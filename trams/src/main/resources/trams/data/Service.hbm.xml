@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="de.davelee.trams.data">
+
+    <class name="Service" table="SERVICE">
+        <id name="serviceId" column="ID">
+            <generator class="native"/>
+        </id>
+        <list name="serviceStops" lazy="true" cascade="all-delete-orphan" table="SERVICESTOPS" inverse="false"> 
+        	<key column="SERVICESTOP_ID"/> 
+			<index column="POSITION_index"/> 
+			<many-to-many unique="true" column="ID" class="Stop"/> 
+		</list>
+    </class>
+
+</hibernate-mapping>

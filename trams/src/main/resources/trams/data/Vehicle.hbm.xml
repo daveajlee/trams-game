@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="de.davelee.trams.data">
+
+    <class name="Vehicle" table="VEHICLE">
+        <id name="id" column="ID">
+            <generator class="native"/>
+        </id>
+        <property name="registrationNumber" column="REGISTRATION_NUMBER"/>
+        <property name="deliveryDate" type="calendar" column="DELIVERY_DATE"/>
+        <property name="depreciationFactor" type="double" column="DEPRECIATION_FACTOR"/>
+        <property name="imagePath" column="IMAGE_PATH"/>
+        <property name="model" column="MODEL"/>
+        <property name="seatingNum" column="SEATING_NUM"/>
+        <property name="standingNum" column="STANDING_NUM"/>
+        <property name="purchasePrice" type="double" column="PURCHASE_PRICE"/>
+        <many-to-one name="assignedSchedule" column="ASSIGNED_SCHEDULE" class="RouteSchedule"/>
+    </class>
+
+</hibernate-mapping>

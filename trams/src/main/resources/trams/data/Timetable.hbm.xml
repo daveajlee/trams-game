@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="de.davelee.trams.data">
+
+    <class name="Timetable" table="TIMETABLE">
+        <id name="id" column="ID">
+            <generator class="native"/>
+        </id>
+        <property name="name" column="NAME"/>
+        <property name="validFromDate" type="calendar" column="VALID_FROM_DATE"/>
+        <property name="validToDate" type="calendar" column="VALID_TO_DATE"/>
+        <map name="servicePatterns" lazy="true" cascade="all-delete-orphan" table="SERVICEPATTERNS" inverse="false"> 
+        	<key column="SERVICEPATTERN_ID"/> 
+			<index column="property_name" type="string"/> 
+			<many-to-many unique="true" column="ELEMENT" class="ServicePattern"/> 
+		</map>
+    </class>
+
+</hibernate-mapping>
