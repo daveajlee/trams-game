@@ -4,7 +4,6 @@ import trams.messages.*;
 import java.util.*;
 
 import trams.data.*;
-import trams.messages.Message;
 
 /**
  * This class represents the simulator in the TraMS program.
@@ -94,11 +93,11 @@ public class Simulator implements java.io.Serializable {
             System.out.println("Date is " + date);
             if ( date.equalsIgnoreCase("All Dates") ) {
                 System.out.println("Date was ok!");
-                if ( folder.equalsIgnoreCase(theMessageQueue.get(i).getFolder()) && type.equalsIgnoreCase(theMessageQueue.get(i).getMessageType())) {
+                if ( folder.equalsIgnoreCase(theMessageQueue.get(i).getFolder()) && type.equalsIgnoreCase(theMessageQueue.get(i).getType())) {
                     messages.add(theMessageQueue.get(i));
                 }
             }
-            else if ( date.equalsIgnoreCase(theMessageQueue.get(i).getDate().split(" at")[0]) && folder.equalsIgnoreCase(theMessageQueue.get(i).getFolder()) && type.equalsIgnoreCase(theMessageQueue.get(i).getMessageType()) ) {
+            else if ( date.equalsIgnoreCase(theMessageQueue.get(i).getDate().split(" at")[0]) && folder.equalsIgnoreCase(theMessageQueue.get(i).getFolder()) && type.equalsIgnoreCase(theMessageQueue.get(i).getType()) ) {
                 messages.add(theMessageQueue.get(i));
             }
         }

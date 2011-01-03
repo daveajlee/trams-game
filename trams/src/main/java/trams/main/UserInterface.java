@@ -7,14 +7,13 @@ import trams.data.*;
 import trams.gui.ControlScreen;
 import trams.gui.SplashScreen;
 import trams.gui.WelcomeScreen;
-import trams.messages.CouncilMessage;
-import trams.messages.Message;
 import trams.simulation.Simulator;
 
 import java.util.*;
 import trams.gui.*;
 import trams.messages.*;
 import trams.simulation.*;
+import org.springframework.context.ApplicationContext;
 
 /**
  * This class controls the user interface of the TraMS program. 
@@ -411,10 +410,20 @@ public class UserInterface implements Runnable {
         //Process through program operations.
         if ( theOperations.createSimulator(scenarioName, playerName) ) {
             //Create welcome message.
-            addMessage(new CouncilMessage("Welcome Message", "Congratulations on your appointment as Managing Director of the " + getScenario().getScenarioName() + "! \n\n Your targets for the coming days and months are: " + getScenario().getTargets(),"Council","Inbox",getSimulator().getCurrentDisplaySimTime()));
+        	Message message = (Message) getContext().getBean("CouncilMessage");
+        	message.setSubject("Welcome Message");
+        	message.setText("Congratulations on your appointment as Managing Director of the " + getScenario().getScenarioName() + "! \n\n Your targets for the coming days and months are: " + getScenario().getTargets());
+        	message.setSender("Council");
+        	message.setFolder("Inbox");
+        	message.setDate(getSimulator().getCurrentDisplaySimTime());
+            addMessage(message);
             return true;
         }
         return false;
+    }
+    
+    public ApplicationContext getContext ( ) {
+    	return theOperations.getContext();
     }
     
     /**
