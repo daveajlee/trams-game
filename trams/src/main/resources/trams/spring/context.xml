@@ -5,7 +5,7 @@
 	
 	<bean id="LanduffScenario" class="trams.data.Scenario">
 		<property name="scenarioName" value="Landuff Transport Company"/>
-		<property name="description" value=" has been appointed Managing Director of the Landuff Transport Company saying "I am delighted to be taking on this role and look forward to delivering a transport system
+		<property name="description" value=" has been appointed Managing Director of the Landuff Transport Company saying I am delighted to be taking on this role and look forward to delivering a transport system
             worthy of the fantastic town of Landuff. \n\nLanduff Town Council are committed to supplying 46 
             bus stops around the town. In addition, the council has supplied £200,000 of initial funding and 4 new single decker buses.
             The council expects the Landuff Transport Company to offer a frequent service to these bus stops on all routes (regardless of subsidy) with a high level of passenger satisfaction. If the passenger satisfaction drops below 20% then the contract 
