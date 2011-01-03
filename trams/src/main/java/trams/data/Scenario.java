@@ -30,6 +30,7 @@ public class Scenario {
     private int minimumSatisfaction;
     private String locationMapFileName;
     private int numberSuppliedVehicles;
+    private String dataFileName;
     //Create the stops that this scenario has - used for picking route stops etc.
     protected List<Stop> stops;
     protected Map<String, Distances> distances;
@@ -53,7 +54,15 @@ public class Scenario {
     	
     }
     
-    public int getNumberSuppliedVehicles() {
+    public String getDataFileName() {
+		return dataFileName;
+	}
+
+	public void setDataFileName(String dataFileName) {
+		this.dataFileName = dataFileName;
+	}
+
+	public int getNumberSuppliedVehicles() {
 		return numberSuppliedVehicles;
 	}
 
