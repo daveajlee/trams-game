@@ -11,7 +11,6 @@ import trams.simulation.Simulator;
 
 import java.util.*;
 import trams.gui.*;
-import trams.messages.*;
 import trams.simulation.*;
 import org.springframework.context.ApplicationContext;
 

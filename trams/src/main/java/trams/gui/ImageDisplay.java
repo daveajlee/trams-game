@@ -28,7 +28,10 @@ public class ImageDisplay extends Canvas {
         theTopBorder = topBorder;
         //Construct and display image.
         Toolkit toolkit = Toolkit.getDefaultToolkit();
-        theImage = toolkit.getImage(ImageDisplay.class.getResource("/" + fileName));        
+        //theImage = toolkit.getImage(ImageDisplay.class.getResource("/" + fileName)); 
+        System.out.println("Attempting to load image... " + fileName);
+        theImage = toolkit.getImage("src/main/resources/trams/images/" + fileName);
+        System.out.println("Image loaded!");
         //theImage = toolkit.getImage(fileName);
         MediaTracker mediaTracker = new MediaTracker(this);
 	mediaTracker.addImage(theImage, 0);

@@ -4,7 +4,6 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
-import trams.main.UserInterface;
 import trams.main.*;
 
 /**
@@ -41,7 +40,8 @@ public class WelcomeScreen extends JFrame {
         theInterface.setFrame ( this );
         
         //Set image icon.
-        Image img = Toolkit.getDefaultToolkit().getImage(WelcomeScreen.class.getResource("/TraMSlogo.png"));
+        //Image img = Toolkit.getDefaultToolkit().getImage(SplashScreen.class.getResource("/TraMSlogo.png"));
+        Image img = Toolkit.getDefaultToolkit().getImage("trams/images/TraMSlogo.png");
         setIconImage(img);
         
         //Call the Exit method in the UserInterface class if the user hits exit.

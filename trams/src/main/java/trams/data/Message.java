@@ -8,6 +8,7 @@ import java.util.Calendar;
  */
 public class Message {
 
+	private int id;
     private String subject;
     private String text;
     private String sender;
@@ -17,7 +18,15 @@ public class Message {
 
     public Message ( ) { }
 
-    public void setSubject(String subject) {
+    public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public void setSubject(String subject) {
 		this.subject = subject;
 	}
 

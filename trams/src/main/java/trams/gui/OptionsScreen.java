@@ -4,7 +4,6 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
-import trams.main.UserInterface;
 import trams.main.*;
 
 /**
@@ -39,7 +38,7 @@ public class OptionsScreen extends JFrame {
         theInterface = ui;
         
         //Set image icon.
-        Image img = Toolkit.getDefaultToolkit().getImage(OptionsScreen.class.getResource("/TraMSlogo.png"));
+        Image img = Toolkit.getDefaultToolkit().getImage("src/main/resources/trams/images/TraMSlogo.png");
         setIconImage(img);
         
         //Initialise GUI with title and close attributes.

@@ -1,12 +1,11 @@
 package trams.tramsdb;
 
 import org.hibernate.Session;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import trams.data.*;
-import trams.scenarios.LanduffScenario;
 import trams.util.HibernateUtil;
-
-import trams.scenarios.*;
 
 import java.util.*;
 
@@ -29,13 +28,15 @@ public class DatabaseManager {
         distances.put("Rathaus Pankow", new Integer(7));
         mgr.createAndStoreDistances("S+U Pankow", distances);*/
         
-        List<Route> routes = new ArrayList<Route>();
+        /*List<Route> routes = new ArrayList<Route>();
         routes.add(mgr.createAndStoreRoute());
         List<Vehicle> vehicles = new ArrayList<Vehicle>();
         vehicles.add(mgr.createAndStoreVehicle("CV58 2XD", Calendar.getInstance(), 0.006, "image.png", "Mercedes", 40, 60, 200.99));
         List<Driver> drivers = new ArrayList<Driver>();
         drivers.add(mgr.createAndStoreDriver("Dave Lee", 40, Calendar.getInstance()));
-        mgr.createAndStoreScenarios(routes, vehicles, drivers, 100, "Dave Lee", 20000.00);
+        mgr.createAndStoreScenarios(routes, vehicles, drivers, 100, "Dave Lee", 20000.00);*/
+        
+        mgr.createAndStoreMessage("Subject", "Text", "Sender", "Folder", "Date");
         
         HibernateUtil.getSessionFactory().close();
     }
@@ -205,15 +206,33 @@ public class DatabaseManager {
     	Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         session.beginTransaction();
         
-        Scenario theScenario = new LanduffScenario(playerName, balance, passengerSatisfaction );
+        ApplicationContext theContext = new ClassPathXmlApplicationContext("trams/data/context.xml");
+        Scenario theScenario = (Scenario) theContext.getBean("LanduffScenario");
+        theScenario.setPlayerName(playerName);
+        theScenario.setBalance(balance);
+        theScenario.setPassengerSatisfaction(passengerSatisfaction);
         theScenario.setRoutes(routes);
         theScenario.setVehicles(vehicles);
         theScenario.setDrivers(drivers);
-        theScenario.populateStops();
         
         session.save(theScenario);
         session.getTransaction().commit();
     }
     
-
+    public void createAndStoreMessage ( String subject, String text, String sender, String folder, String date ) {
+    	Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        session.beginTransaction();
+        
+        ApplicationContext theContext = new ClassPathXmlApplicationContext("/trams/data/context.xml");
+        Message theMessage = (Message) theContext.getBean("CouncilMessage");
+        theMessage.setSubject(subject);
+        theMessage.setText(text);
+        theMessage.setSender(sender);
+        theMessage.setFolder(folder);
+        theMessage.setDate(date);
+        
+        session.save(theMessage);
+        session.getTransaction().commit();
+    }
+    
 }

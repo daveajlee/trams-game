@@ -5,7 +5,6 @@ import java.awt.event.*;
 import javax.swing.*;
 
 import trams.data.*;
-import trams.main.UserInterface;
 import trams.main.*;
 
 /**
@@ -43,7 +42,7 @@ public class MakeContactScreen extends JFrame {
         theRouteDetail = rd;
         
         //Set image icon.
-        Image img = Toolkit.getDefaultToolkit().getImage(MakeContactScreen.class.getResource("/TraMSlogo.png"));
+        Image img = Toolkit.getDefaultToolkit().getImage("src/main/resources/trams/images/TraMSlogo.png");
         setIconImage(img);
         
         //Initialise GUI with title and close attributes.
