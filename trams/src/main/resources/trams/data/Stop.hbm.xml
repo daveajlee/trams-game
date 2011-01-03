@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="de.davelee.trams.data">
+
+    <class name="Stop" table="STOP">
+        <id name="id" column="ID">
+            <generator class="native"/>
+        </id>
+        <property name="stopName" column="NAME"/>
+        <property name="stopTime" type="calendar" column="TIME"/>
+    </class>
+
+</hibernate-mapping>
