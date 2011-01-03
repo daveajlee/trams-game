@@ -1,6 +1,5 @@
 package trams.simulation;
 
-import trams.messages.*;
 import java.util.*;
 
 import trams.data.*;

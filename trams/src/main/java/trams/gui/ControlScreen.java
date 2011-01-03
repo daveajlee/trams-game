@@ -15,7 +15,6 @@ import trams.simulation.Simulator;
 import java.text.*;
 //Import transcon data, main and simulation packages.
 import trams.main.*;
-import trams.messages.*;
 import trams.simulation.*;
 
 /**
@@ -104,7 +103,7 @@ public class ControlScreen extends ButtonBar {
         theInterface.setFrame ( this );
         
         //Set image icon.
-        Image img = Toolkit.getDefaultToolkit().getImage(ControlScreen.class.getResource("/TraMSlogo.png"));
+        Image img = Toolkit.getDefaultToolkit().getImage("src/main/resources/trams/images/TraMSlogo.png");
         setIconImage(img);
         
         //Call the Exit method in the UserInterface class if the user hits exit.

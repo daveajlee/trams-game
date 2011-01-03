@@ -42,7 +42,7 @@ public class HelpScreen extends JFrame {
         theInterface = ui;
         
         //Set image icon.
-        Image img = Toolkit.getDefaultToolkit().getImage(HelpScreen.class.getResource("/TraMSlogo.png"));
+        Image img = Toolkit.getDefaultToolkit().getImage("src/main/resources/trams/images/TraMSlogo.png");
         setIconImage(img);
         
         //Close this window if the user hits exit.

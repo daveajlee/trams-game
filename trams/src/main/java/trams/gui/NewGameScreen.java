@@ -4,7 +4,6 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
-import trams.main.UserInterface;
 import trams.main.*;
 
 /**
@@ -51,7 +50,7 @@ public class NewGameScreen extends JFrame {
         theInterface.setFrame ( this );
         
         //Set image icon.
-        Image img = Toolkit.getDefaultToolkit().getImage(NewGameScreen.class.getResource("/TraMSlogo.png"));
+        Image img = Toolkit.getDefaultToolkit().getImage("src/main/resources/trams/images/TraMSlogo.png");
         setIconImage(img);
         
         //Call the Exit method in the UserInterface class if the user hits exit.
