@@ -11,12 +11,8 @@ import java.io.*;
 import org.w3c.dom.*;
 
 import trams.data.*;
-import trams.messages.CouncilMessage;
-import trams.messages.Message;
-import trams.messages.VehicleMessage;
-import trams.simulation.Simulator;
 import trams.simulation.*;
-import trams.messages.*;
+import org.springframework.context.ApplicationContext;
 
 /**
  * This class does all the hard computation - in terms of creating, loading & saving for the TraMS program.
@@ -26,6 +22,7 @@ public class ProgramOperations {
     
     private Simulator theSimulator;
     private Hashtable<String, LinkedList<Integer>> theSchedIds;
+    private ApplicationContext theContext;
     //private LinkedList<Route> theRoutes;
     
     //Update this list plus createVehicleObject to add new vehicle types to TraMS!
@@ -262,7 +259,7 @@ public class ProgramOperations {
             message.setAttribute("sender", myMessage.getSender());
             message.setAttribute("folder", myMessage.getFolder());
             message.setAttribute("date", myMessage.getDate());
-            message.setAttribute("type", myMessage.getMessageType());
+            message.setAttribute("type", myMessage.getType());
             //Finally add message to scenario.
             scenario.appendChild(message);
         }
@@ -611,14 +608,30 @@ public class ProgramOperations {
      */
     public Message createMessageObject ( String subject, String text, String sender, String folder, String date, String type ) {
         if ( type.equalsIgnoreCase("Council") ) {
-            return new CouncilMessage(subject, text, sender, folder, date);
+        	Message message = (Message) theContext.getBean("CouncilMessage");
+        	message.setSubject(subject);
+        	message.setText(text);
+        	message.setSender(sender);
+        	message.setFolder(folder);
+        	message.setDate(date);
+        	return message;
         }
         else if ( type.equalsIgnoreCase("Vehicle") ) {
-            return new VehicleMessage(subject, text, sender, folder, date);
+            Message message = (Message) theContext.getBean("VehicleMessage");
+            message.setSubject(subject);
+            message.setText(text);
+            message.setSender(sender);
+            message.setFolder(folder);
+            message.setDate(date);
+            return message;
         }
         else {
             return null; //Null if can't find message.
         }
+    }
+    
+    public ApplicationContext getContext() {
+    	return theContext;
     }
     
     /**
@@ -657,18 +670,23 @@ public class ProgramOperations {
      * @return a <code>Scenario</code> object.
      */
     public Scenario createScenarioObject ( String scenarioName, String pName, double balance, int psgSatisfaction ) {
-        if ( scenarioName.equalsIgnoreCase("Landuff Transport Company") ) {
-            return new trams.scenarios.LanduffScenario(pName, balance, psgSatisfaction);
+        Scenario scenario = null;
+    	if ( scenarioName.equalsIgnoreCase("Landuff Transport Company") ) {
+            scenario = (Scenario) theContext.getBean("LanduffScenario");
         }
         else if ( scenarioName.equalsIgnoreCase("MDorf Transport Company") ) {
-            return new trams.scenarios.MDorfScenario(pName, balance, psgSatisfaction);
+            scenario = (Scenario) theContext.getBean("MDorfScenario");
         }
         else if ( scenarioName.equalsIgnoreCase("Longts Transport Company") ) {
-            return new trams.scenarios.LongtsScenario(pName, balance, psgSatisfaction);
+            scenario = (Scenario) theContext.getBean("LongtsScenario");
         }
         else {
-            return null; //Null if can't find scenario.
+        	return null; //Null if can't find scenario.
         }
+        scenario.setPlayerName(pName);
+        scenario.setBalance(balance);
+        scenario.setPassengerSatisfaction(psgSatisfaction);
+        return scenario;
     }
     
     /**

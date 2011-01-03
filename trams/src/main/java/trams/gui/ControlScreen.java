@@ -10,8 +10,6 @@ import javax.swing.event.*;
 
 import trams.data.*;
 import trams.main.UserInterface;
-import trams.messages.CouncilMessage;
-import trams.messages.Message;
 import trams.simulation.Simulator;
 
 import java.text.*;
@@ -314,7 +312,12 @@ public class ControlScreen extends ButtonBar {
         //Now check if it is past midnight! If it is dispose, and create Allocation Screen.
         if ( isPastMidnight(theSimulator.getCurrentSimTime(), theSimulator.getPreviousSimTime()) && !doneAllocations ) {
             //Now add a message to summarise days events!!!
-            theInterface.addMessage(new CouncilMessage("Passenger Satisfaction for " + theSimulator.getPreviousDisplaySimDay(), "Congratulations you have successfully completed transport operations for " + theInterface.getScenario().getScenarioName() + " on " + theSimulator.getPreviousDisplaySimDay() + " with a passenger satisfaction of " + theSimulator.getScenario().getPassengerSatisfaction() + "%.\n\nNow you need to allocate vehicles to routes for " + theSimulator.getCurrentDisplaySimDay() + " and keep the passenger satisfaction up! Click on the Management tab and then choose Allocations. Good luck!", "Council", "Inbox", theSimulator.getCurrentDisplaySimTime()));
+        	Message message = (Message) theInterface.getContext().getBean("CouncilMessage");
+        	message.setSubject("Passenger Satisfaction for " + theSimulator.getPreviousDisplaySimDay());
+        	message.setText("Congratulations you have successfully completed transport operations for " + theInterface.getScenario().getScenarioName() + " on " + theSimulator.getPreviousDisplaySimDay() + " with a passenger satisfaction of " + theSimulator.getScenario().getPassengerSatisfaction() + "%.\n\nNow you need to allocate vehicles to routes for " + theSimulator.getCurrentDisplaySimDay() + " and keep the passenger satisfaction up! Click on the Management tab and then choose Allocations. Good luck!");
+            message.setSender("Council");
+            message.setFolder("Inbox");
+            message.setDate(theSimulator.getCurrentDisplaySimTime());
             //Refresh messages.
             theMessages = theInterface.getMessages(theFoldersBox.getSelectedItem().toString(),theDateBox.getSelectedItem().toString(),theMessageTypeBox.getSelectedItem().toString());
             theMessagesModel.removeAllElements();
