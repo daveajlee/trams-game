@@ -5,13 +5,16 @@
 
 <hibernate-mapping package="trams.data">
 
-    <class name="Driver" table="DRIVER">
+    <class name="Message" table="MESSAGE">
         <id name="id" column="ID">
             <generator class="native"/>
         </id>
-        <property name="name" column="NAME"/>
-        <property name="contractedHours" column="CONTRACTED_HOURS"/>
-        <property name="startDate" type="calendar" column="START_DATE"/>
+        <property name="subject" column="SUBJECT"/>
+        <property name="text" column="TEXT"/>
+        <property name="sender" column="SENDER"/>
+        <property name="folder" column="FOLDER"/>
+        <property name="date" column="SIMDATE"/>
+        <property name="type" column="TYPE"/>
     </class>
 
 </hibernate-mapping>
