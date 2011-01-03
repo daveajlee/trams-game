@@ -31,16 +31,17 @@
         <!-- Drop and re-create the database schema on startup -->
         <property name="hbm2ddl.auto">update</property>
 
-		<mapping resource="de/davelee/trams/data/Distances.hbm.xml"/>
-        <mapping resource="de/davelee/trams/data/Driver.hbm.xml"/>
-        <mapping resource="de/davelee/trams/data/Route.hbm.xml"/>
-        <mapping resource="de/davelee/trams/data/RouteSchedule.hbm.xml"/>
-        <mapping resource="de/davelee/trams/data/Scenario.hbm.xml"/>
-        <mapping resource="de/davelee/trams/data/Stop.hbm.xml"/>
-        <mapping resource="de/davelee/trams/data/Service.hbm.xml"/>
-        <mapping resource="de/davelee/trams/data/ServicePattern.hbm.xml"/>
-        <mapping resource="de/davelee/trams/data/Timetable.hbm.xml"/>
-        <mapping resource="de/davelee/trams/data/Vehicle.hbm.xml"/>
+		<mapping resource="trams/data/Distances.hbm.xml"/>
+        <mapping resource="trams/data/Driver.hbm.xml"/>
+        <mapping resource="trams/data/Message.hbm.xml"/>
+        <mapping resource="trams/data/Route.hbm.xml"/>
+        <mapping resource="trams/data/RouteSchedule.hbm.xml"/>
+        <mapping resource="trams/data/Scenario.hbm.xml"/>
+        <mapping resource="trams/data/Stop.hbm.xml"/>
+        <mapping resource="trams/data/Service.hbm.xml"/>
+        <mapping resource="trams/data/ServicePattern.hbm.xml"/>
+        <mapping resource="trams/data/Timetable.hbm.xml"/>
+        <mapping resource="trams/data/Vehicle.hbm.xml"/>
 
     </session-factory>
 
