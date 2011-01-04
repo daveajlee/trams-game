@@ -235,7 +235,7 @@ public class ControlScreen extends ButtonBar {
         JPanel bottomInfoPanel = new JPanel();
         bottomInfoPanel.setBackground(Color.WHITE);
         DecimalFormat form = new DecimalFormat("0.00");
-        theBalanceLabel = new JLabel("Balance: Â£" + form.format(theInterface.getBalance()));
+        theBalanceLabel = new JLabel("Balance: €" + form.format(theInterface.getBalance()));
         theBalanceLabel.setFont(new Font("Arial", Font.BOLD, 12));
         bottomInfoPanel.add(theBalanceLabel);
         JButton resignButton = new JButton("Resign");
@@ -628,7 +628,7 @@ public class ControlScreen extends ButtonBar {
         theTabbedPane.setComponentAt(2, newManagePanel);
         theDialogPanel.paintImmediately(theDialogPanel.getBounds());
         DecimalFormat form = new DecimalFormat("0.00");
-        theBalanceLabel.setText("Balance: Â£" + form.format(theInterface.getBalance()));
+        theBalanceLabel.setText("Balance: €" + form.format(theInterface.getBalance()));
     }
 
     /**

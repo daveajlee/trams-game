@@ -51,7 +51,9 @@ public class Scenario {
     }
     
     public Scenario ( ) {
-    	
+    	routes = new ArrayList<Route>();
+    	vehicles = new ArrayList<Vehicle>();
+    	drivers = new ArrayList<Driver>();
     }
     
     public String getDataFileName() {
@@ -96,6 +98,10 @@ public class Scenario {
 
 	public String getDescription() {
 		return description;
+	}
+	
+	public String getFullDescription() {
+		return getPlayerName() + getDescription();
 	}
 
 	public void setDescription(String description) {

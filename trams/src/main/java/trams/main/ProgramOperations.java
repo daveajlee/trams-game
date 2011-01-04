@@ -13,6 +13,7 @@ import org.w3c.dom.*;
 import trams.data.*;
 import trams.simulation.*;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
  * This class does all the hard computation - in terms of creating, loading & saving for the TraMS program.
@@ -22,7 +23,7 @@ public class ProgramOperations {
     
     private Simulator theSimulator;
     private Hashtable<String, LinkedList<Integer>> theSchedIds;
-    private ApplicationContext theContext;
+    private ApplicationContext theContext = new ClassPathXmlApplicationContext("trams/spring/context.xml");
     //private LinkedList<Route> theRoutes;
     
     //Update this list plus createVehicleObject to add new vehicle types to TraMS!

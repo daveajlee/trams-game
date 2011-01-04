@@ -86,7 +86,7 @@ public class ScenarioDescriptionScreen extends JFrame {
         //Create the descriptionPanel.
         JPanel descriptionPanel = new JPanel();
         descriptionPanel.setBackground(Color.WHITE);
-        theScenarioDescriptionArea = new JTextArea(theInterface.getScenario().getDescription());
+        theScenarioDescriptionArea = new JTextArea(theInterface.getScenario().getFullDescription());
         theScenarioDescriptionArea.setFont(new Font("Arial", Font.PLAIN, 16));
         theScenarioDescriptionArea.setLineWrap(true);
         theScenarioDescriptionArea.setWrapStyleWord(true);
