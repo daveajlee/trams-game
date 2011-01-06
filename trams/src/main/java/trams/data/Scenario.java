@@ -2,12 +2,14 @@ package trams.data;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 import trams.simulation.Simulator;
+import trams.util.FileUtils;
 import trams.util.SortedRoutes;
 import trams.util.SortedVehicles;
 
@@ -54,7 +56,18 @@ public class Scenario {
     	routes = new ArrayList<Route>();
     	vehicles = new ArrayList<Vehicle>();
     	drivers = new ArrayList<Driver>();
+    	stops = new ArrayList<Stop>();
+    	distances = new HashMap<String, Distances>();
     }
+    
+    public void init ( ) {
+    	//Load text file.
+    	ArrayList<String> fileContents = FileUtils.readFile("classpath:src/main/resources/trams/data/" + locationMapFileName);
+    	//At the moment, print out test code.
+    	for ( int i = 0; i < fileContents.size(); i++ ) {
+    		System.out.println(fileContents.get(i));
+    	}
+    } 
     
     public String getDataFileName() {
 		return dataFileName;
