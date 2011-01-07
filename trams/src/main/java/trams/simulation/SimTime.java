@@ -21,7 +21,7 @@ public class SimTime implements java.io.Serializable {
      */
     public SimTime ( int timeIncrement ) {
         //Set time to defaults for starting new game.
-        theCurrentDateTime = new GregorianCalendar(2009,Calendar.AUGUST,20,5,0,0);
+        theCurrentDateTime = new GregorianCalendar(2011,Calendar.JANUARY,1,3,0,0);
         //Set time increment.
         theTimeIncrement = timeIncrement;
     }

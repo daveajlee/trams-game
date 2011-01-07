@@ -18,7 +18,6 @@ public class SplashScreen extends JFrame {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private ImageDisplay theImageDisplay;
     private ImageDisplay theLogoDisplay;
     private ImageDisplay theBusDisplay;
     private UserInterface theInterface;
@@ -105,16 +104,6 @@ public class SplashScreen extends JFrame {
         //Mouse listeners if this is the about screen.
         if ( isAboutScreen ) {
             this.getContentPane().addMouseListener ( new MouseListener () {
-                public void mouseClicked(MouseEvent e) {
-                    dispose();
-                    if (theInterface != null) { theInterface.resumeSimulation(); }
-                }
-                public void mousePressed(MouseEvent e) {}
-                public void mouseReleased(MouseEvent e) {}
-                public void mouseEntered(MouseEvent e) {}
-                public void mouseExited(MouseEvent e) {}
-            });
-            theImageDisplay.addMouseListener ( new MouseListener () {
                 public void mouseClicked(MouseEvent e) {
                     dispose();
                     if (theInterface != null) { theInterface.resumeSimulation(); }
