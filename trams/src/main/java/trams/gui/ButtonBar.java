@@ -5,8 +5,6 @@ import javax.swing.*;
 import trams.main.UserInterface;
 
 import java.awt.event.*;
-import trams.main.*;
-
 /**
  * ButtonBar class represents the menu system in the TraMS program.
  * @author Dave Lee.

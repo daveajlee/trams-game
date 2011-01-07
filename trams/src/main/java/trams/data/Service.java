@@ -74,7 +74,7 @@ public class Service {
     public String[] getCurrentStop(Calendar currentTime) {
         for ( Stop myServiceStop : serviceStops ) {
             if ( checkTimeDiff(myServiceStop.getStopTime(), currentTime) >= 0 ) {
-                //System.out.println("I will be at " + myServiceStop.getStopName() + " in " + checkTimeDiff(myServiceStop.getStopTime(), currentTime) + " seconds.");
+                //logger.debug("I will be at " + myServiceStop.getStopName() + " in " + checkTimeDiff(myServiceStop.getStopTime(), currentTime) + " seconds.");
                 return new String[] { myServiceStop.getStopName(), "" + checkTimeDiff(myServiceStop.getStopTime(), currentTime) } ;
                 //return "I will be at " + myServiceStop.getStopName() + " in " + checkTimeDiff(myServiceStop.getStopTime(), currentTime) + " seconds.";
             }

@@ -13,9 +13,8 @@ import trams.main.UserInterface;
 import trams.simulation.Simulator;
 
 import java.text.*;
-//Import transcon data, main and simulation packages.
-import trams.main.*;
-import trams.simulation.*;
+
+import org.apache.log4j.Logger;
 
 /**
  * This class represents the control screen display for the TraMS program.
@@ -69,6 +68,8 @@ public class ControlScreen extends ButtonBar {
     private JComboBox theMessageTypeBox;
 
     private boolean redrawOnRouteChange = true;
+    
+    private Logger logger;
 
     /**
      * Create a new control screen.
@@ -128,6 +129,8 @@ public class ControlScreen extends ButtonBar {
         theRouteModel = new DefaultListModel();
         theRouteList = new JList(theRouteModel);
         
+        logger = Logger.getLogger(ControlScreen.class);
+        
         theTopPanel.add(makeOptionsPanel(), BorderLayout.CENTER);
         theDialogPanel.add(theTopPanel, BorderLayout.NORTH);
         
@@ -157,25 +160,25 @@ public class ControlScreen extends ButtonBar {
             public void mousePressed ( MouseEvent e ) { }
             public void mouseClicked ( MouseEvent e ) { 
                 if ( theTabbedPane.getSelectedIndex() == 1) {
-                    System.out.println("You just selected message screen");
+                    logger.debug("You just selected message screen");
                     theTopPanel.getComponent(1).setVisible(false);
                     theInterface.setMessageScreen(true);
                     theInterface.setManagementScreen(false);
                     theInterface.pauseSimulation(); //Pause simulation for message screen.
                 }
                 else if ( theTabbedPane.getSelectedIndex() == 2 ) {
-                    System.out.println("You just selected management screen");
+                    logger.debug("You just selected management screen");
                     theTopPanel.getComponent(1).setVisible(false);
                     theInterface.setManagementScreen(true);
                     theInterface.setMessageScreen(false);
                     theInterface.pauseSimulation(); //Pause simulation for management screen.
                 }
                 else {
-                    System.out.println("You just selected live screen");
+                    logger.debug("You just selected live screen");
                     redrawOnRouteChange = false;
                     populateRouteList();
                     redrawOnRouteChange = true;
-                    System.out.println("Route list has been re-populated!");
+                    logger.debug("Route list has been re-populated!");
                     theTopPanel.getComponent(1).setVisible(true);
                     theInterface.setMessageScreen(false);
                     theInterface.setManagementScreen(false);
@@ -196,7 +199,7 @@ public class ControlScreen extends ButtonBar {
         }
         /*theTabbedPane.addChangeListener(new ChangeListener() {
             public void stateChanged ( ChangeEvent e ) {
-                System.out.println("You just selected the " + theTabbedPane.getSelectedIndex() + " component");
+                logger.debug("You just selected the " + theTabbedPane.getSelectedIndex() + " component");
                 if ( theTabbedPane.getSelectedIndex() == 1) {
                     theInterface.setMessageScreen(true);
                 }
@@ -269,7 +272,7 @@ public class ControlScreen extends ButtonBar {
         this.setLocation ( (int) (screenDim.width/2)-(displayDim.width/2), (int) (screenDim.height/2)-(displayDim.height/2));
         
         //Display the front screen to the user.
-        System.out.println("Completing generation of Control Screen!");
+        logger.debug("Completing generation of Control Screen!");
         this.pack ();
         this.setVisible (true);
         this.setSize ( 800,600 );
@@ -360,7 +363,7 @@ public class ControlScreen extends ButtonBar {
             //Repaint the whole interface immediately.
             theDialogPanel.paintImmediately(theDialogPanel.getBounds());
             return;
-            //System.out.println("I need to do allocations!");
+            //logger.debug("I need to do allocations!");
             //AllocationScreen as = new AllocationScreen(theInterface, true, true, theSimulator);
             //dispose();
         }
@@ -369,7 +372,7 @@ public class ControlScreen extends ButtonBar {
 
         //Now get the component and replace it if appropriate.
         if ( !isRedraw ) {
-            System.out.println("I've set graphics panel to something...");
+            logger.debug("I've set graphics panel to something...");
             theGraphicsPanel = generateNewVehiclePanel();
         }
         if ( isRedraw ) {
@@ -393,7 +396,7 @@ public class ControlScreen extends ButtonBar {
                 public void mouseReleased ( MouseEvent e ) { }
                 public void mousePressed ( MouseEvent e ) { }
                 public void mouseClicked ( MouseEvent e ) { 
-                    System.out.println("You just selected the " + theTabbedPane.getSelectedIndex() + " component");
+                    logger.debug("You just selected the " + theTabbedPane.getSelectedIndex() + " component");
                     if ( theTabbedPane.getSelectedIndex() == 1) {
                         theTopPanel.getComponent(1).setVisible(false);
                         theInterface.setMessageScreen(true);
@@ -420,11 +423,11 @@ public class ControlScreen extends ButtonBar {
             }
             theDialogPanel.add(theTabbedPane, 1);
             /*for ( int i = 0; i < theDialogPanel.getComponentCount(); i++ ) {
-                System.out.println("Going through component " + i + theDialogPanel.getComponent(i));
-                System.out.println("Graphics Panel component " + theGraphicsPanel);
+                logger.debug("Going through component " + i + theDialogPanel.getComponent(i));
+                logger.debug("Graphics Panel component " + theGraphicsPanel);
                 if ( theDialogPanel.getComponent(i) == theGraphicsPanel ) {
                     theDialogPanel.remove(theDialogPanel.getComponent(i));
-                    System.out.println("I've generated vehicle panel!");
+                    logger.debug("I've generated vehicle panel!");
                     theGraphicsPanel = generateNewVehiclePanel();
                     theDialogPanel.add(theGraphicsPanel, i);
                 }
@@ -484,7 +487,7 @@ public class ControlScreen extends ButtonBar {
         theDateModel = new DefaultComboBoxModel();
         theDateModel.addElement("All Dates");
         for ( int i = 0; i < theInterface.getNumberMessages(); i++ ) {
-            System.out.println("Index of " + theDateModel.getIndexOf(theInterface.getMessage(i).getDate().split(" at")[0]));
+            logger.debug("Index of " + theDateModel.getIndexOf(theInterface.getMessage(i).getDate().split(" at")[0]));
             if ( theDateModel.getIndexOf(theInterface.getMessage(i).getDate().split(" at")[0]) == -1 ) {
                 theDateModel.addElement(theInterface.getMessage(i).getDate().split(" at")[0]);
             }
@@ -590,7 +593,7 @@ public class ControlScreen extends ButtonBar {
         //BoxLayout layout = new BoxLayout(theMessagesPanel, BoxLayout.Y_AXIS);
         //theMessagesPanel.setLayout(layout);
         //Create a text area with a scroll pane and add this to the interface.
-        System.out.println("I'm drawing messages....");
+        logger.debug("I'm drawing messages....");
         JPanel messageAndButtonPanel = new JPanel(new BorderLayout());
         messageAndButtonPanel.setBackground(Color.WHITE);
         JScrollPane messagesPane = new JScrollPane();
@@ -663,7 +666,7 @@ public class ControlScreen extends ButtonBar {
         }
         else {
             vehiclePanel = new JPanel(new GridLayout(theInterface.getNumCurrentDisplaySchedules()+1, 1));
-            System.out.println("Route number in vehicle panel is " + theRouteList.getSelectedValue().toString().split(":")[0]);
+            logger.debug("Route number in vehicle panel is " + theRouteList.getSelectedValue().toString().split(":")[0]);
         }
         JPanel stopRowPanel;
         if (theRouteModel.getSize() > 0 ) {
@@ -705,7 +708,7 @@ public class ControlScreen extends ButtonBar {
             String[] vehiclePos =  rs.getCurrentStop(theSimulator.getCurrentSimTime(), theSimulator);
             String thisVehiclePos = vehiclePos[0];
             long timeSecs = Long.parseLong(vehiclePos[1]);
-            System.out.println(schedId + " is at " + thisVehiclePos + " in " + timeSecs + " seconds with delay " + rs.getDelay() + " minutes.");
+            logger.debug(schedId + " is at " + thisVehiclePos + " in " + timeSecs + " seconds with delay " + rs.getDelay() + " minutes.");
             /*if ( rs.hasDelay() ) {
                 theInterface.addMessage(theSimulator.getMessageDisplaySimTime() + ": Vehicle " + schedId + " is running " + rs.getDelay() + " minutes late.");
             }*/
@@ -728,7 +731,7 @@ public class ControlScreen extends ButtonBar {
                 //Each stopPanel has one component which is JLabel.
                 JLabel myLabel = (JLabel) theStopPanels.get(j).getComponent(0);
                 //Now check where this stop is and get its position.
-                //System.out.println("Comparing " + myLabel.getText() + " against " + thisVehiclePos);
+                //logger.debug("Comparing " + myLabel.getText() + " against " + thisVehiclePos);
                 if ( myLabel.getText().equalsIgnoreCase(thisVehiclePos) ) {
                     int panelSize = 800 / theStopPanels.size();
                     int startPos = 0 + ( panelSize * j);
@@ -737,7 +740,7 @@ public class ControlScreen extends ButtonBar {
                         endPos = (panelSize * (j+1))-(panelSize/2);
                     }
                     //Debug.
-                    System.out.println("This is stop " + myLabel.getText() + " - range is from " + startPos + " to " + endPos);
+                    logger.debug("This is stop " + myLabel.getText() + " - range is from " + startPos + " to " + endPos);
                     //xPos = startPos + (panelSize/2 - (panelSize/4));
                     if ( previousStop.equalsIgnoreCase("N/A") ) {
                         xPos = startPos;
@@ -748,17 +751,17 @@ public class ControlScreen extends ButtonBar {
                             xPos = startPos;
                         } 
                         double percent = (double)timeSecs/(double)maxTimeDiff;
-                        System.out.println("Percentage is " + percent + "% for positioning! - timeSecs = " + timeSecs + " and maxTimeDiff = " + maxTimeDiff);
+                        logger.debug("Percentage is " + percent + "% for positioning! - timeSecs = " + timeSecs + " and maxTimeDiff = " + maxTimeDiff);
                         //If inward, then low percentage means close, high means far away.
                         if ( direction == DrawingPanel.RIGHTTOLEFT ) {
                             xPos = (int) Math.round((percent * (endPos - startPos))) + startPos;
-                            System.out.println("Recommeding xPos of " + xPos);
+                            logger.debug("Recommeding xPos of " + xPos);
                         }
                         //If outward, reverse is true i.e. high means close, low means far away.
                         else {
                             double invertPercent = 1 - percent;
                             xPos = (int) Math.round((invertPercent * (endPos - startPos))) + startPos;
-                            System.out.println("Recommeding xPos of " + xPos);
+                            logger.debug("Recommeding xPos of " + xPos);
                         }
                         //xPos = startPos + (panelSize/2 - (panelSize/4));
                     }
@@ -767,7 +770,7 @@ public class ControlScreen extends ButtonBar {
                     previousStop = myLabel.getText();
                 }
             }
-            System.out.println("I'm drawing route schedule " + rs.toString());
+            logger.debug("I'm drawing route schedule " + rs.toString());
             JPanel drawPanel = new DrawingPanel(xPos, direction, rs.hasDelay() );
             drawPanel.addMouseListener(new BusMouseListener(theInterface.getDisplaySchedule(theRouteList.getSelectedValue().toString().split(":")[0], i), theInterface));
             vehiclePanel.add(drawPanel);
@@ -825,13 +828,13 @@ public class ControlScreen extends ButtonBar {
         theRouteModel.clear();
         //String[] allRouteStr = new String[theSimulator.getScenario().getNumberRoutes()];
         for ( int i = 0; i < theSimulator.getScenario().getNumberRoutes(); i++ ) {
-            System.out.println("Adding route " + theSimulator.getScenario().getRoute(i).toString());
-            System.out.println("i is " + i + " and numRoutes is " + theSimulator.getScenario().getNumberRoutes());
+            logger.debug("Adding route " + theSimulator.getScenario().getRoute(i).toString());
+            logger.debug("i is " + i + " and numRoutes is " + theSimulator.getScenario().getNumberRoutes());
             theRouteModel.addElement(theSimulator.getScenario().getRoute(i).toString());
             //allRouteStr[i] = theSimulator.getScenario().getRoute(i).toString();
         }
         //theRouteList = new JList(allRouteStr);
-        System.out.println("Route number in control screen is " + theRouteNumber);
+        logger.debug("Route number in control screen is " + theRouteNumber);
         if ( !theRouteNumber.equalsIgnoreCase("") ) {
             theRouteList.setSelectedValue(theRouteNumber, true);
         }
@@ -842,7 +845,7 @@ public class ControlScreen extends ButtonBar {
     }
     
     public JPanel makeOptionsPanel ( ) {
-        System.out.println("Calling makeOptions panel....");
+        logger.debug("Calling makeOptions panel....");
         //Construct options panel and add it to the top panel.
         JPanel optionsPanel = new JPanel();
         optionsPanel.setBackground(Color.WHITE);
@@ -851,7 +854,7 @@ public class ControlScreen extends ButtonBar {
         if ( theSimulator.getScenario().getNumberRoutes() == 0 ) {
             //theRouteList = new JList(new String[] { "No Routes Available" });
             //theRouteList.setVisibleRowCount(3);
-            System.out.println("Created route list!");
+            logger.debug("Created route list!");
         }
         else {
             populateRouteList();
@@ -863,10 +866,10 @@ public class ControlScreen extends ButtonBar {
                     ControlScreen.this.redrawVehicles(generateNewVehiclePanel());
                     theInterface.resumeSimulation();
                 }
-                //System.out.println("Moving to route " + theRouteList.getSelectedValue().toString().split(":")[0]);
+                //logger.debug("Moving to route " + theRouteList.getSelectedValue().toString().split(":")[0]);
                 //theInterface.setSimulator(theSimulator);
                 //theInterface.changeRoute(theRouteList.getSelectedValue().toString());
-                //System.out.println("You now want " + theRouteList.getSelectedValue().toString());
+                //logger.debug("You now want " + theRouteList.getSelectedValue().toString());
                 //dispose();
             }
         });
@@ -941,7 +944,7 @@ public class ControlScreen extends ButtonBar {
         JPanel vehicleInfoPanel = new JPanel();
         vehicleInfoPanel.setBackground(Color.WHITE);
         //Display page label.
-        //System.out.println("Min for this page is: " + min);
+        //logger.debug("Min for this page is: " + min);
         theCurrentPage = (theMinVehicle/4); if ( (theMinVehicle+1) % 4 !=0 || theCurrentPage == 0 ) { theCurrentPage++; }
         int totalPages;
         if ( theRouteList.getModel().getSize() > 0 ) {
@@ -951,7 +954,7 @@ public class ControlScreen extends ButtonBar {
             totalPages = 0;
         }
         theNumPagesLabel = new JLabel("Page " + theCurrentPage + " / " + totalPages);
-        System.out.println("This is page " + theCurrentPage + " / " + totalPages);
+        logger.debug("This is page " + theCurrentPage + " / " + totalPages);
         vehicleInfoPanel.add(theNumPagesLabel);
         //Previous vehicle button.
         thePreviousVehiclesButton = new JButton("Previous Vehicles");

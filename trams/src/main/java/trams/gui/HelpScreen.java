@@ -10,8 +10,6 @@ import javax.swing.*;
 import javax.swing.event.*;
 
 import trams.main.UserInterface;
-//Import trams main package.
-import trams.main.*;
 
 /**
  * HelpScreen.java is the screen to display the help screen for TraMS.

@@ -1,7 +1,5 @@
 package trams.data;
 
-import java.util.Calendar;
-
 /**
  * Class representing a message in TraMS.
  * @author Dave Lee

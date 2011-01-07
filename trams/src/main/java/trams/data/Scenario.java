@@ -1,7 +1,6 @@
 package trams.data;
 
 import java.io.InputStream;
-import java.io.StringWriter;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -10,10 +9,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Calendar;
-import java.util.GregorianCalendar;
 
 import trams.simulation.Simulator;
-import trams.util.FileUtils;
 import trams.util.SortedRoutes;
 import trams.util.SortedVehicles;
 

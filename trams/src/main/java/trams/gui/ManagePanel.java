@@ -7,6 +7,8 @@ import trams.data.*;
 import trams.main.UserInterface;
 import trams.simulation.Simulator;
 
+import org.apache.log4j.Logger;
+
 import java.awt.event.*;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -22,8 +24,6 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.ArrayList;
-import trams.main.*;
-import trams.simulation.*;
 
 /**
  * This class displays the management options for the control screen in TraMS.
@@ -64,6 +64,8 @@ public class ManagePanel {
     private JTextField theDriverNameField;
     private JSpinner theContractedHoursSpinner;
     private Calendar theStartDate;
+    
+    private Logger logger;
 
     private JTextField theTimetableNameField;
     private DefaultComboBoxModel theValidFromDayModel;
@@ -120,6 +122,8 @@ public class ManagePanel {
         theInterface = ui;
         theSimulator = sim;
         theControlScreen = cs;
+        
+        logger = Logger.getLogger(ManagePanel.class);
     }
     
     public JPanel getDisplayPanel ( ) {
@@ -151,7 +155,7 @@ public class ManagePanel {
             informationArea.setText("WARNING: To successfully run services, you must assign vehicles to route schedules. Click 'Allocations' to match vehicles to route schedules");
         }
         else {
-            System.out.println("The allocations size was " + theInterface.getAllocations().size() + " which is " + theInterface.getAllocations().toString());
+            logger.debug("The allocations size was " + theInterface.getAllocations().size() + " which is " + theInterface.getAllocations().toString());
             informationArea.setText(theInterface.getRandomTipMessage());
         }
         informationArea.setRows(4);
@@ -823,7 +827,7 @@ public class ManagePanel {
                     GregorianCalendar validTo = new GregorianCalendar(vtYear, vtMonth, vtDay);
                     //Save this timetable with valid dates first.
                     theSelectedRoute.addTimetable(theTimetableNameField.getText(), new Timetable(theTimetableNameField.getText(), validFrom, validTo));
-                    //System.out.println("Adding timetable with name " + theTimetableNameField.getText() + " to route " + theSelectedRoute.getRouteNumber());
+                    //logger.debug("Adding timetable with name " + theTimetableNameField.getText() + " to route " + theSelectedRoute.getRouteNumber());
                 }
                 //Process the stops.
                 ArrayList<String> stops = new ArrayList<String>();
@@ -1085,7 +1089,7 @@ public class ManagePanel {
                 theMinVehicleLabel.setText("NOTE: " + getMinVehicles() + " vehicles are required to operate " + theEveryMinuteSpinner.getValue().toString() + " minute frequency!");
             }
         });
-        if ( sp!=null ) { System.out.println("Frequency is " + sp.getFrequency() + " and duration is " + sp.getDuration()); theEveryMinuteModel.setValue(sp.getFrequency()); }
+        if ( sp!=null ) { logger.debug("Frequency is " + sp.getFrequency() + " and duration is " + sp.getDuration()); theEveryMinuteModel.setValue(sp.getFrequency()); }
         timesPanel.add(theEveryMinuteSpinner);
         JLabel minutesLabel = new JLabel("minutes");
         minutesLabel.setFont(new Font("Arial", Font.PLAIN, 14));
@@ -1127,7 +1131,7 @@ public class ManagePanel {
                     theSelectedRoute.getTimetable(theSelectedTimetableName).getServicePattern(theSelectedServicePattern.getName()).editServicePattern(theServicePatternNameField.getText(), operatingDays, theTerminus1Box.getSelectedItem().toString(), theTerminus2Box.getSelectedItem().toString(), timeFrom, timeTo, Integer.parseInt(theEveryMinuteSpinner.getValue().toString()), getCurrentRouteDuration(Integer.parseInt(theEveryMinuteSpinner.getValue().toString())));
                 }
                 else {
-                    System.out.println("I am calling add method with timetable name " + theSelectedTimetableName + "!");
+                    logger.debug("I am calling add method with timetable name " + theSelectedTimetableName + "!");
                     ServicePattern sp = new ServicePattern(theServicePatternNameField.getText(), operatingDays, theTerminus1Box.getSelectedItem().toString(), theTerminus2Box.getSelectedItem().toString(), timeFrom, timeTo, Integer.parseInt(theEveryMinuteSpinner.getValue().toString()), getCurrentRouteDuration(Integer.parseInt(theEveryMinuteSpinner.getValue().toString())) );
                     theSelectedRoute.getTimetable(theSelectedTimetableName).addServicePattern(theServicePatternNameField.getText(), sp);
                 }
@@ -1247,11 +1251,11 @@ public class ManagePanel {
         if ( selectIndex == 0 ) {
             int myDistance = (cumDistance*2);
             int myCumFreq = (frequency*2);
-            System.out.println("Distance was " + myDistance);
+            logger.debug("Distance was " + myDistance);
             while ( myCumFreq < myDistance ) {
                 myCumFreq += (frequency*2);
             }
-            System.out.println("Actual distance is " + myCumFreq);
+            logger.debug("Actual distance is " + myCumFreq);
             return myCumFreq;
         }
         for ( int i = 1; i <= selectIndex; i++ ) {
@@ -1260,11 +1264,11 @@ public class ManagePanel {
         //Return distance * 2.
         int myDistance = (cumDistance*2);
         int myCumFreq = (frequency*2);
-        System.out.println("Distance was " + myDistance);
+        logger.debug("Distance was " + myDistance);
         while ( myCumFreq < myDistance ) {
             myCumFreq += (frequency*2);
         }
-        System.out.println("Actual distance is " + myCumFreq);
+        logger.debug("Actual distance is " + myCumFreq);
         return myCumFreq;
     }
 
@@ -1336,8 +1340,8 @@ public class ManagePanel {
         datesPanel.setBackground(Color.WHITE);
         JLabel datesLabel = new JLabel("Dates:");
         datesLabel.setFont(new Font("Arial", Font.BOLD, 16));
-        System.out.println("Test: " + theSelectedRoute.toString());
-        System.out.println(Arrays.toString(theSelectedRoute.getPossibleSchedulesDates(theInterface.getCurrentSimTime())));
+        logger.debug("Test: " + theSelectedRoute.toString());
+        logger.debug(Arrays.toString(theSelectedRoute.getPossibleSchedulesDates(theInterface.getCurrentSimTime())));
         theDatesComboBox = new JComboBox ( theSelectedRoute.getPossibleSchedulesDates(theInterface.getCurrentSimTime()) );
         theDatesComboBox.setSelectedIndex(dateIndex);
         theDatesComboBox.addItemListener(new ItemListener() {
@@ -1365,18 +1369,18 @@ public class ManagePanel {
             outgoingData[i][0] = theSelectedRoute.getStop(Route.OUTWARDSTOPS, i).getStopName();
             for ( int j = 0; j < 10; j++ ) {
                 int pos = (min+j);
-                System.out.println("This is #" + pos + " of the loop...");
+                logger.debug("This is #" + pos + " of the loop...");
                 if ( services.size() <= (min+j) ) {
-                    System.out.println("No more services!");
+                    logger.debug("No more services!");
                     outgoingData[i][j+1] = "";
                 }
                 else if ( services.get(min+j).getStop(theSelectedRoute.getStop(Route.OUTWARDSTOPS, i).getStopName()) == null ) {
-                    System.out.println("Blank data!");
+                    logger.debug("Blank data!");
                     outgoingData[i][j+1] = "";
                 }
                 else {
                     outgoingData[i][j+1] = services.get(min+j).getStop(theSelectedRoute.getStop(Route.OUTWARDSTOPS, i).getStopName()).getDisplayStopTime();
-                    System.out.println("Adding [" + i + "][" + j + "] At " + services.get(min+j).getStop(theSelectedRoute.getStop(Route.OUTWARDSTOPS, i).getStopName()).getStopName() + " at " + services.get(min+j).getStop(theSelectedRoute.getStop(Route.OUTWARDSTOPS, i).getStopName()).getDisplayStopTime());
+                    logger.debug("Adding [" + i + "][" + j + "] At " + services.get(min+j).getStop(theSelectedRoute.getStop(Route.OUTWARDSTOPS, i).getStopName()).getStopName() + " at " + services.get(min+j).getStop(theSelectedRoute.getStop(Route.OUTWARDSTOPS, i).getStopName()).getDisplayStopTime());
                 }
             }
         }
@@ -2154,7 +2158,7 @@ public class ManagePanel {
         theRoutesList.setFixedCellWidth(270);
         theRoutesList.setFont(new Font("Arial", Font.PLAIN, 15));
         for ( int i = 0; i < theInterface.getNumberRoutes(); i++ ) {
-        	System.out.println("Test Allocations: " + theInterface.getRoute(i).getNumRouteSchedules());
+        	logger.debug("Test Allocations: " + theInterface.getRoute(i).getNumRouteSchedules());
             for ( int j = 0; j < theInterface.getRoute(i).getNumRouteSchedules(); j++ ) {
                 theRoutesModel.addElement(theInterface.getRoute(i).getRouteSchedule(j).toString());
             }
@@ -2315,7 +2319,7 @@ public class ManagePanel {
                             }
                         }
                         //Now assign route detail to vehicle and vice versa.
-                        System.out.println("Assigning " + theInterface.getRoute(routeNumber).getRouteSchedule(routeDetailPos).toString() + " to vehicle " + theInterface.getVehicle(vehiclePos).toString());
+                        logger.debug("Assigning " + theInterface.getRoute(routeNumber).getRouteSchedule(routeDetailPos).toString() + " to vehicle " + theInterface.getVehicle(vehiclePos).toString());
                         theInterface.getVehicle(vehiclePos).setAssignedSchedule(theInterface.getRoute(routeNumber).getRouteSchedule(routeDetailPos));
                         theInterface.getRoute(routeNumber).addAllocation(theInterface.getRoute(routeNumber).getRouteSchedule(routeDetailPos).toString(), theInterface.getVehicle(vehiclePos));
                     }

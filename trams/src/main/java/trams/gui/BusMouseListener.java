@@ -4,7 +4,6 @@ import java.awt.event.*;
 
 import trams.data.*;
 import trams.main.UserInterface;
-import trams.main.*;
 
 /**
  * This class represents a listener for when vehicles are clicked on the control screen.
