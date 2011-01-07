@@ -136,37 +136,37 @@ public class HelpScreen extends JFrame {
                 try {
                     //If statements to display correct content.
                     if ( selectedItem.equalsIgnoreCase("Welcome") ) {
-                        theDisplayPane.setPage(HelpScreen.class.getResource("/intro.html"));
+                        theDisplayPane.setPage(HelpScreen.class.getResource("/trams/help/intro.html"));
                     }
                     else if ( selectedItem.equalsIgnoreCase("Getting Started") ) {
-                        theDisplayPane.setPage(HelpScreen.class.getResource("/gettingstarted.html"));
+                        theDisplayPane.setPage(HelpScreen.class.getResource("/trams/help/gettingstarted.html"));
                     }
                     else if ( selectedItem.equalsIgnoreCase("Load Game") ) {
-                        theDisplayPane.setPage(HelpScreen.class.getResource("/loadgame.html"));
+                        theDisplayPane.setPage(HelpScreen.class.getResource("/trams/help/loadgame.html"));
                     }
                     else if ( selectedItem.equalsIgnoreCase("Web Site") ) {
-                        theDisplayPane.setPage(HelpScreen.class.getResource("/website.html"));
+                        theDisplayPane.setPage(HelpScreen.class.getResource("/trams/help/website.html"));
                     }
                     else if ( selectedItem.equalsIgnoreCase("Create New Game") ) {
-                        theDisplayPane.setPage(HelpScreen.class.getResource("/newgame.html"));
+                        theDisplayPane.setPage(HelpScreen.class.getResource("/trams/help/newgame.html"));
                     }
                     else if ( selectedItem.equalsIgnoreCase("Add/Edit/Delete Route") ) {
-                        theDisplayPane.setPage(HelpScreen.class.getResource("/newroute.html"));
+                        theDisplayPane.setPage(HelpScreen.class.getResource("/trams/help/newroute.html"));
                     }
                     else if ( selectedItem.equalsIgnoreCase("Purchase/Sell Vehicle") ) {
-                        theDisplayPane.setPage(HelpScreen.class.getResource("/newvehicle.html"));
+                        theDisplayPane.setPage(HelpScreen.class.getResource("/trams/help/newvehicle.html"));
                     }
                     else if ( selectedItem.equalsIgnoreCase("Allocate Vehicles to Routes") ) {
-                        theDisplayPane.setPage(HelpScreen.class.getResource("/allocationscreen.html"));
+                        theDisplayPane.setPage(HelpScreen.class.getResource("/trams/help/allocationscreen.html"));
                     }
                     else if ( selectedItem.equalsIgnoreCase("Control Screen") ) {
-                        theDisplayPane.setPage(HelpScreen.class.getResource("/controlscreen.html"));
+                        theDisplayPane.setPage(HelpScreen.class.getResource("/trams/help/controlscreen.html"));
                     }
                     else if ( selectedItem.equalsIgnoreCase("Vehicle Info Screen") ) {
-                        theDisplayPane.setPage(HelpScreen.class.getResource("/vehicleinfoscreen.html"));
+                        theDisplayPane.setPage(HelpScreen.class.getResource("/trams/help/vehicleinfoscreen.html"));
                     }
                     else if ( selectedItem.equalsIgnoreCase("Make Contact With Vehicle") ) {
-                        theDisplayPane.setPage(HelpScreen.class.getResource("/makecontact.html"));
+                        theDisplayPane.setPage(HelpScreen.class.getResource("/trams/help/makecontact.html"));
                     }
                     /*else if ( selectedItem.equalsIgnoreCase("Save Output") ) {
                         theDisplayPane.setPage(HelpScreen.class.getResource("/saveoutput.html"));
@@ -194,7 +194,7 @@ public class HelpScreen extends JFrame {
         rightPanel.add(Box.createRigidArea(new Dimension(0, 10))); //Spacer
         //Add editor pane.
         try {
-            theDisplayPane = new JEditorPane(HelpScreen.class.getResource("/intro.html")); 
+            theDisplayPane = new JEditorPane(HelpScreen.class.getResource("/trams/help/intro.html")); 
             theDisplayPane.setMaximumSize(new Dimension(650,500));
         }
         catch (IOException e) {

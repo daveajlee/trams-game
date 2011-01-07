@@ -1,5 +1,9 @@
 package trams.data;
 
+import java.io.InputStream;
+import java.io.StringWriter;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -62,10 +66,33 @@ public class Scenario {
     
     public void init ( ) {
     	//Load text file.
-    	ArrayList<String> fileContents = FileUtils.readFile("classpath:src/main/resources/trams/data/" + locationMapFileName);
-    	//At the moment, print out test code.
-    	for ( int i = 0; i < fileContents.size(); i++ ) {
-    		System.out.println(fileContents.get(i));
+    	InputStream fileStream = getClass().getResourceAsStream("/trams/data/" + dataFileName);
+    	ArrayList<String> fileContents = new ArrayList<String>();
+    	try {
+    		BufferedReader reader = new BufferedReader(new InputStreamReader(fileStream, "UTF-8"));
+    		String nextLine;
+    		while ( (nextLine = reader.readLine()) != null ) {
+    			fileContents.add(nextLine);
+    		}
+    	} catch ( Exception e ) {
+    		e.printStackTrace();
+    	}
+    	//Process contents - first line is stops.
+    	String[] myStops = fileContents.get(0).split(",");
+    	for ( int i = 0; i < myStops.length; i++ ) {
+    		stops.add(new Stop(myStops[i]));
+    	}
+    	//Rest is then distances.
+    	for ( int i = 1; i < fileContents.size(); i+=2 ) {
+    		//Get stop name.
+    		String stopName = fileContents.get(i).split(":")[0];
+    		Distances myDistances = new Distances();
+    		String[] stopNames = fileContents.get(i).split(":")[1].split(",");
+    		String[] stopTimes = fileContents.get((i+1)).split(":")[1].split(",");
+    		for ( int j = 0; j < stopNames.length; j++ ) {
+    			myDistances.setStopDistance(stopNames[j], Integer.parseInt(stopTimes[j]));
+    		}
+    		distances.put(stopName, myDistances);
     	}
     } 
     

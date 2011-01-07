@@ -1,6 +1,7 @@
 package trams.data;
 
 import java.util.Map;
+import java.util.HashMap;
 
 public class Distances {
 	
@@ -9,7 +10,7 @@ public class Distances {
 	private Map<String, Integer> distanceTimes;
 
 	public Distances() {
-		
+		distanceTimes = new HashMap<String, Integer>();
 	}
 	
 	public Distances(String stopName, Map<String, Integer> distanceTimes) {
@@ -45,5 +46,8 @@ public class Distances {
 		return distanceTimes.get(name);
 	}
 	
+	public void setStopDistance ( String name, int time ) {
+		distanceTimes.put(name, time);
+	}
 	
 }

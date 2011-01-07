@@ -30,7 +30,7 @@ public class UserInterface implements Runnable {
     
     private int theSimulationSpeed = 2000;
     
-    private final String theVersion = "0.4 Preview (Open Source)";
+    private final String theVersion = "0.3.1 (Open Source Edition)";
     
     //This is to decide which screen to show when we refresh.
     private boolean showingMessages = false;
