@@ -185,7 +185,7 @@ public class Simulator implements java.io.Serializable {
      * @return a <code>Calendar</code> representing the current simulated time.
      */
     public Calendar getCurrentSimTime ( ) {
-        return theSimTime.getCurrentTime();
+        return (Calendar) theSimTime.getCurrentTime().clone();
     }
 
     /**

@@ -63,8 +63,11 @@ public class ProgramOperations {
         Scenario scen = createScenarioObject(scenarioName, playerName, 800000.00, 100);
         theSimulator = new Simulator(scen);
         //Now for the scenario - create supplied vehicles.
+        System.out.println("Creating " + scen.getNumberSuppliedVehicles() + " vehicles!");
         for ( int i = 0; i < scen.getNumberSuppliedVehicles(); i++ ) {
-            scen.addVehicle(createVehicleObject(generateRandomReg(theSimulator.getShortYear()), "MyBus Single Decker", theSimulator.getCurrentSimTime()));
+        	Calendar deliveryDate = theSimulator.getCurrentSimTime();
+        	deliveryDate.add(Calendar.DAY_OF_MONTH, -1);
+            scen.addVehicle(createVehicleObject(generateRandomReg(theSimulator.getShortYear()), "MyBus Single Decker", deliveryDate ));
         }
         return true;
     }
