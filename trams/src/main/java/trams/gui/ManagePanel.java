@@ -16,6 +16,7 @@ import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.GridBagLayout;
 import java.text.*;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -322,14 +323,16 @@ public class ManagePanel {
         driverPanel.setLayout(new BorderLayout());
         JPanel driverLabelPanel = new JPanel();
         driverLabelPanel.setBackground(Color.WHITE);
-        theDriversLabel = new JLabel("Drivers:", SwingConstants.CENTER);
+        theDriversLabel = new JLabel("", SwingConstants.CENTER);
+        //theDriversLabel = new JLabel("Drivers:", SwingConstants.CENTER);
         theDriversLabel.setFont(new Font("Arial", Font.BOLD, 18));
         driverLabelPanel.add(theDriversLabel);
         driverPanel.add(driverLabelPanel, BorderLayout.NORTH);
         //Create description panel.
         JPanel driverDescriptionPanel = new JPanel(new BorderLayout());
         driverDescriptionPanel.setBackground(Color.WHITE);
-        JTextArea driverDescriptionArea = new JTextArea("Employ drivers, view current employees and sack drivers");
+        //JTextArea driverDescriptionArea = new JTextArea("Employ drivers, view current employees and sack drivers");
+        JTextArea driverDescriptionArea = new JTextArea("");
         driverDescriptionArea.setBorder(BorderFactory.createLineBorder(Color.WHITE));
         driverDescriptionArea.setWrapStyleWord(true);
         driverDescriptionArea.setLineWrap(true);
@@ -365,7 +368,7 @@ public class ManagePanel {
         });
         viewDriversButtonPanel.add(theViewDriversButton);
         driverButtonPanel.add(viewDriversButtonPanel);
-        driverPanel.add(driverButtonPanel, BorderLayout.SOUTH);
+        //driverPanel.add(driverButtonPanel, BorderLayout.SOUTH);
         gridPanel.add(driverPanel);
         //Allocation panel.
         JPanel allocationPanel = new JPanel();
@@ -1112,7 +1115,7 @@ public class ManagePanel {
                 String operatingDays = "";
                 for ( int i = 0; i < theDaysBox.length; i++ ) {
                     if ( theDaysBox[i].isSelected() ) {
-                        operatingDays += (i+1) + "";
+                        operatingDays += (i+1) + ",";
                     }
                 }
                 //Create time from.
@@ -1333,6 +1336,8 @@ public class ManagePanel {
         datesPanel.setBackground(Color.WHITE);
         JLabel datesLabel = new JLabel("Dates:");
         datesLabel.setFont(new Font("Arial", Font.BOLD, 16));
+        System.out.println("Test: " + theSelectedRoute.toString());
+        System.out.println(Arrays.toString(theSelectedRoute.getPossibleSchedulesDates(theInterface.getCurrentSimTime())));
         theDatesComboBox = new JComboBox ( theSelectedRoute.getPossibleSchedulesDates(theInterface.getCurrentSimTime()) );
         theDatesComboBox.setSelectedIndex(dateIndex);
         theDatesComboBox.addItemListener(new ItemListener() {
@@ -2149,6 +2154,7 @@ public class ManagePanel {
         theRoutesList.setFixedCellWidth(270);
         theRoutesList.setFont(new Font("Arial", Font.PLAIN, 15));
         for ( int i = 0; i < theInterface.getNumberRoutes(); i++ ) {
+        	System.out.println("Test Allocations: " + theInterface.getRoute(i).getNumRouteSchedules());
             for ( int j = 0; j < theInterface.getRoute(i).getNumRouteSchedules(); j++ ) {
                 theRoutesModel.addElement(theInterface.getRoute(i).getRouteSchedule(j).toString());
             }

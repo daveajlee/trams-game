@@ -265,10 +265,12 @@ public class Route {
      * @param sim a <code>Simulator</code> object for reference.
      */
     public void generateRouteSchedules ( List<Service> outgoingServices, List<Service> returnServices ) {
-        //Clear any old route schedules.
+        System.out.println("In generate route schedules...");
+    	//Clear any old route schedules.
         routeSchedules.clear();
         //We need to repeat this loop until both outgoingServices and returnServices are empty!
         int counter = 1;
+        System.out.println("Outgoing Services = " + outgoingServices.size() + " Return Services = " + returnServices.size());
         while ( outgoingServices.size() > 0 || returnServices.size() > 0 ) {
             //Control what service we want - initially we don't care.
             boolean wantOutgoing = true; boolean wantReturn = true;
@@ -300,7 +302,7 @@ public class Route {
                         break;
                     }
                 } else if ( returnServices.size() > 0 ) {
-                    if ( myCal.after(returnServices.get(outgoingServices.size()-1).getStop(0).getStopTime()) ) {
+                    if ( myCal.after(returnServices.get(returnServices.size()-1).getStop(0).getStopTime()) ) {
                         break;
                     }
                 } else {
@@ -383,6 +385,7 @@ public class Route {
         Calendar thisDate;
         while (timeNames.hasNext()) {
             Timetable timeT = getTimetable(timeNames.next());
+            System.out.println("Timetable valid to date is: " + timeT.getValidToDateInfo());
             thisDate = (Calendar) today.clone();
             //Now check if we have passed the valid to date.
             while ( !thisDate.after(timeT.getValidTo()) ) {
@@ -392,7 +395,10 @@ public class Route {
                     Iterator<String> patternNames = timeT.getServicePatternNames().iterator();
                     while ( patternNames.hasNext() ) {
                         ServicePattern sp = timeT.getServicePattern(patternNames.next());
+                        System.out.println("Processing service pattern: " + sp.getName());
+                        System.out.println("Calendar day: " + thisDate.get(Calendar.DAY_OF_WEEK) + " days of operation: " + sp.getDaysOfOperationAsString());
                         if ( sp.isDayOfOperation(thisDate.get(Calendar.DAY_OF_WEEK)) ) {
+                        	System.out.println("Adding this date to calendar: " + thisDate.get(Calendar.DAY_OF_MONTH) + "-" + thisDate.get(Calendar.MONTH) + "-" + thisDate.get(Calendar.YEAR));
                             myCalendar.add(thisDate);
                             break;
                         }

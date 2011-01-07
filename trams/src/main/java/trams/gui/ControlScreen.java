@@ -318,6 +318,9 @@ public class ControlScreen extends ButtonBar {
             message.setFolder("Inbox");
             message.setDate(theSimulator.getCurrentDisplaySimTime());
             //Refresh messages.
+            theFoldersBox.getSelectedItem().toString();
+            theDateBox.getSelectedItem().toString();
+            theMessageTypeBox.getSelectedItem().toString();
             theMessages = theInterface.getMessages(theFoldersBox.getSelectedItem().toString(),theDateBox.getSelectedItem().toString(),theMessageTypeBox.getSelectedItem().toString());
             theMessagesModel.removeAllElements();
             for ( int i = 0; i < theMessages.size(); i++ ) {
