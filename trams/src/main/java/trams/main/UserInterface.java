@@ -10,8 +10,8 @@ import trams.gui.WelcomeScreen;
 import trams.simulation.Simulator;
 
 import java.util.*;
-import trams.gui.*;
-import trams.simulation.*;
+
+import org.apache.log4j.Logger;
 import org.springframework.context.ApplicationContext;
 
 /**
@@ -32,6 +32,8 @@ public class UserInterface implements Runnable {
     
     private final String theVersion = "0.3.1 (Open Source Edition)";
     
+    private Logger logger = Logger.getLogger(UserInterface.class);
+    
     //This is to decide which screen to show when we refresh.
     private boolean showingMessages = false;
     private boolean showingManagement = false;
@@ -43,7 +45,7 @@ public class UserInterface implements Runnable {
      * Create a new user interface - default constructor.
      */
     public UserInterface ( ) {
-        //System.out.println("We are in ui constructor");
+        //logger.debug("We are in ui constructor");
         isEnd = false;
         isSimulationRunning = false;
         theOperations = new ProgramOperations();
@@ -197,7 +199,7 @@ public class UserInterface implements Runnable {
      */
     public void setControlScreen( ControlScreen cs ) {
         theControlScreen = cs;
-        System.out.println("Making control screen visible...");
+        logger.debug("Making control screen visible...");
         theControlScreen.setVisible(true);
     }
     
@@ -287,50 +289,50 @@ public class UserInterface implements Runnable {
         //Store the currentDate - we will need it for display schedules.
         Calendar currentTime = theOperations.getSimulator().getCurrentSimTime();
         //Determine the route ids we will display using these parameters.
-        System.out.println("Route number is " + routeNumber);
-        System.out.println(theOperations.getSimulator().getScenario().getRoute(routeNumber));
-        System.out.println("Number of possible display schedules: " +  theOperations.getSimulator().getScenario().getRoute(routeNumber).getNumRouteSchedules());
+        logger.debug("Route number is " + routeNumber);
+        logger.debug(theOperations.getSimulator().getScenario().getRoute(routeNumber));
+        logger.debug("Number of possible display schedules: " +  theOperations.getSimulator().getScenario().getRoute(routeNumber).getNumRouteSchedules());
         if ( theOperations.getSimulator().getScenario().getRoute(routeNumber).getNumRouteSchedules() < max ) { max = theOperations.getSimulator().getScenario().getRoute(routeNumber).getNumRouteSchedules(); }
-        //System.out.println("Max vehicles starts at " + max + " - routeDetails size is " + routeDetails.size());
-        System.out.println("Min is " + min + " & Max is " + max);
+        //logger.debug("Max vehicles starts at " + max + " - routeDetails size is " + routeDetails.size());
+        logger.debug("Min is " + min + " & Max is " + max);
         if ( min == max ) {
             RouteSchedule rs = theOperations.getSimulator().getScenario().getRoute(routeNumber).getRouteSchedule(min);
-            System.out.println("Getting route schedule " + rs.toString() + " from loop being equal!");
+            logger.debug("Getting route schedule " + rs.toString() + " from loop being equal!");
             if ( theOperations.getSimulator().getScenario().getRoute(routeNumber).getAssignedVehicle(rs.toString()) == null ) {
-                System.out.println("A schedule was null");
+                logger.debug("A schedule was null");
             }
             if ( rs.getCurrentStop(currentTime, theOperations.getSimulator())[0].equalsIgnoreCase("Depot") ) {
-                System.out.println("Vehicle in depot!");
+                logger.debug("Vehicle in depot!");
             }
             if ( theOperations.getSimulator().getScenario().getRoute(routeNumber).getAssignedVehicle(rs.toString()) != null && !rs.getCurrentStop(currentTime, theOperations.getSimulator())[0].equalsIgnoreCase("Depot") ) {
-                //System.out.println("Adding Route Detail " + routeDetails.get(i).getId());
+                //logger.debug("Adding Route Detail " + routeDetails.get(i).getId());
                 theRouteDetailPos.add(0);
             }
             else {
                 max++;
-                //System.out.println("Max is now " + max + " - routeDetails size is: " + routeDetails.size());
+                //logger.debug("Max is now " + max + " - routeDetails size is: " + routeDetails.size());
                 if ( theOperations.getSimulator().getScenario().getRoute(routeNumber).getNumRouteSchedules() < max ) { max = theOperations.getSimulator().getScenario().getRoute(routeNumber).getNumRouteSchedules(); }
-                //System.out.println("Route Detail " + routeDetails.get(i).getId() + " was null - maxVehicles is now " + max);
+                //logger.debug("Route Detail " + routeDetails.get(i).getId() + " was null - maxVehicles is now " + max);
             }
         }
         for ( int i = min; i < max; i++ ) { //Changed from i = 0; i < routeDetails.size().
             RouteSchedule rs = theOperations.getSimulator().getScenario().getRoute(routeNumber).getRouteSchedule(i);
-            System.out.println("Getting route schedule " + rs.toString() + " from for loop!");
+            logger.debug("Getting route schedule " + rs.toString() + " from for loop!");
             if ( theOperations.getSimulator().getScenario().getRoute(routeNumber).getAssignedVehicle(rs.toString()) == null ) {
-                System.out.println("A schedule was null");
+                logger.debug("A schedule was null");
             }
             if ( rs.getCurrentStop(currentTime, theOperations.getSimulator())[0].equalsIgnoreCase("Depot") ) {
-                System.out.println("Vehicle in depot!");
+                logger.debug("Vehicle in depot!");
             }
             if ( theOperations.getSimulator().getScenario().getRoute(routeNumber).getAssignedVehicle(rs.toString()) != null && !rs.getCurrentStop(currentTime, theOperations.getSimulator())[0].equalsIgnoreCase("Depot") ) {
-                //System.out.println("Adding Route Detail " + routeDetails.get(i).getId());
+                //logger.debug("Adding Route Detail " + routeDetails.get(i).getId());
                 theRouteDetailPos.add(i);
             }
             else {
                 max++;
-                //System.out.println("Max is now " + max + " - routeDetails size is: " + routeDetails.size());
+                //logger.debug("Max is now " + max + " - routeDetails size is: " + routeDetails.size());
                 if ( theOperations.getSimulator().getScenario().getRoute(routeNumber).getNumRouteSchedules() < max ) { max = theOperations.getSimulator().getScenario().getRoute(routeNumber).getNumRouteSchedules(); }
-                //System.out.println("Route Detail " + routeDetails.get(i).getId() + " was null - maxVehicles is now " + max);
+                //logger.debug("Route Detail " + routeDetails.get(i).getId() + " was null - maxVehicles is now " + max);
             }
         }
     }
@@ -383,7 +385,7 @@ public class UserInterface implements Runnable {
      */
     public void pauseSimulation ( ) {
         isSimulationRunning = false;
-        //System.out.println("Pausing - Setting isEnd to true in " + this.toString());
+        //logger.debug("Pausing - Setting isEnd to true in " + this.toString());
         isEnd = true;
     }
     
@@ -392,7 +394,7 @@ public class UserInterface implements Runnable {
      */
     public void resumeSimulation ( ) {
         isSimulationRunning = true;
-        //System.out.println("Resuming - Setting isEnd to false");
+        //logger.debug("Resuming - Setting isEnd to false");
         isEnd = false;
         theRunningThread = new Thread(this, "SimThread");
         theRunningThread.start();
@@ -662,7 +664,7 @@ public class UserInterface implements Runnable {
         for ( int i = 0; i < allAllocations.size(); i++ ) {
             boolean keep = false;
             for ( int j = 0; j < runningIds.size(); j++ ) {
-                System.out.println("This is " + allAllocations.get(i).split("&")[0].trim() + " against " + runningIds.get(j));
+                logger.debug("This is " + allAllocations.get(i).split("&")[0].trim() + " against " + runningIds.get(j));
                 if ( allAllocations.get(i).split("&")[0].trim().equalsIgnoreCase(runningIds.get(j)) ) {
                     keep = true;
                 }
@@ -671,8 +673,8 @@ public class UserInterface implements Runnable {
                 allAllocations.remove(i); i--;
             }
         }
-        System.out.println("All allocations are: " + allAllocations.toString());
-        System.out.println("Running Ids are: " + runningIds.toString());
+        logger.debug("All allocations are: " + allAllocations.toString());
+        logger.debug("Running Ids are: " + runningIds.toString());
         return allAllocations;
     }
     
@@ -811,8 +813,7 @@ public class UserInterface implements Runnable {
     public boolean hasSomeDriversBeenEmployed ( ) {
         if ( getNumberDrivers() == 0 ) { return false; }
         for ( int i = 0; i < getNumberDrivers(); i++ ) {
-            return true;
-        	//if ( getDriver(i).hasStartedWork(getCurrentSimTime()) ) { return true; }
+        	if ( getDriver(i).hasStartedWork(getCurrentSimTime()) ) { return true; }
         }
         return false;
     }

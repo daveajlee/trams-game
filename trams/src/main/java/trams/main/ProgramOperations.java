@@ -10,6 +10,8 @@ import org.xml.sax.*;
 import java.io.*;
 import org.w3c.dom.*;
 
+import org.apache.log4j.Logger;
+
 import trams.data.*;
 import trams.simulation.*;
 import org.springframework.context.ApplicationContext;
@@ -23,6 +25,7 @@ public class ProgramOperations {
     
     private Simulator theSimulator;
     private Hashtable<String, LinkedList<Integer>> theSchedIds;
+    private Logger logger = Logger.getLogger(ProgramOperations.class);
     private ApplicationContext theContext = new ClassPathXmlApplicationContext("trams/spring/context.xml");
     //private LinkedList<Route> theRoutes;
     
@@ -63,7 +66,7 @@ public class ProgramOperations {
         Scenario scen = createScenarioObject(scenarioName, playerName, 800000.00, 100);
         theSimulator = new Simulator(scen);
         //Now for the scenario - create supplied vehicles.
-        System.out.println("Creating " + scen.getNumberSuppliedVehicles() + " vehicles!");
+        logger.debug("Creating " + scen.getNumberSuppliedVehicles() + " vehicles!");
         for ( int i = 0; i < scen.getNumberSuppliedVehicles(); i++ ) {
         	Calendar deliveryDate = theSimulator.getCurrentSimTime();
         	deliveryDate.add(Calendar.DAY_OF_MONTH, -1);
@@ -478,7 +481,7 @@ public class ProgramOperations {
                         myTimetable.addServicePattern(serviceElement.getAttribute("name"), myService);
                     }
                     //Finally add this timetable to the route.
-                    System.out.println("Adding " + myTimetable.getName() + " to " + route.getRouteNumber());
+                    logger.debug("Adding " + myTimetable.getName() + " to " + route.getRouteNumber());
                     route.addTimetable(timetableElement.getAttribute("name"), myTimetable);
                 }
                 //Generate timetables.
@@ -509,12 +512,12 @@ public class ProgramOperations {
                         break;
                     }
                 }
-                //System.out.println("Adding vehicle with id " + v.getLast().getVehicleID() + " type " + v.getLast().getVehicleType() + " age " + v.getLast().getVehicleAge());
+                //logger.debug("Adding vehicle with id " + v.getLast().getVehicleID() + " type " + v.getLast().getVehicleType() + " age " + v.getLast().getVehicleAge());
             }
             
         }
         catch (Exception e) {
-            //System.out.println("Exception!");
+            //logger.debug("Exception!");
             e.printStackTrace();
             return false;
         }

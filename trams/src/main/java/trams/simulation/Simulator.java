@@ -3,6 +3,7 @@ package trams.simulation;
 import java.util.*;
 
 import trams.data.*;
+import org.apache.log4j.Logger;
 
 /**
  * This class represents the simulator in the TraMS program.
@@ -18,6 +19,8 @@ public class Simulator implements java.io.Serializable {
     private Calendar thePreviousTime;
     private Scenario theCurrentScenario;
     private String theDifficultyLevel = "Easy"; //Default to easy.
+    
+    private Logger logger = Logger.getLogger(Simulator.class);
 
     //This represents the message to be displayed on screen.
     private LinkedList<Message> theMessageQueue;
@@ -85,13 +88,13 @@ public class Simulator implements java.io.Serializable {
     public LinkedList<Message> getMessages ( String folder, String date, String type ) {
         //Create a blank linked list first.
         LinkedList<Message> messages = new LinkedList<Message>();
-        System.out.println("There are " + theMessageQueue.size() + " messages!");
+        logger.debug("There are " + theMessageQueue.size() + " messages!");
         //Go through all of the messages and see if they are applicable.
         for ( int i = 0; i < theMessageQueue.size(); i++ ) {
-            System.out.println("This is message " + theMessageQueue.get(i).getSubject());
-            System.out.println("Date is " + date);
+            logger.debug("This is message " + theMessageQueue.get(i).getSubject());
+            logger.debug("Date is " + date);
             if ( date.equalsIgnoreCase("All Dates") ) {
-                System.out.println("Date was ok!");
+                logger.debug("Date was ok!");
                 if ( folder.equalsIgnoreCase(theMessageQueue.get(i).getFolder()) && type.equalsIgnoreCase(theMessageQueue.get(i).getType())) {
                     messages.add(theMessageQueue.get(i));
                 }

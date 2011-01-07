@@ -4,8 +4,6 @@ import java.util.*;
 
 import trams.simulation.Simulator;
 
-import trams.simulation.*;
-
 /**
  * Class represents a route schedule (i.e. a particular timetable instance of a route) in the TraMS program.
  * @author Dave Lee.
@@ -263,7 +261,7 @@ public class RouteSchedule {
      */
     public void shortenSchedule ( String stop, Calendar currentTime ) {
         //Shorten schedule to the specific stop stated and reduce the delay accordingly - for current service remove stops after the specified stop.
-        //System.out.println("Service was ending at: " + theAssignedSchedule.getCurrentService().getEndDestination());
+        //logger.debug("Service was ending at: " + theAssignedSchedule.getCurrentService().getEndDestination());
         String oldEnd = getCurrentService(currentTime).getEndDestination();
         //Now we need to remove the stops in beteen!
         long timeDiff = getCurrentService(currentTime).removeStopsBetween(stop, oldEnd, false, true);
@@ -285,7 +283,7 @@ public class RouteSchedule {
         //Get the time difference between current stop and new stop.
         long timeDiff = getCurrentService(currentTime).getStopTimeDifference(currentStop, newStop);
         reduceDelay((int) (timeDiff/2));
-        //System.out.println("Vehicle delay reduced from " + oldDelay + " mins to " + getVehicleDelay() + " mins.");
+        //logger.debug("Vehicle delay reduced from " + oldDelay + " mins to " + getVehicleDelay() + " mins.");
     }
     
 }

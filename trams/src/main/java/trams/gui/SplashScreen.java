@@ -6,7 +6,6 @@ import java.awt.event.*;
 import javax.swing.*;
 
 import trams.main.UserInterface;
-import trams.main.*;
 
 /**
  * Splash screen for the TraMS program.

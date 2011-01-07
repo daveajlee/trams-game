@@ -1,6 +1,7 @@
 package trams.data;
 
 import java.util.*;
+import org.apache.log4j.Logger;
 
 /**
  * This class represents timetable outlines for the Easy Timetable Generator in TraMS.
@@ -13,6 +14,8 @@ public class Timetable {
     private Calendar validFromDate;
     private Calendar validToDate;
     private Map<String, ServicePattern> servicePatterns;
+    
+    private Logger logger = Logger.getLogger(Timetable.class);
     
     public Timetable() {
     	this.servicePatterns = new HashMap<String, ServicePattern>();
@@ -74,7 +77,7 @@ public class Timetable {
      * @param sp a <code>ServicePattern</code> object representing the service pattern.
      */
     public void addServicePattern ( String name, ServicePattern sp ) {
-        System.out.println("Current service pattern size is: " + servicePatterns.size() + " and new name is " + name);
+        logger.debug("Current service pattern size is: " + servicePatterns.size() + " and new name is " + name);
         servicePatterns.put(name, sp);
     }
     

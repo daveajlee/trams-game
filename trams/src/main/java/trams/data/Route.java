@@ -11,6 +11,8 @@ import java.util.GregorianCalendar;
 
 import trams.util.SortedServices;
 
+import org.apache.log4j.Logger;
+
 
 /**
  * This represents a Route object in the TraMS program.
@@ -36,6 +38,8 @@ public class Route {
     
     private Map<String, Timetable> timetables;
     
+    private Logger logger;
+    
     /**
      * Create a new route.
      * @param routeNo a <code>String</code> with the route number,
@@ -50,6 +54,8 @@ public class Route {
         //Initialise the hash table.
         routeSchedules = new ArrayList<RouteSchedule>();
         timetables = new HashMap<String, Timetable>();
+        
+        logger = Logger.getLogger("Route");
     }
     
     public int getId() {
@@ -177,7 +183,7 @@ public class Route {
      * @param today a <code>Calendar</code> object with today's date.
      */
     public List<Service> generateServiceTimetables ( Calendar today, Scenario scene, int direction ) {
-        System.out.println("I'm generating timetable for route " + routeNumber + " for " + today.get(Calendar.DAY_OF_MONTH) + " " + getMonth(today.get(Calendar.MONTH)) + " " + today.get(Calendar.YEAR) );
+        logger.debug("I'm generating timetable for route " + routeNumber + " for " + today.get(Calendar.DAY_OF_MONTH) + " " + getMonth(today.get(Calendar.MONTH)) + " " + today.get(Calendar.YEAR) );
         //First of all, get the current timetable.
         Timetable currentTimetable = getCurrentTimetable(today);
         //Create a list to store services.
@@ -198,7 +204,7 @@ public class Route {
             if ( direction == Route.RETURNSTOPS && diffDurationFreq <= (myServicePattern.getFrequency()/2)) {
                 myTime.add(Calendar.MINUTE, myServicePattern.getFrequency()/2);
             }
-            //System.out.println("End time is " + myServicePattern.getEndTime().get(Calendar.HOUR_OF_DAY) + ":" + myServicePattern.getEndTime().get(Calendar.MINUTE) );
+            //logger.debug("End time is " + myServicePattern.getEndTime().get(Calendar.HOUR_OF_DAY) + ":" + myServicePattern.getEndTime().get(Calendar.MINUTE) );
             //Maintain a counter for the service id.
             int serviceId = 0;
             //Now repeat this loop until myTime is after the service pattern end time.
@@ -206,7 +212,7 @@ public class Route {
                 if ( (myTime.get(Calendar.HOUR_OF_DAY) > myServicePattern.getEndTime().get(Calendar.HOUR_OF_DAY)) ) { break; }
                 else if ( (myTime.get(Calendar.HOUR_OF_DAY) == myServicePattern.getEndTime().get(Calendar.HOUR_OF_DAY)) && (myTime.get(Calendar.MINUTE) > myServicePattern.getEndTime().get(Calendar.MINUTE)) ) { break; }
                 else {
-                    //System.out.println("I want a service starting from both terminuses at " + myTime.get(Calendar.HOUR_OF_DAY) + ":" + myTime.get(Calendar.MINUTE));
+                    //logger.debug("I want a service starting from both terminuses at " + myTime.get(Calendar.HOUR_OF_DAY) + ":" + myTime.get(Calendar.MINUTE));
                     //Create an outgoing service.
                     Service newService = new Service();
                     //Add stops - we also need to create a separate calendar to ensure we don't advance more than we want!!!!
@@ -225,7 +231,7 @@ public class Route {
                         //Create stop.
                         newService.addStop(new Stop(serviceStops.get(i).getStopName(), (Calendar) serviceTime.clone()));
                     }
-                    //System.out.println("Service #" + serviceId + ": " + newService.getAllDisplayStops());
+                    //logger.debug("Service #" + serviceId + ": " + newService.getAllDisplayStops());
                     if ( !isDuplicateService(allServices, newService) ) {
                         allServices.add(newService);
                     }
@@ -265,12 +271,12 @@ public class Route {
      * @param sim a <code>Simulator</code> object for reference.
      */
     public void generateRouteSchedules ( List<Service> outgoingServices, List<Service> returnServices ) {
-        System.out.println("In generate route schedules...");
+        logger.debug("In generate route schedules...");
     	//Clear any old route schedules.
         routeSchedules.clear();
         //We need to repeat this loop until both outgoingServices and returnServices are empty!
         int counter = 1;
-        System.out.println("Outgoing Services = " + outgoingServices.size() + " Return Services = " + returnServices.size());
+        logger.debug("Outgoing Services = " + outgoingServices.size() + " Return Services = " + returnServices.size());
         while ( outgoingServices.size() > 0 || returnServices.size() > 0 ) {
             //Control what service we want - initially we don't care.
             boolean wantOutgoing = true; boolean wantReturn = true;
@@ -279,8 +285,8 @@ public class Route {
             //Create our calendar object and set it to midnight.
             Calendar myCal = new GregorianCalendar(2009,7,7,0,0);
             //Find whether the first outgoing service time is before the first return service time.
-            System.out.println("Outgoing services has size: " + outgoingServices.size());
-            System.out.println("Return services has size: " + returnServices.size());
+            logger.debug("Outgoing services has size: " + outgoingServices.size());
+            logger.debug("Return services has size: " + returnServices.size());
             if ( returnServices.size() > 0 && outgoingServices.size() > 0 && outgoingServices.get(0).getStop(0).getStopTime().after(returnServices.get(0).getStop(0).getStopTime()) ) {
                 myCal = (Calendar) returnServices.get(0).getStop(0).getStopTime().clone();
             }
@@ -292,7 +298,7 @@ public class Route {
             }
             //Here's the loop.
             while ( true ) {
-                //System.out.println("Schedule " + counter + " Time is now " + myCal.get(Calendar.HOUR_OF_DAY) + ":" + myCal.get(Calendar.MINUTE));
+                //logger.debug("Schedule " + counter + " Time is now " + myCal.get(Calendar.HOUR_OF_DAY) + ":" + myCal.get(Calendar.MINUTE));
                 if ( outgoingServices.size() > 0 && returnServices.size() > 0 ) {
                     if ( myCal.after(outgoingServices.get(outgoingServices.size()-1).getStop(0).getStopTime()) && myCal.after(returnServices.get(returnServices.size()-1).getStop(0).getStopTime())) {
                         break;
@@ -312,9 +318,9 @@ public class Route {
                 while ( true ) {
                     if ( loopPos >= outgoingServices.size() && loopPos >= returnServices.size() ) { break; }
                     if ( loopPos < outgoingServices.size() ) {
-                        //if ( wantOutgoing ) { System.out.println("I want an outgoing service so trying: " + returnServices.get(loopPos).getAllDisplayStops() + " to route schedule " + counter); }
+                        //if ( wantOutgoing ) { logger.debug("I want an outgoing service so trying: " + returnServices.get(loopPos).getAllDisplayStops() + " to route schedule " + counter); }
                         if ( wantOutgoing && outgoingServices.get(loopPos).getStop(0).getStopTime().get(Calendar.HOUR_OF_DAY) == myCal.get(Calendar.HOUR_OF_DAY) && outgoingServices.get(loopPos).getStop(0).getStopTime().get(Calendar.MINUTE) == myCal.get(Calendar.MINUTE)) {
-                            //System.out.println("Adding service " + outgoingServices.get(loopPos).getAllDisplayStops() + " to route schedule " + counter);
+                            //logger.debug("Adding service " + outgoingServices.get(loopPos).getAllDisplayStops() + " to route schedule " + counter);
                             //We have found our service - its an outgoing one!!!
                             mySchedule.addService(outgoingServices.get(loopPos));
                             //Set calendar equal to last stop time.
@@ -329,9 +335,9 @@ public class Route {
                         }
                     }
                     if ( loopPos < returnServices.size() ) {
-                        //if ( wantReturn ) { System.out.println("I want a return service so trying: " + returnServices.get(loopPos).getAllDisplayStops() + " to route schedule " + counter); }
+                        //if ( wantReturn ) { logger.debug("I want a return service so trying: " + returnServices.get(loopPos).getAllDisplayStops() + " to route schedule " + counter); }
                         if ( wantReturn && returnServices.get(loopPos).getStop(0).getStopTime().get(Calendar.HOUR_OF_DAY) == myCal.get(Calendar.HOUR_OF_DAY) && returnServices.get(loopPos).getStop(0).getStopTime().get(Calendar.MINUTE) == myCal.get(Calendar.MINUTE)) {
-                            //System.out.println("Adding service " + returnServices.get(loopPos).getAllDisplayStops() + " to route schedule " + counter);
+                            //logger.debug("Adding service " + returnServices.get(loopPos).getAllDisplayStops() + " to route schedule " + counter);
                             //We have found our service - its a return one!!!
                             mySchedule.addService(returnServices.get(loopPos));
                             //Set calendar equal to last stop time.
@@ -354,11 +360,11 @@ public class Route {
             //Add route schedule to route.
             routeSchedules.add(mySchedule);
             //Debug route schedule.
-            System.out.println("This is route schedule " + mySchedule.toString() + " with services: ");
+            logger.debug("This is route schedule " + mySchedule.toString() + " with services: ");
             for ( int i = 0; i < mySchedule.getNumServices(); i++ ) {
-                System.out.print(mySchedule.getService(i).getAllDisplayStops() + " |****| ");
+                logger.debug(mySchedule.getService(i).getAllDisplayStops() + " |****| ");
             }
-            System.out.println("");
+            logger.debug("");
             //Increment counter.
             counter++;
         }
@@ -385,7 +391,7 @@ public class Route {
         Calendar thisDate;
         while (timeNames.hasNext()) {
             Timetable timeT = getTimetable(timeNames.next());
-            System.out.println("Timetable valid to date is: " + timeT.getValidToDateInfo());
+            logger.debug("Timetable valid to date is: " + timeT.getValidToDateInfo());
             thisDate = (Calendar) today.clone();
             //Now check if we have passed the valid to date.
             while ( !thisDate.after(timeT.getValidTo()) ) {
@@ -395,10 +401,10 @@ public class Route {
                     Iterator<String> patternNames = timeT.getServicePatternNames().iterator();
                     while ( patternNames.hasNext() ) {
                         ServicePattern sp = timeT.getServicePattern(patternNames.next());
-                        System.out.println("Processing service pattern: " + sp.getName());
-                        System.out.println("Calendar day: " + thisDate.get(Calendar.DAY_OF_WEEK) + " days of operation: " + sp.getDaysOfOperationAsString());
+                        logger.debug("Processing service pattern: " + sp.getName());
+                        logger.debug("Calendar day: " + thisDate.get(Calendar.DAY_OF_WEEK) + " days of operation: " + sp.getDaysOfOperationAsString());
                         if ( sp.isDayOfOperation(thisDate.get(Calendar.DAY_OF_WEEK)) ) {
-                        	System.out.println("Adding this date to calendar: " + thisDate.get(Calendar.DAY_OF_MONTH) + "-" + thisDate.get(Calendar.MONTH) + "-" + thisDate.get(Calendar.YEAR));
+                        	logger.debug("Adding this date to calendar: " + thisDate.get(Calendar.DAY_OF_MONTH) + "-" + thisDate.get(Calendar.MONTH) + "-" + thisDate.get(Calendar.YEAR));
                             myCalendar.add(thisDate);
                             break;
                         }
@@ -410,7 +416,7 @@ public class Route {
         }
         Collections.sort(myCalendar);
         String[] myCalDates = new String[myCalendar.size()];
-        System.out.println("MyCalDates length is " + myCalDates.length);
+        logger.debug("MyCalDates length is " + myCalDates.length);
         for ( int i = 0; i < myCalDates.length; i++ ) {
             myCalDates[i] = getDay(myCalendar.get(i).get(Calendar.DAY_OF_WEEK)) + " " + myCalendar.get(i).get(Calendar.DAY_OF_MONTH) + getDateExt(myCalendar.get(i).get(Calendar.DAY_OF_MONTH)) + " " + getMonth(myCalendar.get(i).get(Calendar.MONTH)) + " " + myCalendar.get(i).get(Calendar.YEAR); 
         }
@@ -432,7 +438,7 @@ public class Route {
         //Initialise list to store the services.
         List<Service> outgoingServices = new ArrayList<Service>();
         //Get the route schedules for that day!
-        System.out.println(routeSchedules.toString());
+        logger.debug(routeSchedules.toString());
         for ( int h = 0;  h < routeSchedules.size(); h++ ) {
             for ( int i = 0; i < routeSchedules.get(h).getNumServices(); i++ ) {
                 Service myService = routeSchedules.get(h).getService(i);
@@ -478,7 +484,7 @@ public class Route {
         //Initialise list to store the services.
         List<Service> returnServices = new ArrayList<Service>();
         //Get the route schedules for that day!
-        System.out.println(routeSchedules.toString());
+        logger.debug(routeSchedules.toString());
         for ( int h = 0; h < routeSchedules.size(); h++ ) {
             for ( int i = 0; i < routeSchedules.get(h).getNumServices(); i++ ) {
                 Service myService = routeSchedules.get(h).getService(i);

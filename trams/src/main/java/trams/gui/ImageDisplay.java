@@ -1,6 +1,7 @@
 package trams.gui;
 
 import java.awt.*;
+import org.apache.log4j.Logger;
 
 /**
  * Class to display an image in the TraMS program.
@@ -16,6 +17,8 @@ public class ImageDisplay extends Canvas {
     private int theLeftBorder;
     private int theTopBorder;
     
+    private Logger logger = Logger.getLogger(ImageDisplay.class);
+    
     /**
      * Create a new image display.
      * @param fileName a <code>String</code> with the location of the file.
@@ -29,9 +32,9 @@ public class ImageDisplay extends Canvas {
         //Construct and display image.
         Toolkit toolkit = Toolkit.getDefaultToolkit();
         //theImage = toolkit.getImage(ImageDisplay.class.getResource("/" + fileName)); 
-        System.out.println("Attempting to load image... " + fileName);
+        logger.debug("Attempting to load image... " + fileName);
         theImage = toolkit.getImage("src/main/resources/trams/images/" + fileName);
-        System.out.println("Image loaded!");
+        logger.debug("Image loaded!");
         //theImage = toolkit.getImage(fileName);
         MediaTracker mediaTracker = new MediaTracker(this);
 	mediaTracker.addImage(theImage, 0);
