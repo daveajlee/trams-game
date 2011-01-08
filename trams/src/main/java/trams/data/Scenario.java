@@ -321,7 +321,9 @@ public class Scenario {
      * @return a <code>boolean</code> which is true iff the vehicle was added successfully.
      */
     public boolean addVehicle ( Vehicle v ) {
-        return vehicles.add(v);
+    	System.out.println("Adding vehicle with registration " + v.getRegistrationNumber() + " ... vehicle count before " + vehicles.size());
+        System.out.println(vehicles.toString());
+    	return vehicles.add(v);
     }
     
     /**

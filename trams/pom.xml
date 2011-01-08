@@ -4,7 +4,7 @@
 
   <groupId>trams</groupId>
   <artifactId>trams</artifactId>
-  <version>0.3.1-SNAPSHOT</version>
+  <version>0.3.1</version>
   <packaging>jar</packaging>
 
   <name>trams</name>
@@ -56,6 +56,13 @@
     	<groupId>javassist</groupId>
     	<artifactId>javassist</artifactId>
     	<version>3.12.1.GA</version>
+    	<type>jar</type>
+    	<scope>compile</scope>
+    </dependency>
+    <dependency>
+    	<groupId>log4j</groupId>
+    	<artifactId>log4j</artifactId>
+    	<version>1.2.14</version>
     	<type>jar</type>
     	<scope>compile</scope>
     </dependency>

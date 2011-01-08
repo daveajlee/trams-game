@@ -650,21 +650,23 @@ public class ProgramOperations {
      * @return a <code>Vehicle</code> object.
      */
     public Vehicle createVehicleObject ( String id, String type, Calendar deliveryDate ) {
+    	Vehicle vehicle = null;
         if ( type.equalsIgnoreCase("MyBus Single Decker") ) {
-        	return new Vehicle(id, deliveryDate, "singlebus.png", "MyBus Single Decker", 44, 36, 85000.00);
+        	vehicle = (Vehicle) theContext.getBean("singleDeckerBus");
         }
         else if ( type.equalsIgnoreCase("MyBus Double Decker") ) {
-            return new Vehicle(id, deliveryDate, "doubledecker.png", "MyBus Double Decker", 78, 25, 160000.00);
+            vehicle = (Vehicle) theContext.getBean("doubleDeckerBus");
         }
         else if ( type.equalsIgnoreCase("MyBus Bendy") ) {
-            return new Vehicle(id, deliveryDate, "bendybus.png", "MyBus Bendy", 48, 97, 190000.00);
+            vehicle = (Vehicle) theContext.getBean("bendyBus");
         }
         else if ( type.equalsIgnoreCase("MyTram Tram1") ) {
-            return new Vehicle(id, deliveryDate, "tram.png", "MyTram Tram1", 104, 83, 280000.00);
+        	vehicle = (Vehicle) theContext.getBean("tram");
         }
-        else {
-            return null; //Null if can't find vehicle.
-        }
+        vehicle.setRegistrationNumber(id);
+        System.out.println("This vehicle has registration number " + vehicle.getRegistrationNumber());
+    	vehicle.setDeliveryDate(deliveryDate);
+    	return (Vehicle) vehicle.clone();
     }
     
     /**

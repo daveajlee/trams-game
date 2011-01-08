@@ -6,7 +6,7 @@ import trams.main.MyCalendarUtils;
 import trams.simulation.Simulator;
 
 
-public class Vehicle {
+public class Vehicle implements Cloneable {
 	
 	private int id;
 	private String registrationNumber;
@@ -22,6 +22,16 @@ public class Vehicle {
     
     public Vehicle() {
     	
+    }
+    
+    public Object clone() {
+    	Vehicle v = new Vehicle();
+    	v.setId(this.getId()); v.setRegistrationNumber(this.getRegistrationNumber());
+    	v.setDeliveryDate(this.getDeliveryDate()); v.setAssignedSchedule(this.getAssignedSchedule());
+    	v.setDepreciationFactor(this.getDepreciationFactor()); v.setImagePath(this.getImagePath());
+    	v.setModel(this.getModel()); v.setSeatingNum(this.getSeatingNum());
+    	v.setStandingNum(this.getStandingNum()); v.setPurchasePrice(this.getPurchasePrice());
+    	return v;
     }
     
     public int getId() {
@@ -131,7 +141,7 @@ public class Vehicle {
      * @return a <code>boolean</code> which is true iff the vehicle has been delivered.
      */
     public boolean hasBeenDelivered ( Calendar currentDate ) {
-    	if ( MyCalendarUtils.getDiff(currentDate, deliveryDate) > 0 ) {
+    	if ( MyCalendarUtils.getDiff(currentDate, deliveryDate) >= 0 ) {
     		return true;
     	}
     	return false;
