@@ -40,8 +40,7 @@ public class WelcomeScreen extends JFrame {
         theInterface.setFrame ( this );
         
         //Set image icon.
-        //Image img = Toolkit.getDefaultToolkit().getImage(SplashScreen.class.getResource("/TraMSlogo.png"));
-        Image img = Toolkit.getDefaultToolkit().getImage("src/main/resources/trams/images/TraMSlogo.png");
+        Image img = Toolkit.getDefaultToolkit().getImage(WelcomeScreen.class.getResource("/trams/images/TraMSlogo.png"));
         setIconImage(img);
         
         //Call the Exit method in the UserInterface class if the user hits exit.

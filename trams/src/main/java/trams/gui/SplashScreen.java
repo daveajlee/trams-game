@@ -40,8 +40,7 @@ public class SplashScreen extends JFrame {
         theInterface = ui;
         
         //Set image icon.
-        //Image img = Toolkit.getDefaultToolkit().getImage(SplashScreen.class.getResource("/TraMSlogo.png"));
-        Image img = Toolkit.getDefaultToolkit().getImage("src/main/resources/trams/images/TraMSlogo.png");
+        Image img = Toolkit.getDefaultToolkit().getImage(SplashScreen.class.getResource("/trams/images/TraMSlogo.png"));
         setIconImage(img);
         
         //Get a container to add things to.

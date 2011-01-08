@@ -29,7 +29,7 @@ public class LoadingScreen extends JFrame implements Runnable {
         this.setUndecorated(true);
         
         //Set image icon.
-        Image img = Toolkit.getDefaultToolkit().getImage("src/main/resources/trams/images/TraMSlogo.png");
+        Image img = Toolkit.getDefaultToolkit().getImage(LoadingScreen.class.getResource("/trams/images/TraMSlogo.png"));
         setIconImage(img);
         
         //Get a container to add things to.
