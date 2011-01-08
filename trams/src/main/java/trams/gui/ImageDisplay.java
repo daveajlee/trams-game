@@ -33,7 +33,7 @@ public class ImageDisplay extends Canvas {
         Toolkit toolkit = Toolkit.getDefaultToolkit();
         //theImage = toolkit.getImage(ImageDisplay.class.getResource("/" + fileName)); 
         logger.debug("Attempting to load image... " + fileName);
-        theImage = toolkit.getImage("src/main/resources/trams/images/" + fileName);
+        theImage = toolkit.getImage(ImageDisplay.class.getResource("/trams/images/" + fileName));
         logger.debug("Image loaded!");
         //theImage = toolkit.getImage(fileName);
         MediaTracker mediaTracker = new MediaTracker(this);

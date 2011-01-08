@@ -42,7 +42,7 @@ public class MakeContactScreen extends JFrame {
         theRouteDetail = rd;
         
         //Set image icon.
-        Image img = Toolkit.getDefaultToolkit().getImage("src/main/resources/trams/images/TraMSlogo.png");
+        Image img = Toolkit.getDefaultToolkit().getImage(MakeContactScreen.class.getResource("/trams/images/TraMSlogo.png"));
         setIconImage(img);
         
         //Initialise GUI with title and close attributes.
