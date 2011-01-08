@@ -40,5 +40,37 @@
 	<bean id="CouncilMessage" class="trams.data.Message">
 		<property name="type" value="Council"/>
 	</bean>
+	
+	<bean id="singleDeckerBus" class="trams.data.Vehicle">
+		<property name="model"  value="MyBus Single Decker"/>
+		<property name="imagePath" value="singlebus.png"/>
+		<property name="seatingNum" value="44"/>
+		<property name="standingNum" value="36"/>
+		<property name="purchasePrice" value="85000.00"/>
+	</bean>
+	
+	<bean id="doubleDeckerBus" class="trams.data.Vehicle">
+		<property name="model" value="MyBus Double Decker"/>
+		<property name="imagePath" value="doubledecker.png"/>
+		<property name="seatingNum" value="78"/>
+		<property name="standingNum" value="25"/>
+		<property name="purchasePrice" value="160000.00"/>
+	</bean>
+	
+	<bean id="bendyBus" class="trams.data.Vehicle">
+		<property name="model" value="MyBus Bendy"/>
+		<property name="imagePath" value="bendybus.png"/>
+		<property name="seatingNum" value="48"/>
+		<property name="standingNum" value="97"/>
+		<property name="purchasePrice" value="190000.00"/>
+	</bean>
+	
+	<bean id="tram" class="trams.data.Vehicle">
+		<property name="model" value="MyTram Tram1"/>
+		<property name="imagePath" value="tram.png"/>
+		<property name="seatingNum" value="104"/>
+		<property name="standingNum" value="83"/>
+		<property name="purchasePrice" value="280000.00"/>
+	</bean>
 </beans>
 
