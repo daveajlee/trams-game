@@ -36,6 +36,7 @@ public class DatabaseManager {
         drivers.add(mgr.createAndStoreDriver("Dave Lee", 40, Calendar.getInstance()));
         mgr.createAndStoreScenarios(routes, vehicles, drivers, 100, "Dave Lee", 20000.00);*/
         
+        //mgr.createAndStoreService();
         mgr.createAndStoreMessage("Subject", "Text", "Sender", "Folder", "Date");
         
         HibernateUtil.getSessionFactory().close();
@@ -223,13 +224,14 @@ public class DatabaseManager {
     	Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         session.beginTransaction();
         
-        ApplicationContext theContext = new ClassPathXmlApplicationContext("/trams/data/context.xml");
+        ApplicationContext theContext = new ClassPathXmlApplicationContext("trams/spring/context.xml");
         Message theMessage = (Message) theContext.getBean("CouncilMessage");
         theMessage.setSubject(subject);
         theMessage.setText(text);
         theMessage.setSender(sender);
         theMessage.setFolder(folder);
         theMessage.setDate(date);
+        System.out.println(theMessage.getType());
         
         session.save(theMessage);
         session.getTransaction().commit();
