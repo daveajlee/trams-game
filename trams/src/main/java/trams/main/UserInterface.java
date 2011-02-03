@@ -694,8 +694,17 @@ public class UserInterface implements Runnable {
      * @param startDate a <code>Calendar</code> with the start date.
      * @return a <code>boolean</code> which is true iff the driver has been successfully employed.
      */
-    public boolean employDriver ( String name, int hours, Calendar startDate ) {
-        return theOperations.employDriver(name, hours, startDate);
+    public boolean employDriver ( String name, int hours, int rate, Calendar startDate ) {
+        return theOperations.addDriver(name, hours, rate, startDate);
+    }
+    
+    /**
+     * Sack a driver.
+     * @param d a <code>Driver</code> to sack.
+     * @return a <code>boolean</code> which is true iff the driver was sacked.
+     */
+    public boolean sackDriver ( Driver d ) {
+        return theOperations.sackDriver(d);
     }
     
     /**
@@ -826,6 +835,15 @@ public class UserInterface implements Runnable {
     public Driver getDriver ( int pos ) {
         return theOperations.getSimulator().getScenario().getDriver(pos);
     }
+    
+    /**
+     * Get a driver based on its id.
+     * @param pos a <code>int</code> with the id.
+     * @return a <code>Driver</code> object.
+     */
+    public Driver getDriverById ( int id ) {
+        return theOperations.getSimulator().getScenario().getDriverById(id);
+    }
 
     /**
      * Get a vehicle based on its position.
@@ -850,6 +868,13 @@ public class UserInterface implements Runnable {
      */
     public void sortVehicles ( ) {
         theOperations.getSimulator().getScenario().sortVehicles();
+    }
+    
+    /**
+     * Sort drivers in ascending order.
+     */
+    public void sortDrivers ( ) {
+    	theOperations.getSimulator().getScenario().sortDrivers();
     }
     
     /**

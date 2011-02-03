@@ -72,6 +72,13 @@ public class ProgramOperations {
         	deliveryDate.add(Calendar.DAY_OF_MONTH, -1);
             scen.addVehicle(createVehicleObject(generateRandomReg(theSimulator.getShortYear()), "MyBus Single Decker", deliveryDate ));
         }
+        //Also create supplied drivers.
+        logger.debug("Creating " + scen.getNumberSuppliedDrivers() + " drivers!");
+        for ( int i = 0; i < scen.getNumberSuppliedDrivers(); i++ ) {
+        	Calendar startDate = theSimulator.getCurrentSimTime();
+        	startDate.add(Calendar.DAY_OF_MONTH, -1);
+        	addDriver(generateRandomName(), 40, 5, startDate);
+        }
         return true;
     }
     
@@ -553,14 +560,31 @@ public class ProgramOperations {
     }
 
     /**
-     * Employ a driver in the simulation.
+     * Add a driver in the simulation.
      * @param name a <code>String</code> with the driver's name.
      * @param hours a <code>int</code> with the contracted hours.
      * @param startDate a <code>Calendar</code> with the start date.
      * @return a <code>boolean</code> which is true iff the driver has been successfully employed.
      */
-    public boolean employDriver ( String name, int hours, Calendar startDate ) {
-        return theSimulator.getScenario().employDriver(new Driver(name, hours, startDate));
+    public boolean addDriver ( String name, int hours, int rate, Calendar startDate ) {
+    	//Determine the next free personal id.
+    	int highestSoFar = 0;
+    	List<Driver> drivers = theSimulator.getScenario().getDrivers();
+    	for ( int i = 0; i < drivers.size(); i++ ) {
+    		if ( highestSoFar < drivers.get(i).getIdNumber() ) {
+    			highestSoFar = drivers.get(i).getIdNumber();
+    		}
+    	}
+        return theSimulator.getScenario().employDriver(new Driver((highestSoFar+1), name, hours, rate, startDate));
+    }
+    
+    /**
+     * Sack a driver from the simulation.
+     * @param d a <code>Driver</code> object to sell.
+     * @return a <code>boolean</code> which is true iff the driver has been sacked successfully.
+     */
+    public boolean sackDriver ( Driver d ) {
+        return theSimulator.getScenario().sackDriver(d, theSimulator.getCurrentSimTime());
     }
 
     /**
@@ -571,6 +595,29 @@ public class ProgramOperations {
      */
     public boolean purchaseVehicle ( String type, Calendar deliveryDate ) {
         return theSimulator.getScenario().purchaseVehicle(createVehicleObject(generateRandomReg(theSimulator.getShortYear()), type, deliveryDate));
+    }
+    
+    /**
+     * Helper method to generate random driver names.
+     */
+    private String generateRandomName ( ) {
+    	//Get current list of drivers.
+    	List<Driver> drivers = theSimulator.getScenario().getDrivers();
+    	//List of possible names.
+    	String[] firstNames = new String[] { "Bob", "Bill", "Robert", "David", "Emma", "Ruth", "Samuel", "Matthew", "Mark", "John", "Paul", "Timothy", "Peter", "Andrew" };
+    	String[] surNames = new String[] { "Bloggs", "Nachname" };
+    	//At the moment simply choose a firstname and surname at random.
+    	boolean isDuplicate = true; Random random = new Random(); String proposedName = "";
+    	while ( isDuplicate ) {
+    		isDuplicate = false;
+    		proposedName = firstNames[random.nextInt(firstNames.length)] + " " + surNames[random.nextInt(surNames.length)];
+    		for ( int i = 0; i < drivers.size(); i++ ) {
+    			if ( drivers.get(i).getName().equalsIgnoreCase(proposedName) ) {
+    				isDuplicate = true; break;
+    			}
+    		}
+    	}
+    	return proposedName;
     }
     
     /**
