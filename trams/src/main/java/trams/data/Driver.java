@@ -2,6 +2,8 @@ package trams.data;
 
 import java.util.*;
 
+import trams.main.MyCalendarUtils;
+
 /**
  * Class representing a driver in the TraMS program.
  * @author Dave
@@ -9,19 +11,24 @@ import java.util.*;
 public class Driver {
 
 	private int id;
+	private int idNumber;
     private String name;
     private int contractedHours;
+    private int hourlyRate;
     private Calendar startDate;
 
     /**
      * Create a new driver.
      * @param name a <code>String</code> with the name of the driver.
-     * @param contractedHours a <code>int</code> with the number of contracted hours.  
+     * @param contractedHours a <code>int</code> with the number of contracted hours. 
+     * @param hourlyRate a <code>int</code> with the hourly rate. 
      * @param startDate a <code>Calendar</code> object with the start date of the driver.
      */
-    public Driver ( String name, int contractedHours, Calendar startDate ) {
-        this.name = name;
+    public Driver ( int idNumber, String name, int contractedHours, int hourlyRate, Calendar startDate ) {
+        this.idNumber = idNumber;
+    	this.name = name;
         this.contractedHours = contractedHours;
+        this.hourlyRate = hourlyRate;
         this.startDate = startDate;
     }
     
@@ -75,6 +82,35 @@ public class Driver {
     
     public int getContractedHours ( ) {
     	return contractedHours;
+    }
+    
+    public void setHourlyRate(int hourlyRate) {
+    	this.hourlyRate = hourlyRate;
+    }
+    
+    public int getHourlyRate ( ) {
+    	return hourlyRate;
+    }
+    
+    public void setIdNumber ( int idNumber ) {
+    	this.idNumber = idNumber;
+    }
+    
+    public int getIdNumber ( ) {
+    	return idNumber;
+    }
+    
+    public String getImageFileName ( ) {
+    	return "comingsoon.png";
+    }
+    
+    /**
+     * Get the driver length of service based on the difference between startDate and currentDate in months.
+     * @param currentDate a <code>Calendar</code> object with the currentDate.
+     * @return a <code>int</code> with the driver length of service.
+     */
+    public int getLengthOfService ( Calendar currentDate ) {
+        return MyCalendarUtils.getDiff(currentDate, startDate);
     }
 
 }

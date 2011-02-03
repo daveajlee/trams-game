@@ -51,7 +51,15 @@ public class ManagePanel {
     
     /** THESE VARIABLES ARE NEEDED FOR ACTION LISTENERS ETC. **/
     private JTextField theRouteNumberField;
-    private JComboBox[] theStopBoxes;
+    private JComboBox theRouteTypeBox;
+    private JComboBox theStopBox;
+    private DefaultComboBoxModel theStopBoxModel;
+    private JButton theAddStopButton;
+    private DefaultListModel theStopModel;
+    private JList theStopList;
+    private JButton theStopUpButton;
+    private JButton theStopDownButton;
+    private JButton theRemoveStopButton;
     private DefaultListModel theTimetableModel;
     private JList theTimetableList;
     private JButton theCreateTimetableButton;
@@ -61,9 +69,8 @@ public class ManagePanel {
     private Route theSelectedRoute;
     private String theSelectedTimetableName;
 
-    private JTextField theDriverNameField;
     private JSpinner theContractedHoursSpinner;
-    private Calendar theStartDate;
+    private JSpinner theHourlyRateSpinner;
     
     private Logger logger;
 
@@ -104,6 +111,7 @@ public class ManagePanel {
     
     private int theTypePosition;
     private String theVehicleId;
+    private int theDriverPos;
     
     private DefaultListModel theVehiclesModel;
     private JList theVehiclesList;
@@ -113,6 +121,10 @@ public class ManagePanel {
     private JLabel theTotalPriceField;
     private DecimalFormat theFormat;
     private JButton thePurchaseVehicleButton;
+    
+    private DefaultListModel theDriversModel;
+    private JList theDriversList;
+    private Driver theDriver;
     
     private String theSelectedRouteStr;
     private int theCurrentMin;
@@ -327,16 +339,14 @@ public class ManagePanel {
         driverPanel.setLayout(new BorderLayout());
         JPanel driverLabelPanel = new JPanel();
         driverLabelPanel.setBackground(Color.WHITE);
-        theDriversLabel = new JLabel("", SwingConstants.CENTER);
-        //theDriversLabel = new JLabel("Drivers:", SwingConstants.CENTER);
+        theDriversLabel = new JLabel("Drivers:", SwingConstants.CENTER);
         theDriversLabel.setFont(new Font("Arial", Font.BOLD, 18));
         driverLabelPanel.add(theDriversLabel);
         driverPanel.add(driverLabelPanel, BorderLayout.NORTH);
         //Create description panel.
         JPanel driverDescriptionPanel = new JPanel(new BorderLayout());
         driverDescriptionPanel.setBackground(Color.WHITE);
-        //JTextArea driverDescriptionArea = new JTextArea("Employ drivers, view current employees and sack drivers");
-        JTextArea driverDescriptionArea = new JTextArea("");
+        JTextArea driverDescriptionArea = new JTextArea("Employ drivers, view current employees and sack drivers");
         driverDescriptionArea.setBorder(BorderFactory.createLineBorder(Color.WHITE));
         driverDescriptionArea.setWrapStyleWord(true);
         driverDescriptionArea.setLineWrap(true);
@@ -350,7 +360,7 @@ public class ManagePanel {
         driverButtonPanel.setBackground(Color.WHITE);
         JPanel employDriverButtonPanel = new JPanel(new GridBagLayout());
         employDriverButtonPanel.setBackground(Color.WHITE);
-        theEmployDriversButton = new JButton("Employ");
+        theEmployDriversButton = new JButton("Employ A Driver");
         theEmployDriversButton.addActionListener( new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 //Show the actual screen!
@@ -367,12 +377,12 @@ public class ManagePanel {
         theViewDriversButton.addActionListener( new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 //Show the actual screen!
-                theControlScreen.redrawManagement(makeViewDriversPanel(""));
+                theControlScreen.redrawManagement(makeViewDriversPanel(0));
             }
         });
         viewDriversButtonPanel.add(theViewDriversButton);
         driverButtonPanel.add(viewDriversButtonPanel);
-        //driverPanel.add(driverButtonPanel, BorderLayout.SOUTH);
+        driverPanel.add(driverButtonPanel, BorderLayout.SOUTH);
         gridPanel.add(driverPanel);
         //Allocation panel.
         JPanel allocationPanel = new JPanel();
@@ -459,48 +469,147 @@ public class ManagePanel {
         
         //Add the routeNumber panel to the screen panel.
         routeScreenPanel.add(routeNumberPanel);
+        
+        //Create panel for route type.
+        JPanel routeTypePanel = new JPanel(new GridBagLayout());
+        routeTypePanel.setBackground(Color.WHITE);
+        JLabel routeTypeLabel = new JLabel("Route Type: ", SwingConstants.CENTER);
+        routeTypeLabel.setFont(new Font("Arial", Font.ITALIC, 16));
+        routeTypePanel.add(routeTypeLabel);
+        theRouteTypeBox = new JComboBox(new String[] { "Bus", "Tram", "Railway" });
+        theRouteTypeBox.setFont(new Font("Arial", Font.PLAIN, 14));
+        routeTypePanel.add(theRouteTypeBox);
+        
+        //Add the routeType panel to the screen panel.
+        routeScreenPanel.add(routeTypePanel);
         routeScreenPanel.add(Box.createRigidArea(new Dimension(0,10))); //Spacer.
         
-        //Now create stops - a 2 x 3 grid layout.
-        JPanel stopGridPanel = new JPanel(new GridLayout(2,3,5,5));
-        stopGridPanel.setBackground(Color.WHITE);
-        //Create the boxes and labels as appropriate.
-        //Create the stops.
-        JPanel[] stopPanels = new JPanel[5];
-        theStopBoxes = new JComboBox[5];
-        for ( int i = 0; i < stopPanels.length; i++ ) {
-            stopPanels[i] = new JPanel(new GridBagLayout());
-            stopPanels[i].setBackground(Color.WHITE);
-            JLabel stopLabel = new JLabel("Stop " + (i+1) + ":");
-            stopLabel.setFont(new Font("Arial", Font.ITALIC, 16));
-            stopPanels[i].add(stopLabel);
-            theStopBoxes[i] = new JComboBox(theInterface.getScenario().getStopNames());
-            theStopBoxes[i].setFont(new Font("Arial", Font.PLAIN, 14));
-            theStopBoxes[i].setSelectedIndex(theStopBoxes[i].getItemCount()-1);
-            if ( amendRouteObj != null ) { 
-                if ( amendRouteObj.getNumStops(Route.OUTWARDSTOPS) > i ) {
-                    int findIndexPos = findIndex(amendRouteObj.getStop(Route.OUTWARDSTOPS, i).getStopName(), i);
-                    if ( findIndexPos != -1 ) { theStopBoxes[i].setSelectedIndex(findIndexPos); }
-                }
-            }
-            if ( i < 2 ) {
-                theStopBoxes[i].addActionListener( new ActionListener() {
-                    public void actionPerformed ( ActionEvent e ) {
-                        enableCreateButtons();
-                    }
-                });
-            }
-            stopPanels[i].add(theStopBoxes[i]);
-            stopGridPanel.add(stopPanels[i]);
+        //Create panel for stops and timetables.
+        JPanel stopAndTimetablePanel = new JPanel(new BorderLayout());
+        stopAndTimetablePanel.setBackground(Color.WHITE);
+        
+        //Now create stops.
+        JPanel stopPanel = new JPanel();
+        stopPanel.setLayout ( new BoxLayout ( stopPanel, BoxLayout.PAGE_AXIS ) );
+        stopPanel.setBackground(Color.WHITE);
+        
+        JPanel routeStopLabelPanel = new JPanel();
+        routeStopLabelPanel.setBackground(Color.WHITE);
+        JLabel routeStopLabel = new JLabel("Route Stops:");
+        routeStopLabel.setFont(new Font("Arial", Font.ITALIC, 17));
+        routeStopLabelPanel.add(routeStopLabel);
+        stopPanel.add(routeStopLabel);
+        
+        JPanel stopBoxPanel = new JPanel(new GridBagLayout());
+        stopBoxPanel.setBackground(Color.WHITE);
+        JLabel stopLabel = new JLabel("Stop:");
+        stopLabel.setFont(new Font("Arial", Font.ITALIC, 16));
+        stopBoxPanel.add(stopLabel);
+        theStopBoxModel = new DefaultComboBoxModel(theInterface.getScenario().getStopNames());
+        theStopBox = new JComboBox(theStopBoxModel);
+        theStopBox.setFont(new Font("Arial", Font.PLAIN, 14));
+        theStopBox.setSelectedIndex(0);
+        stopBoxPanel.add(theStopBox);
+        theAddStopButton = new JButton("Add Stop");
+        theAddStopButton.addActionListener(new ActionListener() {
+        	public void actionPerformed ( ActionEvent e ) {
+        		theStopModel.addElement(theStopBox.getSelectedItem());
+        		theStopBoxModel.removeElement(theStopBox.getSelectedItem());
+        		if ( theStopModel.getSize() >= 2 ) {
+        			theStopUpButton.setEnabled(true); theStopDownButton.setEnabled(true);
+        			theCreateTimetableButton.setEnabled(true);
+        		}
+        		else if ( theStopModel.getSize() != 0 ) {
+        			theRemoveStopButton.setEnabled(true);
+        			theStopUpButton.setEnabled(false); theStopDownButton.setEnabled(false);
+        			theCreateTimetableButton.setEnabled(false);
+        		}
+        		else {
+        			theRemoveStopButton.setEnabled(false);
+        		}
+        	}
+        });
+        stopBoxPanel.add(theAddStopButton);
+        stopPanel.add(stopBoxPanel);
+        
+        JPanel stopListPanel = new JPanel(new BorderLayout());
+        stopListPanel.setBackground(Color.WHITE);
+        
+        JPanel stopDataPanel = new JPanel(new GridBagLayout());
+        stopDataPanel.setBackground(Color.WHITE);
+        theStopModel = new DefaultListModel();
+        if ( theSelectedRoute != null ) {
+        	List<Stop> stopList = theSelectedRoute.getOutwardStops();
+        	for ( int i = 0; i < stopList.size(); i++ ) {
+        		theStopModel.addElement(stopList.get(i).getStopName());
+        		theStopBoxModel.removeElement(stopList.get(i).getStopName());
+        	}
         }
-        //There's no stop 6 so it is just a filler.
-        JPanel tempPanel = new JPanel();
-        tempPanel.setBackground(Color.WHITE);
-        stopGridPanel.add(tempPanel);
+        theStopList = new JList(theStopModel);
+        theStopList.setVisibleRowCount(5);
+        theStopList.setFixedCellWidth(300);
+        theStopList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        JScrollPane stopPane = new JScrollPane(theStopList);
+        stopDataPanel.add(stopPane);
+        stopListPanel.add(stopDataPanel, BorderLayout.CENTER);
         
-        //Add the stopGrid panel to the screen panel.
-        routeScreenPanel.add(stopGridPanel);
-        routeScreenPanel.add(Box.createRigidArea(new Dimension(0,10))); //Spacer.
+        JPanel stopButtonPanel = new JPanel(new FlowLayout());
+        stopButtonPanel.setBackground(Color.WHITE);
+        theStopUpButton = new JButton("Up");
+        if ( theStopModel.getSize() == 0 ) { theStopUpButton.setEnabled(false); }
+        theStopUpButton.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		if ( theStopList.getSelectedValue() != null && theStopList.getSelectedIndex() != 0 ) {
+        			int newPos = theStopList.getSelectedIndex() - 1;
+        			String value = theStopList.getSelectedValue().toString();
+        			theStopModel.setElementAt(theStopModel.getElementAt(newPos), newPos+1);
+        			theStopModel.setElementAt(value, newPos);
+        		}
+        	}
+        });
+        stopButtonPanel.add(theStopUpButton);
+        theStopDownButton = new JButton("Down");
+        if ( theStopModel.getSize() == 0 ) { theStopDownButton.setEnabled(false); }
+        theStopDownButton.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		if ( theStopList.getSelectedValue() != null && theStopList.getSelectedIndex() != (theStopModel.getSize()-1) ) {
+        			int newPos = theStopList.getSelectedIndex() + 1;
+        			String value = theStopList.getSelectedValue().toString();
+        			theStopModel.setElementAt(theStopModel.getElementAt(newPos), newPos-1);
+        			theStopModel.setElementAt(value, newPos);
+        		}
+        	}
+        });
+        stopButtonPanel.add(theStopDownButton);
+        theRemoveStopButton = new JButton("Remove");
+        if ( theStopModel.getSize() == 0 ) { theRemoveStopButton.setEnabled(false); }
+        theRemoveStopButton.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		if ( theStopList.getSelectedValue() != null ) {
+        			theStopBoxModel.addElement(theStopList.getSelectedValue());
+        			theStopModel.removeElement(theStopList.getSelectedValue());
+        			if ( theStopModel.getSize() >= 2 ) {
+            			theStopUpButton.setEnabled(true); theStopDownButton.setEnabled(true);
+            			theCreateTimetableButton.setEnabled(true);
+            		}
+            		else if ( theStopModel.getSize() != 0 ) {
+            			theRemoveStopButton.setEnabled(true);
+            			theStopUpButton.setEnabled(false); theStopDownButton.setEnabled(false);
+            			theCreateTimetableButton.setEnabled(false);
+            		}
+            		else {
+            			theRemoveStopButton.setEnabled(false);
+            		}
+        		}
+        	}
+        });
+        stopButtonPanel.add(theRemoveStopButton);
+        
+        stopListPanel.add(stopButtonPanel, BorderLayout.SOUTH);
+        
+        stopPanel.add(stopListPanel);
+        
+        stopAndTimetablePanel.add(stopPanel, BorderLayout.WEST);
         
         //Create the timetable list panel and three buttons.
         JPanel timetableListPanel = new JPanel(new BorderLayout());
@@ -528,8 +637,8 @@ public class ManagePanel {
         if ( theTimetableModel.getSize() != 0 ) {
             theTimetableList.setSelectedIndex(0);
         }
-        theTimetableList.setVisibleRowCount(3);
-        theTimetableList.setFixedCellWidth(450);
+        theTimetableList.setVisibleRowCount(5);
+        theTimetableList.setFixedCellWidth(300);
         theTimetableList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         JScrollPane timetablePane = new JScrollPane(theTimetableList);
         centreTimetableListPanel.add(timetablePane);
@@ -545,15 +654,11 @@ public class ManagePanel {
                 if ( theSelectedRoute == null && theTimetableModel.getSize() == 0 ) {
                     theSelectedRoute = new Route();
                     theSelectedRoute.setRouteNumber(theRouteNumberField.getText());
-                    for ( int i = 0; i < theStopBoxes.length; i++ ) {
-                        if ( !theStopBoxes[i].getSelectedItem().toString().equalsIgnoreCase("-") ) {
-                            theSelectedRoute.addStop(theStopBoxes[i].getSelectedItem().toString(), Route.OUTWARDSTOPS);
-                        }
+                    for ( int i = 0; i < theStopModel.getSize(); i++ ) {
+                    	theSelectedRoute.addStop(theStopModel.get(i).toString(), Route.OUTWARDSTOPS);
                     }
-                    for ( int i = (theStopBoxes.length-1); i >=0; i-- ) {
-                        if ( !theStopBoxes[i].getSelectedItem().toString().equalsIgnoreCase("-") ) {
-                            theSelectedRoute.addStop(theStopBoxes[i].getSelectedItem().toString(), Route.RETURNSTOPS);
-                        }
+                    for ( int i = (theStopModel.getSize()-1); i >=0; i-- ) {
+                        theSelectedRoute.addStop(theStopModel.get(i).toString(), Route.RETURNSTOPS);
                     }
                 }
                 //Show the actual screen!
@@ -587,8 +692,10 @@ public class ManagePanel {
         timetableButtonPanel.add(theDeleteTimetableButton);
         timetableListPanel.add(timetableButtonPanel, BorderLayout.SOUTH);
         
-        //Add the timetableList panel to the screen panel.
-        routeScreenPanel.add(timetableListPanel);
+        stopAndTimetablePanel.add(timetableListPanel, BorderLayout.EAST);
+        
+        //Add the stopAndTimetable panel to the screen panel.
+        routeScreenPanel.add(stopAndTimetablePanel);
         routeScreenPanel.add(Box.createRigidArea(new Dimension(0,10))); //Spacer.
         
         //Create bottom button panel for next two buttons.
@@ -831,10 +938,8 @@ public class ManagePanel {
                 }
                 //Process the stops.
                 ArrayList<String> stops = new ArrayList<String>();
-                for ( int i = 0; i < theStopBoxes.length; i++ ) {
-                    if ( !theStopBoxes[i].getSelectedItem().toString().equalsIgnoreCase("-") ) {
-                        stops.add(theStopBoxes[i].getSelectedItem().toString());
-                    }
+                for ( int i = 0; i < theStopModel.getSize(); i++ ) {
+                    stops.add(theStopModel.get(i).toString());
                 }
                 //Show the actual screen!
                 theControlScreen.redrawManagement(makeServicePatternPanel(stops, theTimetableNameField.getText(), null));
@@ -847,10 +952,8 @@ public class ManagePanel {
                 ServicePattern sp = theSelectedRoute.getTimetable(theTimetableNameField.getText()).getServicePattern(theServicePatternList.getSelectedValue().toString());
                 //Process the stops.
                 ArrayList<String> stops = new ArrayList<String>();
-                for ( int i = 0; i < theStopBoxes.length; i++ ) {
-                    if ( !theStopBoxes[i].getSelectedItem().toString().equalsIgnoreCase("-") ) {
-                        stops.add(theStopBoxes[i].getSelectedItem().toString());
-                    }
+                for ( int i = 0; i < theStopModel.getSize(); i++ ) {
+                	stops.add(theStopModel.get(i).toString());
                 }
                 theControlScreen.redrawManagement(ManagePanel.this.makeServicePatternPanel(stops, theTimetableNameField.getText(), sp));
             }
@@ -1157,18 +1260,9 @@ public class ManagePanel {
         
     }
     
-    public int findIndex ( String text, int pos ) {
-        for ( int i = 0; i < theStopBoxes[pos].getItemCount(); i++ ) {
-            if ( theStopBoxes[pos].getItemAt(i).toString().equalsIgnoreCase(text) ) {
-                return i;
-            }
-        }
-        return -1;
-    }
-    
     public void enableCreateButtons ( ) {
-        //To enable create timetable button we need the selected item in stop1Box and stop2Box to not be -.
-        if ( !theStopBoxes[0].getSelectedItem().toString().equalsIgnoreCase("-") && !theStopBoxes[1].getSelectedItem().toString().equalsIgnoreCase("-") && !theRouteNumberField.getText().equalsIgnoreCase("") ) {
+        //To enable create timetable button we need stopModel to have a size of 2 or greater and a route number to be assigned.
+        if ( theStopModel.getSize() >= 2 && !theRouteNumberField.getText().equalsIgnoreCase("") ) {
             theCreateTimetableButton.setEnabled(true);
             //In addition, the timetable model must not be 0 to create a route.
             if ( theTimetableModel.getSize() > 0 ) {
@@ -1517,22 +1611,23 @@ public class ManagePanel {
         //topLabel.setVerticalAlignment(JLabel.CENTER);
         textLabelPanel.add(topLabel);
         driverScreenPanel.add(textLabelPanel);
-
+        driverScreenPanel.add(Box.createRigidArea(new Dimension(0,10))); //Spacer.
+        
+        //Create information panel.
+        JPanel driverInfoPanel = new JPanel(new BorderLayout());
+        driverInfoPanel.setBackground(Color.WHITE);
+        JTextArea driverInfoArea = new JTextArea("Please enter the following details to place an advert for a new driver or drivers. A message will be sent when a driver replies to your advert.");
+        driverInfoArea.setEditable(false);
+        driverInfoArea.setWrapStyleWord(true);
+        driverInfoArea.setLineWrap(true);
+        driverInfoArea.setColumns(400);
+        driverInfoArea.setFont(new Font("Arial", Font.ITALIC, 16));
+        driverInfoPanel.add(driverInfoArea);
+        driverScreenPanel.add(driverInfoPanel);
+        
         //Create panel for information fields.
-        JPanel gridPanel = new JPanel(new GridLayout(7,2,2,2));
+        JPanel gridPanel = new JPanel(new GridLayout(2,1,5,5));
         gridPanel.setBackground(Color.WHITE);  
-        //Driver name.
-        JPanel driverNamePanel = new JPanel();
-        driverNamePanel.setBackground(Color.WHITE);
-        JLabel driverNameLabel = new JLabel("Name:");
-        driverNameLabel.setFont(new Font("Arial", Font.BOLD, 16));
-        driverNamePanel.add(driverNameLabel);
-        theDriverNameField = new JTextField("");
-        theDriverNameField.setColumns(30);
-        theDriverNameField.setFont(new Font("Arial", Font.PLAIN, 14));
-        driverNamePanel.add(theDriverNameField);
-
-        gridPanel.add(driverNamePanel);
 
         //Contracted hours.
         JPanel contractedHoursPanel = new JPanel();
@@ -1546,27 +1641,26 @@ public class ManagePanel {
 
         gridPanel.add(contractedHoursPanel);
 
-        //Create label and field for start date and add it to the start panel.
-        JPanel startLabelPanel = new JPanel();
-        startLabelPanel.setBackground(Color.WHITE);
-        JLabel startLabel = new JLabel("Start Date:", SwingConstants.CENTER);
-        startLabel.setFont(new Font("Arial", Font.BOLD, 16));
-        startLabelPanel.add(startLabel);
-        theStartDate = (Calendar) theInterface.getSimulator().getCurrentSimTime().clone();
-        theStartDate.add(Calendar.HOUR, 72);
-        JLabel startField = new JLabel("" + theInterface.getSimulator().formatDateString(theStartDate));
-        startField.setFont(new Font("Arial", Font.ITALIC, 14));
-        startLabelPanel.add(startField);
-        gridPanel.add(startLabelPanel);
-        driverScreenPanel.add(gridPanel);
+        //Hourly rate.
+        JPanel hourlyRatePanel = new JPanel();
+        hourlyRatePanel.setBackground(Color.WHITE);
+        JLabel hourlyRateLabel = new JLabel("Hourly Rate:", SwingConstants.CENTER);
+        hourlyRateLabel.setFont(new Font("Arial", Font.BOLD, 16));
+        hourlyRatePanel.add(hourlyRateLabel);
+        theHourlyRateSpinner = new JSpinner(new SpinnerNumberModel(5,5,15,1));
+        theHourlyRateSpinner.setFont(new Font("Arial", Font.PLAIN, 14));
+        hourlyRatePanel.add(theHourlyRateSpinner);
+        gridPanel.add(hourlyRatePanel);
 
+        driverScreenPanel.add(gridPanel);
+        
         //Create return to create game screen button and add it to screen panel.
         JPanel buttonPanel = new JPanel();
         buttonPanel.setBackground(Color.WHITE);
-        JButton employDriverButton = new JButton("Employ Driver");
+        JButton employDriverButton = new JButton("Place Advert");
         employDriverButton.addActionListener( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
-                theInterface.employDriver(theDriverNameField.getText(), (Integer) theContractedHoursSpinner.getValue(), theStartDate);
+                theInterface.employDriver("", (Integer) theContractedHoursSpinner.getValue(), (Integer) theHourlyRateSpinner.getValue(), null);
                 theControlScreen.redrawManagement(ManagePanel.this.getDisplayPanel());
             }
         });
@@ -1583,25 +1677,168 @@ public class ManagePanel {
         return driverScreenPanel;
     }
 
-    public JPanel makeViewDriversPanel ( String text ) {
+    public JPanel makeViewDriversPanel ( int pos ) {
+    	//Initialise pos variable.
+        theDriverPos = pos;
+        
         //Create screen panel to add things to.
         JPanel driverScreenPanel = new JPanel();
         driverScreenPanel.setLayout ( new BoxLayout ( driverScreenPanel, BoxLayout.PAGE_AXIS ) );
         driverScreenPanel.setBackground(Color.WHITE);
-
-        JLabel driverComingSoonLabel = new JLabel("Coming Soon...");
-
-        driverScreenPanel.add(driverComingSoonLabel);
-
+        
+        //Create label at top of screen in a topLabelPanel added to screenPanel.
+        JPanel textLabelPanel = new JPanel(new BorderLayout());
+        textLabelPanel.setBackground(Color.WHITE);
+        JLabel topLabel = new JLabel("View Drivers", SwingConstants.CENTER);
+        topLabel.setFont(new Font("Arial", Font.BOLD, 25));
+        topLabel.setVerticalAlignment(JLabel.CENTER);
+        textLabelPanel.add(topLabel, BorderLayout.CENTER);
+        driverScreenPanel.add(textLabelPanel);
+        
+        //Now create a border layout so that we can have a choice of vehicles on the right hand side.
+        JPanel driverBorderPanel = new JPanel(new BorderLayout());
+        driverBorderPanel.setBackground(Color.WHITE);
+        
+        //Create centre panel and add all those to appear in the centre panel to it!
+        JPanel centrePanel = new JPanel();
+        centrePanel.setLayout ( new BoxLayout ( centrePanel, BoxLayout.PAGE_AXIS ) );
+        centrePanel.setBackground(Color.WHITE);
+        
+        //Get vehicle data now so that we can used to compile first!
+        theDriversModel = new DefaultListModel();
+        theInterface.sortDrivers();
+        for ( int i = 0; i < theInterface.getNumberDrivers(); i++ ) {
+            if ( theInterface.getDriver(i).hasStartedWork(theInterface.getCurrentSimTime()) ) {
+                theDriversModel.addElement(theInterface.getDriver(i).getIdNumber());
+            }
+        }
+        
+        //Create driver object so that we can pull information from it.
+        theDriver = theInterface.getDriver(theDriverPos);
+        	
+        //Create picture panel.
+        JPanel picturePanel = new JPanel(new GridBagLayout());
+        picturePanel.setBackground(Color.WHITE);
+        ImageDisplay personDisplay = new ImageDisplay(theDriver.getImageFileName(),0,0);
+        personDisplay.setSize(220,200);
+        personDisplay.setBackground(Color.WHITE);
+        picturePanel.add(personDisplay);
+        centrePanel.add(picturePanel);
+            
+        //Create panel for information fields.
+        JPanel gridPanel = new JPanel(new GridLayout(7,2,5,5));
+        gridPanel.setBackground(Color.WHITE);
+        //Create label and field for driver id and add it to the id panel.
+        JPanel idLabelPanel = new JPanel();
+        idLabelPanel.setBackground(Color.WHITE);
+        JLabel idLabel = new JLabel("ID:", SwingConstants.CENTER);
+        idLabel.setFont(new Font("Arial", Font.ITALIC, 14));
+        idLabelPanel.add(idLabel);
+        gridPanel.add(idLabel);
+        JLabel idField = new JLabel("" + theDriver.getIdNumber());
+        idField.setFont(new Font("Arial", Font.PLAIN, 12));
+        gridPanel.add(idField);
+        //Create label and field for name and add it to the name panel.
+        JPanel nameLabelPanel = new JPanel();
+        nameLabelPanel.setBackground(Color.WHITE);
+        JLabel nameLabel = new JLabel("Name:", SwingConstants.CENTER);
+        nameLabel.setFont(new Font("Arial", Font.ITALIC, 14));
+        nameLabelPanel.add(nameLabel);
+        gridPanel.add(nameLabel);
+        JLabel nameField = new JLabel(theDriver.getName());
+        nameField.setFont(new Font("Arial", Font.PLAIN, 12));
+        gridPanel.add(nameField);
+        //Create label and field for length of service and add it to the los panel.
+        JPanel losLabelPanel = new JPanel();
+        losLabelPanel.setBackground(Color.WHITE);
+        JLabel losLabel = new JLabel("Length of Service:", SwingConstants.CENTER);
+        losLabel.setFont(new Font("Arial", Font.ITALIC, 14));
+        losLabelPanel.add(losLabel);
+        gridPanel.add(losLabel);
+        JLabel losField = new JLabel(theDriver.getLengthOfService(theInterface.getCurrentSimTime()) + " months");
+        losField.setFont(new Font("Arial", Font.PLAIN, 12));
+        gridPanel.add(losField);
+        //Create label and field for contracted hours and add it to the seating panel.
+        JPanel contractedHoursLabelPanel = new JPanel();
+        contractedHoursLabelPanel.setBackground(Color.WHITE);
+        JLabel contractedHoursLabel = new JLabel("Contracted Hours:", SwingConstants.CENTER);
+        contractedHoursLabel.setFont(new Font("Arial", Font.ITALIC, 14));
+        contractedHoursLabelPanel.add(contractedHoursLabel);
+        gridPanel.add(contractedHoursLabel);
+        JLabel contractedHoursField = new JLabel("" + theDriver.getContractedHours());
+        contractedHoursField.setFont(new Font("Arial", Font.PLAIN, 12));
+        gridPanel.add(contractedHoursField);
+        //Create label and field for hourly rate and add it to the standing panel.
+        JPanel hourlyRateLabelPanel = new JPanel();
+        hourlyRateLabelPanel.setBackground(Color.WHITE);
+        JLabel hourlyRateLabel = new JLabel("Hourly Rate:", SwingConstants.CENTER);
+        hourlyRateLabel.setFont(new Font("Arial", Font.ITALIC, 14));
+        hourlyRateLabelPanel.add(hourlyRateLabel);
+        gridPanel.add(hourlyRateLabel);
+        JLabel hourlyRateField = new JLabel("" + theDriver.getHourlyRate());
+        hourlyRateField.setFont(new Font("Arial", Font.PLAIN, 12));
+        gridPanel.add(hourlyRateField);
+        
+        //Add the grid panel to the centre panel.
+        centrePanel.add(gridPanel);
+        
+        //Create bottom button panel.
+        JPanel bottomButtonPanel = new JPanel();
+        bottomButtonPanel.setBackground(Color.WHITE);
+                
+        //Create sack driver button and add it to screen panel.
+        JButton sackDriverButton = new JButton("Sack Driver");
+        sackDriverButton.addActionListener ( new ActionListener() {
+            public void actionPerformed ( ActionEvent e ) {
+                theInterface.sackDriver(theDriver);
+                theControlScreen.redrawManagement(makeViewDriversPanel(0));
+            }
+        });
+        bottomButtonPanel.add(sackDriverButton);
+        
         //Create return to create game screen button and add it to screen panel.
         JButton managementScreenButton = new JButton("Return to Management Screen");
         managementScreenButton.addActionListener ( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
-                theControlScreen.redrawManagement(ManagePanel.this.getDisplayPanel());
+                theControlScreen.redrawManagement(ManagePanel.this.getDisplayPanel()); 
             }
         });
-        driverScreenPanel.add(managementScreenButton);
-
+        bottomButtonPanel.add(managementScreenButton);
+        
+        //Add bottom button panel to the screen panel.
+        centrePanel.add(bottomButtonPanel);
+        
+        //Add centre panel to border panel.
+        driverBorderPanel.add(centrePanel, BorderLayout.CENTER);
+        
+        //Now create the east panel to display the driver list.
+        JPanel eastPanel = new JPanel(new BorderLayout());
+        eastPanel.setBackground(Color.WHITE);
+        //Third part of driver panel is list of drivers.
+        JPanel modelPanel = new JPanel();
+        modelPanel.setBackground(Color.WHITE);
+        theDriversList = new JList(theDriversModel);
+        theDriversList.setFixedCellWidth(100);
+        theDriversList.setVisibleRowCount(25);
+        theDriversList.setSelectedValue(theDriver.getIdNumber(), true);
+        theDriversList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        theDriversList.setFont(new Font("Arial", Font.PLAIN, 15));
+        theDriversList.addListSelectionListener(new ListSelectionListener() {
+            public void valueChanged ( ListSelectionEvent e ) {
+                int selectedValue = theDriversList.getSelectedIndex();
+                theControlScreen.redrawManagement(ManagePanel.this.makeViewDriversPanel(selectedValue)); 
+            }
+        });
+        JScrollPane driversPane = new JScrollPane(theDriversList);
+        modelPanel.add(driversPane);
+        eastPanel.add(modelPanel, BorderLayout.CENTER);
+        
+        //Add east panel to border panel.
+        driverBorderPanel.add(eastPanel, BorderLayout.EAST);
+        
+        //Add vehicleBorderPanel to vehicleScreenPanel.
+        driverScreenPanel.add(driverBorderPanel);
+   
         return driverScreenPanel;
     }
     

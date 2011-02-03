@@ -13,6 +13,7 @@ import java.util.Calendar;
 import trams.simulation.Simulator;
 import trams.util.SortedRoutes;
 import trams.util.SortedVehicles;
+import trams.util.SortedDrivers;
 
 /**
  * Class representing a scenario (i.e. transport company in TraMS).
@@ -33,6 +34,7 @@ public class Scenario {
     private int minimumSatisfaction;
     private String locationMapFileName;
     private int numberSuppliedVehicles;
+    private int numberSuppliedDrivers;
     private String dataFileName;
     //Create the stops that this scenario has - used for picking route stops etc.
     protected List<Stop> stops;
@@ -107,6 +109,14 @@ public class Scenario {
 
 	public void setNumberSuppliedVehicles(int numberSuppliedVehicles) {
 		this.numberSuppliedVehicles = numberSuppliedVehicles;
+	}
+	
+	public int getNumberSuppliedDrivers() {
+		return numberSuppliedDrivers;
+	}
+	
+	public void setNumberSuppliedDrivers(int numberSuppliedDrivers) {
+		this.numberSuppliedDrivers = numberSuppliedDrivers;
 	}
 
 	public String getLocationMapFileName() {
@@ -374,6 +384,13 @@ public class Scenario {
     public void sortVehicles ( ) {
         Collections.sort(vehicles, new SortedVehicles());
     }
+    
+    /**
+     * Sort drivers by driver id.
+     */
+    public void sortDrivers ( ) {
+    	Collections.sort(drivers, new SortedDrivers());
+    }
 
     /**
      * Employ a driver
@@ -419,6 +436,20 @@ public class Scenario {
      */
     public Driver getDriver ( int pos ) {
         return drivers.get(pos);
+    }
+    
+    /**
+     * Get driver with specified id.
+     * @param id a <code>int</code> with the specified id.
+     * @return a <code>Driver</code> object.
+     */
+    public Driver getDriverById ( int id ) {
+    	for ( int i = 0; i < drivers.size(); i++ ) {
+    		if ( drivers.get(i).getIdNumber() == id ) {
+    			return drivers.get(i);
+    		}
+    	}
+        return null;
     }
 
     /**
@@ -508,8 +539,6 @@ public class Scenario {
         for ( int i = 0; i < stops.size(); i++ ) {
             possStops[i] = stops.get(i).getStopName();
         }
-        //Add dash at end.
-        possStops[stops.size()] = "-";
         //Return stop names.
         return possStops;
     }

@@ -25,6 +25,7 @@ public class Route {
 	 */
 	private int id;
 	private String routeNumber;
+	private String routeType;
     private List<Stop> outwardStops;
     private List<Stop> returnStops;
     private List<RouteSchedule> routeSchedules;
@@ -378,7 +379,15 @@ public class Route {
         this.routeNumber = routeNumber;
     } 
     
-    /**
+    public String getRouteType() {
+		return routeType;
+	}
+
+	public void setRouteType(String routeType) {
+		this.routeType = routeType;
+	}
+
+	/**
      * Return a formatted String array of schedule dates from today.
      * @param today a <code>Calendar</code> object with the current date.
      * @return a <code>String</code> array of possible schedule dates.
