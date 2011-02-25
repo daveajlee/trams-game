@@ -97,8 +97,7 @@ public class NewGameScreen extends JFrame {
             public void keyReleased(KeyEvent e) {
                 if ( thePlayerNameField.getText().length() > 0 ) {
                     theCreateGameButton.setEnabled(true);
-                }
-                else {
+                } else {
                     theCreateGameButton.setEnabled(false);
                 }
             }
@@ -181,11 +180,9 @@ public class NewGameScreen extends JFrame {
             public void actionPerformed ( ActionEvent e ) {
                 if ( theLanduffTownScenario.isSelected() ) {
                     theInterface.loadScenario("Landuff Transport Company", thePlayerNameField.getText());
-                }
-                else if ( theMDorfCityScenario.isSelected() ) {
+                } else if ( theMDorfCityScenario.isSelected() ) {
                     theInterface.loadScenario("MDorf Transport Company", thePlayerNameField.getText());
-                }
-                else {
+                } else {
                     theInterface.loadScenario("Longts Transport Company", thePlayerNameField.getText());
                 }
                 new ScenarioDescriptionScreen(theInterface);

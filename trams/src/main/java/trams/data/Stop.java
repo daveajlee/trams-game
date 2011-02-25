@@ -78,8 +78,7 @@ public class Stop {
         String min;
         if ( minute < 10 ) {
             min = "0" + minute;
-        }
-        else {
+        } else {
             min = "" + minute;
         }
         return stopTime.get(Calendar.HOUR_OF_DAY) + ":" + min;

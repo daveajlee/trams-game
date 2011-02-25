@@ -19,6 +19,11 @@ public class ImageDisplay extends Canvas {
     
     private Logger logger = Logger.getLogger(ImageDisplay.class);
     
+    private static final int X_POS = -1000;
+    private static final int Y_POS = -1000;
+    private static final int WIDTH = 2000;
+    private static final int HEIGHT = 2000;
+    
     /**
      * Create a new image display.
      * @param fileName a <code>String</code> with the location of the file.
@@ -38,12 +43,9 @@ public class ImageDisplay extends Canvas {
         //theImage = toolkit.getImage(fileName);
         MediaTracker mediaTracker = new MediaTracker(this);
 	mediaTracker.addImage(theImage, 0);
-        try
-	{
+        try {
             mediaTracker.waitForID(0);
-        }
-	catch (InterruptedException ie)
-	{
+        } catch (InterruptedException ie) {
             System.err.println(ie);
             System.exit(1);
         }
@@ -63,7 +65,7 @@ public class ImageDisplay extends Canvas {
     public void repaint () {
         Graphics g = getGraphics();
         g.setColor(Color.WHITE);
-        g.fillRect(-1000,-1000,2000,2000);
+        g.fillRect(X_POS,Y_POS,WIDTH,HEIGHT);
         paint ( g );
     }
     

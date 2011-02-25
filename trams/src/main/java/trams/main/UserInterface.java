@@ -307,8 +307,7 @@ public class UserInterface implements Runnable {
             if ( theOperations.getSimulator().getScenario().getRoute(routeNumber).getAssignedVehicle(rs.toString()) != null && !rs.getCurrentStop(currentTime, theOperations.getSimulator())[0].equalsIgnoreCase("Depot") ) {
                 //logger.debug("Adding Route Detail " + routeDetails.get(i).getId());
                 theRouteDetailPos.add(0);
-            }
-            else {
+            } else {
                 max++;
                 //logger.debug("Max is now " + max + " - routeDetails size is: " + routeDetails.size());
                 if ( theOperations.getSimulator().getScenario().getRoute(routeNumber).getNumRouteSchedules() < max ) { max = theOperations.getSimulator().getScenario().getRoute(routeNumber).getNumRouteSchedules(); }
@@ -327,8 +326,7 @@ public class UserInterface implements Runnable {
             if ( theOperations.getSimulator().getScenario().getRoute(routeNumber).getAssignedVehicle(rs.toString()) != null && !rs.getCurrentStop(currentTime, theOperations.getSimulator())[0].equalsIgnoreCase("Depot") ) {
                 //logger.debug("Adding Route Detail " + routeDetails.get(i).getId());
                 theRouteDetailPos.add(i);
-            }
-            else {
+            } else {
                 max++;
                 //logger.debug("Max is now " + max + " - routeDetails size is: " + routeDetails.size());
                 if ( theOperations.getSimulator().getScenario().getRoute(routeNumber).getNumRouteSchedules() < max ) { max = theOperations.getSimulator().getScenario().getRoute(routeNumber).getNumRouteSchedules(); }
@@ -758,8 +756,7 @@ public class UserInterface implements Runnable {
             if ( addNewRoute(newRoute) ) {
                 success = true;
             }
-        }
-        else {
+        } else {
             addNewRoute(newRoute);
         }
         //If fail to delete old, return false.
@@ -900,16 +897,14 @@ public class UserInterface implements Runnable {
     public static void main ( String[] args ) {
         try {
             UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
-        }
-        catch ( Exception e ) { }
+        } catch ( Exception e ) { }
         //Display splash screen to the user.
         SplashScreen ss = new SplashScreen(false, null);
         for ( int i = 12; i > -5; i-- ) {
             try {
                 Thread.sleep(200);
                 ss.moveImage(10*(i+1),0);
-            }
-            catch ( InterruptedException ie ) { }
+            } catch ( InterruptedException ie ) { }
         }
         ss.dispose();
         UserInterface ui = new UserInterface();

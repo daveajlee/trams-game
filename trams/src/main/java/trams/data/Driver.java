@@ -42,10 +42,16 @@ public class Driver {
     public boolean hasStartedWork ( Calendar currentDate ) {
         //Check year...
         int yearDiff = currentDate.get(Calendar.YEAR) - startDate.get(Calendar.YEAR);
-        if ( yearDiff < 0 ) { return false; } if ( yearDiff > 0 ) { return true; }
+        if ( yearDiff < 0 ) { 
+        	return false; 
+        } 
+        if ( yearDiff > 0 ) { 
+        	return true; 
+        }
         //Check month...
         int monthDiff = currentDate.get(Calendar.MONTH) - startDate.get(Calendar.MONTH);
-        if ( monthDiff < 0 ) { return false; } if ( monthDiff > 0 ) { return true; }
+        if ( monthDiff < 0 ) { return false; } 
+        if ( monthDiff > 0 ) { return true; }
         //Check date...
         int dateDiff = currentDate.get(Calendar.DATE) - startDate.get(Calendar.DATE);
         if ( dateDiff < 0 ) { return false; }

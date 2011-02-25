@@ -479,13 +479,9 @@ public class Scenario {
             //Running... 1 - 5 minutes late.
             if ( myVehicle.getDelay() > 0 && myVehicle.getDelay() < 6 ) {
                 numSmallLateVehicles++;
-            }
-            //Running... 6 - 15 minutes late.
-            else if ( myVehicle.getDelay() > 5 && myVehicle.getDelay() < 16 ) {
+            } else if ( myVehicle.getDelay() > 5 && myVehicle.getDelay() < 16 ) {
                 numMediumLateVehicles++;
-            }
-            //Running... 16+ minutes late.
-            else if ( myVehicle.getDelay() > 15 ) {
+            } else if ( myVehicle.getDelay() > 15 ) {
                 numLargeLateVehicles++;
             }
         }
@@ -494,14 +490,11 @@ public class Scenario {
         //Easy: numSmallLateVehicles / 2 and numMediumLateVehicles and numLargeLateVehicles*2.
         if ( difficultyLevel.equalsIgnoreCase("Easy") ) {
             totalSubtract = (numSmallLateVehicles/2) + numMediumLateVehicles + (numLargeLateVehicles*2);
-        }
-        else if ( difficultyLevel.equalsIgnoreCase("Intermediate") ) {
+        } else if ( difficultyLevel.equalsIgnoreCase("Intermediate") ) {
             totalSubtract = (numSmallLateVehicles) + (numMediumLateVehicles*2) + (numLargeLateVehicles*3);
-        }
-        else if ( difficultyLevel.equalsIgnoreCase("Medium") ) {
+        } else if ( difficultyLevel.equalsIgnoreCase("Medium") ) {
             totalSubtract = (numSmallLateVehicles*2) + (numMediumLateVehicles*3) + (numLargeLateVehicles*4);
-        }
-        else if ( difficultyLevel.equalsIgnoreCase("Hard") ) {
+        } else if ( difficultyLevel.equalsIgnoreCase("Hard") ) {
             totalSubtract = (numSmallLateVehicles*3) + (numMediumLateVehicles*4) + (numLargeLateVehicles*5);
         }
         //Subtract from passenger satisfaction.

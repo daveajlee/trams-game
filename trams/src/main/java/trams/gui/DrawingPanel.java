@@ -40,13 +40,12 @@ public class DrawingPanel extends JPanel {
     public void paint ( Graphics g ) {
         g.setColor(Color.BLACK);
         g.drawLine(0, 25, 800, 25);
-        if ( theHasDelay ) { g.setColor(Color.RED); }
-        else { g.setColor(Color.GREEN); }
+        if ( theHasDelay ) { g.setColor(Color.RED); 
+        } else { g.setColor(Color.GREEN); }
         int[] xPoints;
         if ( theDirection == DrawingPanel.RIGHTTOLEFT ) {
             xPoints = new int[] {theXPosition+0,theXPosition+50,theXPosition+50};
-        }
-        else {
+        } else {
             xPoints = new int[] {theXPosition+100,theXPosition+50,theXPosition+50};
         }
         int[] yPoints = {25,0,50};

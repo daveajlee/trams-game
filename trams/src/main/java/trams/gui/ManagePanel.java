@@ -148,8 +148,7 @@ public class ManagePanel {
         ImageDisplay infoDisplay = null;
         if ( theInterface.getNumberRoutes() == 0 || theInterface.getNumberVehicles() == 0 || theInterface.getAllocations().size() == 0 ) {
             infoDisplay = new ImageDisplay("xpic.png",0,0);
-        }
-        else {
+        } else {
             infoDisplay = new ImageDisplay("infopic.png",0,0);
         }
         infoDisplay.setSize(50,50);
@@ -159,14 +158,11 @@ public class ManagePanel {
         informationArea.setFont(new Font("Arial", Font.PLAIN, 14));
         if ( theInterface.getNumberRoutes() == 0 ) {
             informationArea.setText("WARNING: No routes have been devised yet. Click 'Create Route' to define a route.");
-        }
-        else if ( theInterface.getNumberVehicles() == 0 ) {
+        } else if ( theInterface.getNumberVehicles() == 0 ) {
             informationArea.setText("WARNING: You can't run routes without vehicles. Click 'Purchase Vehicle' to buy a vehicle");
-        }
-        else if ( theInterface.getAllocations().size() == 0 ) {
+        } else if ( theInterface.getAllocations().size() == 0 ) {
             informationArea.setText("WARNING: To successfully run services, you must assign vehicles to route schedules. Click 'Allocations' to match vehicles to route schedules");
-        }
-        else {
+        } else {
             logger.debug("The allocations size was " + theInterface.getAllocations().size() + " which is " + theInterface.getAllocations().toString());
             informationArea.setText(theInterface.getRandomTipMessage());
         }
@@ -518,13 +514,11 @@ public class ManagePanel {
         		if ( theStopModel.getSize() >= 2 ) {
         			theStopUpButton.setEnabled(true); theStopDownButton.setEnabled(true);
         			theCreateTimetableButton.setEnabled(true);
-        		}
-        		else if ( theStopModel.getSize() != 0 ) {
+        		} else if ( theStopModel.getSize() != 0 ) {
         			theRemoveStopButton.setEnabled(true);
         			theStopUpButton.setEnabled(false); theStopDownButton.setEnabled(false);
         			theCreateTimetableButton.setEnabled(false);
-        		}
-        		else {
+        		} else {
         			theRemoveStopButton.setEnabled(false);
         		}
         	}
@@ -591,13 +585,11 @@ public class ManagePanel {
         			if ( theStopModel.getSize() >= 2 ) {
             			theStopUpButton.setEnabled(true); theStopDownButton.setEnabled(true);
             			theCreateTimetableButton.setEnabled(true);
-            		}
-            		else if ( theStopModel.getSize() != 0 ) {
+            		} else if ( theStopModel.getSize() != 0 ) {
             			theRemoveStopButton.setEnabled(true);
             			theStopUpButton.setEnabled(false); theStopDownButton.setEnabled(false);
             			theCreateTimetableButton.setEnabled(false);
-            		}
-            		else {
+            		} else {
             			theRemoveStopButton.setEnabled(false);
             		}
         		}
@@ -631,8 +623,7 @@ public class ManagePanel {
                 String timetableName = timetableKeys.next();
                 theTimetableModel.addElement(theSelectedRoute.getTimetable(timetableName).getName());
             }
-        } 
-        catch (NullPointerException npe) { }
+        } catch (NullPointerException npe) { }
         theTimetableList = new JList(theTimetableModel);
         if ( theTimetableModel.getSize() != 0 ) {
             theTimetableList.setSelectedIndex(0);
@@ -683,8 +674,7 @@ public class ManagePanel {
                 if ( theTimetableModel.getSize() == 0 ) {
                     theDeleteTimetableButton.setEnabled(false);
                     theModifyTimetableButton.setEnabled(false);
-                }
-                else {
+                } else {
                     theTimetableList.setSelectedIndex(0);
                 }
             }
@@ -769,8 +759,7 @@ public class ManagePanel {
             public void keyReleased(KeyEvent e) {
                 if ( !theTimetableNameField.getText().equalsIgnoreCase("") ) {
                     theCreateServicePatternButton.setEnabled(true);
-                }
-                else {
+                } else {
                     theCreateServicePatternButton.setEnabled(false);
                 }
             }
@@ -820,8 +809,7 @@ public class ManagePanel {
                     for ( int i = theFromStartDay; i <= getMonthLen(month); i++ ) {
                         theValidFromDayModel.addElement(i);
                     }
-                }
-                else {
+                } else {
                     theValidFromDayModel.removeAllElements();
                     for ( int i = 1; i <= getMonthLen(month); i++ ) {
                         theValidFromDayModel.addElement(i);
@@ -867,8 +855,7 @@ public class ManagePanel {
                     for ( int i = theToStartDay; i <= getMonthLen(month); i++ ) {
                         theValidToDayModel.addElement(i);
                     }
-                }
-                else {
+                } else {
                     theValidToDayModel.removeAllElements();
                     for ( int i = 1; i <= getMonthLen(month); i++ ) {
                         theValidToDayModel.addElement(i);
@@ -905,8 +892,7 @@ public class ManagePanel {
                 String servicePatternName = patternKeys.next();
                 theServicePatternModel.addElement(theSelectedRoute.getTimetable(theTimetableNameField.getText()).getServicePattern(servicePatternName).getName());
             }
-        } 
-        catch (NullPointerException npe) { }
+        } catch (NullPointerException npe) { }
         theServicePatternList = new JList(theServicePatternModel);
         if ( theServicePatternModel.getSize() > 0 ) { theServicePatternList.setSelectedIndex(0); } 
         theServicePatternList.setVisibleRowCount(3);
@@ -968,8 +954,7 @@ public class ManagePanel {
                 if ( theServicePatternModel.getSize() == 0 ) {
                     theDeleteServicePatternButton.setEnabled(false);
                     theModifyServicePatternButton.setEnabled(false);
-                }
-                else {
+                } else {
                     theServicePatternList.setSelectedIndex(0);
                 }
             }
@@ -1057,8 +1042,7 @@ public class ManagePanel {
                         }
                     }
                     theCreateSPButton.setEnabled(false);
-                }
-                else {
+                } else {
                     theCreateSPButton.setEnabled(false);
                 }
             }
@@ -1086,14 +1070,15 @@ public class ManagePanel {
                             }
                         }
                         theCreateSPButton.setEnabled(false);
-                    }
-                    else {
+                    } else {
                         theCreateSPButton.setEnabled(false);
                     }
                 }
             });
             int addPos = (i+1);
-            if ( sp!=null ) { if ( sp.getDaysOfOperation().contains("" + addPos) ) { theDaysBox[i].setSelected(true); } }
+            if ( sp!=null ) { if ( sp.getDaysOfOperation().contains("" + addPos) ) { theDaysBox[i].setSelected(true); 
+            } 
+            }
             dayOfWeekPanel.add(theDaysBox[i]);
         }
         servicePatternScreenPanel.add(dayOfWeekPanel);
@@ -1214,8 +1199,8 @@ public class ManagePanel {
         
         //Create new route button and add it to screen panel.
         theCreateSPButton = new JButton("Create Service Pattern");
-        if ( sp != null ) { theCreateSPButton.setText("Modify Service Pattern"); }
-        else { theCreateSPButton.setEnabled(false); }
+        if ( sp != null ) { theCreateSPButton.setText("Modify Service Pattern"); 
+    	} else { theCreateSPButton.setEnabled(false); }
         theCreateSPButton.addActionListener ( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
                 //Create a linked list of days selected.
@@ -1232,8 +1217,7 @@ public class ManagePanel {
                 //Create + add service pattern.
                 if ( theSelectedServicePattern != null ) {
                     theSelectedRoute.getTimetable(theSelectedTimetableName).getServicePattern(theSelectedServicePattern.getName()).editServicePattern(theServicePatternNameField.getText(), operatingDays, theTerminus1Box.getSelectedItem().toString(), theTerminus2Box.getSelectedItem().toString(), timeFrom, timeTo, Integer.parseInt(theEveryMinuteSpinner.getValue().toString()), getCurrentRouteDuration(Integer.parseInt(theEveryMinuteSpinner.getValue().toString())));
-                }
-                else {
+                } else {
                     logger.debug("I am calling add method with timetable name " + theSelectedTimetableName + "!");
                     ServicePattern sp = new ServicePattern(theServicePatternNameField.getText(), operatingDays, theTerminus1Box.getSelectedItem().toString(), theTerminus2Box.getSelectedItem().toString(), timeFrom, timeTo, Integer.parseInt(theEveryMinuteSpinner.getValue().toString()), getCurrentRouteDuration(Integer.parseInt(theEveryMinuteSpinner.getValue().toString())) );
                     theSelectedRoute.getTimetable(theSelectedTimetableName).addServicePattern(theServicePatternNameField.getText(), sp);
@@ -1277,19 +1261,19 @@ public class ManagePanel {
      * @return a <code>int</code> with the month length.
      */
     private int getMonthLen ( String month ) {
-        if ( month.equalsIgnoreCase("January") ) { return 31; }
-        else if ( month.equalsIgnoreCase("February") ) { return 28; }
-        else if ( month.equalsIgnoreCase("March") ) { return 31; }
-        else if ( month.equalsIgnoreCase("April") ) { return 30; }
-        else if ( month.equalsIgnoreCase("May") ) { return 31; }
-        else if ( month.equalsIgnoreCase("June") ) { return 30; }
-        else if ( month.equalsIgnoreCase("July") ) { return 31; }
-        else if ( month.equalsIgnoreCase("August") ) { return 31; }
-        else if ( month.equalsIgnoreCase("September") ) { return 30; }
-        else if ( month.equalsIgnoreCase("October") ) { return 31; }
-        else if ( month.equalsIgnoreCase("November") ) { return 30; }
-        else if ( month.equalsIgnoreCase("December") ) { return 31; }
-        else { return 0; }
+        if ( month.equalsIgnoreCase("January") ) { return 31;
+    	} else if ( month.equalsIgnoreCase("February") ) { return 28;
+		} else if ( month.equalsIgnoreCase("March") ) { return 31;
+		} else if ( month.equalsIgnoreCase("April") ) { return 30;
+		} else if ( month.equalsIgnoreCase("May") ) { return 31;
+		} else if ( month.equalsIgnoreCase("June") ) { return 30;
+		} else if ( month.equalsIgnoreCase("July") ) { return 31;
+		} else if ( month.equalsIgnoreCase("August") ) { return 31;
+		} else if ( month.equalsIgnoreCase("September") ) { return 30;
+		} else if ( month.equalsIgnoreCase("October") ) { return 31;
+		} else if ( month.equalsIgnoreCase("November") ) { return 30;
+		} else if ( month.equalsIgnoreCase("December") ) { return 31;
+		} else { return 0; }
     }
     
     /**
@@ -1298,19 +1282,19 @@ public class ManagePanel {
      * @return a <code>String</code> with the string representation of the month.
      */
     private String getMonth ( int month ) {
-        if ( month == Calendar.JANUARY ) { return "January"; }
-        else if ( month == Calendar.FEBRUARY ) { return "February"; }
-        else if ( month == Calendar.MARCH ) { return "March"; }
-        else if ( month == Calendar.APRIL ) { return "April"; }
-        else if ( month == Calendar.MAY ) { return "May"; }
-        else if ( month == Calendar.JUNE ) { return "June"; }
-        else if ( month == Calendar.JULY ) { return "July"; }
-        else if ( month == Calendar.AUGUST ) { return "August"; }
-        else if ( month == Calendar.SEPTEMBER ) { return "September"; }
-        else if ( month == Calendar.OCTOBER ) { return "October"; }
-        else if ( month == Calendar.NOVEMBER ) { return "November"; }
-        else if ( month == Calendar.DECEMBER ) { return "December"; }
-        else { return ""; }
+        if ( month == Calendar.JANUARY ) { return "January";
+    	} else if ( month == Calendar.FEBRUARY ) { return "February";
+		} else if ( month == Calendar.MARCH ) { return "March";
+		} else if ( month == Calendar.APRIL ) { return "April";
+		} else if ( month == Calendar.MAY ) { return "May";
+		} else if ( month == Calendar.JUNE ) { return "June";
+		} else if ( month == Calendar.JULY ) { return "July";
+		} else if ( month == Calendar.AUGUST ) { return "August";
+		} else if ( month == Calendar.SEPTEMBER ) { return "September";
+		} else if ( month == Calendar.OCTOBER ) { return "October";
+		} else if ( month == Calendar.NOVEMBER ) { return "November";
+		} else if ( month == Calendar.DECEMBER ) { return "December";
+		} else { return ""; }
     }
     
     /**
@@ -1319,19 +1303,19 @@ public class ManagePanel {
      * @return a <code>int</code> with the int representation of the month.
      */
     private int getMonthNumber ( String month ) {
-        if ( month.equalsIgnoreCase("January") ) { return Calendar.JANUARY; }
-        else if ( month.equalsIgnoreCase("February") ) { return Calendar.FEBRUARY; }
-        else if ( month.equalsIgnoreCase("March") ) { return Calendar.MARCH; }
-        else if ( month.equalsIgnoreCase("April") ) { return Calendar.APRIL; }
-        else if ( month.equalsIgnoreCase("May") ) { return Calendar.MAY; }
-        else if ( month.equalsIgnoreCase("June") ) { return Calendar.JUNE; }
-        else if ( month.equalsIgnoreCase("July") ) { return Calendar.JULY; }
-        else if ( month.equalsIgnoreCase("August") ) { return Calendar.AUGUST; }
-        else if ( month.equalsIgnoreCase("September") ) { return Calendar.SEPTEMBER; }
-        else if ( month.equalsIgnoreCase("October") ) { return Calendar.OCTOBER; }
-        else if ( month.equalsIgnoreCase("November") ) { return Calendar.NOVEMBER; }
-        else if ( month.equalsIgnoreCase("December") ) { return Calendar.DECEMBER; }
-        else { return -1; }
+        if ( month.equalsIgnoreCase("January") ) { return Calendar.JANUARY;
+    	} else if ( month.equalsIgnoreCase("February") ) { return Calendar.FEBRUARY;
+		} else if ( month.equalsIgnoreCase("March") ) { return Calendar.MARCH;
+		} else if ( month.equalsIgnoreCase("April") ) { return Calendar.APRIL;
+		} else if ( month.equalsIgnoreCase("May") ) { return Calendar.MAY;
+		} else if ( month.equalsIgnoreCase("June") ) { return Calendar.JUNE;
+		} else if ( month.equalsIgnoreCase("July") ) { return Calendar.JULY;
+		} else if ( month.equalsIgnoreCase("August") ) { return Calendar.AUGUST;
+		} else if ( month.equalsIgnoreCase("September") ) { return Calendar.SEPTEMBER;
+		} else if ( month.equalsIgnoreCase("October") ) { return Calendar.OCTOBER;
+		} else if ( month.equalsIgnoreCase("November") ) { return Calendar.NOVEMBER;
+		} else if ( month.equalsIgnoreCase("December") ) { return Calendar.DECEMBER;
+		} else { return -1; }
     }
     
     private int getCurrentRouteDuration ( int frequency ) {
@@ -1467,12 +1451,10 @@ public class ManagePanel {
                 if ( services.size() <= (min+j) ) {
                     logger.debug("No more services!");
                     outgoingData[i][j+1] = "";
-                }
-                else if ( services.get(min+j).getStop(theSelectedRoute.getStop(Route.OUTWARDSTOPS, i).getStopName()) == null ) {
+                } else if ( services.get(min+j).getStop(theSelectedRoute.getStop(Route.OUTWARDSTOPS, i).getStopName()) == null ) {
                     logger.debug("Blank data!");
                     outgoingData[i][j+1] = "";
-                }
-                else {
+                } else {
                     outgoingData[i][j+1] = services.get(min+j).getStop(theSelectedRoute.getStop(Route.OUTWARDSTOPS, i).getStopName()).getDisplayStopTime();
                     logger.debug("Adding [" + i + "][" + j + "] At " + services.get(min+j).getStop(theSelectedRoute.getStop(Route.OUTWARDSTOPS, i).getStopName()).getStopName() + " at " + services.get(min+j).getStop(theSelectedRoute.getStop(Route.OUTWARDSTOPS, i).getStopName()).getDisplayStopTime());
                 }
@@ -1504,11 +1486,9 @@ public class ManagePanel {
             for ( int j = 0; j < 10; j++ ) {
                 if ( returnServices.size() <= (min+j) ) {
                     ingoingData[i][j+1] = "";
-                }
-                else if ( returnServices.get(min+j).getStop(theSelectedRoute.getStop(Route.RETURNSTOPS, i).getStopName()) == null ) {
+                } else if ( returnServices.get(min+j).getStop(theSelectedRoute.getStop(Route.RETURNSTOPS, i).getStopName()) == null ) {
                     ingoingData[i][j+1] = "";
-                }
-                else {
+                } else {
                     ingoingData[i][j+1] = returnServices.get(min+j).getStop(theSelectedRoute.getStop(Route.RETURNSTOPS, i).getStopName()).getDisplayStopTime();
                 }
             }
@@ -1973,8 +1953,7 @@ public class ManagePanel {
                     theTotalPriceField.setText("€" + theFormat.format(totalPrice) + " (Insufficient funds available)");
                     theTotalPriceField.setForeground(Color.RED);
                     thePurchaseVehicleButton.setEnabled(false);
-                }
-                else {
+                } else {
                     theTotalPriceField.setText("€" + theFormat.format(totalPrice));
                     theTotalPriceField.setForeground(Color.BLACK);
                     thePurchaseVehicleButton.setEnabled(true);
@@ -2434,11 +2413,9 @@ public class ManagePanel {
             public void actionPerformed(ActionEvent e) {
                 if ( theRoutesList.getSelectedValue() == null ) {
                     JOptionPane.showMessageDialog(null, "You must select a route before you can assign a vehicle to it!", "ERROR: No Route Selected", JOptionPane.ERROR_MESSAGE);
-                }
-                else if ( theVehiclesList.getSelectedValue() == null ) {
+                } else if ( theVehiclesList.getSelectedValue() == null ) {
                     JOptionPane.showMessageDialog(null, "You must select a vehicle before you can assign a route to it!", "ERROR: No Vehicle Selected", JOptionPane.ERROR_MESSAGE);
-                }
-                else {
+                } else {
                     theAllocationsModel.addElement(theRoutesList.getSelectedValue() + " & " + theVehiclesList.getSelectedValue().toString().split(" ")[0]);
                     theRoutesModel.removeElement(theRoutesList.getSelectedValue());
                     theVehiclesModel.removeElement(theVehiclesList.getSelectedValue());
@@ -2451,8 +2428,7 @@ public class ManagePanel {
             public void actionPerformed(ActionEvent e) {
                 if ( theAllocationsList.getSelectedValue() == null ) {
                     JOptionPane.showMessageDialog(null, "You must select an allocation before you can remove it!", "ERROR: No Allocation Selected", JOptionPane.ERROR_MESSAGE);
-                }
-                else {
+                } else {
                     String text = theAllocationsList.getSelectedValue().toString();
                     theAllocationsModel.removeElement(theAllocationsList.getSelectedValue());
                     String[] textParts = text.split("&");

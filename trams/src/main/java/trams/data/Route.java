@@ -172,9 +172,9 @@ public class Route {
         boolean shouldAddStop = false;
         //Now go through route stops in the direction and add those as appropriate.
         for ( int i = 0; i < getNumStops(direction); i++ ) {
-            if ( getStop(direction, i).getStopName().equalsIgnoreCase(startStop) ) { myStops.add(getStop(direction, i)); shouldAddStop = true; }
-            else if ( getStop(direction, i).getStopName().equalsIgnoreCase(endStop) ) { myStops.add(getStop(direction, i)); shouldAddStop = false; }
-            else if ( shouldAddStop ) { myStops.add(getStop(direction, i)); }
+            if ( getStop(direction, i).getStopName().equalsIgnoreCase(startStop) ) { myStops.add(getStop(direction, i)); shouldAddStop = true; 
+            } else if ( getStop(direction, i).getStopName().equalsIgnoreCase(endStop) ) { myStops.add(getStop(direction, i)); shouldAddStop = false; 
+            } else if ( shouldAddStop ) { myStops.add(getStop(direction, i)); }
         }
         return myStops;
     }
@@ -210,9 +210,9 @@ public class Route {
             int serviceId = 0;
             //Now repeat this loop until myTime is after the service pattern end time.
             while ( true ) {
-                if ( (myTime.get(Calendar.HOUR_OF_DAY) > myServicePattern.getEndTime().get(Calendar.HOUR_OF_DAY)) ) { break; }
-                else if ( (myTime.get(Calendar.HOUR_OF_DAY) == myServicePattern.getEndTime().get(Calendar.HOUR_OF_DAY)) && (myTime.get(Calendar.MINUTE) > myServicePattern.getEndTime().get(Calendar.MINUTE)) ) { break; }
-                else {
+                if ( (myTime.get(Calendar.HOUR_OF_DAY) > myServicePattern.getEndTime().get(Calendar.HOUR_OF_DAY)) ) { break; 
+                } else if ( (myTime.get(Calendar.HOUR_OF_DAY) == myServicePattern.getEndTime().get(Calendar.HOUR_OF_DAY)) && (myTime.get(Calendar.MINUTE) > myServicePattern.getEndTime().get(Calendar.MINUTE)) ) { break; 
+                } else {
                     //logger.debug("I want a service starting from both terminuses at " + myTime.get(Calendar.HOUR_OF_DAY) + ":" + myTime.get(Calendar.MINUTE));
                     //Create an outgoing service.
                     Service newService = new Service();
@@ -221,8 +221,7 @@ public class Route {
                     List<Stop> serviceStops = new ArrayList<Stop>();
                     if ( direction == Route.OUTWARDSTOPS ) {
                         serviceStops = getStopsBetween(myServicePattern.getReturnTerminus(), myServicePattern.getOutgoingTerminus(), direction);
-                    }
-                    else {
+                    } else {
                         serviceStops = getStopsBetween(myServicePattern.getOutgoingTerminus(), myServicePattern.getReturnTerminus(), direction);
                     }
                     newService.addStop(new Stop(serviceStops.get(0).getStopName(), (Calendar) serviceTime.clone()));
@@ -290,11 +289,9 @@ public class Route {
             logger.debug("Return services has size: " + returnServices.size());
             if ( returnServices.size() > 0 && outgoingServices.size() > 0 && outgoingServices.get(0).getStop(0).getStopTime().after(returnServices.get(0).getStop(0).getStopTime()) ) {
                 myCal = (Calendar) returnServices.get(0).getStop(0).getStopTime().clone();
-            }
-            else if ( outgoingServices.size() == 0 ) {
+            } else if ( outgoingServices.size() == 0 ) {
                 myCal = (Calendar) returnServices.get(0).getStop(0).getStopTime().clone();
-            }
-            else {
+            } else {
                 myCal = (Calendar) outgoingServices.get(0).getStop(0).getStopTime().clone();
             }
             //Here's the loop.
@@ -516,8 +513,7 @@ public class Route {
         for ( int i = 0; i < outwardStops.size(); i++ ) {
             if ( outwardStops.get(i).getStopName().equalsIgnoreCase(stop1) ) {
                 return true;
-            }
-            else if ( outwardStops.get(i).getStopName().equalsIgnoreCase(stop2) ) {
+            } else if ( outwardStops.get(i).getStopName().equalsIgnoreCase(stop2) ) {
                 return false;
             }
         }
@@ -531,14 +527,14 @@ public class Route {
      * @return a <code>String</code> with the string representation of the day.
      */
     private String getDay ( int day ) {
-        if ( day == Calendar.SUNDAY ) { return "Sunday"; }
-        else if ( day == Calendar.MONDAY ) { return "Monday"; }
-        else if ( day == Calendar.TUESDAY ) { return "Tuesday"; }
-        else if ( day == Calendar.WEDNESDAY ) { return "Wednesday"; }
-        else if ( day == Calendar.THURSDAY ) { return "Thursday"; }
-        else if ( day == Calendar.FRIDAY ) { return "Friday"; }
-        else if ( day == Calendar.SATURDAY ) { return "Saturday"; }
-        else { return ""; }
+        if ( day == Calendar.SUNDAY ) { return "Sunday";
+    	} else if ( day == Calendar.MONDAY ) { return "Monday";
+		} else if ( day == Calendar.TUESDAY ) { return "Tuesday";
+		} else if ( day == Calendar.WEDNESDAY ) { return "Wednesday";
+		} else if ( day == Calendar.THURSDAY ) { return "Thursday";
+		} else if ( day == Calendar.FRIDAY ) { return "Friday";
+		} else if ( day == Calendar.SATURDAY ) { return "Saturday";
+		} else { return ""; }
     }
     
     /**
@@ -547,19 +543,19 @@ public class Route {
      * @return a <code>String</code> with the string representation of the month.
      */
     private String getMonth ( int month ) {
-        if ( month == Calendar.JANUARY ) { return "January"; }
-        else if ( month == Calendar.FEBRUARY ) { return "February"; }
-        else if ( month == Calendar.MARCH ) { return "March"; }
-        else if ( month == Calendar.APRIL ) { return "April"; }
-        else if ( month == Calendar.MAY ) { return "May"; }
-        else if ( month == Calendar.JUNE ) { return "June"; }
-        else if ( month == Calendar.JULY ) { return "July"; }
-        else if ( month == Calendar.AUGUST ) { return "August"; }
-        else if ( month == Calendar.SEPTEMBER ) { return "September"; }
-        else if ( month == Calendar.OCTOBER ) { return "October"; }
-        else if ( month == Calendar.NOVEMBER ) { return "November"; }
-        else if ( month == Calendar.DECEMBER ) { return "December"; }
-        else { return ""; }
+        if ( month == Calendar.JANUARY ) { return "January";
+    	} else if ( month == Calendar.FEBRUARY ) { return "February";
+		} else if ( month == Calendar.MARCH ) { return "March";
+		} else if ( month == Calendar.APRIL ) { return "April";
+		} else if ( month == Calendar.MAY ) { return "May";
+		} else if ( month == Calendar.JUNE ) { return "June";
+		} else if ( month == Calendar.JULY ) { return "July";
+		} else if ( month == Calendar.AUGUST ) { return "August";
+		} else if ( month == Calendar.SEPTEMBER ) { return "September";
+		} else if ( month == Calendar.OCTOBER ) { return "October";
+		} else if ( month == Calendar.NOVEMBER ) { return "November";
+		} else if ( month == Calendar.DECEMBER ) { return "December";
+		} else { return ""; }
     }
     
     /**
@@ -568,19 +564,19 @@ public class Route {
      * @return a <code>String</code> with the String representation of the month in number form.
      */
     private String getMonth ( String month ) {
-        if ( month.equalsIgnoreCase("January") ) { return "0"; }
-        else if ( month.equalsIgnoreCase("February") ) { return "1"; }
-        else if ( month.equalsIgnoreCase("March") ) { return "2"; }
-        else if ( month.equalsIgnoreCase("April") ) { return "3"; }
-        else if ( month.equalsIgnoreCase("May") ) { return "4"; }
-        else if ( month.equalsIgnoreCase("June") ) { return "5"; }
-        else if ( month.equalsIgnoreCase("July") ) { return "6"; }
-        else if ( month.equalsIgnoreCase("August") ) { return "7"; }
-        else if ( month.equalsIgnoreCase("September") ) { return "8"; }
-        else if ( month.equalsIgnoreCase("October") ) { return "9"; }
-        else if ( month.equalsIgnoreCase("November") ) { return "10"; }
-        else if ( month.equalsIgnoreCase("December") ) { return "11"; }
-        else { return ""; }
+        if ( month.equalsIgnoreCase("January") ) { return "0";
+    	} else if ( month.equalsIgnoreCase("February") ) { return "1";
+		} else if ( month.equalsIgnoreCase("March") ) { return "2";
+		} else if ( month.equalsIgnoreCase("April") ) { return "3";
+		} else if ( month.equalsIgnoreCase("May") ) { return "4";
+		} else if ( month.equalsIgnoreCase("June") ) { return "5";
+		} else if ( month.equalsIgnoreCase("July") ) { return "6";
+		} else if ( month.equalsIgnoreCase("August") ) { return "7";
+		} else if ( month.equalsIgnoreCase("September") ) { return "8";
+		} else if ( month.equalsIgnoreCase("October") ) { return "9";
+		} else if ( month.equalsIgnoreCase("November") ) { return "10";
+		} else if ( month.equalsIgnoreCase("December") ) { return "11";
+		} else { return ""; }
     }
     
     /**
@@ -589,10 +585,10 @@ public class Route {
      * @return a <code>String</code> with the day extension.
      */
     private String getDateExt ( int dayDate ) {
-        if ( dayDate == 1 || dayDate == 21 || dayDate == 31 ) { return "st"; }
-        else if ( dayDate == 2 || dayDate == 22 ) { return "nd"; }
-        else if ( dayDate == 3 || dayDate == 23 ) { return "rd"; }
-        else { return "th"; }
+        if ( dayDate == 1 || dayDate == 21 || dayDate == 31 ) { return "st";
+    	} else if ( dayDate == 2 || dayDate == 22 ) { return "nd";
+		} else if ( dayDate == 3 || dayDate == 23 ) { return "rd";
+		} else { return "th"; }
     }
     
     /**
@@ -636,8 +632,7 @@ public class Route {
         //Outward stops.
         if ( outinward == Route.OUTWARDSTOPS ) {
             return outwardStops.add(new Stop(stopName));
-        } //Inward stops.
-        else if ( outinward == Route.RETURNSTOPS ) {
+        } else if ( outinward == Route.RETURNSTOPS ) {
             return returnStops.add(new Stop(stopName));
         }
         return false;
@@ -663,16 +658,14 @@ public class Route {
                         outwardStops.remove(prevStop); outwardStops.remove(currentStop);
                         outwardStops.add(i-1, currentStop);
                         outwardStops.add(i, prevStop);
-                    }
-                    else if ( !moveup && i != outwardStops.size()-1 ) {
+                    } else if ( !moveup && i != outwardStops.size()-1 ) {
                         Stop nextStop = outwardStops.get(i+1);
                         Stop currentStop = outwardStops.get(i);
                         outwardStops.remove(nextStop); outwardStops.remove(currentStop);
                         try {
                             outwardStops.add(i+1, currentStop);
                             outwardStops.add(i, nextStop);
-                        }
-                        catch ( IndexOutOfBoundsException ioe ) {
+                        } catch ( IndexOutOfBoundsException ioe ) {
                             outwardStops.add(nextStop);
                             outwardStops.add(currentStop);
                         }
@@ -680,8 +673,7 @@ public class Route {
                     }
                 }
             }
-        } //Inward stops.
-        else {
+        }  else {
             //Search for stop in linked list.
             for ( int i = 0; i < returnStops.size(); i++ ) {
                 if ( returnStops.get(i).getStopName().equalsIgnoreCase(stopName) ) {
@@ -692,8 +684,7 @@ public class Route {
                         returnStops.remove(prevStop); returnStops.remove(currentStop);
                         returnStops.add(i-1, currentStop);
                         returnStops.add(i, prevStop);
-                    }
-                    else if ( !moveup && i != returnStops.size()-1 ) {
+                    } else if ( !moveup && i != returnStops.size()-1 ) {
                         Stop nextStop = returnStops.get(i+1);
                         Stop currentStop = returnStops.get(i);
                         returnStops.remove(nextStop); returnStops.remove(currentStop);
@@ -725,8 +716,7 @@ public class Route {
                 }
             }
             return false;
-        }
-        else {
+        } else {
             for ( int i = 0; i < returnStops.size(); i++ ) {
                 if ( returnStops.get(i).getStopName().equalsIgnoreCase(stopName) ) {
                     returnStops.remove(i); return true;
@@ -765,8 +755,7 @@ public class Route {
     public int getNumStops ( int stopType ) {
         if ( stopType == OUTWARDSTOPS ) {
             return outwardStops.size();
-        }
-        else if ( stopType == RETURNSTOPS ) {
+        } else if ( stopType == RETURNSTOPS ) {
             return returnStops.size();
         }
         return 0;
@@ -781,8 +770,7 @@ public class Route {
     public Stop getStop ( int stopType, int num ) {
         if ( stopType == OUTWARDSTOPS ) {
             return outwardStops.get(num);
-        }
-        else if ( stopType == RETURNSTOPS ) {
+        } else if ( stopType == RETURNSTOPS ) {
             return returnStops.get(num);
         }
         return null;

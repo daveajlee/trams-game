@@ -98,8 +98,7 @@ public class Simulator implements java.io.Serializable {
                 if ( folder.equalsIgnoreCase(theMessageQueue.get(i).getFolder()) && type.equalsIgnoreCase(theMessageQueue.get(i).getType())) {
                     messages.add(theMessageQueue.get(i));
                 }
-            }
-            else if ( date.equalsIgnoreCase(theMessageQueue.get(i).getDate().split(" at")[0]) && folder.equalsIgnoreCase(theMessageQueue.get(i).getFolder()) && type.equalsIgnoreCase(theMessageQueue.get(i).getType()) ) {
+            } else if ( date.equalsIgnoreCase(theMessageQueue.get(i).getDate().split(" at")[0]) && folder.equalsIgnoreCase(theMessageQueue.get(i).getFolder()) && type.equalsIgnoreCase(theMessageQueue.get(i).getType()) ) {
                 messages.add(theMessageQueue.get(i));
             }
         }
