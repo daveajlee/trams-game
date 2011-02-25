@@ -93,9 +93,9 @@ public class MakeContactScreen extends JFrame {
         theShortenRouteButton.addActionListener( new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 //Acknowledge control message!
-                theCommunicationArea.setText(theCommunicationArea.getText() + 
-                        "\n\n Control: Vehicle " + theInterface.getAllocatedVehicle(theRouteDetail.toString()).getRegistrationNumber() + ", please terminate at " + theStopBox.getSelectedItem().toString() + " and proceed in service in the reverse direction. Over!" +
-                        "\n\n Vehicle " + theInterface.getAllocatedVehicle(theRouteDetail.toString()).getRegistrationNumber() + ": Message acknowledeged. Thanks. Over!");
+                theCommunicationArea.setText(theCommunicationArea.getText() 
+                        + "\n\n Control: Vehicle " + theInterface.getAllocatedVehicle(theRouteDetail.toString()).getRegistrationNumber() + ", please terminate at " + theStopBox.getSelectedItem().toString() + " and proceed in service in the reverse direction. Over!"
+                        + "\n\n Vehicle " + theInterface.getAllocatedVehicle(theRouteDetail.toString()).getRegistrationNumber() + ": Message acknowledeged. Thanks. Over!");
                 //Ask vehicle to shorten current route to the specified destination.
                 theInterface.getAllocatedVehicle(theRouteDetail.toString()).shortenSchedule(theStopBox.getSelectedItem().toString(), theInterface.getSimulator().getCurrentSimTime());
             }
@@ -104,9 +104,9 @@ public class MakeContactScreen extends JFrame {
         theGoOutOfServiceButton = new JButton("Out of Service Until Stop");
         theGoOutOfServiceButton.addActionListener( new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                theCommunicationArea.setText(theCommunicationArea.getText() + 
-                        "\n\n Control: Vehicle " + theInterface.getAllocatedVehicle(theRouteDetail.toString()).getRegistrationNumber() + ", please go out of service until " + theStopBox.getSelectedItem().toString() + ". Over!" +
-                        "\n\n Vehicle " + theInterface.getAllocatedVehicle(theRouteDetail.toString()).getRegistrationNumber() + ": Message acknowledeged. Thanks. Over!");
+                theCommunicationArea.setText(theCommunicationArea.getText() 
+                        + "\n\n Control: Vehicle " + theInterface.getAllocatedVehicle(theRouteDetail.toString()).getRegistrationNumber() + ", please go out of service until " + theStopBox.getSelectedItem().toString() + ". Over!" 
+                        + "\n\n Vehicle " + theInterface.getAllocatedVehicle(theRouteDetail.toString()).getRegistrationNumber() + ": Message acknowledeged. Thanks. Over!");
                 //Request vehicle to go out of service.
                 theInterface.getAllocatedVehicle(theRouteDetail.toString()).outOfService(theRouteDetail.getCurrentStop(theInterface.getSimulator().getCurrentSimTime(), theInterface.getSimulator())[0], theStopBox.getSelectedItem().toString(), theInterface.getSimulator().getCurrentSimTime());
             }

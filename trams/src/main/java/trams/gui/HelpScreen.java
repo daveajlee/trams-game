@@ -125,8 +125,7 @@ public class HelpScreen extends JFrame {
                 String selectedItem;
                 try {
                     selectedItem = theTopicsList.getSelectedValue().toString();
-                }
-                catch ( NullPointerException npe ) {
+                } catch ( NullPointerException npe ) {
                     selectedItem = theTopicsList.getModel().getElementAt(0).toString();
                     theTopicsList.setSelectedValue(selectedItem, true);
                 }
@@ -135,42 +134,31 @@ public class HelpScreen extends JFrame {
                     //If statements to display correct content.
                     if ( selectedItem.equalsIgnoreCase("Welcome") ) {
                         theDisplayPane.setPage(HelpScreen.class.getResource("/trams/help/intro.html"));
-                    }
-                    else if ( selectedItem.equalsIgnoreCase("Getting Started") ) {
+                    } else if ( selectedItem.equalsIgnoreCase("Getting Started") ) {
                         theDisplayPane.setPage(HelpScreen.class.getResource("/trams/help/gettingstarted.html"));
-                    }
-                    else if ( selectedItem.equalsIgnoreCase("Load Game") ) {
+                    } else if ( selectedItem.equalsIgnoreCase("Load Game") ) {
                         theDisplayPane.setPage(HelpScreen.class.getResource("/trams/help/loadgame.html"));
-                    }
-                    else if ( selectedItem.equalsIgnoreCase("Web Site") ) {
+                    } else if ( selectedItem.equalsIgnoreCase("Web Site") ) {
                         theDisplayPane.setPage(HelpScreen.class.getResource("/trams/help/website.html"));
-                    }
-                    else if ( selectedItem.equalsIgnoreCase("Create New Game") ) {
+                    } else if ( selectedItem.equalsIgnoreCase("Create New Game") ) {
                         theDisplayPane.setPage(HelpScreen.class.getResource("/trams/help/newgame.html"));
-                    }
-                    else if ( selectedItem.equalsIgnoreCase("Add/Edit/Delete Route") ) {
+                    } else if ( selectedItem.equalsIgnoreCase("Add/Edit/Delete Route") ) {
                         theDisplayPane.setPage(HelpScreen.class.getResource("/trams/help/newroute.html"));
-                    }
-                    else if ( selectedItem.equalsIgnoreCase("Purchase/Sell Vehicle") ) {
+                    } else if ( selectedItem.equalsIgnoreCase("Purchase/Sell Vehicle") ) {
                         theDisplayPane.setPage(HelpScreen.class.getResource("/trams/help/newvehicle.html"));
-                    }
-                    else if ( selectedItem.equalsIgnoreCase("Allocate Vehicles to Routes") ) {
+                    } else if ( selectedItem.equalsIgnoreCase("Allocate Vehicles to Routes") ) {
                         theDisplayPane.setPage(HelpScreen.class.getResource("/trams/help/allocationscreen.html"));
-                    }
-                    else if ( selectedItem.equalsIgnoreCase("Control Screen") ) {
+                    } else if ( selectedItem.equalsIgnoreCase("Control Screen") ) {
                         theDisplayPane.setPage(HelpScreen.class.getResource("/trams/help/controlscreen.html"));
-                    }
-                    else if ( selectedItem.equalsIgnoreCase("Vehicle Info Screen") ) {
+                    } else if ( selectedItem.equalsIgnoreCase("Vehicle Info Screen") ) {
                         theDisplayPane.setPage(HelpScreen.class.getResource("/trams/help/vehicleinfoscreen.html"));
-                    }
-                    else if ( selectedItem.equalsIgnoreCase("Make Contact With Vehicle") ) {
+                    } else if ( selectedItem.equalsIgnoreCase("Make Contact With Vehicle") ) {
                         theDisplayPane.setPage(HelpScreen.class.getResource("/trams/help/makecontact.html"));
                     }
                     /*else if ( selectedItem.equalsIgnoreCase("Save Output") ) {
                         theDisplayPane.setPage(HelpScreen.class.getResource("/saveoutput.html"));
                     }*/
-                }
-                catch ( IOException e ) {
+                } catch ( IOException e ) {
                     e.printStackTrace();
                     dispose();
                 }
@@ -194,8 +182,7 @@ public class HelpScreen extends JFrame {
         try {
             theDisplayPane = new JEditorPane(HelpScreen.class.getResource("/trams/help/intro.html")); 
             theDisplayPane.setMaximumSize(new Dimension(650,500));
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
             dispose();
         }
@@ -236,9 +223,7 @@ public class HelpScreen extends JFrame {
         //If text is blank then set tempModel to fullModel.
         if ( text.equalsIgnoreCase("") ) {
             tempModel = theTopicsModel;
-        }
-        //Otherwise, add those which have this prefix.
-        else {
+        } else {
             for ( int i = 0; i < theTopicsModel.size(); i++ ) {
                 if ( includeString(text, theTopicsModel.get(i).toString()) ) {
                     tempModel.addElement(theTopicsModel.get(i).toString());

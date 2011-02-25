@@ -39,8 +39,7 @@ public class PointBox {
     public boolean isThisBox ( int width, int height ) {
         if ( width >= theMinWidth && width <= theMaxWidth && height >= theMinHeight && height <= theMaxHeight ) {
             return true;
-        }
-        else {
+        } else {
             return false;
         }
     }

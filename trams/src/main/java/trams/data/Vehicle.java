@@ -20,6 +20,8 @@ public class Vehicle implements Cloneable {
     private int standingNum;
     private double purchasePrice;
     
+    private static final double DEPRECIATION_FACTOR = 0.006;
+    
     public Vehicle() {
     	
     }
@@ -108,7 +110,7 @@ public class Vehicle implements Cloneable {
         this.seatingNum = seatingNum;
         this.standingNum = standingNum;
         this.purchasePrice = purchasePrice;
-        this.depreciationFactor = 0.006;
+        this.depreciationFactor = DEPRECIATION_FACTOR;
     }
     
     /**

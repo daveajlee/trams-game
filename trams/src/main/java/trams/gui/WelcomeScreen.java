@@ -201,8 +201,7 @@ public class WelcomeScreen extends JFrame {
             public void mouseClicked(MouseEvent e) {
                 if ( theInterface.loadFile() ) {
                     dispose();
-                }
-                else {
+                } else {
                     JOptionPane.showMessageDialog(WelcomeScreen.this,"The selected file is not a valid saved game for Transport Control Simulator. Please either choose another file or create a new game.", "ERROR: Saved Game Could Not Be Loaded", JOptionPane.ERROR_MESSAGE);
                 }
             }

@@ -110,14 +110,11 @@ public class OptionsScreen extends JFrame {
         }
         if ( theInterface.getDifficultyLevel().equalsIgnoreCase("Easy") ) {
             theDifficultButtons[0].setSelected(true);
-        }
-        else if ( theInterface.getDifficultyLevel().equalsIgnoreCase("Intermediate") ) {
+        } else if ( theInterface.getDifficultyLevel().equalsIgnoreCase("Intermediate") ) {
             theDifficultButtons[1].setSelected(true);
-        }
-        else if ( theInterface.getDifficultyLevel().equalsIgnoreCase("Medium") ) {
+        } else if ( theInterface.getDifficultyLevel().equalsIgnoreCase("Medium") ) {
             theDifficultButtons[2].setSelected(true);
-        }
-        else if ( theInterface.getDifficultyLevel().equalsIgnoreCase("Hard") ) {
+        } else if ( theInterface.getDifficultyLevel().equalsIgnoreCase("Hard") ) {
             theDifficultButtons[3].setSelected(true);
         }
         //Now add the difficulty panel to the tabbed panel.
@@ -135,14 +132,11 @@ public class OptionsScreen extends JFrame {
                 //Process options - set difficulty level!
                 if ( theDifficultButtons[0].isSelected() ) {
                     theInterface.setDifficultyLevel("Easy");
-                }
-                else if ( theDifficultButtons[1].isSelected() ) {
+                } else if ( theDifficultButtons[1].isSelected() ) {
                     theInterface.setDifficultyLevel("Intermediate");
-                }
-                else if ( theDifficultButtons[2].isSelected() ) {
+                } else if ( theDifficultButtons[2].isSelected() ) {
                     theInterface.setDifficultyLevel("Medium");
-                }
-                else if ( theDifficultButtons[3].isSelected() ) {
+                } else if ( theDifficultButtons[3].isSelected() ) {
                     theInterface.setDifficultyLevel("Hard");
                 }
                 if ( !theInterface.getManagementScreen() && !theInterface.getMessageScreen() ) {

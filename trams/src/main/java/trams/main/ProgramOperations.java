@@ -115,41 +115,29 @@ public class ProgramOperations {
     public int getMonth ( String name ) {
         if ( name.equalsIgnoreCase("Jan") ) {
             return Calendar.JANUARY;
-        }
-        else if ( name.equalsIgnoreCase("Feb") ) {
+        } else if ( name.equalsIgnoreCase("Feb") ) {
             return Calendar.FEBRUARY;
-        }
-        else if ( name.equalsIgnoreCase("Mar") ) {
+        } else if ( name.equalsIgnoreCase("Mar") ) {
             return Calendar.MARCH;
-        }
-        else if ( name.equalsIgnoreCase("Apr") ) {
+        } else if ( name.equalsIgnoreCase("Apr") ) {
             return Calendar.APRIL;
-        }
-        else if ( name.equalsIgnoreCase("May") ) {
+        } else if ( name.equalsIgnoreCase("May") ) {
             return Calendar.MAY;
-        }
-        else if ( name.equalsIgnoreCase("Jun") ) {
+        } else if ( name.equalsIgnoreCase("Jun") ) {
             return Calendar.JUNE;
-        }
-        else if ( name.equalsIgnoreCase("Jul") ) {
+        } else if ( name.equalsIgnoreCase("Jul") ) {
             return Calendar.JULY;
-        }
-        else if ( name.equalsIgnoreCase("Aug") ) {
+        } else if ( name.equalsIgnoreCase("Aug") ) {
             return Calendar.AUGUST;
-        }
-        else if ( name.equalsIgnoreCase("Sep") ) {
+        } else if ( name.equalsIgnoreCase("Sep") ) {
             return Calendar.SEPTEMBER;
-        }
-        else if ( name.equalsIgnoreCase("Oct") ) {
+        } else if ( name.equalsIgnoreCase("Oct") ) {
             return Calendar.OCTOBER;
-        }
-        else if ( name.equalsIgnoreCase("Nov") ) {
+        } else if ( name.equalsIgnoreCase("Nov") ) {
             return Calendar.NOVEMBER;
-        }
-        else if ( name.equalsIgnoreCase("Dec") ) {
+        } else if ( name.equalsIgnoreCase("Dec") ) {
             return Calendar.DECEMBER;
-        }
-        else {
+        } else {
             return -1;
         }
     }
@@ -183,22 +171,18 @@ public class ProgramOperations {
         try {
             DocumentBuilder builder = factory.newDocumentBuilder();
             document = builder.parse(file);
-        } 
-        //Exception handling from http://java.sun.com/webservices/jaxp/dist/1.1/docs/tutorial/dom/1_read.html
-        catch (SAXException sxe) {
+        } catch (SAXException sxe) {
             // Error generated during parsing
             Exception  x = sxe;
             if (sxe.getException() != null)
                 x = sxe.getException();
             x.printStackTrace();
             return false;
-        } 
-        catch (ParserConfigurationException pce) {
+        } catch (ParserConfigurationException pce) {
             // Parser with specified options can't be built
             pce.printStackTrace();
             return false;
-        } 
-        catch (IOException ioe) {
+        } catch (IOException ioe) {
             // I/O error
             ioe.printStackTrace();
             return false;
@@ -245,7 +229,10 @@ public class ProgramOperations {
         //Create root element.
         Element game = doc.createElement("game");
         Calendar currentTime = theSimulator.getCurrentSimTime();
-        int hourNum = currentTime.get(Calendar.HOUR); String hour = "" + hourNum; if ( hourNum < 10 ) { hour = "0" + hourNum; } if ( currentTime.get(Calendar.AM_PM) == Calendar.PM ) { hourNum += 12; hour = "" + hourNum; } 
+        int hourNum = currentTime.get(Calendar.HOUR); String hour = "" + hourNum; if ( hourNum < 10 ) { hour = "0" + hourNum; 
+        } 
+        if ( currentTime.get(Calendar.AM_PM) == Calendar.PM ) { hourNum += 12; hour = "" + hourNum; 
+        } 
         int minNum = currentTime.get(Calendar.MINUTE); String minute = "" + minNum; if ( minNum < 10 ) { minute = "0" + minNum; }
         int monthNum = currentTime.get(Calendar.MONTH)+1; String month = "" + monthNum; if ( monthNum < 10 ) { month = "0" + monthNum; }
         int dateNum = currentTime.get(Calendar.DATE); String date = "" + dateNum; if ( dateNum < 10 ) { date = "0" + dateNum; }
@@ -349,8 +336,7 @@ public class ProgramOperations {
             if ( currentRouteAndId.length == 2 ) {
                 vehicle.setAttribute("route", currentRouteAndId[0]);
                 vehicle.setAttribute("schedId", currentRouteAndId[1]);
-            }
-            else {
+            } else {
                 //Vehicle was not assigned so make it blank for compatibility.
                 vehicle.setAttribute("route", "");
                 vehicle.setAttribute("schedId", "");
@@ -522,8 +508,7 @@ public class ProgramOperations {
                 //logger.debug("Adding vehicle with id " + v.getLast().getVehicleID() + " type " + v.getLast().getVehicleType() + " age " + v.getLast().getVehicleAge());
             }
             
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             //logger.debug("Exception!");
             e.printStackTrace();
             return false;
@@ -669,8 +654,7 @@ public class ProgramOperations {
         	message.setFolder(folder);
         	message.setDate(date);
         	return message;
-        }
-        else if ( type.equalsIgnoreCase("Vehicle") ) {
+        } else if ( type.equalsIgnoreCase("Vehicle") ) {
             Message message = (Message) theContext.getBean("VehicleMessage");
             message.setSubject(subject);
             message.setText(text);
@@ -678,8 +662,7 @@ public class ProgramOperations {
             message.setFolder(folder);
             message.setDate(date);
             return message;
-        }
-        else {
+        } else {
             return null; //Null if can't find message.
         }
     }
@@ -700,14 +683,11 @@ public class ProgramOperations {
     	Vehicle vehicle = null;
         if ( type.equalsIgnoreCase("MyBus Single Decker") ) {
         	vehicle = (Vehicle) theContext.getBean("singleDeckerBus");
-        }
-        else if ( type.equalsIgnoreCase("MyBus Double Decker") ) {
+        } else if ( type.equalsIgnoreCase("MyBus Double Decker") ) {
             vehicle = (Vehicle) theContext.getBean("doubleDeckerBus");
-        }
-        else if ( type.equalsIgnoreCase("MyBus Bendy") ) {
+        } else if ( type.equalsIgnoreCase("MyBus Bendy") ) {
             vehicle = (Vehicle) theContext.getBean("bendyBus");
-        }
-        else if ( type.equalsIgnoreCase("MyTram Tram1") ) {
+        } else if ( type.equalsIgnoreCase("MyTram Tram1") ) {
         	vehicle = (Vehicle) theContext.getBean("tram");
         }
         vehicle.setRegistrationNumber(id);
@@ -729,14 +709,11 @@ public class ProgramOperations {
         Scenario scenario = null;
     	if ( scenarioName.equalsIgnoreCase("Landuff Transport Company") ) {
             scenario = (Scenario) theContext.getBean("LanduffScenario");
-        }
-        else if ( scenarioName.equalsIgnoreCase("MDorf Transport Company") ) {
+        } else if ( scenarioName.equalsIgnoreCase("MDorf Transport Company") ) {
             scenario = (Scenario) theContext.getBean("MDorfScenario");
-        }
-        else if ( scenarioName.equalsIgnoreCase("Longts Transport Company") ) {
+        } else if ( scenarioName.equalsIgnoreCase("Longts Transport Company") ) {
             scenario = (Scenario) theContext.getBean("LongtsScenario");
-        }
-        else {
+        } else {
         	return null; //Null if can't find scenario.
         }
         scenario.setPlayerName(pName);

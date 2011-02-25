@@ -140,9 +140,8 @@ public class ControlScreen extends ButtonBar {
         //Create Live Situation tab.
         if ( theSimulator.getScenario().getNumberRoutes() > 0 ) {
             drawVehicles(false);
-            theTabbedPane.addTab("Live Situation", theGraphicsPanel);
-        }
-        else {
+            theTabbedPane.addTab("Live Situation", theGraphicsPanel); 
+        } else {
             drawVehicles(false);
             theTabbedPane.addTab("Live Situation", theGraphicsPanel);
         }
@@ -154,26 +153,24 @@ public class ControlScreen extends ButtonBar {
             theTabbedPane.setSelectedIndex(1);
         }
         theTabbedPane.addMouseListener(new MouseListener() {
-            public void mouseExited ( MouseEvent e ) { }
-            public void mouseEntered ( MouseEvent e ) { }
-            public void mouseReleased ( MouseEvent e ) { }
-            public void mousePressed ( MouseEvent e ) { }
-            public void mouseClicked ( MouseEvent e ) { 
-                if ( theTabbedPane.getSelectedIndex() == 1) {
+            public void mouseExited(final MouseEvent e) { }
+            public void mouseEntered(final MouseEvent e) { }
+            public void mouseReleased(final MouseEvent e) { }
+            public void mousePressed(final MouseEvent e) { }
+            public void mouseClicked(final MouseEvent e) { 
+                if (theTabbedPane.getSelectedIndex() == 1) {
                     logger.debug("You just selected message screen");
                     theTopPanel.getComponent(1).setVisible(false);
                     theInterface.setMessageScreen(true);
                     theInterface.setManagementScreen(false);
-                    theInterface.pauseSimulation(); //Pause simulation for message screen.
-                }
-                else if ( theTabbedPane.getSelectedIndex() == 2 ) {
+                    theInterface.pauseSimulation();
+            } else if (theTabbedPane.getSelectedIndex() == 2) {
                     logger.debug("You just selected management screen");
                     theTopPanel.getComponent(1).setVisible(false);
                     theInterface.setManagementScreen(true);
                     theInterface.setMessageScreen(false);
-                    theInterface.pauseSimulation(); //Pause simulation for management screen.
-                }
-                else {
+                    theInterface.pauseSimulation();
+                } else {
                     logger.debug("You just selected live screen");
                     redrawOnRouteChange = false;
                     populateRouteList();
@@ -332,11 +329,9 @@ public class ControlScreen extends ButtonBar {
             theMessagesList.setSelectedIndex(0);
             if ( theMessages.size() == 0 && theDateBox.getSelectedItem().toString().equalsIgnoreCase("All Dates") ) {
                 theMessagesArea.setText("There are no " + theMessageTypeBox.getSelectedItem().toString() + " messages in the " + theFoldersBox.getSelectedItem().toString() + " folder.");
-            }
-            else if ( theMessages.size() == 0 ) {
+            } else if ( theMessages.size() == 0 ) {
                 theMessagesArea.setText("There are no " + theMessageTypeBox.getSelectedItem().toString() + " messages in the " + theFoldersBox.getSelectedItem().toString() + " folder for the date " + theDateBox.getSelectedItem().toString() + ".");
-            }
-            else {
+            } else {
                 theMessagesArea.setText(theMessages.get(theMessagesList.getSelectedIndex()).getText());
             }
             theDateModel.addElement(theSimulator.getCurrentDisplaySimTime().split(" at ")[0]);
@@ -386,8 +381,7 @@ public class ControlScreen extends ButtonBar {
             theTabbedPane.addTab("Management", theManagementPanel.getDisplayPanel());
             if ( theInterface.getMessageScreen() ) {
                 theTabbedPane.setSelectedIndex(1);
-            }
-            else if ( theInterface.getManagementScreen() ) {
+            } else if ( theInterface.getManagementScreen() ) {
                 theTabbedPane.setSelectedIndex(2);
             }
             theTabbedPane.addMouseListener(new MouseListener() {
@@ -402,14 +396,12 @@ public class ControlScreen extends ButtonBar {
                         theInterface.setMessageScreen(true);
                         theInterface.setManagementScreen(false);
                         theInterface.pauseSimulation(); //Pause simulation for message screen.
-                    }
-                    else if ( theTabbedPane.getSelectedIndex() == 2 ) {
+                    } else if ( theTabbedPane.getSelectedIndex() == 2 ) {
                         theTopPanel.getComponent(1).setVisible(false);
                         theInterface.setManagementScreen(true);
                         theInterface.setMessageScreen(false);
                         theInterface.pauseSimulation(); //Pause simulation for management screen.
-                    }
-                    else {
+                    } else {
                         theTopPanel.getComponent(1).setVisible(true);
                         theInterface.setMessageScreen(false);
                         theInterface.setManagementScreen(false);
@@ -504,11 +496,9 @@ public class ControlScreen extends ButtonBar {
                 theMessagesList.setSelectedIndex(0);
                 if ( theMessages.size() == 0 && theDateBox.getSelectedItem().toString().equalsIgnoreCase("All Dates") ) {
                     theMessagesArea.setText("There are no " + theMessageTypeBox.getSelectedItem().toString() + " messages in the " + theFoldersBox.getSelectedItem().toString() + " folder.");
-                }
-                else if ( theMessages.size() == 0 ) {
+                } else if ( theMessages.size() == 0 ) {
                     theMessagesArea.setText("There are no " + theMessageTypeBox.getSelectedItem().toString() + " messages in the " + theFoldersBox.getSelectedItem().toString() + " folder for the date " + theDateBox.getSelectedItem().toString() + ".");
-                }
-                else {
+                } else {
                     theMessagesArea.setText(theMessages.get(theMessagesList.getSelectedIndex()).getText());
                 }
             }
@@ -536,11 +526,9 @@ public class ControlScreen extends ButtonBar {
                 theMessagesList.setSelectedIndex(0);
                 if ( theMessages.size() == 0 && theDateBox.getSelectedItem().toString().equalsIgnoreCase("All Dates") ) {
                     theMessagesArea.setText("There are no " + theMessageTypeBox.getSelectedItem().toString() + " messages in the " + theFoldersBox.getSelectedItem().toString() + " folder.");
-                }
-                else if ( theMessages.size() == 0 ) {
+                } else if ( theMessages.size() == 0 ) {
                     theMessagesArea.setText("There are no " + theMessageTypeBox.getSelectedItem().toString() + " messages in the " + theFoldersBox.getSelectedItem().toString() + " folder for the date " + theDateBox.getSelectedItem().toString() + ".");
-                }
-                else {
+                } else {
                     theMessagesArea.setText(theMessages.get(theMessagesList.getSelectedIndex()).getText());
                 }
             }
@@ -568,11 +556,9 @@ public class ControlScreen extends ButtonBar {
                 theMessagesList.setSelectedIndex(0);
                 if ( theMessages.size() == 0 && theDateBox.getSelectedItem().toString().equalsIgnoreCase("All Dates") ) {
                     theMessagesArea.setText("There are no " + theMessageTypeBox.getSelectedItem().toString() + " messages in the " + theFoldersBox.getSelectedItem().toString() + " folder.");
-                }
-                else if ( theMessages.size() == 0 ) {
+                } else if ( theMessages.size() == 0 ) {
                     theMessagesArea.setText("There are no " + theMessageTypeBox.getSelectedItem().toString() + " messages in the " + theFoldersBox.getSelectedItem().toString() + " folder for the date " + theDateBox.getSelectedItem().toString() + ".");
-                }
-                else {
+                } else {
                     theMessagesArea.setText(theMessages.get(theMessagesList.getSelectedIndex()).getText());
                 }
             }
@@ -599,11 +585,9 @@ public class ControlScreen extends ButtonBar {
         JScrollPane messagesPane = new JScrollPane();
         if ( theMessages.size() == 0 && theDateBox.getSelectedItem().toString().equalsIgnoreCase("All Dates") ) {
             theMessagesArea.setText("There are no " + theMessageTypeBox.getSelectedItem().toString() + " messages in the " + theFoldersBox.getSelectedItem().toString() + " folder.");
-        }
-        else if ( theMessages.size() == 0 ) {
+        } else if ( theMessages.size() == 0 ) {
             theMessagesArea.setText("There are no " + theMessageTypeBox.getSelectedItem().toString() + " messages in the " + theFoldersBox.getSelectedItem().toString() + " for the date " + theDateBox.getSelectedItem().toString() + " folder.");
-        }
-        else {
+        } else {
             theMessagesArea.setText(theMessages.get(theMessagesList.getSelectedIndex()).getText());
         }
         theMessagesArea.setFont(new Font("Arial", Font.ITALIC, 12));
@@ -625,9 +609,7 @@ public class ControlScreen extends ButtonBar {
         //Disable the live situation tab if appropriate.
         if ( theSimulator.getScenario().getNumberRoutes() == 0 ) {
             theTabbedPane.setEnabledAt(0, false);
-        }
-        //Otherwise, re-enable live panel.
-        else {
+        } else {
             theTabbedPane.setEnabledAt(0, true);
         }
 
@@ -659,12 +641,10 @@ public class ControlScreen extends ButtonBar {
         //Call set display method first.
         if ( theRouteModel.getSize() > 0) {
             theInterface.setCurrentDisplayMinMax(theMinVehicle, theMaxVehicle,theRouteNumber.split(":")[0]);
-        }
-        //Create vehicle Panel as a JPanel!
+        } 
         if ( theInterface.getNumCurrentDisplaySchedules() == 0 ) {
             vehiclePanel = new JPanel(new GridLayout(2, 1));
-        }
-        else {
+        } else {
             vehiclePanel = new JPanel(new GridLayout(theInterface.getNumCurrentDisplaySchedules()+1, 1));
             logger.debug("Route number in vehicle panel is " + theRouteList.getSelectedValue().toString().split(":")[0]);
         }
@@ -683,8 +663,7 @@ public class ControlScreen extends ButtonBar {
                 theStopPanels.add(stopPanel);
                 stopRowPanel.add(stopPanel);
             }
-        }
-        else {
+        } else {
             stopRowPanel = new JPanel(new GridLayout(1, 1));
             JLabel noStopsLabel = new JLabel("No Stops");
             noStopsLabel.setFont(new Font("Arial", Font.BOLD, 20));
@@ -744,8 +723,7 @@ public class ControlScreen extends ButtonBar {
                     //xPos = startPos + (panelSize/2 - (panelSize/4));
                     if ( previousStop.equalsIgnoreCase("N/A") ) {
                         xPos = startPos;
-                    }
-                    else {
+                    } else {
                         long maxTimeDiff = Math.abs(rs.getCurrentService(theSimulator.getCurrentSimTime()).getStopMaxTimeDiff(previousStop, myLabel.getText()));
                         if ( maxTimeDiff == Integer.MAX_VALUE ) {
                             xPos = startPos;
@@ -756,17 +734,14 @@ public class ControlScreen extends ButtonBar {
                         if ( direction == DrawingPanel.RIGHTTOLEFT ) {
                             xPos = (int) Math.round((percent * (endPos - startPos))) + startPos;
                             logger.debug("Recommeding xPos of " + xPos);
-                        }
-                        //If outward, reverse is true i.e. high means close, low means far away.
-                        else {
+                        } else {
                             double invertPercent = 1 - percent;
                             xPos = (int) Math.round((invertPercent * (endPos - startPos))) + startPos;
                             logger.debug("Recommeding xPos of " + xPos);
                         }
                         //xPos = startPos + (panelSize/2 - (panelSize/4));
                     }
-                }
-                else {
+                } else {
                     previousStop = myLabel.getText();
                 }
             }
@@ -837,8 +812,7 @@ public class ControlScreen extends ButtonBar {
         logger.debug("Route number in control screen is " + theRouteNumber);
         if ( !theRouteNumber.equalsIgnoreCase("") ) {
             theRouteList.setSelectedValue(theRouteNumber, true);
-        }
-        else if ( theRouteList.getModel().getSize() > 0 ){
+        } else if ( theRouteList.getModel().getSize() > 0 ){
             theRouteList.setSelectedIndex(0);
             theRouteNumber = theRouteList.getSelectedValue().toString();
         }
@@ -855,8 +829,7 @@ public class ControlScreen extends ButtonBar {
             //theRouteList = new JList(new String[] { "No Routes Available" });
             //theRouteList.setVisibleRowCount(3);
             logger.debug("Created route list!");
-        }
-        else {
+        } else {
             populateRouteList();
         }
         theRouteList.addListSelectionListener(new ListSelectionListener() {
@@ -900,8 +873,7 @@ public class ControlScreen extends ButtonBar {
                 if ( thePauseSimulationButton.getText().equalsIgnoreCase("||") ) {
                     thePauseSimulationButton.setText("|>");
                     theInterface.pauseSimulation();
-                }
-                else if ( thePauseSimulationButton.getText().equalsIgnoreCase("|>") ) {
+                } else if ( thePauseSimulationButton.getText().equalsIgnoreCase("|>") ) {
                     thePauseSimulationButton.setText("||");
                     theInterface.resumeSimulation();
                 }
@@ -949,8 +921,7 @@ public class ControlScreen extends ButtonBar {
         int totalPages;
         if ( theRouteList.getModel().getSize() > 0 ) {
             totalPages = (theInterface.getNumRouteDisplayVehicles(theRouteList.getSelectedValue().toString().split(":")[0])/4); if ((theInterface.getNumRouteDisplayVehicles(theRouteList.getSelectedValue().toString().split(":")[0])%4) !=0 || totalPages == 0 ) { totalPages++; }
-        }
-        else {
+        } else {
             totalPages = 0;
         }
         theNumPagesLabel = new JLabel("Page " + theCurrentPage + " / " + totalPages);

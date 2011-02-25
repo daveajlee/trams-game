@@ -15,6 +15,15 @@ public class RouteSchedule {
 	private int scheduleNumber;
     private List<Service> serviceList;
     private int delayInMins;
+    
+    private static final double PERCENT_20 = 0.20;
+    private static final double PERCENT_25 = 0.25;
+    private static final double PERCENT_30 = 0.30;
+    private static final double PERCENT_60 = 0.60;
+    private static final double PERCENT_75 = 0.75;
+    private static final double PERCENT_85 = 0.85;
+    private static final double PERCENT_90 = 0.90;
+    private static final double PERCENT_95 = 0.95;
 
     public RouteSchedule() {
     	serviceList = new ArrayList<Service>();
@@ -107,11 +116,9 @@ public class RouteSchedule {
                 //Now fiddle delay!
                 calculateNewDelay(simulator);
                 return myService.getCurrentStop(currentTime);
-            }
-            else if (!myService.hasServiceStarted(currentTime) && myService.getServiceId() != 1) {
+            } else if (!myService.hasServiceStarted(currentTime) && myService.getServiceId() != 1) {
                 return new String[] { myService.getStartTerminus(currentTime), "" + 0 };
-            }
-            else if (!myService.hasServiceStarted(currentTime) && myService.getServiceId() == 1) {
+            } else if (!myService.hasServiceStarted(currentTime) && myService.getServiceId() == 1) {
                 return new String[] { "Depot", "" + 0 };
             }
         }
@@ -128,8 +135,7 @@ public class RouteSchedule {
         for ( int i = 0; i < serviceList.size(); i++ ) {
             if ( serviceList.get(i).hasServiceStarted(currentTime) && !serviceList.get(i).hasServiceEnded(currentTime)) {
                 return serviceList.get(i);
-            }
-            else if ( serviceList.get(i).hasServiceStarted(currentTime) && i != (serviceList.size()-1) && !serviceList.get(i+1).hasServiceStarted(currentTime) ) {
+            } else if ( serviceList.get(i).hasServiceStarted(currentTime) && i != (serviceList.size()-1) && !serviceList.get(i+1).hasServiceStarted(currentTime) ) {
                 return serviceList.get(i);
             }
         }
@@ -167,10 +173,10 @@ public class RouteSchedule {
         double prob = randNumGen.nextDouble();
         //Create probability array.
         double[] ratioArray = new double[0];
-        if ( simulator.getDifficultyLevel().equalsIgnoreCase("Easy") ) { ratioArray = new double[] { 0.25, 0.85, 0.95 }; }
-        else if ( simulator.getDifficultyLevel().equalsIgnoreCase("Intermediate") ) { ratioArray = new double[] { 0.20, 0.85, 0.95 }; }
-        else if ( simulator.getDifficultyLevel().equalsIgnoreCase("Medium") ) { ratioArray = new double[] { 0.20, 0.75, 0.90 }; }
-        else if ( simulator.getDifficultyLevel().equalsIgnoreCase("Hard") ) { ratioArray = new double[] { 0.30, 0.60, 0.85 }; }
+        if ( simulator.getDifficultyLevel().equalsIgnoreCase("Easy") ) { ratioArray = new double[] { PERCENT_25, PERCENT_85, PERCENT_95 }; 
+        } else if ( simulator.getDifficultyLevel().equalsIgnoreCase("Intermediate") ) { ratioArray = new double[] { PERCENT_20, PERCENT_85, PERCENT_95 }; 
+        } else if ( simulator.getDifficultyLevel().equalsIgnoreCase("Medium") ) { ratioArray = new double[] { PERCENT_20, PERCENT_75, PERCENT_90 }; 
+        } else if ( simulator.getDifficultyLevel().equalsIgnoreCase("Hard") ) { ratioArray = new double[] { PERCENT_30, PERCENT_60, PERCENT_85 }; }
         //With ratioArray[0] probability no delay change.
         if ( prob < ratioArray[0] ) { return; }
         //With ratioArray[1] probability - reduce delay by 1-5 mins.
@@ -215,9 +221,8 @@ public class RouteSchedule {
      */
     public void reduceDelay(int mins) {
         //If no delay, then can't reduce it so just return.
-        if (delayInMins == 0) { return; }
-        //Otherwise, reduce delay by that number of minutes.
-        else {
+        if (delayInMins == 0) { return; 
+        } else {
             delayInMins -= mins;
             //Now check if delay falls below 0, if it does then delay is 0.
             if (delayInMins < 0) { delayInMins = 0; }

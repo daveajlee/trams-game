@@ -10,31 +10,34 @@ import trams.util.HibernateUtil;
 import java.util.*;
 
 public class DatabaseManager {
+	
+	private static final double DEPRECIATION_FACTOR = 0.006;
 
     public static void main(String[] args) {
         DatabaseManager mgr = new DatabaseManager();
 
-        //mgr.createAndStoreDriver("Dave Lee", 40, Calendar.getInstance());
-        //mgr.createAndStoreStop("Rathaus Pankow", Calendar.getInstance());
-        //mgr.createAndStoreService();
+        mgr.createAndStoreDriver("Dave Lee", 40, Calendar.getInstance());
+        mgr.createAndStoreStop("Rathaus Pankow", Calendar.getInstance());
+        mgr.createAndStoreService();
+        mgr.createAndStoreServicePattern("Mon-Fri","2,3,4,5,6","Rathaus Pankow","S + U Pankow",Calendar.getInstance(),Calendar.getInstance(),15,3);
         //ServicePattern sp = new ServicePattern("Mon-Fri","2,3,4,5,6","Rathaus Pankow","S + U Pankow",Calendar.getInstance(),Calendar.getInstance(),15,3);
         //mgr.createAndStoreTimetable("myTimetable", Calendar.getInstance(), Calendar.getInstance(), sp);
         //mgr.createAndStoreRouteSchedule("2A", 1, 5);
         //mgr.createAndStoreVehicle("CV58 2XD", Calendar.getInstance(), 0.006, "image.png", "Mercedes", 40, 60, 200.99);
-        //mgr.createAndStoreRoute();
+        mgr.createAndStoreRoute();
         
-        /*Map<String, Integer> distances = new HashMap<String, Integer>();
+        Map<String, Integer> distances = new HashMap<String, Integer>();
         distances.put("Pankow Kirche", new Integer(4));
         distances.put("Rathaus Pankow", new Integer(7));
-        mgr.createAndStoreDistances("S+U Pankow", distances);*/
+        mgr.createAndStoreDistances("S+U Pankow", distances);
         
-        /*List<Route> routes = new ArrayList<Route>();
+        List<Route> routes = new ArrayList<Route>();
         routes.add(mgr.createAndStoreRoute());
         List<Vehicle> vehicles = new ArrayList<Vehicle>();
-        vehicles.add(mgr.createAndStoreVehicle("CV58 2XD", Calendar.getInstance(), 0.006, "image.png", "Mercedes", 40, 60, 200.99));
+        vehicles.add(mgr.createAndStoreVehicle("CV58 2XD", Calendar.getInstance(), DEPRECIATION_FACTOR, "image.png", "Mercedes", 40, 60, 200.99));
         List<Driver> drivers = new ArrayList<Driver>();
         drivers.add(mgr.createAndStoreDriver("Dave Lee", 40, Calendar.getInstance()));
-        mgr.createAndStoreScenarios(routes, vehicles, drivers, 100, "Dave Lee", 20000.00);*/
+        mgr.createAndStoreScenarios(routes, vehicles, drivers, 100, "Dave Lee", 20000.00);
         
         //mgr.createAndStoreService();
         mgr.createAndStoreMessage("Subject", "Text", "Sender", "Folder", "Date");
@@ -182,7 +185,7 @@ public class DatabaseManager {
         List<RouteSchedule> theRouteSchedulesList = new ArrayList<RouteSchedule>();
         theRouteSchedulesList.add(createAndStoreRouteSchedule("155", 1, 0));
         theRoute.setRouteSchedules(theRouteSchedulesList);
-        theRoute.addAllocation(theRouteSchedulesList.get(0).toString(), createAndStoreVehicle("CV58 2XD", Calendar.getInstance(), 0.006, "image.png", "Mercedes", 40, 60, 200.99));
+        theRoute.addAllocation(theRouteSchedulesList.get(0).toString(), createAndStoreVehicle("CV58 2XD", Calendar.getInstance(), DEPRECIATION_FACTOR, "image.png", "Mercedes", 40, 60, 200.99));
         ServicePattern sp = new ServicePattern("Mon-Fri","2,3,4,5,6","Rathaus Pankow","S + U Pankow",Calendar.getInstance(),Calendar.getInstance(),15,3);
         theRoute.addTimetable("myTimetable", createAndStoreTimetable("myTimetable", Calendar.getInstance(), Calendar.getInstance(), sp));
         

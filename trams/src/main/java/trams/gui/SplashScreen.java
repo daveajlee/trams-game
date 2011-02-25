@@ -73,8 +73,8 @@ public class SplashScreen extends JFrame {
         //Construct graphics panel to add to the centre panel.
         JPanel busPanel = new JPanel();
         busPanel.setBackground(Color.WHITE);
-        if ( isAboutScreen ) { theBusDisplay = new ImageDisplay("abouttransparent.png",60,0); }
-        else { theBusDisplay = new ImageDisplay("loadingtransparent.png",120,0); }
+        if ( isAboutScreen ) { theBusDisplay = new ImageDisplay("abouttransparent.png",60,0); 
+    	} else { theBusDisplay = new ImageDisplay("loadingtransparent.png",120,0); }
         theBusDisplay.setSize(450,340);
         theBusDisplay.setBackground(Color.WHITE);
         busPanel.add(theBusDisplay);
@@ -83,8 +83,8 @@ public class SplashScreen extends JFrame {
         //Construct loading panel to add to the centre panel.
         JPanel loadingPanel = new JPanel();
         loadingPanel.setBackground(Color.WHITE);
-        if ( isAboutScreen ) { theLoadingLabel = new JLabel("Version: " + theInterface.getVersion()); }
-        else { theLoadingLabel = new JLabel("Loading... Please Wait!"); }
+        if ( isAboutScreen ) { theLoadingLabel = new JLabel("Version: " + theInterface.getVersion());
+    } else { theLoadingLabel = new JLabel("Loading... Please Wait!"); }
         theLoadingLabel.setFont(new Font("Arial", Font.ITALIC, 15));
         loadingPanel.add(theLoadingLabel);
         centrePanel.add(loadingPanel);
