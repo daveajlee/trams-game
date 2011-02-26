@@ -29,6 +29,9 @@ public class BusInfoScreen extends JFrame {
     //Stored route detail.
     private RouteSchedule theRouteDetail;
     
+    private static final int DIMENSION_SPACER = 10;
+    private static final int MEDIUM_FONT_SIZE = 15;
+    
     /**
      * Create a new bus information screen.
      * @param ui a <code>UserInterface</code> representing the current user interface.
@@ -64,7 +67,7 @@ public class BusInfoScreen extends JFrame {
         //Get a container to add things to.
         Container c = this.getContentPane();
         c.setBackground(Color.WHITE);
-        c.add(Box.createRigidArea(new Dimension(0,10))); //Spacer.
+        c.add(Box.createRigidArea(new Dimension(0,DIMENSION_SPACER))); //Spacer.
         
         //Create screen panel to add things to.
         JPanel screenPanel = new JPanel();
@@ -85,23 +88,23 @@ public class BusInfoScreen extends JFrame {
         eastPanel.setBackground(Color.WHITE);
         //Timetable id.
         theTimetableIDLabel = new JLabel("Timetable ID: " + theRouteDetail.toString());
-        theTimetableIDLabel.setFont(new Font("Arial", Font.BOLD, 15));
+        theTimetableIDLabel.setFont(new Font("Arial", Font.BOLD, MEDIUM_FONT_SIZE));
         eastPanel.add(theTimetableIDLabel);
         //Vehicle id.
         theVehicleIDLabel = new JLabel("Vehicle ID: " + theInterface.getAllocatedVehicle(theRouteDetail.toString()).getRegistrationNumber());
-        theVehicleIDLabel.setFont(new Font("Arial", Font.BOLD, 15));
+        theVehicleIDLabel.setFont(new Font("Arial", Font.BOLD, MEDIUM_FONT_SIZE));
         eastPanel.add(theVehicleIDLabel);
         //Location.
         theLocationLabel = new JLabel("Location: " + theRouteDetail.getCurrentService(theInterface.getSimulator().getCurrentSimTime()).getCurrentStop(theInterface.getSimulator().getCurrentSimTime())[0]);
-        theLocationLabel.setFont(new Font("Arial", Font.BOLD, 15));
+        theLocationLabel.setFont(new Font("Arial", Font.BOLD, MEDIUM_FONT_SIZE));
         eastPanel.add(theLocationLabel);
         //Destination.
         theDestinationLabel = new JLabel("Destination: " + theRouteDetail.getCurrentService(theInterface.getSimulator().getCurrentSimTime()).getEndDestination());
-        theDestinationLabel.setFont(new Font("Arial", Font.BOLD, 15));
+        theDestinationLabel.setFont(new Font("Arial", Font.BOLD, MEDIUM_FONT_SIZE));
         eastPanel.add(theDestinationLabel);
         //Delay.
         theDelayLabel = new JLabel("Delay: " + theInterface.getAllocatedVehicle(theRouteDetail.toString()).getDelay() + " mins");
-        theDelayLabel.setFont(new Font("Arial", Font.BOLD, 15));
+        theDelayLabel.setFont(new Font("Arial", Font.BOLD, MEDIUM_FONT_SIZE));
         eastPanel.add(theDelayLabel);
         //Add east panel to screen panel.
         screenPanel.add(eastPanel, BorderLayout.CENTER);

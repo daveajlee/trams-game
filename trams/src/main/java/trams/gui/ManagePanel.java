@@ -130,6 +130,17 @@ public class ManagePanel {
     private int theCurrentMin;
     private JComboBox theDatesComboBox;
     
+    private static final int DIMENSION_SPACER = 10;
+    private static final int DEFAULT_FREQUENCY = 10;
+    private static final int SERVICES_PER_PAGE = 10;
+    private static final int MIN_HOURS = 10;
+    private static final int DRIVER_CELL_WIDTH = 100;
+    private static final int VEHICLE_CELL_WIDTH = 100;
+    private static final int ROUTE_ROW_COUNT = 15;
+    private static final int SMALL_FONT_SIZE = 12;
+    private static final int MEDIUM_FONT_SIZE = 14;
+    private static final int LARGE_FONT_SIZE = 15;
+    
     public ManagePanel ( UserInterface ui, Simulator sim, ControlScreen cs ) {
         theInterface = ui;
         theSimulator = sim;
@@ -155,7 +166,7 @@ public class ManagePanel {
         infoDisplay.setBackground(Color.WHITE);
         informationPanel.add(infoDisplay, BorderLayout.WEST);
         JTextArea informationArea = new JTextArea();
-        informationArea.setFont(new Font("Arial", Font.PLAIN, 14));
+        informationArea.setFont(new Font("Arial", Font.PLAIN, MEDIUM_FONT_SIZE));
         if ( theInterface.getNumberRoutes() == 0 ) {
             informationArea.setText("WARNING: No routes have been devised yet. Click 'Create Route' to define a route.");
         } else if ( theInterface.getNumberVehicles() == 0 ) {
@@ -193,7 +204,7 @@ public class ManagePanel {
         scenarioDescriptionArea.setBorder(BorderFactory.createLineBorder(Color.WHITE));
         scenarioDescriptionArea.setWrapStyleWord(true);
         scenarioDescriptionArea.setLineWrap(true);
-        scenarioDescriptionArea.setFont(new Font("Arial", Font.ITALIC, 14));
+        scenarioDescriptionArea.setFont(new Font("Arial", Font.ITALIC, MEDIUM_FONT_SIZE));
         scenarioDescriptionPanel.add(scenarioDescriptionArea);
         scenarioPanel.add(scenarioDescriptionPanel, BorderLayout.CENTER);
         //Scenario buttons.
@@ -211,7 +222,7 @@ public class ManagePanel {
         });
         viewScenarioButtonPanel.add(theViewScenarioButton);
         scenarioButtonPanel.add(viewScenarioButtonPanel);
-        scenarioButtonPanel.add(Box.createRigidArea(new Dimension(0,10)));
+        scenarioButtonPanel.add(Box.createRigidArea(new Dimension(0,DIMENSION_SPACER)));
         JPanel locationMapButtonPanel = new JPanel(new GridBagLayout());
         locationMapButtonPanel.setBackground(Color.WHITE);
         JButton locationMapButton = new JButton("Location Map");
@@ -243,7 +254,7 @@ public class ManagePanel {
         routeDescriptionArea.setBorder(BorderFactory.createLineBorder(Color.WHITE));
         routeDescriptionArea.setWrapStyleWord(true);
         routeDescriptionArea.setLineWrap(true);
-        routeDescriptionArea.setFont(new Font("Arial", Font.ITALIC, 14));
+        routeDescriptionArea.setFont(new Font("Arial", Font.ITALIC, MEDIUM_FONT_SIZE));
         routeDescriptionPanel.add(routeDescriptionArea, BorderLayout.CENTER);
         routePanel.add(routeDescriptionPanel);
         //Route buttons.
@@ -261,7 +272,7 @@ public class ManagePanel {
         });
         createRouteButtonPanel.add(theAddRouteButton);
         routeButtonPanel.add(createRouteButtonPanel);
-        routeButtonPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+        routeButtonPanel.add(Box.createRigidArea(new Dimension(0, DIMENSION_SPACER)));
         JPanel timetableButtonPanel = new JPanel(new GridBagLayout());
         timetableButtonPanel.setBackground(Color.WHITE);
         theRouteTimetableButton = new JButton("View Route Info");
@@ -294,7 +305,7 @@ public class ManagePanel {
         descriptionArea.setBorder(BorderFactory.createLineBorder(Color.WHITE));
         descriptionArea.setWrapStyleWord(true);
         descriptionArea.setLineWrap(true);
-        descriptionArea.setFont(new Font("Arial", Font.ITALIC, 14));
+        descriptionArea.setFont(new Font("Arial", Font.ITALIC, MEDIUM_FONT_SIZE));
         descriptionArea.setColumns(25);
         vehicleDescriptionPanel.add(descriptionArea);
         vehiclePanel.add(vehicleDescriptionPanel, BorderLayout.CENTER);
@@ -313,7 +324,7 @@ public class ManagePanel {
         });
         purchaseVehicleButtonPanel.add(thePurchaseVehicleScreenButton);
         vehicleButtonPanel.add(purchaseVehicleButtonPanel);
-        vehicleButtonPanel.add(Box.createRigidArea(new Dimension(0,10)));
+        vehicleButtonPanel.add(Box.createRigidArea(new Dimension(0,DIMENSION_SPACER)));
         JPanel viewDepotButtonPanel = new JPanel(new GridBagLayout());
         viewDepotButtonPanel.setBackground(Color.WHITE);
         theViewDepotButton = new JButton("View Depot");
@@ -346,7 +357,7 @@ public class ManagePanel {
         driverDescriptionArea.setBorder(BorderFactory.createLineBorder(Color.WHITE));
         driverDescriptionArea.setWrapStyleWord(true);
         driverDescriptionArea.setLineWrap(true);
-        driverDescriptionArea.setFont(new Font("Arial", Font.ITALIC, 14));
+        driverDescriptionArea.setFont(new Font("Arial", Font.ITALIC, MEDIUM_FONT_SIZE));
         driverDescriptionArea.setColumns(25);
         driverDescriptionPanel.add(driverDescriptionArea);
         driverPanel.add(driverDescriptionPanel, BorderLayout.CENTER);
@@ -365,7 +376,7 @@ public class ManagePanel {
         });
         employDriverButtonPanel.add(theEmployDriversButton);
         driverButtonPanel.add(employDriverButtonPanel);
-        driverButtonPanel.add(Box.createRigidArea(new Dimension(0,10)));
+        driverButtonPanel.add(Box.createRigidArea(new Dimension(0,DIMENSION_SPACER)));
         JPanel viewDriversButtonPanel = new JPanel(new GridBagLayout());
         viewDriversButtonPanel.setBackground(Color.WHITE);
         theViewDriversButton = new JButton("View Drivers");
@@ -398,7 +409,7 @@ public class ManagePanel {
         allocationDescriptionArea.setBorder(BorderFactory.createLineBorder(Color.WHITE));
         allocationDescriptionArea.setWrapStyleWord(true);
         allocationDescriptionArea.setLineWrap(true);
-        allocationDescriptionArea.setFont(new Font("Arial", Font.ITALIC, 14));
+        allocationDescriptionArea.setFont(new Font("Arial", Font.ITALIC, MEDIUM_FONT_SIZE));
         allocationDescriptionPanel.add(allocationDescriptionArea, BorderLayout.CENTER);
         allocationPanel.add(allocationDescriptionPanel);
         //Allocation button.
@@ -451,8 +462,8 @@ public class ManagePanel {
         JLabel routeNumberLabel = new JLabel("Route Number: ", SwingConstants.CENTER);
         routeNumberLabel.setFont(new Font("Arial", Font.ITALIC, 16));
         routeNumberPanel.add(routeNumberLabel);
-        theRouteNumberField = new JTextField(10);
-        theRouteNumberField.setFont(new Font("Arial", Font.PLAIN, 14));
+        theRouteNumberField = new JTextField(DIMENSION_SPACER);
+        theRouteNumberField.setFont(new Font("Arial", Font.PLAIN, MEDIUM_FONT_SIZE));
         if ( amendRouteObj != null ) { theRouteNumberField.setText(amendRouteObj.getRouteNumber()); }
         theRouteNumberField.addKeyListener(new KeyListener()  {
             public void keyReleased(KeyEvent e) {
@@ -473,12 +484,12 @@ public class ManagePanel {
         routeTypeLabel.setFont(new Font("Arial", Font.ITALIC, 16));
         routeTypePanel.add(routeTypeLabel);
         theRouteTypeBox = new JComboBox(new String[] { "Bus", "Tram", "Railway" });
-        theRouteTypeBox.setFont(new Font("Arial", Font.PLAIN, 14));
+        theRouteTypeBox.setFont(new Font("Arial", Font.PLAIN, MEDIUM_FONT_SIZE));
         routeTypePanel.add(theRouteTypeBox);
         
         //Add the routeType panel to the screen panel.
         routeScreenPanel.add(routeTypePanel);
-        routeScreenPanel.add(Box.createRigidArea(new Dimension(0,10))); //Spacer.
+        routeScreenPanel.add(Box.createRigidArea(new Dimension(0,DIMENSION_SPACER))); //Spacer.
         
         //Create panel for stops and timetables.
         JPanel stopAndTimetablePanel = new JPanel(new BorderLayout());
@@ -503,7 +514,7 @@ public class ManagePanel {
         stopBoxPanel.add(stopLabel);
         theStopBoxModel = new DefaultComboBoxModel(theInterface.getScenario().getStopNames());
         theStopBox = new JComboBox(theStopBoxModel);
-        theStopBox.setFont(new Font("Arial", Font.PLAIN, 14));
+        theStopBox.setFont(new Font("Arial", Font.PLAIN, MEDIUM_FONT_SIZE));
         theStopBox.setSelectedIndex(0);
         stopBoxPanel.add(theStopBox);
         theAddStopButton = new JButton("Add Stop");
@@ -686,7 +697,7 @@ public class ManagePanel {
         
         //Add the stopAndTimetable panel to the screen panel.
         routeScreenPanel.add(stopAndTimetablePanel);
-        routeScreenPanel.add(Box.createRigidArea(new Dimension(0,10))); //Spacer.
+        routeScreenPanel.add(Box.createRigidArea(new Dimension(0,DIMENSION_SPACER))); //Spacer.
         
         //Create bottom button panel for next two buttons.
         JPanel bottomButtonPanel = new JPanel();
@@ -766,7 +777,7 @@ public class ManagePanel {
             public void keyTyped(KeyEvent e) { }
             public void keyPressed(KeyEvent e) { }
         });
-        theTimetableNameField.setFont(new Font("Arial", Font.PLAIN, 14));
+        theTimetableNameField.setFont(new Font("Arial", Font.PLAIN, MEDIUM_FONT_SIZE));
         timetableNamePanel.add(theTimetableNameField);
         timetableScreenPanel.add(timetableNamePanel);
                 
@@ -789,7 +800,7 @@ public class ManagePanel {
         if ( myTimetable != null ) {
             validFromDayBox.setSelectedItem(myTimetable.getValidFrom().get(Calendar.DAY_OF_MONTH));
         }
-        validFromDayBox.setFont(new Font("Arial", Font.PLAIN, 14));
+        validFromDayBox.setFont(new Font("Arial", Font.PLAIN, MEDIUM_FONT_SIZE));
         validityPanel.add(validFromDayBox);
         //Valid From Month.
         theValidFromMonthBox = new JComboBox();
@@ -800,7 +811,7 @@ public class ManagePanel {
         if ( myTimetable != null ) {
             theValidFromMonthBox.setSelectedItem(getMonth(myTimetable.getValidFrom().get(Calendar.MONTH)) + " " + myTimetable.getValidFrom().get(Calendar.YEAR));
         }
-        theValidFromMonthBox.setFont(new Font("Arial", Font.PLAIN, 14));
+        theValidFromMonthBox.setFont(new Font("Arial", Font.PLAIN, MEDIUM_FONT_SIZE));
         theValidFromMonthBox.addActionListener( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
                 String month = theValidFromMonthBox.getSelectedItem().toString().split(" ")[0];
@@ -835,7 +846,7 @@ public class ManagePanel {
         if ( myTimetable != null ) {
             validToDayBox.setSelectedItem(myTimetable.getValidTo().get(Calendar.DAY_OF_MONTH));
         }
-        validToDayBox.setFont(new Font("Arial", Font.PLAIN, 14));
+        validToDayBox.setFont(new Font("Arial", Font.PLAIN, MEDIUM_FONT_SIZE));
         validityPanel.add(validToDayBox);
         //Valid To Month.
         theValidToMonthBox = new JComboBox();
@@ -846,7 +857,7 @@ public class ManagePanel {
         if ( myTimetable != null ) {
             theValidToMonthBox.setSelectedItem(getMonth(myTimetable.getValidTo().get(Calendar.MONTH)) + " " + myTimetable.getValidTo().get(Calendar.YEAR));
         }
-        theValidToMonthBox.setFont(new Font("Arial", Font.PLAIN, 14));
+        theValidToMonthBox.setFont(new Font("Arial", Font.PLAIN, MEDIUM_FONT_SIZE));
         theValidToMonthBox.addActionListener( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
                 String month = theValidToMonthBox.getSelectedItem().toString().split(" ")[0];
@@ -867,7 +878,7 @@ public class ManagePanel {
        
         //Add validityPanel to the screen panel.
         timetableScreenPanel.add(validityPanel);
-        timetableScreenPanel.add(Box.createRigidArea(new Dimension(0,10))); //Spacer.
+        timetableScreenPanel.add(Box.createRigidArea(new Dimension(0,DIMENSION_SPACER))); //Spacer.
         
         //Create label in middle of screen in a middleLabelPanel added to screenPanel.
         JPanel middleLabelPanel = new JPanel(new BorderLayout());
@@ -964,7 +975,7 @@ public class ManagePanel {
         servicePatternListPanel.add(servicePatternButtonPanel, BorderLayout.SOUTH);
         //Add the servicePatternList panel to the screen panel.
         timetableScreenPanel.add(servicePatternListPanel);
-        timetableScreenPanel.add(Box.createRigidArea(new Dimension(0,10))); //Spacer.
+        timetableScreenPanel.add(Box.createRigidArea(new Dimension(0,DIMENSION_SPACER))); //Spacer.
         
         //Create bottom button panel for next two buttons.
         JPanel bottomButtonPanel = new JPanel();
@@ -1031,7 +1042,7 @@ public class ManagePanel {
         servicePatternNamePanel.add(servicePatternNameLabel);
         theServicePatternNameField = new JTextField(20);
         if ( sp != null ) { theServicePatternNameField.setText(sp.getName()); }
-        theServicePatternNameField.setFont(new Font("Arial", Font.PLAIN, 14));
+        theServicePatternNameField.setFont(new Font("Arial", Font.PLAIN, MEDIUM_FONT_SIZE));
         theServicePatternNameField.addKeyListener(new KeyListener()  {
             public void keyReleased(KeyEvent e) {
                 if ( !theServicePatternNameField.getText().equalsIgnoreCase("") ) {
@@ -1059,7 +1070,7 @@ public class ManagePanel {
         String[] dayStr = new String[] { "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" };
         for ( int i = 0; i < theDaysBox.length; i++ ) {
             theDaysBox[i] = new JCheckBox(dayStr[i]);
-            theDaysBox[i].setFont(new Font("Arial", Font.PLAIN, 14));
+            theDaysBox[i].setFont(new Font("Arial", Font.PLAIN, MEDIUM_FONT_SIZE));
             theDaysBox[i].addActionListener(new ActionListener() {
                 public void actionPerformed ( ActionEvent e ) {
                     if ( !theServicePatternNameField.getText().equalsIgnoreCase("") ) {
@@ -1097,7 +1108,7 @@ public class ManagePanel {
         }
         theTerminus1Box.setSelectedIndex(0);
         if ( sp!=null ) { theTerminus1Box.setSelectedItem(sp.getReturnTerminus()); }
-        theTerminus1Box.setFont(new Font("Arial", Font.PLAIN, 14));
+        theTerminus1Box.setFont(new Font("Arial", Font.PLAIN, MEDIUM_FONT_SIZE));
         theTerminus1Box.addItemListener(new ItemListener() {
             public void itemStateChanged ( ItemEvent e ) {
                 //Update terminus 2 box!!!
@@ -1121,7 +1132,7 @@ public class ManagePanel {
         }
         theTerminus2Box.setSelectedIndex(theTerminus2Box.getItemCount() - 1);
         if ( sp!= null) { theTerminus2Box.setSelectedItem(sp.getOutgoingTerminus()); }
-        theTerminus2Box.setFont(new Font("Arial", Font.PLAIN, 14));
+        theTerminus2Box.setFont(new Font("Arial", Font.PLAIN, MEDIUM_FONT_SIZE));
         theTerminus2Box.addItemListener( new ItemListener () {
             public void itemStateChanged ( ItemEvent e ) {
                 //Update spinner!
@@ -1143,11 +1154,11 @@ public class ManagePanel {
         timesPanel.add(fromLabel);
         theFromHourSpinner = new JSpinner(new SpinnerNumberModel(6,0,23,1));
         if ( sp!=null ) { theFromHourSpinner.setValue(sp.getStartTime().get(Calendar.HOUR_OF_DAY)); }
-        theFromHourSpinner.setFont(new Font("Arial", Font.PLAIN, 14));
+        theFromHourSpinner.setFont(new Font("Arial", Font.PLAIN, MEDIUM_FONT_SIZE));
         timesPanel.add(theFromHourSpinner);
         theFromMinuteSpinner = new JSpinner(new SpinnerNumberModel(0,0,59,1));
         if ( sp!=null ) { theFromMinuteSpinner.setValue(sp.getStartTime().get(Calendar.MINUTE)); }
-        theFromMinuteSpinner.setFont(new Font("Arial", Font.PLAIN, 14));
+        theFromMinuteSpinner.setFont(new Font("Arial", Font.PLAIN, MEDIUM_FONT_SIZE));
         timesPanel.add(theFromMinuteSpinner);
         //To + times.
         JLabel toLabel = new JLabel("To:");
@@ -1155,23 +1166,23 @@ public class ManagePanel {
         timesPanel.add(toLabel);
         theToHourSpinner = new JSpinner(new SpinnerNumberModel(18,0,23,1));
         if ( sp!=null ) { theToHourSpinner.setValue(sp.getEndTime().get(Calendar.HOUR_OF_DAY)); }
-        theToHourSpinner.setFont(new Font("Arial", Font.PLAIN, 14));
+        theToHourSpinner.setFont(new Font("Arial", Font.PLAIN, MEDIUM_FONT_SIZE));
         timesPanel.add(theToHourSpinner);
         theToMinuteSpinner = new JSpinner(new SpinnerNumberModel(30,0,59,1));
         if ( sp!=null ) { theToMinuteSpinner.setValue(sp.getEndTime().get(Calendar.MINUTE)); }
-        theToMinuteSpinner.setFont(new Font("Arial", Font.PLAIN, 14));
+        theToMinuteSpinner.setFont(new Font("Arial", Font.PLAIN, MEDIUM_FONT_SIZE));
         timesPanel.add(theToMinuteSpinner);
         //Every.
         JLabel everyLabel = new JLabel("Every: ");
         everyLabel.setFont(new Font("Arial", Font.ITALIC, 16));
         timesPanel.add(everyLabel);
-        int min = 10;
+        int min = DEFAULT_FREQUENCY;
         if ( min > getCurrentRouteDuration(1) ) { min = getCurrentRouteDuration(1); }
         theEveryMinuteModel = new SpinnerNumberModel(min,1,getMaxRouteDuration(),1);
         theEveryMinuteSpinner = new JSpinner(theEveryMinuteModel);
         //Initialise minVehicles label here but then actually place it later.
         theMinVehicleLabel = new JLabel("NOTE: " + getMinVehicles() + " vehicles are required to operate " + theEveryMinuteSpinner.getValue().toString() + " minute frequency!" );
-        theEveryMinuteSpinner.setFont(new Font("Arial", Font.PLAIN, 14));
+        theEveryMinuteSpinner.setFont(new Font("Arial", Font.PLAIN, MEDIUM_FONT_SIZE));
         theEveryMinuteSpinner.addChangeListener(new ChangeListener() {
             public void stateChanged ( ChangeEvent e ) {
                 theMinVehicleLabel.setText("NOTE: " + getMinVehicles() + " vehicles are required to operate " + theEveryMinuteSpinner.getValue().toString() + " minute frequency!");
@@ -1180,7 +1191,7 @@ public class ManagePanel {
         if ( sp!=null ) { logger.debug("Frequency is " + sp.getFrequency() + " and duration is " + sp.getDuration()); theEveryMinuteModel.setValue(sp.getFrequency()); }
         timesPanel.add(theEveryMinuteSpinner);
         JLabel minutesLabel = new JLabel("minutes");
-        minutesLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+        minutesLabel.setFont(new Font("Arial", Font.PLAIN, MEDIUM_FONT_SIZE));
         timesPanel.add(minutesLabel);
         
         servicePatternScreenPanel.add(timesPanel);
@@ -1189,7 +1200,7 @@ public class ManagePanel {
         JPanel minVehiclePanel = new JPanel(new GridBagLayout());
         minVehiclePanel.setBackground(Color.WHITE);
         
-        theMinVehicleLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+        theMinVehicleLabel.setFont(new Font("Arial", Font.PLAIN, MEDIUM_FONT_SIZE));
         minVehiclePanel.add(theMinVehicleLabel);
         servicePatternScreenPanel.add(minVehiclePanel);
         
@@ -1403,10 +1414,10 @@ public class ManagePanel {
         JPanel validityPanel = new JPanel(new BorderLayout());
         validityPanel.setBackground(Color.WHITE);
         JLabel validFromDateLabel = new JLabel("Valid From: " + theSelectedRoute.getCurrentTimetable(theInterface.getCurrentSimTime()).getValidFromDateInfo());
-        validFromDateLabel.setFont(new Font("Arial", Font.ITALIC, 14));
+        validFromDateLabel.setFont(new Font("Arial", Font.ITALIC, MEDIUM_FONT_SIZE));
         validityPanel.add(validFromDateLabel, BorderLayout.NORTH);
         JLabel validToDateLabel = new JLabel("Valid To: " + theSelectedRoute.getCurrentTimetable(theInterface.getCurrentSimTime()).getValidToDateInfo());
-        validToDateLabel.setFont(new Font("Arial", Font.ITALIC, 14));
+        validToDateLabel.setFont(new Font("Arial", Font.ITALIC, MEDIUM_FONT_SIZE));
         validityPanel.add(validToDateLabel, BorderLayout.SOUTH);
         topPanel.add(validityPanel, BorderLayout.SOUTH);
         //Add top panel to topLabel panel and topLabel panel to screenPanel.
@@ -1439,13 +1450,13 @@ public class ManagePanel {
             
         //Process data...
         String[] outgoingColumnNames = new String[] { "Stop Name", "", "", "", "", "", "", "", "", "", "" };
-        Object[][] outgoingData = new Object[theSelectedRoute.getNumStops(Route.OUTWARDSTOPS)][11];
+        Object[][] outgoingData = new Object[theSelectedRoute.getNumStops(Route.OUTWARDSTOPS)][SERVICES_PER_PAGE+1];
         Calendar cal = theSelectedRoute.translateDate(theDatesComboBox.getSelectedItem().toString());
         List<Service> services = theSelectedRoute.generateServiceTimetables(cal, theInterface.getScenario(), Route.OUTWARDSTOPS);
         //LinkedList<Service> services = theSelectedRoute.getAllOutgoingServices(theDatesComboBox.getSelectedItem().toString());
         for ( int i = 0; i < theSelectedRoute.getNumStops(Route.OUTWARDSTOPS); i++) {
             outgoingData[i][0] = theSelectedRoute.getStop(Route.OUTWARDSTOPS, i).getStopName();
-            for ( int j = 0; j < 10; j++ ) {
+            for ( int j = 0; j < SERVICES_PER_PAGE; j++ ) {
                 int pos = (min+j);
                 logger.debug("This is #" + pos + " of the loop...");
                 if ( services.size() <= (min+j) ) {
@@ -1478,12 +1489,12 @@ public class ManagePanel {
             
         //Process data...
         String[] ingoingColumnNames = new String[] { "Stop Name", "", "", "", "", "", "", "", "", "", "" };
-        Object[][] ingoingData = new Object[theSelectedRoute.getNumStops(Route.RETURNSTOPS)][11];
+        Object[][] ingoingData = new Object[theSelectedRoute.getNumStops(Route.RETURNSTOPS)][SERVICES_PER_PAGE+1];
         List<Service> returnServices = theSelectedRoute.generateServiceTimetables(cal, theInterface.getScenario(), Route.RETURNSTOPS);
         //LinkedList<Service> returnServices = theSelectedRoute.getAllReturnServices(theDatesComboBox.getSelectedItem().toString());
         for ( int i = 0; i < theSelectedRoute.getNumStops(Route.RETURNSTOPS); i++) {
             ingoingData[i][0] = theSelectedRoute.getStop(Route.RETURNSTOPS, i);
-            for ( int j = 0; j < 10; j++ ) {
+            for ( int j = 0; j < SERVICES_PER_PAGE; j++ ) {
                 if ( returnServices.size() <= (min+j) ) {
                     ingoingData[i][j+1] = "";
                 } else if ( returnServices.get(min+j).getStop(theSelectedRoute.getStop(Route.RETURNSTOPS, i).getStopName()) == null ) {
@@ -1508,17 +1519,17 @@ public class ManagePanel {
         }
         previousButton.addActionListener(new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
-                theControlScreen.redrawManagement(makeTimetablePanel(theSelectedRouteStr, theCurrentMin-10, theDatesComboBox.getSelectedIndex()));
+                theControlScreen.redrawManagement(makeTimetablePanel(theSelectedRouteStr, theCurrentMin-SERVICES_PER_PAGE, theDatesComboBox.getSelectedIndex()));
             }
         });
         otherServicesButtonPanel.add(previousButton);
         JButton nextButton = new JButton("Next Services >");
-        if ( (min+10) > services.size() && (min+10) > returnServices.size() ) {
+        if ( (min+SERVICES_PER_PAGE) > services.size() && (min+SERVICES_PER_PAGE) > returnServices.size() ) {
             nextButton.setEnabled(false);
         }
         nextButton.addActionListener(new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
-                theControlScreen.redrawManagement(makeTimetablePanel(theSelectedRouteStr, theCurrentMin+10, theDatesComboBox.getSelectedIndex()));
+                theControlScreen.redrawManagement(makeTimetablePanel(theSelectedRouteStr, theCurrentMin+SERVICES_PER_PAGE, theDatesComboBox.getSelectedIndex()));
             }
         });
         otherServicesButtonPanel.add(nextButton);
@@ -1560,9 +1571,9 @@ public class ManagePanel {
         }
         theRoutesList = new JList(theRoutesModel);
         theRoutesList.setFixedCellWidth(40);
-        theRoutesList.setVisibleRowCount(15);
+        theRoutesList.setVisibleRowCount(ROUTE_ROW_COUNT);
         theRoutesList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        theRoutesList.setFont(new Font("Arial", Font.PLAIN, 15));
+        theRoutesList.setFont(new Font("Arial", Font.PLAIN, LARGE_FONT_SIZE));
         if ( theRoutesModel.getSize() > 0 ) { theRoutesList.setSelectedValue(route, true); }
         theRoutesList.addListSelectionListener ( new ListSelectionListener() {
             public void valueChanged ( ListSelectionEvent e ) {
@@ -1591,7 +1602,7 @@ public class ManagePanel {
         //topLabel.setVerticalAlignment(JLabel.CENTER);
         textLabelPanel.add(topLabel);
         driverScreenPanel.add(textLabelPanel);
-        driverScreenPanel.add(Box.createRigidArea(new Dimension(0,10))); //Spacer.
+        driverScreenPanel.add(Box.createRigidArea(new Dimension(0,DIMENSION_SPACER))); //Spacer.
         
         //Create information panel.
         JPanel driverInfoPanel = new JPanel(new BorderLayout());
@@ -1615,8 +1626,8 @@ public class ManagePanel {
         JLabel contractedHoursLabel = new JLabel("Contracted Hours:");
         contractedHoursLabel.setFont(new Font("Arial", Font.BOLD, 16));
         contractedHoursPanel.add(contractedHoursLabel);
-        theContractedHoursSpinner = new JSpinner(new SpinnerNumberModel(35,10,40,5));
-        theContractedHoursSpinner.setFont(new Font("Arial", Font.PLAIN, 14));
+        theContractedHoursSpinner = new JSpinner(new SpinnerNumberModel(35,MIN_HOURS,40,5));
+        theContractedHoursSpinner.setFont(new Font("Arial", Font.PLAIN, MEDIUM_FONT_SIZE));
         contractedHoursPanel.add(theContractedHoursSpinner);
 
         gridPanel.add(contractedHoursPanel);
@@ -1628,7 +1639,7 @@ public class ManagePanel {
         hourlyRateLabel.setFont(new Font("Arial", Font.BOLD, 16));
         hourlyRatePanel.add(hourlyRateLabel);
         theHourlyRateSpinner = new JSpinner(new SpinnerNumberModel(5,5,15,1));
-        theHourlyRateSpinner.setFont(new Font("Arial", Font.PLAIN, 14));
+        theHourlyRateSpinner.setFont(new Font("Arial", Font.PLAIN, MEDIUM_FONT_SIZE));
         hourlyRatePanel.add(theHourlyRateSpinner);
         gridPanel.add(hourlyRatePanel);
 
@@ -1712,51 +1723,51 @@ public class ManagePanel {
         JPanel idLabelPanel = new JPanel();
         idLabelPanel.setBackground(Color.WHITE);
         JLabel idLabel = new JLabel("ID:", SwingConstants.CENTER);
-        idLabel.setFont(new Font("Arial", Font.ITALIC, 14));
+        idLabel.setFont(new Font("Arial", Font.ITALIC, MEDIUM_FONT_SIZE));
         idLabelPanel.add(idLabel);
         gridPanel.add(idLabel);
         JLabel idField = new JLabel("" + theDriver.getIdNumber());
-        idField.setFont(new Font("Arial", Font.PLAIN, 12));
+        idField.setFont(new Font("Arial", Font.PLAIN, SMALL_FONT_SIZE));
         gridPanel.add(idField);
         //Create label and field for name and add it to the name panel.
         JPanel nameLabelPanel = new JPanel();
         nameLabelPanel.setBackground(Color.WHITE);
         JLabel nameLabel = new JLabel("Name:", SwingConstants.CENTER);
-        nameLabel.setFont(new Font("Arial", Font.ITALIC, 14));
+        nameLabel.setFont(new Font("Arial", Font.ITALIC, MEDIUM_FONT_SIZE));
         nameLabelPanel.add(nameLabel);
         gridPanel.add(nameLabel);
         JLabel nameField = new JLabel(theDriver.getName());
-        nameField.setFont(new Font("Arial", Font.PLAIN, 12));
+        nameField.setFont(new Font("Arial", Font.PLAIN, SMALL_FONT_SIZE));
         gridPanel.add(nameField);
         //Create label and field for length of service and add it to the los panel.
         JPanel losLabelPanel = new JPanel();
         losLabelPanel.setBackground(Color.WHITE);
         JLabel losLabel = new JLabel("Length of Service:", SwingConstants.CENTER);
-        losLabel.setFont(new Font("Arial", Font.ITALIC, 14));
+        losLabel.setFont(new Font("Arial", Font.ITALIC, MEDIUM_FONT_SIZE));
         losLabelPanel.add(losLabel);
         gridPanel.add(losLabel);
         JLabel losField = new JLabel(theDriver.getLengthOfService(theInterface.getCurrentSimTime()) + " months");
-        losField.setFont(new Font("Arial", Font.PLAIN, 12));
+        losField.setFont(new Font("Arial", Font.PLAIN, SMALL_FONT_SIZE));
         gridPanel.add(losField);
         //Create label and field for contracted hours and add it to the seating panel.
         JPanel contractedHoursLabelPanel = new JPanel();
         contractedHoursLabelPanel.setBackground(Color.WHITE);
         JLabel contractedHoursLabel = new JLabel("Contracted Hours:", SwingConstants.CENTER);
-        contractedHoursLabel.setFont(new Font("Arial", Font.ITALIC, 14));
+        contractedHoursLabel.setFont(new Font("Arial", Font.ITALIC, MEDIUM_FONT_SIZE));
         contractedHoursLabelPanel.add(contractedHoursLabel);
         gridPanel.add(contractedHoursLabel);
         JLabel contractedHoursField = new JLabel("" + theDriver.getContractedHours());
-        contractedHoursField.setFont(new Font("Arial", Font.PLAIN, 12));
+        contractedHoursField.setFont(new Font("Arial", Font.PLAIN, SMALL_FONT_SIZE));
         gridPanel.add(contractedHoursField);
         //Create label and field for hourly rate and add it to the standing panel.
         JPanel hourlyRateLabelPanel = new JPanel();
         hourlyRateLabelPanel.setBackground(Color.WHITE);
         JLabel hourlyRateLabel = new JLabel("Hourly Rate:", SwingConstants.CENTER);
-        hourlyRateLabel.setFont(new Font("Arial", Font.ITALIC, 14));
+        hourlyRateLabel.setFont(new Font("Arial", Font.ITALIC, MEDIUM_FONT_SIZE));
         hourlyRateLabelPanel.add(hourlyRateLabel);
         gridPanel.add(hourlyRateLabel);
         JLabel hourlyRateField = new JLabel("" + theDriver.getHourlyRate());
-        hourlyRateField.setFont(new Font("Arial", Font.PLAIN, 12));
+        hourlyRateField.setFont(new Font("Arial", Font.PLAIN, SMALL_FONT_SIZE));
         gridPanel.add(hourlyRateField);
         
         //Add the grid panel to the centre panel.
@@ -1798,11 +1809,11 @@ public class ManagePanel {
         JPanel modelPanel = new JPanel();
         modelPanel.setBackground(Color.WHITE);
         theDriversList = new JList(theDriversModel);
-        theDriversList.setFixedCellWidth(100);
+        theDriversList.setFixedCellWidth(DRIVER_CELL_WIDTH);
         theDriversList.setVisibleRowCount(25);
         theDriversList.setSelectedValue(theDriver.getIdNumber(), true);
         theDriversList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        theDriversList.setFont(new Font("Arial", Font.PLAIN, 15));
+        theDriversList.setFont(new Font("Arial", Font.PLAIN, LARGE_FONT_SIZE));
         theDriversList.addListSelectionListener(new ListSelectionListener() {
             public void valueChanged ( ListSelectionEvent e ) {
                 int selectedValue = theDriversList.getSelectedIndex();
@@ -1888,64 +1899,64 @@ public class ManagePanel {
         JPanel typeLabelPanel = new JPanel();
         typeLabelPanel.setBackground(Color.WHITE);
         JLabel typeLabel = new JLabel("Type:", SwingConstants.CENTER);
-        typeLabel.setFont(new Font("Arial", Font.ITALIC, 14));
+        typeLabel.setFont(new Font("Arial", Font.ITALIC, MEDIUM_FONT_SIZE));
         typeLabelPanel.add(typeLabel);
         gridPanel.add(typeLabel);
         JLabel typeField = new JLabel(theVehicle.getModel());
-        typeField.setFont(new Font("Arial", Font.PLAIN, 12));
+        typeField.setFont(new Font("Arial", Font.PLAIN, SMALL_FONT_SIZE));
         gridPanel.add(typeField);
         //Create label and field for seating capacity and add it to the seating panel.
         JPanel seatingLabelPanel = new JPanel();
         seatingLabelPanel.setBackground(Color.WHITE);
         JLabel seatingLabel = new JLabel("Seating Capacity:", SwingConstants.CENTER);
-        seatingLabel.setFont(new Font("Arial", Font.ITALIC, 14));
+        seatingLabel.setFont(new Font("Arial", Font.ITALIC, MEDIUM_FONT_SIZE));
         seatingLabelPanel.add(seatingLabel);
         gridPanel.add(seatingLabel);
         JLabel seatingField = new JLabel("" + theVehicle.getSeatingCapacity());
-        seatingField.setFont(new Font("Arial", Font.PLAIN, 12));
+        seatingField.setFont(new Font("Arial", Font.PLAIN, SMALL_FONT_SIZE));
         gridPanel.add(seatingField);
         //Create label and field for standing capacity and add it to the standing panel.
         JPanel standingLabelPanel = new JPanel();
         standingLabelPanel.setBackground(Color.WHITE);
         JLabel standingLabel = new JLabel("Standing Capacity:", SwingConstants.CENTER);
-        standingLabel.setFont(new Font("Arial", Font.ITALIC, 14));
+        standingLabel.setFont(new Font("Arial", Font.ITALIC, MEDIUM_FONT_SIZE));
         standingLabelPanel.add(standingLabel);
         gridPanel.add(standingLabel);
         JLabel standingField = new JLabel("" + theVehicle.getStandingCapacity());
-        standingField.setFont(new Font("Arial", Font.PLAIN, 12));
+        standingField.setFont(new Font("Arial", Font.PLAIN, SMALL_FONT_SIZE));
         gridPanel.add(standingField);
         //Create label and field for delivery date and add it to the delivery panel.
         JPanel deliveryLabelPanel = new JPanel();
         deliveryLabelPanel.setBackground(Color.WHITE);
         JLabel deliveryLabel = new JLabel("Delivery Date:", SwingConstants.CENTER);
-        deliveryLabel.setFont(new Font("Arial", Font.ITALIC, 14));
+        deliveryLabel.setFont(new Font("Arial", Font.ITALIC, MEDIUM_FONT_SIZE));
         deliveryLabelPanel.add(deliveryLabel);
         gridPanel.add(deliveryLabel);
         theDeliveryDate = (Calendar) theInterface.getSimulator().getCurrentSimTime().clone();
         theDeliveryDate.add(Calendar.HOUR, 72);
         JLabel deliveryField = new JLabel("" + theInterface.getSimulator().formatDateString(theDeliveryDate));
-        deliveryField.setFont(new Font("Arial", Font.PLAIN, 12));
+        deliveryField.setFont(new Font("Arial", Font.PLAIN, SMALL_FONT_SIZE));
         gridPanel.add(deliveryField);
         //Create label and field for purchase price and add it to the price panel.
         JPanel priceLabelPanel = new JPanel();
         priceLabelPanel.setBackground(Color.WHITE);
         JLabel priceLabel = new JLabel("Purchase Price:", SwingConstants.CENTER);
-        priceLabel.setFont(new Font("Arial", Font.ITALIC, 14));
+        priceLabel.setFont(new Font("Arial", Font.ITALIC, MEDIUM_FONT_SIZE));
         priceLabelPanel.add(priceLabel);
         gridPanel.add(priceLabel);
         theFormat = new DecimalFormat("0.00");
         JLabel priceField = new JLabel("€" + theFormat.format(theVehicle.getPurchasePrice()));
-        priceField.setFont(new Font("Arial", Font.PLAIN, 12));
+        priceField.setFont(new Font("Arial", Font.PLAIN, SMALL_FONT_SIZE));
         gridPanel.add(priceField);
         //Create label and field for quantity and add it to the quantity panel.
         JPanel quantityLabelPanel = new JPanel(new BorderLayout());
         quantityLabelPanel.setBackground(Color.WHITE);
         JLabel quantityLabel = new JLabel("Quantity:", SwingConstants.CENTER);
-        quantityLabel.setFont(new Font("Arial", Font.ITALIC, 14));
+        quantityLabel.setFont(new Font("Arial", Font.ITALIC, MEDIUM_FONT_SIZE));
         quantityLabelPanel.add(quantityLabel);
         gridPanel.add(quantityLabel);
         theQuantitySpinner = new JSpinner(new SpinnerNumberModel(1,1,40,1));
-        theQuantitySpinner.setFont(new Font("Arial", Font.PLAIN, 12));
+        theQuantitySpinner.setFont(new Font("Arial", Font.PLAIN, SMALL_FONT_SIZE));
         theQuantitySpinner.addChangeListener(new ChangeListener() {
             public void stateChanged ( ChangeEvent e ) {
                 double totalPrice = Double.parseDouble(theQuantitySpinner.getValue().toString()) * theVehicle.getPurchasePrice();
@@ -1960,18 +1971,18 @@ public class ManagePanel {
                 }
             }
         });
-        theQuantitySpinner.setMaximumSize(new Dimension(10,15));
+        theQuantitySpinner.setMaximumSize(new Dimension(DIMENSION_SPACER,15));
         gridPanel.add(theQuantitySpinner);
         //Create label and field for total price and add it to the total price panel.
         JPanel totalPriceLabelPanel = new JPanel();
         totalPriceLabelPanel.setBackground(Color.WHITE);
         JLabel totalPriceLabel = new JLabel("Total Price:", SwingConstants.CENTER);
-        totalPriceLabel.setFont(new Font("Arial", Font.ITALIC, 14));
+        totalPriceLabel.setFont(new Font("Arial", Font.ITALIC, MEDIUM_FONT_SIZE));
         totalPriceLabelPanel.add(totalPriceLabel);
         gridPanel.add(totalPriceLabel);
         double totalPrice = Double.parseDouble(theQuantitySpinner.getValue().toString()) * theVehicle.getPurchasePrice();
         theTotalPriceField = new JLabel("€" + theFormat.format(totalPrice));
-        theTotalPriceField.setFont(new Font("Arial", Font.PLAIN, 12));
+        theTotalPriceField.setFont(new Font("Arial", Font.PLAIN, SMALL_FONT_SIZE));
         gridPanel.add(theTotalPriceField);
         
         //Add the grid panel to the screen panel.
@@ -2068,72 +2079,72 @@ public class ManagePanel {
         JPanel idLabelPanel = new JPanel();
         idLabelPanel.setBackground(Color.WHITE);
         JLabel idLabel = new JLabel("ID:", SwingConstants.CENTER);
-        idLabel.setFont(new Font("Arial", Font.ITALIC, 14));
+        idLabel.setFont(new Font("Arial", Font.ITALIC, MEDIUM_FONT_SIZE));
         idLabelPanel.add(idLabel);
         gridPanel.add(idLabel);
         JLabel idField = new JLabel(theVehicle.getRegistrationNumber());
-        idField.setFont(new Font("Arial", Font.PLAIN, 12));
+        idField.setFont(new Font("Arial", Font.PLAIN, SMALL_FONT_SIZE));
         gridPanel.add(idField);
         //Create label and field for vehicle type and add it to the type panel.
         JPanel typeLabelPanel = new JPanel();
         typeLabelPanel.setBackground(Color.WHITE);
         JLabel typeLabel = new JLabel("Type:", SwingConstants.CENTER);
-        typeLabel.setFont(new Font("Arial", Font.ITALIC, 14));
+        typeLabel.setFont(new Font("Arial", Font.ITALIC, MEDIUM_FONT_SIZE));
         typeLabelPanel.add(typeLabel);
         gridPanel.add(typeLabel);
         JLabel typeField = new JLabel(theVehicle.getModel());
-        typeField.setFont(new Font("Arial", Font.PLAIN, 12));
+        typeField.setFont(new Font("Arial", Font.PLAIN, SMALL_FONT_SIZE));
         gridPanel.add(typeField);
         //Create label and field for age and add it to the age panel.
         JPanel ageLabelPanel = new JPanel();
         ageLabelPanel.setBackground(Color.WHITE);
         JLabel ageLabel = new JLabel("Age:", SwingConstants.CENTER);
-        ageLabel.setFont(new Font("Arial", Font.ITALIC, 14));
+        ageLabel.setFont(new Font("Arial", Font.ITALIC, MEDIUM_FONT_SIZE));
         ageLabelPanel.add(ageLabel);
         gridPanel.add(ageLabel);
         JLabel ageField = new JLabel(theVehicle.getAge(theInterface.getCurrentSimTime()) + " months");
-        ageField.setFont(new Font("Arial", Font.PLAIN, 12));
+        ageField.setFont(new Font("Arial", Font.PLAIN, SMALL_FONT_SIZE));
         gridPanel.add(ageField);
         //Create label and field for seating capacity and add it to the seating panel.
         JPanel seatingLabelPanel = new JPanel();
         seatingLabelPanel.setBackground(Color.WHITE);
         JLabel seatingLabel = new JLabel("Seating Capacity:", SwingConstants.CENTER);
-        seatingLabel.setFont(new Font("Arial", Font.ITALIC, 14));
+        seatingLabel.setFont(new Font("Arial", Font.ITALIC, MEDIUM_FONT_SIZE));
         seatingLabelPanel.add(seatingLabel);
         gridPanel.add(seatingLabel);
         JLabel seatingField = new JLabel("" + theVehicle.getSeatingCapacity());
-        seatingField.setFont(new Font("Arial", Font.PLAIN, 12));
+        seatingField.setFont(new Font("Arial", Font.PLAIN, SMALL_FONT_SIZE));
         gridPanel.add(seatingField);
         //Create label and field for standing capacity and add it to the standing panel.
         JPanel standingLabelPanel = new JPanel();
         standingLabelPanel.setBackground(Color.WHITE);
         JLabel standingLabel = new JLabel("Standing Capacity:", SwingConstants.CENTER);
-        standingLabel.setFont(new Font("Arial", Font.ITALIC, 14));
+        standingLabel.setFont(new Font("Arial", Font.ITALIC, MEDIUM_FONT_SIZE));
         standingLabelPanel.add(standingLabel);
         gridPanel.add(standingLabel);
         JLabel standingField = new JLabel("" + theVehicle.getStandingCapacity());
-        standingField.setFont(new Font("Arial", Font.PLAIN, 12));
+        standingField.setFont(new Font("Arial", Font.PLAIN, SMALL_FONT_SIZE));
         gridPanel.add(standingField);
         //Create label and field for assigned schedule and add it to the schedule panel.
         JPanel assignedLabelPanel = new JPanel();
         assignedLabelPanel.setBackground(Color.WHITE);
         JLabel assignedLabel = new JLabel("Assigned Schedule:", SwingConstants.CENTER);
-        assignedLabel.setFont(new Font("Arial", Font.ITALIC, 14));
+        assignedLabel.setFont(new Font("Arial", Font.ITALIC, MEDIUM_FONT_SIZE));
         assignedLabelPanel.add(assignedLabel);
         gridPanel.add(assignedLabel);
         JLabel assignedField = new JLabel(theVehicle.getAssignedScheduleId());
-        assignedField.setFont(new Font("Arial", Font.PLAIN, 12));
+        assignedField.setFont(new Font("Arial", Font.PLAIN, SMALL_FONT_SIZE));
         gridPanel.add(assignedField);
         //Create label and field for value and add it to the value panel.
         JPanel valueLabelPanel = new JPanel();
         valueLabelPanel.setBackground(Color.WHITE);
         JLabel valueLabel = new JLabel("Value:", SwingConstants.CENTER);
-        valueLabel.setFont(new Font("Arial", Font.ITALIC, 14));
+        valueLabel.setFont(new Font("Arial", Font.ITALIC, MEDIUM_FONT_SIZE));
         valueLabelPanel.add(valueLabel);
         gridPanel.add(valueLabel);
         theFormat = new DecimalFormat("0.00");
         JLabel valueField = new JLabel("€" + theFormat.format(theVehicle.getValue(theInterface.getCurrentSimTime())));
-        valueField.setFont(new Font("Arial", Font.PLAIN, 12));
+        valueField.setFont(new Font("Arial", Font.PLAIN, SMALL_FONT_SIZE));
         gridPanel.add(valueField);
         
         //Add the grid panel to the centre panel.
@@ -2175,11 +2186,11 @@ public class ManagePanel {
         JPanel modelPanel = new JPanel();
         modelPanel.setBackground(Color.WHITE);
         theVehiclesList = new JList(theVehiclesModel);
-        theVehiclesList.setFixedCellWidth(100);
+        theVehiclesList.setFixedCellWidth(VEHICLE_CELL_WIDTH);
         theVehiclesList.setVisibleRowCount(25);
         theVehiclesList.setSelectedValue(theVehicle.getRegistrationNumber(), true);
         theVehiclesList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        theVehiclesList.setFont(new Font("Arial", Font.PLAIN, 15));
+        theVehiclesList.setFont(new Font("Arial", Font.PLAIN, LARGE_FONT_SIZE));
         theVehiclesList.addListSelectionListener(new ListSelectionListener() {
             public void valueChanged ( ListSelectionEvent e ) {
                 String selectedValue = theVehiclesList.getSelectedValue().toString();
@@ -2213,7 +2224,7 @@ public class ManagePanel {
         topLabel.setFont(new Font("Arial", Font.BOLD, 25));
         topLabelPanel.add(topLabel, BorderLayout.CENTER);
         scenarioScreenPanel.add(topLabelPanel, BorderLayout.NORTH);
-        scenarioScreenPanel.add(Box.createRigidArea(new Dimension(0,10)));
+        scenarioScreenPanel.add(Box.createRigidArea(new Dimension(0,DIMENSION_SPACER)));
 
         //Create info panel.
         /*JPanel infoPanel = new JPanel(new BorderLayout());
@@ -2246,7 +2257,7 @@ public class ManagePanel {
         JTextArea scenarioTargetArea = new JTextArea(theInterface.getScenario().getTargets());
         scenarioTargetArea.setWrapStyleWord(true);
         scenarioTargetArea.setLineWrap(true);
-        scenarioTargetArea.setFont(new Font("Arial", Font.ITALIC, 14));
+        scenarioTargetArea.setFont(new Font("Arial", Font.ITALIC, MEDIUM_FONT_SIZE));
         scenarioTargetPanel.add(scenarioTargetArea);
         targetPanel.add(scenarioTargetPanel);
         scenarioScreenPanel.add(targetPanel);
@@ -2265,7 +2276,7 @@ public class ManagePanel {
 
         //Add scenarioNamePanel to info panel.
         scenarioScreenPanel.add(playerNamePanel);
-        scenarioScreenPanel.add(Box.createRigidArea(new Dimension(0,10)));
+        scenarioScreenPanel.add(Box.createRigidArea(new Dimension(0,DIMENSION_SPACER)));
 
         //Options button panel with save details and return to management screen buttons.
         JPanel optionsButtonPanel = new JPanel();
@@ -2372,7 +2383,7 @@ public class ManagePanel {
         theRoutesModel = new DefaultListModel();
         theRoutesList = new JList(theRoutesModel);
         theRoutesList.setFixedCellWidth(270);
-        theRoutesList.setFont(new Font("Arial", Font.PLAIN, 15));
+        theRoutesList.setFont(new Font("Arial", Font.PLAIN, LARGE_FONT_SIZE));
         for ( int i = 0; i < theInterface.getNumberRoutes(); i++ ) {
         	logger.debug("Test Allocations: " + theInterface.getRoute(i).getNumRouteSchedules());
             for ( int j = 0; j < theInterface.getRoute(i).getNumRouteSchedules(); j++ ) {
@@ -2397,7 +2408,7 @@ public class ManagePanel {
         theVehiclesList.setFixedCellWidth(320);
         theVehiclesList.setVisibleRowCount(4);
         theVehiclesList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        theVehiclesList.setFont(new Font("Arial", Font.PLAIN, 15));
+        theVehiclesList.setFont(new Font("Arial", Font.PLAIN, LARGE_FONT_SIZE));
         JScrollPane vehiclesPane = new JScrollPane(theVehiclesList);
         modelPanel.add(vehiclesPane);
         listPanel.add(modelPanel, BorderLayout.EAST);
@@ -2490,7 +2501,7 @@ public class ManagePanel {
         theAllocationsList.setFixedCellWidth(250);
         theAllocationsList.setVisibleRowCount(4);
         theAllocationsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        theAllocationsList.setFont(new Font("Arial", Font.PLAIN, 15));
+        theAllocationsList.setFont(new Font("Arial", Font.PLAIN, LARGE_FONT_SIZE));
         JScrollPane allocationsPane = new JScrollPane(theAllocationsList);
         allocationListPanel.add(allocationsPane);
 

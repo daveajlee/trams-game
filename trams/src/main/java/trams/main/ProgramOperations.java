@@ -31,7 +31,11 @@ public class ProgramOperations {
     
     //Update this list plus createVehicleObject to add new vehicle types to TraMS!
     private String[] availableVehicles = new String[] { "MyBus Single Decker", "MyBus Double Decker", "MyBus Bendy", "MyTram Tram1" };
-     
+    
+    private static final int MAX_SINGLE_DIGIT = 10;
+    private static final int START_SATISFACTION = 100;
+    private static final int NUM_AM_HOURS = 12;
+    
     /**
      * Create a new ProgramOperations object - default constructor.
      */
@@ -63,7 +67,7 @@ public class ProgramOperations {
      * @return a <code>boolean</code> which is true iff the simulation was created successfully.
      */
     public boolean createSimulator ( String scenarioName, String playerName ) {
-        Scenario scen = createScenarioObject(scenarioName, playerName, 800000.00, 100);
+        Scenario scen = createScenarioObject(scenarioName, playerName, 800000.00, START_SATISFACTION);
         theSimulator = new Simulator(scen);
         //Now for the scenario - create supplied vehicles.
         logger.debug("Creating " + scen.getNumberSuppliedVehicles() + " vehicles!");
@@ -229,13 +233,13 @@ public class ProgramOperations {
         //Create root element.
         Element game = doc.createElement("game");
         Calendar currentTime = theSimulator.getCurrentSimTime();
-        int hourNum = currentTime.get(Calendar.HOUR); String hour = "" + hourNum; if ( hourNum < 10 ) { hour = "0" + hourNum; 
+        int hourNum = currentTime.get(Calendar.HOUR); String hour = "" + hourNum; if ( hourNum < MAX_SINGLE_DIGIT ) { hour = "0" + hourNum; 
         } 
-        if ( currentTime.get(Calendar.AM_PM) == Calendar.PM ) { hourNum += 12; hour = "" + hourNum; 
+        if ( currentTime.get(Calendar.AM_PM) == Calendar.PM ) { hourNum += NUM_AM_HOURS; hour = "" + hourNum; 
         } 
-        int minNum = currentTime.get(Calendar.MINUTE); String minute = "" + minNum; if ( minNum < 10 ) { minute = "0" + minNum; }
-        int monthNum = currentTime.get(Calendar.MONTH)+1; String month = "" + monthNum; if ( monthNum < 10 ) { month = "0" + monthNum; }
-        int dateNum = currentTime.get(Calendar.DATE); String date = "" + dateNum; if ( dateNum < 10 ) { date = "0" + dateNum; }
+        int minNum = currentTime.get(Calendar.MINUTE); String minute = "" + minNum; if ( minNum < MAX_SINGLE_DIGIT ) { minute = "0" + minNum; }
+        int monthNum = currentTime.get(Calendar.MONTH)+1; String month = "" + monthNum; if ( monthNum < MAX_SINGLE_DIGIT ) { month = "0" + monthNum; }
+        int dateNum = currentTime.get(Calendar.DATE); String date = "" + dateNum; if ( dateNum < MAX_SINGLE_DIGIT ) { date = "0" + dateNum; }
         String time = currentTime.get(Calendar.YEAR) + "-" + month + "-" + date + "-" + hour + ":" + minute;
         game.setAttribute("time", time);
         game.setAttribute("increment", "" + theSimulator.getIncrement());
@@ -296,13 +300,13 @@ public class ProgramOperations {
                 timetable.setAttribute("name", myTimetable.getName());
                 //Do valid from date.
                 Calendar validFromDate = myTimetable.getValidFrom();
-                int vfMonthNum = validFromDate.get(Calendar.MONTH)+1; String vfMonth = "" + vfMonthNum; if ( vfMonthNum < 10 ) { vfMonth = "0" + vfMonthNum; }
-                int vfDateNum = validFromDate.get(Calendar.DATE); String vfDate = "" + vfDateNum; if ( vfDateNum < 10 ) { vfDate = "0" + vfDateNum; }
+                int vfMonthNum = validFromDate.get(Calendar.MONTH)+1; String vfMonth = "" + vfMonthNum; if ( vfMonthNum < MAX_SINGLE_DIGIT ) { vfMonth = "0" + vfMonthNum; }
+                int vfDateNum = validFromDate.get(Calendar.DATE); String vfDate = "" + vfDateNum; if ( vfDateNum < MAX_SINGLE_DIGIT ) { vfDate = "0" + vfDateNum; }
                 timetable.setAttribute("validFrom", validFromDate.get(Calendar.YEAR) + "-" + vfMonth + "-" + vfDate );
                 //Do valid to date.
                 Calendar validToDate = myTimetable.getValidTo();
-                int vtMonthNum = validToDate.get(Calendar.MONTH)+1; String vtMonth = "" + vtMonthNum; if ( vtMonthNum < 10 ) { vtMonth = "0" + vtMonthNum; }
-                int vtDateNum = validToDate.get(Calendar.DATE); String vtDate = "" + vtDateNum; if ( vtDateNum < 10 ) { vtDate = "0" + vtDateNum; }
+                int vtMonthNum = validToDate.get(Calendar.MONTH)+1; String vtMonth = "" + vtMonthNum; if ( vtMonthNum < MAX_SINGLE_DIGIT ) { vtMonth = "0" + vtMonthNum; }
+                int vtDateNum = validToDate.get(Calendar.DATE); String vtDate = "" + vtDateNum; if ( vtDateNum < MAX_SINGLE_DIGIT ) { vtDate = "0" + vtDateNum; }
                 timetable.setAttribute("validTo", validToDate.get(Calendar.YEAR) + "-" + vtMonth + "-" + vtDate );
                 //Now for all service patterns.
                 Iterator<String> servicePatternNames = myTimetable.getServicePatternNames().iterator();

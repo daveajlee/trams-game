@@ -33,6 +33,9 @@ public class NewGameScreen extends JFrame {
     private JButton theCreateGameButton;
     private JButton theWelcomeScreenButton;
     
+    private static final int DIMENSION_SPACER = 10;
+    private static final int MEDIUM_FONT_SIZE = 14;
+    
     /**
      * Create a new new game screen.
      * @param ui a <code>UserInterface</code> object with the current user interface.
@@ -63,7 +66,7 @@ public class NewGameScreen extends JFrame {
         //Get a container to add things to.
         Container c = this.getContentPane();
         c.setBackground(Color.WHITE);
-        c.add(Box.createRigidArea(new Dimension(0,10))); //Spacer.
+        c.add(Box.createRigidArea(new Dimension(0,DIMENSION_SPACER))); //Spacer.
         
         //Create a screen panel in box layout to store everything.
         JPanel screenPanel = new JPanel();
@@ -133,7 +136,7 @@ public class NewGameScreen extends JFrame {
         theLanduffTownDescription.setRows(2);
         theLanduffTownDescription.setLineWrap(true);
         theLanduffTownDescription.setWrapStyleWord(true);
-        theLanduffTownDescription.setFont(new Font("Arial", Font.ITALIC, 14));
+        theLanduffTownDescription.setFont(new Font("Arial", Font.ITALIC, MEDIUM_FONT_SIZE));
         landuffTownPanel.add(theLanduffTownDescription, BorderLayout.SOUTH);
         scenarioRadioPanel.add(landuffTownPanel);
         //Millenium Dorf City Scenario.
@@ -148,7 +151,7 @@ public class NewGameScreen extends JFrame {
         theMDorfCityDescription.setRows(2);
         theMDorfCityDescription.setLineWrap(true);
         theMDorfCityDescription.setWrapStyleWord(true);
-        theMDorfCityDescription.setFont(new Font("Arial", Font.ITALIC, 14));
+        theMDorfCityDescription.setFont(new Font("Arial", Font.ITALIC, MEDIUM_FONT_SIZE));
         millDorfPanel.add(theMDorfCityDescription, BorderLayout.SOUTH);
         scenarioRadioPanel.add(millDorfPanel);
         //Longts City Scenario.
@@ -163,7 +166,7 @@ public class NewGameScreen extends JFrame {
         theLongtsCityDescription.setRows(2);
         theLongtsCityDescription.setLineWrap(true);
         theLongtsCityDescription.setWrapStyleWord(true);
-        theLongtsCityDescription.setFont(new Font("Arial", Font.ITALIC, 14));
+        theLongtsCityDescription.setFont(new Font("Arial", Font.ITALIC, MEDIUM_FONT_SIZE));
         longtsCityPanel.add(theLongtsCityDescription, BorderLayout.SOUTH);
         scenarioRadioPanel.add(longtsCityPanel);
         //Add scenarioRadioPanel to scenarioPanel.

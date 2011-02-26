@@ -24,6 +24,10 @@ public class SplashScreen extends JFrame {
     private JLabel theLoadingLabel;
     private JLabel theCopyrightLabel;
     
+    private static final int DIMENSION_SPACER = 10;
+    private static final int COPYRIGHT_FONT_SIZE = 10;
+    private static final int LOADING_IMAGE_BORDER = 120;
+    
     /**
      * Create a new splash screen.
      * @param isAboutScreen a <code>boolean</code> which is true iff this is the about screen rather than splash screen at beginning.
@@ -50,7 +54,7 @@ public class SplashScreen extends JFrame {
         JPanel centrePanel = new JPanel();
         centrePanel.setLayout ( new BoxLayout ( centrePanel, BoxLayout.PAGE_AXIS ) );
         centrePanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.black,1), BorderFactory.createEmptyBorder(5,5,5,5)));
-        centrePanel.add(Box.createRigidArea(new Dimension(0,10))); //Spacer.
+        centrePanel.add(Box.createRigidArea(new Dimension(0,DIMENSION_SPACER))); //Spacer.
         centrePanel.setBackground(Color.WHITE);
         
         //Construct logo panel to add to the centre panel.
@@ -74,7 +78,7 @@ public class SplashScreen extends JFrame {
         JPanel busPanel = new JPanel();
         busPanel.setBackground(Color.WHITE);
         if ( isAboutScreen ) { theBusDisplay = new ImageDisplay("abouttransparent.png",60,0); 
-    	} else { theBusDisplay = new ImageDisplay("loadingtransparent.png",120,0); }
+    	} else { theBusDisplay = new ImageDisplay("loadingtransparent.png",LOADING_IMAGE_BORDER,0); }
         theBusDisplay.setSize(450,340);
         theBusDisplay.setBackground(Color.WHITE);
         busPanel.add(theBusDisplay);
@@ -93,7 +97,7 @@ public class SplashScreen extends JFrame {
         JPanel copyrightPanel = new JPanel();
         copyrightPanel.setBackground(Color.WHITE);
         theCopyrightLabel = new JLabel("http://trams.sourceforge.net");
-        theCopyrightLabel.setFont(new Font("Arial", Font.PLAIN, 10));
+        theCopyrightLabel.setFont(new Font("Arial", Font.PLAIN, COPYRIGHT_FONT_SIZE));
         copyrightPanel.add(theCopyrightLabel);
         centrePanel.add(copyrightPanel);
         

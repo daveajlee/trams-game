@@ -15,6 +15,8 @@ public class Stop {
 	private String stopName;
     private Calendar stopTime;
     
+    private static final int MAX_SINGLE_DIGIT = 10;
+    
     public Stop ( ) {
     	
     }
@@ -76,7 +78,7 @@ public class Stop {
     public String getDisplayStopTime( ) {
         int minute = stopTime.get(Calendar.MINUTE);
         String min;
-        if ( minute < 10 ) {
+        if ( minute < MAX_SINGLE_DIGIT ) {
             min = "0" + minute;
         } else {
             min = "" + minute;

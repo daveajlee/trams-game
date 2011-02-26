@@ -16,6 +16,8 @@ public class LoadingScreen extends JFrame implements Runnable {
 	private JLabel theLoadingLabel;
     private JLabel thePleaseWaitLabel;
     
+    private static final int DIMENSION_SPACER = 10;
+    
     /**
      * Create a new loading screen.
      */
@@ -35,7 +37,7 @@ public class LoadingScreen extends JFrame implements Runnable {
         //Get a container to add things to.
         Container c = this.getContentPane();
         c.setBackground(Color.WHITE);
-        c.add(Box.createRigidArea(new Dimension(0,10))); //Spacer.
+        c.add(Box.createRigidArea(new Dimension(0,DIMENSION_SPACER))); //Spacer.
         
         //Create one JPanel with border layout.
         JPanel layoutPanel = new JPanel(new BorderLayout());
