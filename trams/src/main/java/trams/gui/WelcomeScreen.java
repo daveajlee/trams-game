@@ -23,6 +23,8 @@ public class WelcomeScreen extends JFrame {
     private ImageDisplay theLoadBusDisplay;
     private ImageDisplay theExitBusDisplay;
     
+    private static final int DIMENSION_SPACER = 10;
+    
     /**
      * Create a new welcome screen.
      * @param ui a <code>UserInterface</code> object with the current user interface.
@@ -53,7 +55,7 @@ public class WelcomeScreen extends JFrame {
         //Get a container to add things to.
         Container c = this.getContentPane();
         c.setBackground(Color.WHITE);
-        c.add(Box.createRigidArea(new Dimension(0,10))); //Spacer.
+        c.add(Box.createRigidArea(new Dimension(0,DIMENSION_SPACER))); //Spacer.
         
         //Create top, centre and bottom panels to add things to.
         JPanel topPanel = new JPanel();
@@ -96,7 +98,7 @@ public class WelcomeScreen extends JFrame {
         });
         busPanel.add(theNewBusDisplay);
         newPanel.add(busPanel);
-        newPanel.add(Box.createRigidArea(new Dimension(0,10))); //Spacer.
+        newPanel.add(Box.createRigidArea(new Dimension(0,DIMENSION_SPACER))); //Spacer.
         centrePanel.add(newPanel);
         
         
@@ -121,7 +123,7 @@ public class WelcomeScreen extends JFrame {
         });
         busLoadPanel.add(theLoadBusDisplay);
         loadPanel.add(busLoadPanel);
-        loadPanel.add(Box.createRigidArea(new Dimension(0,10))); //Spacer.
+        loadPanel.add(Box.createRigidArea(new Dimension(0,DIMENSION_SPACER))); //Spacer.
         centrePanel.add(loadPanel);
         
         //Create exit panel with image and label first.
@@ -143,7 +145,7 @@ public class WelcomeScreen extends JFrame {
         });
         busExitPanel.add(theExitBusDisplay);
         exitPanel.add(busExitPanel);
-        exitPanel.add(Box.createRigidArea(new Dimension(0,10))); //Spacer.
+        exitPanel.add(Box.createRigidArea(new Dimension(0,DIMENSION_SPACER))); //Spacer.
         bottomPanel.add(exitPanel);
         bottomPanel.addMouseListener ( new MouseListener () {
             public void mouseClicked(MouseEvent e) {

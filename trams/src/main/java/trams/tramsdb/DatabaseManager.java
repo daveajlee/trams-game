@@ -12,6 +12,8 @@ import java.util.*;
 public class DatabaseManager {
 	
 	private static final double DEPRECIATION_FACTOR = 0.006;
+	private static final int PASSENGER_SATISFACTION = 100;
+	private static final int FREQUENCY = 15;
 
     public static void main(String[] args) {
         DatabaseManager mgr = new DatabaseManager();
@@ -19,7 +21,7 @@ public class DatabaseManager {
         mgr.createAndStoreDriver("Dave Lee", 40, Calendar.getInstance());
         mgr.createAndStoreStop("Rathaus Pankow", Calendar.getInstance());
         mgr.createAndStoreService();
-        mgr.createAndStoreServicePattern("Mon-Fri","2,3,4,5,6","Rathaus Pankow","S + U Pankow",Calendar.getInstance(),Calendar.getInstance(),15,3);
+        mgr.createAndStoreServicePattern("Mon-Fri","2,3,4,5,6","Rathaus Pankow","S + U Pankow",Calendar.getInstance(),Calendar.getInstance(),FREQUENCY,3);
         //ServicePattern sp = new ServicePattern("Mon-Fri","2,3,4,5,6","Rathaus Pankow","S + U Pankow",Calendar.getInstance(),Calendar.getInstance(),15,3);
         //mgr.createAndStoreTimetable("myTimetable", Calendar.getInstance(), Calendar.getInstance(), sp);
         //mgr.createAndStoreRouteSchedule("2A", 1, 5);
@@ -37,7 +39,7 @@ public class DatabaseManager {
         vehicles.add(mgr.createAndStoreVehicle("CV58 2XD", Calendar.getInstance(), DEPRECIATION_FACTOR, "image.png", "Mercedes", 40, 60, 200.99));
         List<Driver> drivers = new ArrayList<Driver>();
         drivers.add(mgr.createAndStoreDriver("Dave Lee", 40, Calendar.getInstance()));
-        mgr.createAndStoreScenarios(routes, vehicles, drivers, 100, "Dave Lee", 20000.00);
+        mgr.createAndStoreScenarios(routes, vehicles, drivers, PASSENGER_SATISFACTION, "Dave Lee", 20000.00);
         
         //mgr.createAndStoreService();
         mgr.createAndStoreMessage("Subject", "Text", "Sender", "Folder", "Date");
@@ -186,7 +188,7 @@ public class DatabaseManager {
         theRouteSchedulesList.add(createAndStoreRouteSchedule("155", 1, 0));
         theRoute.setRouteSchedules(theRouteSchedulesList);
         theRoute.addAllocation(theRouteSchedulesList.get(0).toString(), createAndStoreVehicle("CV58 2XD", Calendar.getInstance(), DEPRECIATION_FACTOR, "image.png", "Mercedes", 40, 60, 200.99));
-        ServicePattern sp = new ServicePattern("Mon-Fri","2,3,4,5,6","Rathaus Pankow","S + U Pankow",Calendar.getInstance(),Calendar.getInstance(),15,3);
+        ServicePattern sp = new ServicePattern("Mon-Fri","2,3,4,5,6","Rathaus Pankow","S + U Pankow",Calendar.getInstance(),Calendar.getInstance(),FREQUENCY,3);
         theRoute.addTimetable("myTimetable", createAndStoreTimetable("myTimetable", Calendar.getInstance(), Calendar.getInstance(), sp));
         
         //session.save(theRoute);

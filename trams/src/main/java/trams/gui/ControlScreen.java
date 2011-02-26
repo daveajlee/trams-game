@@ -70,6 +70,12 @@ public class ControlScreen extends ButtonBar {
     private boolean redrawOnRouteChange = true;
     
     private Logger logger;
+    
+    private static final int MAX_PERCENT = 100;
+    private static final int MAX_SIM_SPEED = 1000;
+    private static final int ENTRY_FONT_SIZE = 12;
+    private static final int MEDIUM_FONT_SIZE = 14;
+    private static final int LARGE_FONT_SIZE = 15;
 
     /**
      * Create a new control screen.
@@ -224,7 +230,7 @@ public class ControlScreen extends ButtonBar {
         //Create passenger satisfaction bar.
         JPanel passengerSatisfactionPanel = new JPanel();
         passengerSatisfactionPanel.setBackground(Color.WHITE);
-        thePassengerSatisfactionBar = new JProgressBar(0, 100);
+        thePassengerSatisfactionBar = new JProgressBar(0, MAX_PERCENT);
         thePassengerSatisfactionBar.setValue(theInterface.getScenario().getPassengerSatisfaction());
         thePassengerSatisfactionBar.setString("Passenger Satisfaction Rating - " + thePassengerSatisfactionBar.getValue() + "%");
         thePassengerSatisfactionBar.setFont(new Font("Arial", Font.ITALIC, 20));
@@ -236,7 +242,7 @@ public class ControlScreen extends ButtonBar {
         bottomInfoPanel.setBackground(Color.WHITE);
         DecimalFormat form = new DecimalFormat("0.00");
         theBalanceLabel = new JLabel("Balance: €" + form.format(theInterface.getBalance()));
-        theBalanceLabel.setFont(new Font("Arial", Font.BOLD, 12));
+        theBalanceLabel.setFont(new Font("Arial", Font.BOLD, ENTRY_FONT_SIZE));
         bottomInfoPanel.add(theBalanceLabel);
         JButton resignButton = new JButton("Resign");
         resignButton.addActionListener( new ActionListener() {
@@ -473,7 +479,7 @@ public class ControlScreen extends ButtonBar {
         datePanel.setBackground(Color.WHITE);
         //Create date heading.
         JLabel dateLabel = new JLabel("Date:");
-        dateLabel.setFont(new Font("Arial", Font.BOLD, 14));
+        dateLabel.setFont(new Font("Arial", Font.BOLD, MEDIUM_FONT_SIZE));
         datePanel.add(dateLabel);
         //Create combo box with date.
         theDateModel = new DefaultComboBoxModel();
@@ -485,7 +491,7 @@ public class ControlScreen extends ButtonBar {
             }
         }
         theDateBox = new JComboBox(theDateModel);
-        theDateBox.setFont(new Font("Arial", Font.PLAIN, 12));
+        theDateBox.setFont(new Font("Arial", Font.PLAIN, ENTRY_FONT_SIZE));
         theDateBox.addItemListener( new ItemListener() {
             public void itemStateChanged ( ItemEvent e ) {
                 theMessages = theInterface.getMessages(theFoldersBox.getSelectedItem().toString(),theDateBox.getSelectedItem().toString(),theMessageTypeBox.getSelectedItem().toString());
@@ -511,11 +517,11 @@ public class ControlScreen extends ButtonBar {
         messageTypePanel.setBackground(Color.WHITE);
         //Create message type heading.
         JLabel messageTypeLabel = new JLabel("Message Type:");
-        messageTypeLabel.setFont(new Font("Arial", Font.BOLD, 14));
+        messageTypeLabel.setFont(new Font("Arial", Font.BOLD, MEDIUM_FONT_SIZE));
         messageTypePanel.add(messageTypeLabel);
         //Create combo box with message types.
         theMessageTypeBox = new JComboBox(new String[] { "Council", "Vehicle" });
-        theMessageTypeBox.setFont(new Font("Arial", Font.PLAIN, 12));
+        theMessageTypeBox.setFont(new Font("Arial", Font.PLAIN, ENTRY_FONT_SIZE));
         theMessageTypeBox.addItemListener ( new ItemListener() {
             public void itemStateChanged ( ItemEvent e ) {
                 theMessages = theInterface.getMessages(theFoldersBox.getSelectedItem().toString(),theDateBox.getSelectedItem().toString(),theMessageTypeBox.getSelectedItem().toString());
@@ -541,11 +547,11 @@ public class ControlScreen extends ButtonBar {
         foldersPanel.setBackground(Color.WHITE);
         //Create folders heading.
         JLabel foldersLabel = new JLabel("Folders:");
-        foldersLabel.setFont(new Font("Arial", Font.BOLD, 14));
+        foldersLabel.setFont(new Font("Arial", Font.BOLD, MEDIUM_FONT_SIZE));
         foldersPanel.add(foldersLabel);
         //Create combo box with folders list.
         theFoldersBox = new JComboBox(new String[] { "Inbox", "Sent Items" });
-        theFoldersBox.setFont(new Font("Arial", Font.PLAIN, 12));
+        theFoldersBox.setFont(new Font("Arial", Font.PLAIN, ENTRY_FONT_SIZE));
         theFoldersBox.addItemListener ( new ItemListener() {
             public void itemStateChanged ( ItemEvent e ) {
                 theMessages = theInterface.getMessages(theFoldersBox.getSelectedItem().toString(),theDateBox.getSelectedItem().toString(),theMessageTypeBox.getSelectedItem().toString());
@@ -590,7 +596,7 @@ public class ControlScreen extends ButtonBar {
         } else {
             theMessagesArea.setText(theMessages.get(theMessagesList.getSelectedIndex()).getText());
         }
-        theMessagesArea.setFont(new Font("Arial", Font.ITALIC, 12));
+        theMessagesArea.setFont(new Font("Arial", Font.ITALIC, ENTRY_FONT_SIZE));
         theMessagesArea.setWrapStyleWord(true);
         theMessagesArea.setLineWrap(true);
         //messagesArea.setPreferredSize(theGraphicsPanel.getPreferredSize());
@@ -658,7 +664,7 @@ public class ControlScreen extends ButtonBar {
                 stopPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.black,1), BorderFactory.createEmptyBorder(5,5,5,5)));
                 stopPanel.setBackground(Color.LIGHT_GRAY);
                 JLabel stopLabel = new JLabel(theInterface.getStopName(theRouteList.getSelectedValue().toString().split(":")[0], i));
-                stopLabel.setFont(new Font("Arial", Font.BOLD, 15));
+                stopLabel.setFont(new Font("Arial", Font.BOLD, LARGE_FONT_SIZE));
                 stopPanel.add(stopLabel);
                 theStopPanels.add(stopPanel);
                 stopRowPanel.add(stopPanel);
@@ -852,7 +858,7 @@ public class ControlScreen extends ButtonBar {
         simulatorControlPanel.setBackground(Color.WHITE);
         //Simulator Options Label.
         theSimulatorOptionsLabel = new JLabel("Simulator Options: ");
-        theSimulatorOptionsLabel.setFont(new Font("Arial", Font.BOLD, 15));
+        theSimulatorOptionsLabel.setFont(new Font("Arial", Font.BOLD, LARGE_FONT_SIZE));
         simulatorControlPanel.add(theSimulatorOptionsLabel);
         //Slow Simulation Button.
         theSlowSimulationButton = new JButton("<<");
@@ -885,7 +891,7 @@ public class ControlScreen extends ButtonBar {
         theSpeedUpSimulationButton.addActionListener(new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
                 theInterface.speedUpSimulation();
-                if ( theInterface.getSimulationSpeed() <= 1000 ) {
+                if ( theInterface.getSimulationSpeed() <= MAX_SIM_SPEED ) {
                     theSpeedUpSimulationButton.setEnabled(false);
                 }
                 theSlowSimulationButton.setEnabled(true);
@@ -894,11 +900,11 @@ public class ControlScreen extends ButtonBar {
         simulatorControlPanel.add(theSpeedUpSimulationButton);
         //Time Increment Label.
         theTimeIncrementLabel = new JLabel("      Time Increment: ");
-        theTimeIncrementLabel.setFont(new Font("Arial", Font.BOLD, 15));
+        theTimeIncrementLabel.setFont(new Font("Arial", Font.BOLD, LARGE_FONT_SIZE));
         simulatorControlPanel.add(theTimeIncrementLabel);
         //Time Increment Spinner Field.
         theTimeIncrementSpinner = new JSpinner(new SpinnerNumberModel(theSimulator.getIncrement(),5,60,5));
-        theTimeIncrementSpinner.setFont(new Font("Arial", Font.BOLD, 15));
+        theTimeIncrementSpinner.setFont(new Font("Arial", Font.BOLD, LARGE_FONT_SIZE));
         theTimeIncrementSpinner.addChangeListener(new ChangeListener() {
             public void stateChanged ( ChangeEvent ce ) {
                 theSimulator.setIncrement(Integer.parseInt(theTimeIncrementSpinner.getValue().toString()));

@@ -30,6 +30,10 @@ public class HelpScreen extends JFrame {
     private JEditorPane theDisplayPane;
     private UserInterface theInterface;
     
+    private static final int DIMENSION_SPACER = 10;
+    private static final int ROW_COUNT = 10;
+    private static final int MEDIUM_FONT_SIZE = 14;
+    
     /**
      * Default constructor for HelpScreen which creates the help screen interface and displays it to the user.
      * @param ui a <code>UserInterface</code> object.
@@ -64,25 +68,25 @@ public class HelpScreen extends JFrame {
         //Create a panel to display components.
         JPanel dialogPanel = new JPanel();
         dialogPanel.setLayout( new BoxLayout ( dialogPanel, BoxLayout.PAGE_AXIS ) );
-        dialogPanel.add(Box.createRigidArea(new Dimension(0, 10))); //Spacer.
+        dialogPanel.add(Box.createRigidArea(new Dimension(0, DIMENSION_SPACER))); //Spacer.
         
         //Create grid layout - 2 to 1.
         JPanel helpPanel = new JPanel();
         helpPanel.setLayout(new BoxLayout( helpPanel, BoxLayout.LINE_AXIS ) );
-        helpPanel.add(Box.createRigidArea(new Dimension(10, 0)));
+        helpPanel.add(Box.createRigidArea(new Dimension(DIMENSION_SPACER, 0)));
         
         //Create left hand panel.
         JPanel leftPanel = new JPanel();
         leftPanel.setLayout( new BoxLayout ( leftPanel, BoxLayout.PAGE_AXIS ) );
-        leftPanel.add(Box.createRigidArea(new Dimension(0, 10))); //Spacer.
+        leftPanel.add(Box.createRigidArea(new Dimension(0, DIMENSION_SPACER))); //Spacer.
         
         //Add search label.
         JPanel searchLabelPanel = new JPanel();
         theSearchLabel = new JLabel("Search for Help...");
-        theSearchLabel.setFont(new Font("Arial", Font.BOLD, 14));
+        theSearchLabel.setFont(new Font("Arial", Font.BOLD, MEDIUM_FONT_SIZE));
         searchLabelPanel.add(theSearchLabel);
         leftPanel.add(searchLabelPanel);
-        leftPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+        leftPanel.add(Box.createRigidArea(new Dimension(0, DIMENSION_SPACER)));
         
         //Add search field.
         theSearchField = new JTextField();
@@ -98,10 +102,10 @@ public class HelpScreen extends JFrame {
         //Add search label.
         JPanel topicLabelPanel = new JPanel();
         theTopicsLabel = new JLabel("Choose a Help Topic...");
-        theTopicsLabel.setFont(new Font("Arial", Font.BOLD, 14));
+        theTopicsLabel.setFont(new Font("Arial", Font.BOLD, MEDIUM_FONT_SIZE));
         topicLabelPanel.add(theTopicsLabel);
         leftPanel.add(topicLabelPanel);
-        leftPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+        leftPanel.add(Box.createRigidArea(new Dimension(0, DIMENSION_SPACER)));
         
         //Add topics list.
         JPanel topicListPanel = new JPanel(new BorderLayout());
@@ -114,7 +118,7 @@ public class HelpScreen extends JFrame {
         theTopicsModel.addElement("Vehicle Info Screen"); theTopicsModel.addElement("Web Site");
         /*theTopicsModel.addElement("Load Output"); theTopicsModel.addElement("Save Output");*/
         theTopicsList = new JList(theTopicsModel);
-        theTopicsList.setVisibleRowCount(10);
+        theTopicsList.setVisibleRowCount(ROW_COUNT);
         theTopicsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         //Default.
         theTopicsList.setSelectedIndex(0);
@@ -167,17 +171,17 @@ public class HelpScreen extends JFrame {
         JScrollPane topicsPane = new JScrollPane(theTopicsList);
         topicListPanel.add(topicsPane, BorderLayout.CENTER);
         leftPanel.add(topicListPanel);
-        leftPanel.add(Box.createRigidArea(new Dimension(0, 10))); //Spacer.
+        leftPanel.add(Box.createRigidArea(new Dimension(0, DIMENSION_SPACER))); //Spacer.
         leftPanel.setMaximumSize(new Dimension(450,400));
         
         //Add left panel to help panel.
         helpPanel.add(leftPanel);
-        helpPanel.add(Box.createRigidArea(new Dimension(10, 0)));
+        helpPanel.add(Box.createRigidArea(new Dimension(DIMENSION_SPACER, 0)));
         
         //Create right pane.
         JPanel rightPanel = new JPanel();
         rightPanel.setLayout( new BoxLayout ( rightPanel, BoxLayout.PAGE_AXIS ) );
-        rightPanel.add(Box.createRigidArea(new Dimension(0, 10))); //Spacer
+        rightPanel.add(Box.createRigidArea(new Dimension(0, DIMENSION_SPACER))); //Spacer
         //Add editor pane.
         try {
             theDisplayPane = new JEditorPane(HelpScreen.class.getResource("/trams/help/intro.html")); 
@@ -189,7 +193,7 @@ public class HelpScreen extends JFrame {
         JScrollPane displayScroll = new JScrollPane(theDisplayPane);
         displayScroll.setMaximumSize(new Dimension(650,390));
         rightPanel.add(displayScroll);
-        rightPanel.add(Box.createRigidArea(new Dimension(0, 10))); //Spacer.
+        rightPanel.add(Box.createRigidArea(new Dimension(0, DIMENSION_SPACER))); //Spacer.
         rightPanel.setMaximumSize(new Dimension(650,390));
         helpPanel.add(rightPanel);
         helpPanel.setMaximumSize(new Dimension(650,390));

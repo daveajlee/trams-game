@@ -15,6 +15,9 @@ public class SimTime implements java.io.Serializable {
 	private Calendar theCurrentDateTime;
     private int theTimeIncrement;
     
+    private static final int MAX_SINGLE_DIGIT = 10;
+    private static final int NUM_AM_HOURS = 12;
+    
     /**
      * Create a new simulated time.
      * @param timeIncrement a <code>int</code> with the time increment.
@@ -119,7 +122,7 @@ public class SimTime implements java.io.Serializable {
      */
     private String getHour ( int hour, int ampm ) {
         if ( hour == 0 && ampm == Calendar.PM ) {
-            return "" + 12;
+            return "" + NUM_AM_HOURS;
         } 
         return "" + hour;
     }
@@ -130,7 +133,7 @@ public class SimTime implements java.io.Serializable {
      * @return a <code>String</code> with the formatted minutes.
      */
     private String getMinute ( int minute ) {
-        if ( minute < 10 ) { return "0" + minute; }
+        if ( minute < MAX_SINGLE_DIGIT ) { return "0" + minute; }
         return "" + minute;
     } 
     

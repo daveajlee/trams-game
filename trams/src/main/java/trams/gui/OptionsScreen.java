@@ -28,6 +28,9 @@ public class OptionsScreen extends JFrame {
     //Difficulty Variables.
     private int numDifficultyLevels = 4;
     
+    private static final int DIMENSION_SPACER = 10;
+    private static final int DESCRIPTION_FONT_SIZE = 11;
+    
     /**
      * Create a new options screen.
      * @param ui a <code>UserInterface</code> object with the current user interface.
@@ -59,7 +62,7 @@ public class OptionsScreen extends JFrame {
         //Get a container to add things to.
         Container c = this.getContentPane();
         c.setBackground(Color.WHITE);
-        c.add(Box.createRigidArea(new Dimension(0,10))); //Spacer.
+        c.add(Box.createRigidArea(new Dimension(0,DIMENSION_SPACER))); //Spacer.
         
         //Create screen panel to add things to.
         JPanel screenPanel = new JPanel();
@@ -105,7 +108,7 @@ public class OptionsScreen extends JFrame {
             difficultDescrips[i].setLineWrap(true);
             difficultDescrips[i].setWrapStyleWord(true);
             difficultDescrips[i].setEditable(false);
-            difficultDescrips[i].setFont(new Font("Arial", Font.ITALIC, 11));
+            difficultDescrips[i].setFont(new Font("Arial", Font.ITALIC, DESCRIPTION_FONT_SIZE));
             difficultyPanel.add(difficultDescrips[i]);
         }
         if ( theInterface.getDifficultyLevel().equalsIgnoreCase("Easy") ) {

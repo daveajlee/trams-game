@@ -23,6 +23,8 @@ public class ScenarioDescriptionScreen extends JFrame {
     private JTextArea theScenarioDescriptionArea;
     private JButton theContinueButton;
     
+    private static final int DIMENSION_SPACER = 10;
+    
     /**
      * Create a new scenario description screen.
      * @param ui a <code>UserInterface</code> object with the current user interface.
@@ -53,7 +55,7 @@ public class ScenarioDescriptionScreen extends JFrame {
         //Get a container to add things to.
         Container c = this.getContentPane();
         c.setBackground(Color.WHITE);
-        c.add(Box.createRigidArea(new Dimension(0,10))); //Spacer.
+        c.add(Box.createRigidArea(new Dimension(0,DIMENSION_SPACER))); //Spacer.
         
         //Create a screen panel in box layout to store everything.
         JPanel screenPanel = new JPanel();

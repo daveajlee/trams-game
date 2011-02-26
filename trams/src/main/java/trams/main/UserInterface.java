@@ -41,6 +41,8 @@ public class UserInterface implements Runnable {
     //This is where we keep the tip messages.
     LinkedList<String> theTipMessages = new LinkedList<String>();
     
+    private static final int MAX_SIM_SPEED = 1000;
+    
     /**
      * Create a new user interface - default constructor.
      */
@@ -171,7 +173,7 @@ public class UserInterface implements Runnable {
      * Speed up the simulation!
      */
     public void speedUpSimulation() {
-        if ( theSimulationSpeed > 1000 ) {
+        if ( theSimulationSpeed > MAX_SIM_SPEED ) {
             theSimulationSpeed -= 250;
         }
     }

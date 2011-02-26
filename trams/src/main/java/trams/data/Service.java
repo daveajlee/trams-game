@@ -14,6 +14,9 @@ public class Service {
 	private int serviceId;
     private List<Stop> serviceStops;
     
+    private static final int MAX_SINGLE_DIGIT = 10;
+    private static final int NUM_AM_HOURS = 12;
+    
     /**
      * Create a new service.
      * @param serviceId a <code>int</code> with the service id.
@@ -243,9 +246,9 @@ public class Service {
         //Store time diff.
         long timeDiff = 0;
         if ( firstTime.get(Calendar.AM_PM) == Calendar.AM && secondTime.get(Calendar.AM_PM) == Calendar.PM ) {
-            timeDiff = -(12 * (60 * 60));
+            timeDiff = -(NUM_AM_HOURS * (60 * 60));
         } else if ( secondTime.get(Calendar.AM_PM) == Calendar.AM && firstTime.get(Calendar.AM_PM) == Calendar.PM ) {
-            timeDiff = 12 *(60 * 60);
+            timeDiff = NUM_AM_HOURS *(60 * 60);
         }
         long diffHour = (firstTime.get(Calendar.HOUR) - secondTime.get(Calendar.HOUR) ) * (60 * 60);
         long diffMins = (firstTime.get(Calendar.MINUTE) - secondTime.get(Calendar.MINUTE)) * 60;
@@ -335,7 +338,7 @@ public class Service {
      */
     private String getHour ( int hour, int ampm ) {
         if ( hour == 0 && ampm == Calendar.PM ) {
-            return "" + 12;
+            return "" + NUM_AM_HOURS;
         } 
         return "" + hour;
     }
@@ -346,7 +349,7 @@ public class Service {
      * @return a <code>String</code> with formatted minute.
      */
     private String getMinute ( int minute ) {
-        if ( minute < 10 ) { return "0" + minute; }
+        if ( minute < MAX_SINGLE_DIGIT ) { return "0" + minute; }
         return "" + minute;
     } 
     

@@ -28,6 +28,9 @@ public class MakeContactScreen extends JFrame {
     //Stored route detail.
     private RouteSchedule theRouteDetail;
     
+    private static final int DIMENSION_SPACER = 10;
+    private static final int SMALL_FONT_SIZE = 12;
+    
     /**
      * Create a new make contact screen.
      * @param ui a <code>UserInterface</code> object.
@@ -63,7 +66,7 @@ public class MakeContactScreen extends JFrame {
         //Get a container to add things to.
         Container c = this.getContentPane();
         c.setBackground(Color.WHITE);
-        c.add(Box.createRigidArea(new Dimension(0,10))); //Spacer.
+        c.add(Box.createRigidArea(new Dimension(0,DIMENSION_SPACER))); //Spacer.
         
         //Create screen panel to add things to.
         JPanel screenPanel = new JPanel();
@@ -84,7 +87,7 @@ public class MakeContactScreen extends JFrame {
         JPanel stopPanel = new JPanel();
         stopPanel.setBackground(Color.WHITE);
         theStopLabel = new JLabel("Stop");
-        theStopLabel.setFont(new Font("Arial", Font.BOLD, 12));
+        theStopLabel.setFont(new Font("Arial", Font.BOLD, SMALL_FONT_SIZE));
         stopPanel.add(theStopLabel);
         theStopBox = new JComboBox(getListOfStops());
         stopPanel.add(theStopBox);
@@ -123,7 +126,7 @@ public class MakeContactScreen extends JFrame {
         theCommunicationArea.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         theCommunicationArea.setText("Control: Vehicle " + theInterface.getAllocatedVehicle(theRouteDetail.toString()).getRegistrationNumber() + ", please state your current position. Over!");
         theCommunicationArea.setText(theCommunicationArea.getText() + "\n\n Vehicle " + theInterface.getAllocatedVehicle(theRouteDetail.toString()).getRegistrationNumber() + ": At " + theRouteDetail.getCurrentStop(theInterface.getSimulator().getCurrentSimTime(), theInterface.getSimulator())[0] + " heading towards " + getCurrentDestination() + " with delay of " + theInterface.getAllocatedVehicle(theRouteDetail.toString()).getDelay() + " mins. Over!");
-        theCommunicationArea.setFont(new Font("Arial", Font.ITALIC, 12));
+        theCommunicationArea.setFont(new Font("Arial", Font.ITALIC, SMALL_FONT_SIZE));
         theCommunicationArea.setEditable(false);
         theCommunicationArea.setLineWrap(true);
         theCommunicationArea.setWrapStyleWord(true);
