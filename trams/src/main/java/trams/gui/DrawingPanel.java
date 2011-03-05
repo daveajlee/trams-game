@@ -1,7 +1,10 @@
 package trams.gui;
 
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Graphics;
+
+import javax.swing.JPanel;
+
 
 /**
  * Class to represent the drawing part of the control screen.

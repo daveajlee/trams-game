@@ -1,6 +1,9 @@
 package trams.data;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Random;
 
 import trams.simulation.Simulator;
 
@@ -173,10 +176,20 @@ public class RouteSchedule {
         double prob = randNumGen.nextDouble();
         //Create probability array.
         double[] ratioArray = new double[0];
-        if ( simulator.getDifficultyLevel().equalsIgnoreCase("Easy") ) { ratioArray = new double[] { PERCENT_25, PERCENT_85, PERCENT_95 }; 
-        } else if ( simulator.getDifficultyLevel().equalsIgnoreCase("Intermediate") ) { ratioArray = new double[] { PERCENT_20, PERCENT_85, PERCENT_95 }; 
-        } else if ( simulator.getDifficultyLevel().equalsIgnoreCase("Medium") ) { ratioArray = new double[] { PERCENT_20, PERCENT_75, PERCENT_90 }; 
-        } else if ( simulator.getDifficultyLevel().equalsIgnoreCase("Hard") ) { ratioArray = new double[] { PERCENT_30, PERCENT_60, PERCENT_85 }; }
+        switch ( simulator.getDifficultyLevel() ) {
+        	case EASY:
+        		ratioArray = new double[] { PERCENT_25, PERCENT_85, PERCENT_95 };
+        		break;
+        	case INTERMEDIATE:
+        		ratioArray = new double[] { PERCENT_20, PERCENT_85, PERCENT_95 };
+        		break;
+        	case MEDIUM:
+        		ratioArray = new double[] { PERCENT_20, PERCENT_75, PERCENT_90 }; 
+        		break;
+        	case HARD:
+        		ratioArray = new double[] { PERCENT_30, PERCENT_60, PERCENT_85 };
+        		break;
+        }
         //With ratioArray[0] probability no delay change.
         if ( prob < ratioArray[0] ) { return; }
         //With ratioArray[1] probability - reduce delay by 1-5 mins.

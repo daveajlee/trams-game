@@ -1,6 +1,6 @@
 package trams.data;
 
-import java.util.*;
+import java.util.Calendar;
 
 /**
  * This class represents a Stop in the TraMS program.

@@ -1,8 +1,27 @@
 package trams.gui;
 
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.GridLayout;
+import java.awt.Image;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowAdapter;
+
+import javax.swing.Box;
+import javax.swing.ButtonGroup;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JTabbedPane;
+import javax.swing.JTextArea;
 
 import trams.main.*;
 
@@ -111,14 +130,19 @@ public class OptionsScreen extends JFrame {
             difficultDescrips[i].setFont(new Font("Arial", Font.ITALIC, DESCRIPTION_FONT_SIZE));
             difficultyPanel.add(difficultDescrips[i]);
         }
-        if ( theInterface.getDifficultyLevel().equalsIgnoreCase("Easy") ) {
-            theDifficultButtons[0].setSelected(true);
-        } else if ( theInterface.getDifficultyLevel().equalsIgnoreCase("Intermediate") ) {
-            theDifficultButtons[1].setSelected(true);
-        } else if ( theInterface.getDifficultyLevel().equalsIgnoreCase("Medium") ) {
-            theDifficultButtons[2].setSelected(true);
-        } else if ( theInterface.getDifficultyLevel().equalsIgnoreCase("Hard") ) {
-            theDifficultButtons[3].setSelected(true);
+        switch ( theInterface.getDifficultyLevel() ) {
+        	case EASY:
+        		theDifficultButtons[0].setSelected(true);
+        		break;
+        	case INTERMEDIATE:
+        		theDifficultButtons[1].setSelected(true);
+        		break;
+        	case MEDIUM:
+        		theDifficultButtons[2].setSelected(true);
+        		break;
+        	case HARD:
+        		theDifficultButtons[3].setSelected(true);
+        		break;
         }
         //Now add the difficulty panel to the tabbed panel.
         theOptionsTabbedPane.addTab("Difficulty", difficultyPanel);

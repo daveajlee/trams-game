@@ -1,7 +1,12 @@
 package trams.simulation;
 
-import java.util.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.LinkedList;
+import java.util.Locale;
 
+import trams.constants.DifficultyLevel;
 import trams.data.*;
 import trams.util.MyCalendarUtils;
 
@@ -17,10 +22,11 @@ public class Simulator implements java.io.Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private SimTime theSimTime;
+	private Calendar theSimTime;
+	private int theTimeIncrement;
     private Calendar thePreviousTime;
     private Scenario theCurrentScenario;
-    private String theDifficultyLevel = "Easy"; //Default to easy.
+    private DifficultyLevel theDifficultyLevel = DifficultyLevel.EASY; //Default to easy.
     
     private Logger logger = Logger.getLogger(Simulator.class);
 
@@ -32,8 +38,10 @@ public class Simulator implements java.io.Serializable {
      * @param newScenario a <code>Scenario</code> with the current scenario.
      */
     public Simulator ( Scenario newScenario ) {
-        theSimTime = new SimTime(15);
-        thePreviousTime = (Calendar) theSimTime.getCurrentTime().clone();
+    	//Default time is current time.
+    	theSimTime = Calendar.getInstance(new Locale("ENGLISH", "UK"));
+    	theTimeIncrement = 15;
+        thePreviousTime = (Calendar) theSimTime.clone();
         theCurrentScenario = newScenario;
         //Initialise queue here.
         theMessageQueue = new LinkedList<Message>();
@@ -47,11 +55,16 @@ public class Simulator implements java.io.Serializable {
      */
     public Simulator ( Scenario newScenario, String startTime, int timeIncrement ) {
         theCurrentScenario = newScenario;
-        String[] dateTimes = startTime.split("-");
-        String[] times = dateTimes[3].split(":");
-        Calendar theCalendar = new GregorianCalendar(Integer.parseInt(dateTimes[0]), Integer.parseInt(dateTimes[1])-1, Integer.parseInt(dateTimes[2]), Integer.parseInt(times[0]), Integer.parseInt(times[1]), 0); 
-        theSimTime = new SimTime(theCalendar, timeIncrement);
-        thePreviousTime = (Calendar) theSimTime.getCurrentTime().clone();
+        SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd-HH:mm", new Locale("ENGLISH", "UK"));
+        theSimTime = Calendar.getInstance();
+        try {
+        	theSimTime.setTime(dateFormatter.parse(startTime));
+        }
+        catch ( ParseException pe ) {
+        	pe.printStackTrace();
+        }
+        theTimeIncrement = timeIncrement;
+        thePreviousTime = (Calendar) theSimTime.clone();
         //Initialise queue here.
         theMessageQueue = new LinkedList<Message>();
     }
@@ -130,9 +143,9 @@ public class Simulator implements java.io.Serializable {
      */
     public void incrementTime ( ) {
         //Copy previous time first.
-        thePreviousTime = (Calendar) theSimTime.getCurrentTime().clone();
+        thePreviousTime = (Calendar) theSimTime.clone();
         //Increment time.
-        theSimTime.incrementTime();
+        theSimTime.add(Calendar.MINUTE, theTimeIncrement);
     }
     
     /**
@@ -140,7 +153,7 @@ public class Simulator implements java.io.Serializable {
      * @return a <code>int</code> with the current time increment.
      */
     public int getIncrement ( ) {
-        return theSimTime.getIncrement();
+        return theTimeIncrement;
     }
     
     /**
@@ -157,7 +170,7 @@ public class Simulator implements java.io.Serializable {
      * @param newIncrement a <code>int</code> with the new time increment.
      */
     public void setIncrement ( int newIncrement ) {
-        theSimTime.setIncrement(newIncrement);
+        theTimeIncrement = newIncrement;
     }
     
     /**
@@ -165,14 +178,14 @@ public class Simulator implements java.io.Serializable {
      * @return a <code>String</code> with the short date info.
      */
     public String getShortYear ( ) {
-        return MyCalendarUtils.getShortYear(theSimTime.getCurrentTime());
+        return MyCalendarUtils.getShortYear(theSimTime);
     }
     
     /**
      * Get the current difficulty level.
-     * @return a <code>String</code> with the difficulty level.
+     * @return a <code>DifficultyLevel</code> with the difficulty level.
      */
-    public String getDifficultyLevel ( ) {
+    public DifficultyLevel getDifficultyLevel ( ) {
         return theDifficultyLevel;
     }
     
@@ -181,7 +194,7 @@ public class Simulator implements java.io.Serializable {
      * @param diffLevel a <code>String</code> with the difficulty level.
      */
     public void setDifficultyLevel ( String diffLevel ) {
-        theDifficultyLevel = diffLevel;
+        theDifficultyLevel = DifficultyLevel.getDifficultyLevel(diffLevel);
     }
     
     /**
@@ -189,7 +202,7 @@ public class Simulator implements java.io.Serializable {
      * @return a <code>Calendar</code> representing the current simulated time.
      */
     public Calendar getCurrentSimTime ( ) {
-        return (Calendar) theSimTime.getCurrentTime().clone();
+        return (Calendar) theSimTime.clone();
     }
 
     /**
@@ -205,7 +218,7 @@ public class Simulator implements java.io.Serializable {
      * @return a <code>String</code> with the current display date.
      */
     public String getCurrentDisplaySimDay ( ) {
-        return MyCalendarUtils.getDateInfo(theSimTime.getCurrentTime());
+        return MyCalendarUtils.getDateInfo(theSimTime);
     }
 
     /**
@@ -221,7 +234,7 @@ public class Simulator implements java.io.Serializable {
      * @return a <code>String</code> with the current display date and time.
      */
     public String getCurrentDisplaySimTime ( ) {
-        return MyCalendarUtils.getDateInfo(theSimTime.getCurrentTime()) + " at " + MyCalendarUtils.getTimeInfo(theSimTime.getCurrentTime(), true);
+        return MyCalendarUtils.getDateInfo(theSimTime) + " at " + MyCalendarUtils.getTimeInfo(theSimTime, true);
     }
     
     /**
@@ -229,7 +242,7 @@ public class Simulator implements java.io.Serializable {
      * @return a <code>String</code> with the current date and time for stamping messages.
      */
     public String getMessageDisplaySimTime ( ) {
-        return MyCalendarUtils.getShortDate(theSimTime.getCurrentTime()) + " " + MyCalendarUtils.getTimeInfo(theSimTime.getCurrentTime(), true);
+        return MyCalendarUtils.getShortDate(theSimTime) + " " + MyCalendarUtils.getTimeInfo(theSimTime, true);
     }
     
 }

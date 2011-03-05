@@ -1,6 +1,6 @@
 package trams.util;
 
-import java.util.*;
+import java.util.Comparator;
 
 import trams.data.Driver;
 

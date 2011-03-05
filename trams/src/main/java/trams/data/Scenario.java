@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Calendar;
 
+import trams.constants.DifficultyLevel;
 import trams.simulation.Simulator;
 import trams.util.SortedRoutes;
 import trams.util.SortedVehicles;
@@ -466,7 +467,7 @@ public class Scenario {
      * @param difficultyLevel a <code>String</code> with the difficulty level.
      * @return a <code>int</code> with the passenger satisfaction level.
      */
-    public int computePassengerSatisfaction ( Calendar currentTime, String difficultyLevel ) {
+    public int computePassengerSatisfaction ( Calendar currentTime, DifficultyLevel difficultyLevel ) {
         //Essentially satisfaction is determined by the ability for vehicles to run on time.
         //Now count number of vehicles into three groups: 1 - 5 minutes late, 6 - 15 minutes late, 16+ minutes late.
         int numSmallLateVehicles = 0; int numMediumLateVehicles = 0; int numLargeLateVehicles = 0;
@@ -488,14 +489,19 @@ public class Scenario {
         int totalSubtract = 0;
 
         //Easy: numSmallLateVehicles / 2 and numMediumLateVehicles and numLargeLateVehicles*2.
-        if ( difficultyLevel.equalsIgnoreCase("Easy") ) {
-            totalSubtract = (numSmallLateVehicles/2) + numMediumLateVehicles + (numLargeLateVehicles*2);
-        } else if ( difficultyLevel.equalsIgnoreCase("Intermediate") ) {
-            totalSubtract = (numSmallLateVehicles) + (numMediumLateVehicles*2) + (numLargeLateVehicles*3);
-        } else if ( difficultyLevel.equalsIgnoreCase("Medium") ) {
-            totalSubtract = (numSmallLateVehicles*2) + (numMediumLateVehicles*3) + (numLargeLateVehicles*4);
-        } else if ( difficultyLevel.equalsIgnoreCase("Hard") ) {
-            totalSubtract = (numSmallLateVehicles*3) + (numMediumLateVehicles*4) + (numLargeLateVehicles*5);
+        switch ( difficultyLevel ) {
+        	case EASY:
+        		totalSubtract = (numSmallLateVehicles/2) + numMediumLateVehicles + (numLargeLateVehicles*2);
+        		break;
+        	case INTERMEDIATE:
+        		totalSubtract = (numSmallLateVehicles) + (numMediumLateVehicles*2) + (numLargeLateVehicles*3);
+        		break;
+        	case MEDIUM:
+        		 totalSubtract = (numSmallLateVehicles*2) + (numMediumLateVehicles*3) + (numLargeLateVehicles*4);
+        		 break;
+        	case HARD:
+        		totalSubtract = (numSmallLateVehicles*3) + (numMediumLateVehicles*4) + (numLargeLateVehicles*5);
+        		break;
         }
         //Subtract from passenger satisfaction.
         passengerSatisfaction -= totalSubtract;

@@ -1,8 +1,25 @@
 package trams.gui;
 
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.Image;
+import java.awt.Toolkit;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextArea;
+import javax.swing.SwingConstants;
 
 import trams.main.*;
 
@@ -78,12 +95,12 @@ public class ScenarioDescriptionScreen extends JFrame {
         screenPanel.add(welcomePanel);
         
         //Create the MDLabelPanel first of all.
-        JPanel MDLabelPanel = new JPanel();
-        MDLabelPanel.setBackground(Color.WHITE);
+        JPanel managingDirectorLabelPanel = new JPanel();
+        managingDirectorLabelPanel.setBackground(Color.WHITE);
         theMDLabel = new JLabel(theInterface.getScenario().getPlayerName() + " appointed Managing Director of " + theInterface.getScenario().getScenarioName());
         theMDLabel.setFont(new Font("Arial", Font.BOLD, 18));
-        MDLabelPanel.add(theMDLabel);
-        screenPanel.add(MDLabelPanel);
+        managingDirectorLabelPanel.add(theMDLabel);
+        screenPanel.add(managingDirectorLabelPanel);
         
         //Create the descriptionPanel.
         JPanel descriptionPanel = new JPanel();

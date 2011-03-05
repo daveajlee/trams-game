@@ -1,6 +1,12 @@
 package trams.gui;
 
-import java.awt.*;
+import java.awt.Canvas;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.MediaTracker;
+import java.awt.Toolkit;
+
 import org.apache.log4j.Logger;
 
 /**
