@@ -2,8 +2,8 @@ package trams.data;
 
 import java.util.Calendar;
 
-import trams.main.MyCalendarUtils;
 import trams.simulation.Simulator;
+import trams.util.MyCalendarUtils;
 
 
 public class Vehicle implements Cloneable {

@@ -138,14 +138,6 @@ public class ServicePattern {
     	}
         return false;
     }
-
-    /**
-     * Get the days of operations for this service pattern as a String.
-     * @return a <code>String</code> with the days of operation as a formatted String.
-     */
-    public String getDaysOfOperationAsString ( ) {
-        return daysOfOperation;
-    }
     
     /**
      * Get the return terminus - also the 1st selected stop.
@@ -170,14 +162,6 @@ public class ServicePattern {
     public Calendar getStartTime ( ) {
         return startTime;
     }
-
-    /**
-     * Get the start time of this service pattern as a String.
-     * @return a <code>String</code> with the start time.
-     */
-    public String getStartTimeInfo ( ) {
-        return startTime.get(Calendar.HOUR_OF_DAY) + ":" + startTime.get(Calendar.MINUTE);
-    }
     
     /**
      * Get the end time of this service pattern.
@@ -185,14 +169,6 @@ public class ServicePattern {
      */
     public Calendar getEndTime ( ) {
         return endTime;
-    }
-
-    /**
-     * Get the end time of this service pattern as a String.
-     * @return a <code>String</code> with the end time.
-     */
-    public String getEndTimeInfo ( ) {
-        return endTime.get(Calendar.HOUR_OF_DAY) + ":" + endTime.get(Calendar.MINUTE);
     }
     
     /**

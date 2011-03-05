@@ -3,6 +3,8 @@ package trams.simulation;
 import java.util.*;
 
 import trams.data.*;
+import trams.util.MyCalendarUtils;
+
 import org.apache.log4j.Logger;
 
 /**
@@ -147,7 +149,7 @@ public class Simulator implements java.io.Serializable {
      * @return a <code>String</code> with the formatted string.
      */
     public String formatDateString ( Calendar calDate ) {
-        return theSimTime.formatDateString(calDate);
+        return MyCalendarUtils.getDateInfo(calDate);
     }
     
     /**
@@ -163,7 +165,7 @@ public class Simulator implements java.io.Serializable {
      * @return a <code>String</code> with the short date info.
      */
     public String getShortYear ( ) {
-        return theSimTime.getShortYear();
+        return MyCalendarUtils.getShortYear(theSimTime.getCurrentTime());
     }
     
     /**
@@ -203,15 +205,15 @@ public class Simulator implements java.io.Serializable {
      * @return a <code>String</code> with the current display date.
      */
     public String getCurrentDisplaySimDay ( ) {
-        return theSimTime.getDateInfo();
+        return MyCalendarUtils.getDateInfo(theSimTime.getCurrentTime());
     }
 
     /**
      * Get the previous display date as a String.
      * @return a <code>String</code> with the previous display date.
      */
-    public String getPreviousDisplaySimDay ( ) {
-        return theSimTime.getDay(thePreviousTime.get(Calendar.DAY_OF_WEEK)) + " " + thePreviousTime.get(Calendar.DATE) + theSimTime.getDateExt(thePreviousTime.get(Calendar.DATE)) + " " + theSimTime.getMonth(thePreviousTime.get(Calendar.MONTH)) + " " + thePreviousTime.get(Calendar.YEAR);
+    public String getPreviousDisplaySimDay() {
+    	return MyCalendarUtils.getDateInfo(thePreviousTime);
     }
     
     /**
@@ -219,7 +221,7 @@ public class Simulator implements java.io.Serializable {
      * @return a <code>String</code> with the current display date and time.
      */
     public String getCurrentDisplaySimTime ( ) {
-        return theSimTime.getDateInfo() + " at " + theSimTime.getTimeInfo();
+        return MyCalendarUtils.getDateInfo(theSimTime.getCurrentTime()) + " at " + MyCalendarUtils.getTimeInfo(theSimTime.getCurrentTime(), true);
     }
     
     /**
@@ -227,7 +229,7 @@ public class Simulator implements java.io.Serializable {
      * @return a <code>String</code> with the current date and time for stamping messages.
      */
     public String getMessageDisplaySimTime ( ) {
-        return theSimTime.getShortDate() + " " + theSimTime.getTimeInfo();
+        return MyCalendarUtils.getShortDate(theSimTime.getCurrentTime()) + " " + MyCalendarUtils.getTimeInfo(theSimTime.getCurrentTime(), true);
     }
     
 }

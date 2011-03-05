@@ -1,5 +1,7 @@
 package trams.data;
 
+import java.text.SimpleDateFormat;
+import java.util.Locale;
 import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
@@ -9,6 +11,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.GregorianCalendar;
 
+import trams.util.MyCalendarUtils;
 import trams.util.SortedServices;
 
 import org.apache.log4j.Logger;
@@ -184,7 +187,7 @@ public class Route {
      * @param today a <code>Calendar</code> object with today's date.
      */
     public List<Service> generateServiceTimetables ( Calendar today, Scenario scene, int direction ) {
-        logger.debug("I'm generating timetable for route " + routeNumber + " for " + today.get(Calendar.DAY_OF_MONTH) + " " + getMonth(today.get(Calendar.MONTH)) + " " + today.get(Calendar.YEAR) );
+        logger.debug("I'm generating timetable for route " + routeNumber + " for " + MyCalendarUtils.getDateInfo(today));
         //First of all, get the current timetable.
         Timetable currentTimetable = getCurrentTimetable(today);
         //Create a list to store services.
@@ -408,7 +411,7 @@ public class Route {
                     while ( patternNames.hasNext() ) {
                         ServicePattern sp = timeT.getServicePattern(patternNames.next());
                         logger.debug("Processing service pattern: " + sp.getName());
-                        logger.debug("Calendar day: " + thisDate.get(Calendar.DAY_OF_WEEK) + " days of operation: " + sp.getDaysOfOperationAsString());
+                        logger.debug("Calendar day: " + thisDate.get(Calendar.DAY_OF_WEEK) + " days of operation: " + sp.getDaysOfOperation());
                         if ( sp.isDayOfOperation(thisDate.get(Calendar.DAY_OF_WEEK)) ) {
                         	logger.debug("Adding this date to calendar: " + thisDate.get(Calendar.DAY_OF_MONTH) + "-" + thisDate.get(Calendar.MONTH) + "-" + thisDate.get(Calendar.YEAR));
                             myCalendar.add(thisDate);
@@ -424,7 +427,7 @@ public class Route {
         String[] myCalDates = new String[myCalendar.size()];
         logger.debug("MyCalDates length is " + myCalDates.length);
         for ( int i = 0; i < myCalDates.length; i++ ) {
-            myCalDates[i] = getDay(myCalendar.get(i).get(Calendar.DAY_OF_WEEK)) + " " + myCalendar.get(i).get(Calendar.DAY_OF_MONTH) + getDateExt(myCalendar.get(i).get(Calendar.DAY_OF_MONTH)) + " " + getMonth(myCalendar.get(i).get(Calendar.MONTH)) + " " + myCalendar.get(i).get(Calendar.YEAR); 
+            myCalDates[i] = MyCalendarUtils.getDateInfo(myCalendar.get(i)); 
         }
         return myCalDates;
     }
@@ -463,16 +466,24 @@ public class Route {
      * @return a <code>Calendar</code> object representing the formal day.
      */
     public Calendar translateDate ( String day ) {
-        String[] dayParts = day.split(" ");
-        String month = getMonth(dayParts[2]);
-        String day2 = ""; String dayStr = "";
-        for ( int i = 0; i < dayParts[1].length(); i++ ) {
+    	//First remove the date extension.
+    	String[] dayParts = day.split(" "); String dateFormat = "";
+    	for ( int i = 0; i < dayParts[1].length(); i++ ) {
             if (Character.isDigit(dayParts[1].charAt(i)) ) {
-                dayStr += dayParts[1].charAt(i);
+                dateFormat += dayParts[1].charAt(i);
             }
         }
-        day2 = dayStr;
-        return new GregorianCalendar(Integer.parseInt(dayParts[3]), Integer.parseInt(month), Integer.parseInt(day2));
+    	dateFormat += "-" + dayParts[2] + "-" + dayParts[3];
+    	//Then process date.
+    	SimpleDateFormat formatter = new SimpleDateFormat("dd-MMM-yyyy", new Locale("ENGLISH", "UK"));
+    	Calendar cal = Calendar.getInstance();
+    	try {
+    		cal.setTime(formatter.parse(dateFormat));
+    		return cal;
+    	} catch ( Exception e ) {
+    		e.printStackTrace();
+    		return null;
+    	}
     }
 
     /**
@@ -518,78 +529,7 @@ public class Route {
             }
         }
         return false;
-    }
-    
-    
-    /**
-     * Get the day of the week as a String based on the number.
-     * @param day a <code>int</code> with the day number.
-     * @return a <code>String</code> with the string representation of the day.
-     */
-    private String getDay ( int day ) {
-        if ( day == Calendar.SUNDAY ) { return "Sunday";
-    	} else if ( day == Calendar.MONDAY ) { return "Monday";
-		} else if ( day == Calendar.TUESDAY ) { return "Tuesday";
-		} else if ( day == Calendar.WEDNESDAY ) { return "Wednesday";
-		} else if ( day == Calendar.THURSDAY ) { return "Thursday";
-		} else if ( day == Calendar.FRIDAY ) { return "Friday";
-		} else if ( day == Calendar.SATURDAY ) { return "Saturday";
-		} else { return ""; }
-    }
-    
-    /**
-     * Get the month as a String based on the number.
-     * @param day a <code>int</code> with the month number.
-     * @return a <code>String</code> with the string representation of the month.
-     */
-    private String getMonth ( int month ) {
-        if ( month == Calendar.JANUARY ) { return "January";
-    	} else if ( month == Calendar.FEBRUARY ) { return "February";
-		} else if ( month == Calendar.MARCH ) { return "March";
-		} else if ( month == Calendar.APRIL ) { return "April";
-		} else if ( month == Calendar.MAY ) { return "May";
-		} else if ( month == Calendar.JUNE ) { return "June";
-		} else if ( month == Calendar.JULY ) { return "July";
-		} else if ( month == Calendar.AUGUST ) { return "August";
-		} else if ( month == Calendar.SEPTEMBER ) { return "September";
-		} else if ( month == Calendar.OCTOBER ) { return "October";
-		} else if ( month == Calendar.NOVEMBER ) { return "November";
-		} else if ( month == Calendar.DECEMBER ) { return "December";
-		} else { return ""; }
-    }
-    
-    /**
-     * Get the month as a number based on the String.
-     * @param day a <code>String</code> with the month name.
-     * @return a <code>String</code> with the String representation of the month in number form.
-     */
-    private String getMonth ( String month ) {
-        if ( month.equalsIgnoreCase("January") ) { return "0";
-    	} else if ( month.equalsIgnoreCase("February") ) { return "1";
-		} else if ( month.equalsIgnoreCase("March") ) { return "2";
-		} else if ( month.equalsIgnoreCase("April") ) { return "3";
-		} else if ( month.equalsIgnoreCase("May") ) { return "4";
-		} else if ( month.equalsIgnoreCase("June") ) { return "5";
-		} else if ( month.equalsIgnoreCase("July") ) { return "6";
-		} else if ( month.equalsIgnoreCase("August") ) { return "7";
-		} else if ( month.equalsIgnoreCase("September") ) { return "8";
-		} else if ( month.equalsIgnoreCase("October") ) { return "9";
-		} else if ( month.equalsIgnoreCase("November") ) { return "10";
-		} else if ( month.equalsIgnoreCase("December") ) { return "11";
-		} else { return ""; }
-    }
-    
-    /**
-     * Get the day extension for a particular day number.
-     * @param dayDate a <code>int</code> with the day number.
-     * @return a <code>String</code> with the day extension.
-     */
-    private String getDateExt ( int dayDate ) {
-        if ( dayDate == 1 || dayDate == 21 || dayDate == 31 ) { return "st";
-    	} else if ( dayDate == 2 || dayDate == 22 ) { return "nd";
-		} else if ( dayDate == 3 || dayDate == 23 ) { return "rd";
-		} else { return "th"; }
-    }
+    }    
     
     /**
      * Add an allocation to this route.
