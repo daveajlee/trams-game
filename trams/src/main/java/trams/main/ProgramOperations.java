@@ -14,6 +14,8 @@ import org.apache.log4j.Logger;
 
 import trams.data.*;
 import trams.simulation.*;
+import trams.util.MyCalendarUtils;
+
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -315,11 +317,11 @@ public class ProgramOperations {
                     //Create element with appropriate attributes.
                     Element servicePattern = doc.createElement("servicePattern");
                     servicePattern.setAttribute("name", myServicePattern.getName());
-                    servicePattern.setAttribute("days", myServicePattern.getDaysOfOperationAsString());
+                    servicePattern.setAttribute("days", myServicePattern.getDaysOfOperation());
                     servicePattern.setAttribute("returnTerminus", myServicePattern.getReturnTerminus());
                     servicePattern.setAttribute("outgoingTerminus", myServicePattern.getOutgoingTerminus());
-                    servicePattern.setAttribute("startTime", myServicePattern.getStartTimeInfo());
-                    servicePattern.setAttribute("endTime", myServicePattern.getEndTimeInfo());
+                    servicePattern.setAttribute("startTime", MyCalendarUtils.getTimeInfo(myServicePattern.getStartTime(), false));
+                    servicePattern.setAttribute("endTime", MyCalendarUtils.getTimeInfo(myServicePattern.getEndTime(), false));
                     servicePattern.setAttribute("frequency", "" + myServicePattern.getFrequency());
                     servicePattern.setAttribute("duration", "" + myServicePattern.getDuration());
                     timetable.appendChild(servicePattern);

@@ -2,6 +2,8 @@ package trams.data;
 
 import java.util.*;
 
+import trams.util.MyCalendarUtils;
+
 /**
  * Class to represent a service (i.e. one run of a route from terminus to terminus) in the TraMS program.
  * @author Dave
@@ -278,91 +280,7 @@ public class Service {
      * @return a <code>String</code> with a formatted time String.
      */
     public String getDateInfo ( Calendar stopTime ) {
-        return getDay(stopTime.get(Calendar.DAY_OF_WEEK)) + " " + stopTime.get(Calendar.DATE) + getDateExt(stopTime.get(Calendar.DATE)) + " " + getMonth(stopTime.get(Calendar.MONTH)) + " " + stopTime.get(Calendar.YEAR) + " " + getHour(stopTime.get(Calendar.HOUR), stopTime.get(Calendar.AM_PM)) + "." + getMinute(stopTime.get(Calendar.MINUTE)) + getAMPM(stopTime.get(Calendar.AM_PM));
-    }
-    
-    /**
-     * Return the day based on the number.
-     * @param day a <code>int</code> with the day number.
-     * @return a <code>String</code> with the formatted day.
-     */
-    private String getDay ( int day ) {
-        if ( day == Calendar.SUNDAY ) { return "Sunday";
-    	} else if ( day == Calendar.MONDAY ) { return "Monday";
-		} else if ( day == Calendar.TUESDAY ) { return "Tuesday";
-		} else if ( day == Calendar.WEDNESDAY ) { return "Wednesday";
-		} else if ( day == Calendar.THURSDAY ) { return "Thursday";
-		} else if ( day == Calendar.FRIDAY ) { return "Friday";
-		} else if ( day == Calendar.SATURDAY ) { return "Saturday";
-		} else { return ""; }
-    }
-    
-    /**
-     * Get the month based on the number.
-     * @param month a <code>int</code> with the month number.
-     * @return a <code>String</code> with the formatted month.
-     */
-    private String getMonth ( int month ) {
-        if ( month == Calendar.JANUARY ) { return "January";
-    	} else if ( month == Calendar.FEBRUARY ) { return "February";
-		} else if ( month == Calendar.MARCH ) { return "March";
-		} else if ( month == Calendar.APRIL ) { return "April";
-		} else if ( month == Calendar.MAY ) { return "May";
-		} else if ( month == Calendar.JUNE ) { return "June";
-		} else if ( month == Calendar.JULY ) { return "July";
-		} else if ( month == Calendar.AUGUST ) { return "August";
-		} else if ( month == Calendar.SEPTEMBER ) { return "September";
-		} else if ( month == Calendar.OCTOBER ) { return "October";
-		} else if ( month == Calendar.NOVEMBER ) { return "November";
-		} else if ( month == Calendar.DECEMBER ) { return "December";
-		} else { return ""; }
-    }
-    
-    /**
-     * Get the date extension  (e.g. th).
-     * @param dayDate a <code>int</code> with the number of day.
-     * @return a <code>String</code> with the correct extension.
-     */
-    private String getDateExt ( int dayDate ) {
-        if ( dayDate == 1 || dayDate == 21 || dayDate == 31 ) { return "st";
-    	} else if ( dayDate == 2 || dayDate == 22 ) { return "nd";
-		} else if ( dayDate == 3 || dayDate == 23 ) { return "rd";
-		} else { return "th"; }
-    }
-    
-    /**
-     * Get formatted hour.
-     * @param hour a <code>int</code> with the hour.
-     * @param ampm a <code>int</code> with am/pm.
-     * @return a <code>String</code> with formatted hour.
-     */
-    private String getHour ( int hour, int ampm ) {
-        if ( hour == 0 && ampm == Calendar.PM ) {
-            return "" + NUM_AM_HOURS;
-        } 
-        return "" + hour;
-    }
-    
-    /**
-     * Get formatted minute (with leading 0).
-     * @param minute a <code>int</code> with the minute.
-     * @return a <code>String</code> with formatted minute.
-     */
-    private String getMinute ( int minute ) {
-        if ( minute < MAX_SINGLE_DIGIT ) { return "0" + minute; }
-        return "" + minute;
-    } 
-    
-    /**
-     * Get formatted AM/PM.
-     * @param ampm a <code>int</code> with am/pm.
-     * @return a <code>String</code> with formatted am/pm.
-     */
-    private String getAMPM ( int ampm ) {
-        if ( ampm == Calendar.AM ) {
-            return "am";
-        }
-        return "pm";
+    	return MyCalendarUtils.getDateInfo(stopTime) + " " + MyCalendarUtils.getTimeInfo(stopTime, true);
     }
     
 }

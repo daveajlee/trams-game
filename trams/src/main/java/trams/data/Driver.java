@@ -2,7 +2,7 @@ package trams.data;
 
 import java.util.*;
 
-import trams.main.MyCalendarUtils;
+import trams.util.MyCalendarUtils;
 
 /**
  * Class representing a driver in the TraMS program.
@@ -40,22 +40,7 @@ public class Driver {
      * @return a <code>boolean</code> which is true iff the driver has started work.
      */
     public boolean hasStartedWork ( Calendar currentDate ) {
-        //Check year...
-        int yearDiff = currentDate.get(Calendar.YEAR) - startDate.get(Calendar.YEAR);
-        if ( yearDiff < 0 ) { 
-        	return false; 
-        } 
-        if ( yearDiff > 0 ) { 
-        	return true; 
-        }
-        //Check month...
-        int monthDiff = currentDate.get(Calendar.MONTH) - startDate.get(Calendar.MONTH);
-        if ( monthDiff < 0 ) { return false; } 
-        if ( monthDiff > 0 ) { return true; }
-        //Check date...
-        int dateDiff = currentDate.get(Calendar.DATE) - startDate.get(Calendar.DATE);
-        if ( dateDiff < 0 ) { return false; }
-        return true;
+    	return !currentDate.before(startDate); 
     }
     
     public int getId() {

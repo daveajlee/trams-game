@@ -3,6 +3,8 @@ package trams.data;
 import java.util.*;
 import org.apache.log4j.Logger;
 
+import trams.util.MyCalendarUtils;
+
 /**
  * This class represents timetable outlines for the Easy Timetable Generator in TraMS.
  * @author Dave Lee
@@ -135,7 +137,7 @@ public class Timetable {
      * @return a <code>String</code> object.
      */
     public String getValidFromDateInfo ( ) {
-        return getDay(validFromDate.get(Calendar.DAY_OF_WEEK)) + " " + validFromDate.get(Calendar.DAY_OF_MONTH) + getDateExt(validFromDate.get(Calendar.DAY_OF_MONTH)) + " " + getMonth(validFromDate.get(Calendar.MONTH)) + " " + validFromDate.get(Calendar.YEAR);
+    	return MyCalendarUtils.getDateInfo(validFromDate);
     }
     
     /**
@@ -159,56 +161,7 @@ public class Timetable {
      * @return a <code>String</code> object.
      */
     public String getValidToDateInfo ( ) {
-        return getDay(validToDate.get(Calendar.DAY_OF_WEEK)) + " " + validToDate.get(Calendar.DAY_OF_MONTH) + getDateExt(validToDate.get(Calendar.DAY_OF_MONTH)) + " " + getMonth(validToDate.get(Calendar.MONTH)) + " " + validToDate.get(Calendar.YEAR);
-    }
-
-    /**
-     * Get the day of the week as a String based on the number.
-     * @param day a <code>int</code> with the day number.
-     * @return a <code>String</code> with the string representation of the day.
-     */
-    private String getDay ( int day ) {
-        if ( day == Calendar.SUNDAY ) { return "Sunday";
-    	} else if ( day == Calendar.MONDAY ) { return "Monday";
-		} else if ( day == Calendar.TUESDAY ) { return "Tuesday";
-		} else if ( day == Calendar.WEDNESDAY ) { return "Wednesday";
-		} else if ( day == Calendar.THURSDAY ) { return "Thursday";
-		} else if ( day == Calendar.FRIDAY ) { return "Friday";
-		} else if ( day == Calendar.SATURDAY ) { return "Saturday";
-		} else { return ""; }
-    }
-
-    /**
-     * Get the month as a String based on the number.
-     * @param day a <code>int</code> with the month number.
-     * @return a <code>String</code> with the string representation of the month.
-     */
-    private String getMonth ( int month ) {
-        if ( month == Calendar.JANUARY ) { return "January";
-    	} else if ( month == Calendar.FEBRUARY ) { return "February";
-		} else if ( month == Calendar.MARCH ) { return "March";
-		} else if ( month == Calendar.APRIL ) { return "April";
-		} else if ( month == Calendar.MAY ) { return "May";
-		} else if ( month == Calendar.JUNE ) { return "June";
-		} else if ( month == Calendar.JULY ) { return "July";
-		} else if ( month == Calendar.AUGUST ) { return "August";
-		} else if ( month == Calendar.SEPTEMBER ) { return "September";
-		} else if ( month == Calendar.OCTOBER ) { return "October";
-		} else if ( month == Calendar.NOVEMBER ) { return "November";
-		} else if ( month == Calendar.DECEMBER ) { return "December";
-		} else { return ""; }
-    }
-
-    /**
-     * Get the day extension for a particular day number.
-     * @param dayDate a <code>int</code> with the day number.
-     * @return a <code>String</code> with the day extension.
-     */
-    private String getDateExt ( int dayDate ) {
-        if ( dayDate == 1 || dayDate == 21 || dayDate == 31 ) { return "st"; 
-        } else if ( dayDate == 2 || dayDate == 22 ) { return "nd";
-        } else if ( dayDate == 3 || dayDate == 23 ) { return "rd"; 
-        } else { return "th"; }
+        return MyCalendarUtils.getDateInfo(validToDate);
     }
     
 }
