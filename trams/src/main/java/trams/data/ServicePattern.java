@@ -1,6 +1,6 @@
 package trams.data;
 
-import java.util.*;
+import java.util.Calendar;
 
 /**
  * This class represents a service pattern for a timetable - used by Easy Timetable Generator.

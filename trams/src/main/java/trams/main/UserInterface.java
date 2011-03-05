@@ -1,15 +1,22 @@
 package trams.main;
 
-import javax.swing.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.LinkedList;
+import java.util.Random;
+
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.UIManager;
 import javax.swing.filechooser.*;
 
+import trams.constants.DifficultyLevel;
 import trams.data.*;
 import trams.gui.ControlScreen;
 import trams.gui.SplashScreen;
 import trams.gui.WelcomeScreen;
 import trams.simulation.Simulator;
-
-import java.util.*;
 
 import org.apache.log4j.Logger;
 import org.springframework.context.ApplicationContext;
@@ -219,7 +226,7 @@ public class UserInterface implements Runnable {
      * Get the difficulty level.
      * @return a <code>String</code> with the difficulty level.
      */
-    public String getDifficultyLevel ( ) {
+    public DifficultyLevel getDifficultyLevel ( ) {
         return theOperations.getSimulator().getDifficultyLevel();
     }
     
