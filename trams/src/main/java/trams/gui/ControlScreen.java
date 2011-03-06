@@ -11,13 +11,16 @@ import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.event.ActionListener;
+import java.text.DecimalFormat;
+import java.util.Calendar;
+import java.util.LinkedList;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
@@ -36,17 +39,17 @@ import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
-import javax.swing.event.*;
-
-import trams.data.*;
-import trams.main.UserInterface;
-import trams.simulation.Simulator;
-
-import java.text.DecimalFormat;
-import java.util.LinkedList;
-import java.util.Calendar;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import org.apache.log4j.Logger;
+
+import trams.data.Message;
+import trams.data.RouteSchedule;
+import trams.main.UserInterface;
+import trams.simulation.Simulator;
 
 /**
  * This class represents the control screen display for the TraMS program.
@@ -332,7 +335,8 @@ public class ControlScreen extends ButtonBar {
                 theInterface.pauseSimulation();
                 Thread aboutThread = new Thread() {
                     public void run () {
-                        new SplashScreen(true, theInterface);
+                        //SplashScreen ss = new SplashScreen(true);
+                        //ss.setInterface(theInterface);
                     }
                 };
                 aboutThread.start();

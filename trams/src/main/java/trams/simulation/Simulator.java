@@ -6,11 +6,12 @@ import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.Locale;
 
-import trams.constants.DifficultyLevel;
-import trams.data.*;
-import trams.util.MyCalendarUtils;
-
 import org.apache.log4j.Logger;
+
+import trams.constants.DifficultyLevel;
+import trams.data.Message;
+import trams.data.Scenario;
+import trams.util.MyCalendarUtils;
 
 /**
  * This class represents the simulator in the TraMS program.

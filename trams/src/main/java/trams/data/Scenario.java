@@ -1,20 +1,20 @@
 package trams.data;
 
-import java.io.InputStream;
 import java.io.BufferedReader;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Calendar;
 
 import trams.constants.DifficultyLevel;
 import trams.simulation.Simulator;
+import trams.util.SortedDrivers;
 import trams.util.SortedRoutes;
 import trams.util.SortedVehicles;
-import trams.util.SortedDrivers;
 
 /**
  * Class representing a scenario (i.e. transport company in TraMS).

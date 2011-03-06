@@ -3,7 +3,7 @@ package trams.gui;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
-import trams.data.*;
+import trams.data.RouteSchedule;
 import trams.main.UserInterface;
 
 /**

@@ -1,6 +1,7 @@
 package trams.gui;
 
-import trams.data.*;
+import trams.data.RouteSchedule;
+
 
 /**
  * Class to represent a point (box) in the control screen display in the TraMS program.

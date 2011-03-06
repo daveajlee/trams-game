@@ -4,23 +4,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
-import javax.xml.parsers.*;
-import javax.xml.xpath.*;
-import javax.xml.transform.*;
-import javax.xml.transform.dom.*;
-import javax.xml.transform.stream.*;
-import org.xml.sax.*;
-import org.w3c.dom.*;
-
-import org.apache.log4j.Logger;
-
-import trams.data.*;
-import trams.simulation.*;
-import trams.util.MyCalendarUtils;
-
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -29,6 +12,36 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathFactory;
+
+import org.apache.log4j.Logger;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
+
+import trams.data.Driver;
+import trams.data.Message;
+import trams.data.Route;
+import trams.data.Scenario;
+import trams.data.Service;
+import trams.data.ServicePattern;
+import trams.data.Timetable;
+import trams.data.Vehicle;
+import trams.simulation.Simulator;
+import trams.util.MyCalendarUtils;
 
 /**
  * This class does all the hard computation - in terms of creating, loading & saving for the TraMS program.

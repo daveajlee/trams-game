@@ -9,17 +9,23 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
-import javax.swing.filechooser.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
+
+import org.apache.log4j.Logger;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import trams.constants.DifficultyLevel;
-import trams.data.*;
+import trams.data.Driver;
+import trams.data.Message;
+import trams.data.Route;
+import trams.data.RouteSchedule;
+import trams.data.Scenario;
+import trams.data.Vehicle;
 import trams.gui.ControlScreen;
 import trams.gui.SplashScreen;
 import trams.gui.WelcomeScreen;
 import trams.simulation.Simulator;
-
-import org.apache.log4j.Logger;
-import org.springframework.context.ApplicationContext;
 
 /**
  * This class controls the user interface of the TraMS program. 
@@ -907,13 +913,13 @@ public class UserInterface implements Runnable {
         try {
             UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
         } catch ( Exception e ) { }
+        //Load Application Context.
+        ApplicationContext myContext = new ClassPathXmlApplicationContext("trams/spring/context.xml");
         //Display splash screen to the user.
-        SplashScreen ss = new SplashScreen(false, null);
-        for ( int i = 12; i > -5; i-- ) {
-            try {
-                Thread.sleep(200);
-                ss.moveImage(10*(i+1),0);
-            } catch ( InterruptedException ie ) { }
+        SplashScreen ss = (SplashScreen) myContext.getBean("splashScreen");
+        ss.setStarted();
+        while ( ss.notFinished() ) {
+        	try { Thread.sleep(1000); } catch ( InterruptedException ie ) { }
         }
         ss.dispose();
         UserInterface ui = new UserInterface();

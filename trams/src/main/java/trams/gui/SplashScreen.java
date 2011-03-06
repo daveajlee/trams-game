@@ -5,9 +5,9 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Image;
 import java.awt.Toolkit;
-import java.awt.Font;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
@@ -41,20 +41,24 @@ public class SplashScreen extends JFrame {
     private static final int COPYRIGHT_FONT_SIZE = 10;
     private static final int LOADING_IMAGE_BORDER = 120;
     
+    private boolean isFinished = false;
+    private boolean isStarted = false;
+    
     /**
      * Create a new splash screen.
      * @param isAboutScreen a <code>boolean</code> which is true iff this is the about screen rather than splash screen at beginning.
      * @param ui a <code>UserInterface</code> object with the current user interface.
      */
-    public SplashScreen ( boolean isAboutScreen, UserInterface ui ) {
+    public SplashScreen ( ) {
+    	
+    }
+    
+    public void init () {
         
         //Initialise GUI with resizable, title and decorate methods.
         this.setTitle ("TraMS - Transport Management Simulator");
         this.setResizable (true);
         this.setUndecorated(true);
-        
-        //Initialise user interface object.
-        theInterface = ui;
         
         //Set image icon.
         Image img = Toolkit.getDefaultToolkit().getImage(SplashScreen.class.getResource("/trams/images/TraMSlogo.png"));
@@ -90,8 +94,9 @@ public class SplashScreen extends JFrame {
         //Construct graphics panel to add to the centre panel.
         JPanel busPanel = new JPanel();
         busPanel.setBackground(Color.WHITE);
-        if ( isAboutScreen ) { theBusDisplay = new ImageDisplay("abouttransparent.png",60,0); 
-    	} else { theBusDisplay = new ImageDisplay("loadingtransparent.png",LOADING_IMAGE_BORDER,0); }
+        //if ( isAboutScreen ) { theBusDisplay = new ImageDisplay("abouttransparent.png",60,0); 
+    	//} else { theBusDisplay = new ImageDisplay("loadingtransparent.png",LOADING_IMAGE_BORDER,0); }
+        theBusDisplay = new ImageDisplay("loadingtransparent.png",LOADING_IMAGE_BORDER,0);
         theBusDisplay.setSize(450,340);
         theBusDisplay.setBackground(Color.WHITE);
         busPanel.add(theBusDisplay);
@@ -100,8 +105,9 @@ public class SplashScreen extends JFrame {
         //Construct loading panel to add to the centre panel.
         JPanel loadingPanel = new JPanel();
         loadingPanel.setBackground(Color.WHITE);
-        if ( isAboutScreen ) { theLoadingLabel = new JLabel("Version: " + theInterface.getVersion());
-    } else { theLoadingLabel = new JLabel("Loading... Please Wait!"); }
+        //if ( isAboutScreen ) { theLoadingLabel = new JLabel("Version: " + theInterface.getVersion());
+        //} else { theLoadingLabel = new JLabel("Loading... Please Wait!"); }
+        theLoadingLabel = new JLabel("Loading... Please Wait!"); 
         theLoadingLabel.setFont(new Font("Arial", Font.ITALIC, 15));
         loadingPanel.add(theLoadingLabel);
         centrePanel.add(loadingPanel);
@@ -117,7 +123,7 @@ public class SplashScreen extends JFrame {
         c.add(centrePanel, BorderLayout.CENTER);
         
         //Mouse listeners if this is the about screen.
-        if ( isAboutScreen ) {
+        //if ( isAboutScreen ) {
             this.getContentPane().addMouseListener ( new MouseListener () {
                 public void mouseClicked(MouseEvent e) {
                     dispose();
@@ -138,7 +144,7 @@ public class SplashScreen extends JFrame {
                 public void mouseEntered(MouseEvent e) {}
                 public void mouseExited(MouseEvent e) {}
             });
-        }
+        //}
         
         //Position the screen at the center of the screen.
         Toolkit tools = Toolkit.getDefaultToolkit();
@@ -153,8 +159,32 @@ public class SplashScreen extends JFrame {
         
     }
     
+    public void setInterface ( UserInterface ui ) {
+    	theInterface = ui;
+    }
+    
     public void moveImage ( int width, int height ) {
         theBusDisplay.moveImage(width, height);
+    }
+    
+    public int width() {
+    	return theBusDisplay.getWidth();
+    }
+    
+    public boolean notFinished ( ) {
+    	return !isFinished;
+    }
+    
+    public void setFinished ( ) {
+    	isFinished = true;
+    }
+    
+    public void setStarted ( ) {
+    	isStarted = true;
+    }
+    
+    public boolean getStarted ( ) {
+    	return isStarted;
     }
     
 }
