@@ -1,20 +1,20 @@
 package trams.data;
 
 import java.text.SimpleDateFormat;
-import java.util.Locale;
-import java.util.Map;
-import java.util.List;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
+import org.apache.log4j.Logger;
 
 import trams.util.MyCalendarUtils;
 import trams.util.SortedServices;
-
-import org.apache.log4j.Logger;
 
 
 /**

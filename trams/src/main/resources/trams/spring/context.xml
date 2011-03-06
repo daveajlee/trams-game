@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:task="http://www.springframework.org/schema/tasks"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 	
 	<bean id="LanduffScenario" class="trams.data.Scenario" init-method="init">
@@ -75,5 +76,29 @@
 		<property name="standingNum" value="83"/>
 		<property name="purchasePrice" value="280000.00"/>
 	</bean>
+	
+	<bean id="splashScreen" class="trams.gui.SplashScreen" init-method="init">
+	</bean>
+	
+	<bean id="splashScreenImageTask" class="trams.tasks.SplashScreenImageTask">
+		<property name="splashScreen" ref="splashScreen"/>
+		<property name="position" value="0" />
+	</bean>
+
+	<bean id="scheduledSplashTask" class="org.springframework.scheduling.timer.ScheduledTimerTask">
+    	<!-- run every 1/5 of a second -->
+    	<property name="period" value="200" />
+    	<property name="timerTask" ref="splashScreenImageTask" />
+	</bean>
+
+	<bean id="timerFactory" class="org.springframework.scheduling.timer.TimerFactoryBean">
+    	<property name="scheduledTimerTasks">
+        	<list>
+            	<ref bean="scheduledSplashTask" />
+        	</list>
+    	</property>
+	</bean>
+	
+
 </beans>
 

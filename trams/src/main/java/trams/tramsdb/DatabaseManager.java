@@ -10,7 +10,17 @@ import org.hibernate.Session;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import trams.data.*;
+import trams.data.Distances;
+import trams.data.Driver;
+import trams.data.Message;
+import trams.data.Route;
+import trams.data.RouteSchedule;
+import trams.data.Scenario;
+import trams.data.Service;
+import trams.data.ServicePattern;
+import trams.data.Stop;
+import trams.data.Timetable;
+import trams.data.Vehicle;
 import trams.util.HibernateUtil;
 
 public class DatabaseManager {

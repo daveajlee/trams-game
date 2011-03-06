@@ -1,7 +1,7 @@
 package trams.data;
 
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
 public class Distances {
 	

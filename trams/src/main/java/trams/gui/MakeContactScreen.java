@@ -10,9 +10,9 @@ import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.event.ActionListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -25,8 +25,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 
-import trams.data.*;
-import trams.main.*;
+import trams.data.RouteSchedule;
+import trams.main.UserInterface;
 
 /**
  * This class represents the contact screen between vehicles and the control centre in the TraMS program.
