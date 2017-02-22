@@ -29,10 +29,12 @@ public class SplashScreenImageTask extends TimerTask {
 	private int[] positions = new int[] { 130, 120, 110, 100, 90, 80, 70, 60, 50, 40, 30, 20, 10, 0, -10, -20, -30, -40 };
 	
 	public void run() {
-		if ( !splashScreen.getStarted() ) { splashScreen.dispose(); return; }
+		splashScreen.setVisible(true);
+		if ( !splashScreen.getStarted() ) { splashScreen.setFinished(); splashScreen.dispose(); return; }
 		splashScreen.moveImage(positions[position], 0);
 		if ( position == (positions.length-1) ) {
 			splashScreen.setFinished();
+			splashScreen.setVisible(false);
 			splashScreen.dispose();
 			this.cancel();
 		}

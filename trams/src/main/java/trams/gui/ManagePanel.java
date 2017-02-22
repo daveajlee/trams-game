@@ -1978,7 +1978,7 @@ public class ManagePanel {
         priceLabelPanel.add(priceLabel);
         gridPanel.add(priceLabel);
         theFormat = new DecimalFormat("0.00");
-        JLabel priceField = new JLabel("€" + theFormat.format(theVehicle.getPurchasePrice()));
+        JLabel priceField = new JLabel("â‚¬" + theFormat.format(theVehicle.getPurchasePrice()));
         priceField.setFont(new Font("Arial", Font.PLAIN, SMALL_FONT_SIZE));
         gridPanel.add(priceField);
         //Create label and field for quantity and add it to the quantity panel.
@@ -1994,11 +1994,11 @@ public class ManagePanel {
             public void stateChanged ( ChangeEvent e ) {
                 double totalPrice = Double.parseDouble(theQuantitySpinner.getValue().toString()) * theVehicle.getPurchasePrice();
                 if ( totalPrice > theInterface.getBalance() ) {
-                    theTotalPriceField.setText("€" + theFormat.format(totalPrice) + " (Insufficient funds available)");
+                    theTotalPriceField.setText("â‚¬" + theFormat.format(totalPrice) + " (Insufficient funds available)");
                     theTotalPriceField.setForeground(Color.RED);
                     thePurchaseVehicleButton.setEnabled(false);
                 } else {
-                    theTotalPriceField.setText("€" + theFormat.format(totalPrice));
+                    theTotalPriceField.setText("â‚¬" + theFormat.format(totalPrice));
                     theTotalPriceField.setForeground(Color.BLACK);
                     thePurchaseVehicleButton.setEnabled(true);
                 }
@@ -2014,7 +2014,7 @@ public class ManagePanel {
         totalPriceLabelPanel.add(totalPriceLabel);
         gridPanel.add(totalPriceLabel);
         double totalPrice = Double.parseDouble(theQuantitySpinner.getValue().toString()) * theVehicle.getPurchasePrice();
-        theTotalPriceField = new JLabel("€" + theFormat.format(totalPrice));
+        theTotalPriceField = new JLabel("ï¿½" + theFormat.format(totalPrice));
         theTotalPriceField.setFont(new Font("Arial", Font.PLAIN, SMALL_FONT_SIZE));
         gridPanel.add(theTotalPriceField);
         
@@ -2176,7 +2176,7 @@ public class ManagePanel {
         valueLabelPanel.add(valueLabel);
         gridPanel.add(valueLabel);
         theFormat = new DecimalFormat("0.00");
-        JLabel valueField = new JLabel("€" + theFormat.format(theVehicle.getValue(theInterface.getCurrentSimTime())));
+        JLabel valueField = new JLabel("â‚¬" + theFormat.format(theVehicle.getValue(theInterface.getCurrentSimTime())));
         valueField.setFont(new Font("Arial", Font.PLAIN, SMALL_FONT_SIZE));
         gridPanel.add(valueField);
         
