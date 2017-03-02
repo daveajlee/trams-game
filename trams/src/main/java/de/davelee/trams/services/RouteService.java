@@ -14,7 +14,6 @@ import de.davelee.trams.data.Journey;
 import de.davelee.trams.data.JourneyPattern;
 import de.davelee.trams.data.Route;
 import de.davelee.trams.data.RouteSchedule;
-import de.davelee.trams.data.Scenario;
 import de.davelee.trams.data.Stop;
 import de.davelee.trams.data.Timetable;
 import de.davelee.trams.db.DatabaseManager;
@@ -25,8 +24,7 @@ import de.davelee.trams.util.SortedRoutes;
 public class RouteService {
 	
 	private static final Logger logger = LoggerFactory.getLogger(RouteService.class);
-	
-	private RouteScheduleService routeScheduleService;
+
     private JourneyPatternService journeyPatternService;
     private JourneyService journeyService;
     private ScenarioService scenarioService;
@@ -37,7 +35,6 @@ public class RouteService {
     public static int RETURN_DIRECTION = 1;
 	
 	public RouteService() {
-		routeScheduleService = new RouteScheduleService();
         journeyPatternService = new JourneyPatternService();
         journeyService = new JourneyService();
         scenarioService = new ScenarioService();
@@ -55,7 +52,7 @@ public class RouteService {
      * This method generates the route timetables for a particular day - it is a very important method.
      * @param today a <code>Calendar</code> object with today's date.
      */
-    public long[] generateJourneyTimetables ( long routeId, Calendar today, Scenario scene, int direction ) {
+    public long[] generateJourneyTimetables ( long routeId, Calendar today, long scenarioId, int direction ) {
         logger.debug("I'm generating timetable for routeId " + routeId + " for " + DateFormats.DAY_MONTH_YEAR_FORMAT.getFormat().format(today.getTime()));
         //First of all, get the current timetable.
         Timetable currentTimetable = getCurrentTimetable(routeId, today);
@@ -100,7 +97,7 @@ public class RouteService {
                     newStop.setStopTime( (Calendar) journeyTime.clone());
                     for ( int i = 1; i < journeyStops.size(); i++ ) {
                         //Now add to journey time the difference between the two stops.
-                        journeyTime.add(Calendar.MINUTE, scenarioService.getDistance(scene.getId(), journeyStops.get(i-1).getStopName(), journeyStops.get(i).getStopName()));
+                        journeyTime.add(Calendar.MINUTE, scenarioService.getDistance(scenarioId, journeyStops.get(i-1).getStopName(), journeyStops.get(i).getStopName()));
                         //Create stop.
                         Stop newStop2 = new Stop();
                         newStop2.setStopName(journeyStops.get(i).getStopName());
@@ -147,11 +144,11 @@ public class RouteService {
      * @param returnJourneys a <code>LinkedList</code> with all return journeys.
      * @param sim a <code>Simulator</code> object for reference.
      */
-    public void generateRouteSchedules ( long routeId, Calendar currentTime, Scenario scenario ) {
+    public void generateRouteSchedules ( long routeId, Calendar currentTime, long scenarioId ) {
     	//Initialise parameters.
     	Route route = getRouteById(routeId);
-    	long[] outgoingJourneyIds = generateJourneyTimetables(routeId, currentTime, scenario, RouteService.OUTWARD_DIRECTION);
-    	long[] returnJourneyIds = generateJourneyTimetables(routeId, currentTime, scenario, RouteService.RETURN_DIRECTION);
+    	long[] outgoingJourneyIds = generateJourneyTimetables(routeId, currentTime, scenarioId, RouteService.OUTWARD_DIRECTION);
+    	long[] returnJourneyIds = generateJourneyTimetables(routeId, currentTime, scenarioId, RouteService.RETURN_DIRECTION);
     	List<Journey> outgoingJourneys = new ArrayList<Journey>();
     	for ( int i = 0; i < outgoingJourneyIds.length; i++ ) {
     		outgoingJourneys.add(journeyService.getJourneyById(outgoingJourneyIds[i]));
@@ -293,64 +290,6 @@ public class RouteService {
             myCalDates[i] = DateFormats.FULL_FORMAT.getFormat().format(myCalendar); 
         }
         return myCalDates;
-    }
-    
-    /**
-     * Return all outgoing journeys for a particular day.
-     */
-    public List<Journey> getAllOutgoingJourneys ( Route route, String day ) {
-        //Initialise list to store the journeys.
-        List<Journey> outgoingJourneys = new ArrayList<Journey>();
-        //Get the route schedules for that day!
-        logger.debug(route.getRouteSchedules().toString());
-        for ( int h = 0;  h < route.getRouteSchedules().size(); h++ ) {
-            for ( int i = 0; i < routeScheduleService.getNumJourneys(route.getRouteSchedules().get(h)); i++ ) {
-                Journey myJourney = routeScheduleService.getJourney(route.getRouteSchedules().get(h), i);
-                if ( isOutwardService(route, myJourney.getJourneyStops().get(0).getStopName(), myJourney.getJourneyStops().get(1).getStopName()) ) {
-                    outgoingJourneys.add(myJourney);
-                }
-            }
-        }
-        Collections.sort(outgoingJourneys, new SortedJourneys());
-        return outgoingJourneys;
-    }
-
-    /**
-     * Return all return services for a particular day.
-     */
-    public List<Journey> getAllReturnServices ( Route route, String day ) {
-        //Initialise list to store the journeys.
-        List<Journey> returnServices = new ArrayList<Journey>();
-        //Get the route schedules for that day!
-        logger.debug(route.getRouteSchedules().toString());
-        for ( int h = 0; h < route.getRouteSchedules().size(); h++ ) {
-            for ( int i = 0; i < routeScheduleService.getNumJourneys(route.getRouteSchedules().get(h)); i++ ) {
-                Journey myJourney = routeScheduleService.getJourney(route.getRouteSchedules().get(h), i);
-                if ( !isOutwardService(route, myJourney.getJourneyStops().get(0).getStopName(), myJourney.getJourneyStops().get(1).getStopName()) ) {
-                    returnServices.add(myJourney);
-                }
-            }
-        }
-        Collections.sort(returnServices, new SortedJourneys());
-        return returnServices;
-    }
-    
-    /**
-     * This method checks using two stops if the service is an outward or inward service.
-     * @return a <code>boolean</code> which is true iff the service is an outward service.
-     */
-    public boolean isOutwardService ( Route route, String stop1, String stop2 ) {
-        //Go through the stops - if we find the 1st one before the 2nd one - it is outward.
-        //Otherwise it is inward.
-        for ( int i = 0; i < route.getStops().size(); i++ ) {
-            if ( route.getStops().get(i).getStopName().equalsIgnoreCase(stop1) ) {
-                return true;
-            }
-            else if ( route.getStops().get(i).getStopName().equalsIgnoreCase(stop2) ) {
-                return false;
-            }
-        }
-        return false;
     }
     
     /**

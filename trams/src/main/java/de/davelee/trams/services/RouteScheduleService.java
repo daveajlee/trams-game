@@ -1,15 +1,11 @@
 package de.davelee.trams.services;
 
-import java.util.Calendar;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
-import de.davelee.trams.data.RouteSchedule;
-import de.davelee.trams.data.Journey;
-import de.davelee.trams.data.Simulator;
-import de.davelee.trams.data.Vehicle;
+import de.davelee.trams.data.*;
 import de.davelee.trams.util.DifficultyLevel;
 import de.davelee.trams.util.JourneyStatus;
+import de.davelee.trams.util.SortedJourneys;
 
 public class RouteScheduleService {
     
@@ -25,14 +21,13 @@ public class RouteScheduleService {
      * @return a <code>String</code> array with the stop details.
      */
     public String getCurrentStopName ( long routeScheduleId, Calendar currentDate, DifficultyLevel difficultyLevel ) {
-    	RouteSchedule schedule = getRouteScheduleById(routeScheduleId);
         //Copy current Date to current Time and then use delay to determine position.
         Calendar currentTime = (Calendar) currentDate.clone();
-        currentTime.add(Calendar.MINUTE, -schedule.getDelayInMins());
-        for (Journey myJourney : schedule.getJourneyList()) {
+        currentTime.add(Calendar.MINUTE, -getRouteScheduleById(routeScheduleId).getDelayInMins());
+        for (Journey myJourney : getJourneyList(getRouteScheduleById(routeScheduleId))) {
             if (journeyService.checkJourneyStatus(myJourney, currentTime) == JourneyStatus.RUNNING) {
                 //Now fiddle delay!
-                calculateNewDelay(schedule, difficultyLevel);
+                calculateNewDelay(getRouteScheduleById(routeScheduleId), difficultyLevel);
                 return journeyService.getCurrentStopName(myJourney, currentTime);
             }
             if (journeyService.checkJourneyStatus(myJourney, currentTime) == JourneyStatus.YET_TO_RUN) {
@@ -44,19 +39,22 @@ public class RouteScheduleService {
                 }
             }
         }
-        schedule.setDelayInMins(0); //Finished for the day.
+        getRouteScheduleById(routeScheduleId).setDelayInMins(0); //Finished for the day.
         return "Depot";
+    }
+
+    public List<Journey> getJourneyList (RouteSchedule schedule ) {
+        return schedule.getJourneyList();
     }
     
     public String[] getLastStop ( long routeScheduleId, Calendar currentDate, DifficultyLevel difficultyLevel) {
-    	RouteSchedule schedule = getRouteScheduleById(routeScheduleId);
         //Copy current Date to current Time and then use delay to determine position.
         Calendar currentTime = (Calendar) currentDate.clone();
-        currentTime.add(Calendar.MINUTE, -schedule.getDelayInMins());
-        for (Journey myJourney : schedule.getJourneyList()) {
+        currentTime.add(Calendar.MINUTE, -getRouteScheduleById(routeScheduleId).getDelayInMins());
+        for (Journey myJourney : getJourneyList(getRouteScheduleById(routeScheduleId))) {
             if (journeyService.checkJourneyStatus(myJourney, currentTime) == JourneyStatus.RUNNING) {
                 //Now fiddle delay!
-                calculateNewDelay(schedule, difficultyLevel);
+                calculateNewDelay(getRouteScheduleById(routeScheduleId), difficultyLevel);
                 return new String[] { journeyService.getLastStop(myJourney).getStopName(), "" + 0 };
             }
             else if (journeyService.checkJourneyStatus(myJourney, currentTime) == JourneyStatus.YET_TO_RUN) {
@@ -69,7 +67,7 @@ public class RouteScheduleService {
                 
             }
         }
-        schedule.setDelayInMins(0); //Finished for the day.
+        getRouteScheduleById(routeScheduleId).setDelayInMins(0); //Finished for the day.
         return new String[] { "Depot", "" + 0 };
     }
     
@@ -272,6 +270,62 @@ public class RouteScheduleService {
         }
         //Otherwise, return false;
         return false;
+     }
+
+    /**
+     * This method checks using two stops if the service is an outward or inward service.
+     * @return a <code>boolean</code> which is true iff the service is an outward service.
+     */
+    public boolean isOutwardService (List<Stop> stops, String stop1, String stop2 ) {
+        //Go through the stops - if we find the 1st one before the 2nd one - it is outward.
+        //Otherwise it is inward.
+        for ( int i = 0; i < stops.size(); i++ ) {
+            if ( stops.get(i).getStopName().equalsIgnoreCase(stop1) ) {
+                return true;
+            }
+            else if ( stops.get(i).getStopName().equalsIgnoreCase(stop2) ) {
+                return false;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Return all outgoing journeys for a particular day.
+     */
+     public List<Journey> getAllOutgoingJourneys ( List<RouteSchedule> schedules, List<Stop> stops, String day ) {
+         //Initialise list to store the journeys.
+         List<Journey> outgoingJourneys = new ArrayList<Journey>();
+         //Get the route schedules for that day!
+         for ( int h = 0;  h < schedules.size(); h++ ) {
+            for ( int i = 0; i < getNumJourneys(schedules.get(h)); i++ ) {
+                Journey myJourney = getJourney(schedules.get(h), i);
+                if ( isOutwardService(stops, myJourney.getJourneyStops().get(0).getStopName(), myJourney.getJourneyStops().get(1).getStopName()) ) {
+                    outgoingJourneys.add(myJourney);
+                }
+            }
+         }
+         Collections.sort(outgoingJourneys, new SortedJourneys());
+         return outgoingJourneys;
+     }
+
+     /**
+      * Return all return services for a particular day.
+      */
+     public List<Journey> getAllReturnServices ( List<RouteSchedule> schedules, List<Stop> stops, String day ) {
+         //Initialise list to store the journeys.
+         List<Journey> returnServices = new ArrayList<Journey>();
+         //Get the route schedules for that day!
+         for ( int h = 0; h < schedules.size(); h++ ) {
+             for ( int i = 0; i < getNumJourneys(schedules.get(h)); i++ ) {
+                 Journey myJourney = getJourney(schedules.get(h), i);
+                 if ( !isOutwardService(stops, myJourney.getJourneyStops().get(0).getStopName(), myJourney.getJourneyStops().get(1).getStopName()) ) {
+                    returnServices.add(myJourney);
+                 }
+             }
+         }
+         Collections.sort(returnServices, new SortedJourneys());
+         return returnServices;
      }
 
 }
