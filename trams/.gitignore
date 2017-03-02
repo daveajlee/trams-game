@@ -1,0 +1,17 @@
+/releases/*
+/target/*
+test.tmp
+test2.tmp
+.classpath
+.project
+.settings/*
+hibernate.ddl
+test.log
+test.properties
+test.script
+test2.lck
+test2.log
+test2.properties
+test2.script
+tramshistory.txt
+trams.iml
