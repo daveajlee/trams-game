@@ -7,6 +7,7 @@ import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.List;
 
+import de.davelee.trams.factory.ScenarioFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,7 +28,7 @@ public class RouteService {
 
     private JourneyPatternService journeyPatternService;
     private JourneyService journeyService;
-    private ScenarioService scenarioService;
+    private ScenarioFactory scenarioFactory;
     
     private DatabaseManager databaseManager;
     
@@ -37,10 +38,9 @@ public class RouteService {
 	public RouteService() {
         journeyPatternService = new JourneyPatternService();
         journeyService = new JourneyService();
-        scenarioService = new ScenarioService();
 	}
 	
-	 public DatabaseManager getDatabaseManager() {
+    public DatabaseManager getDatabaseManager() {
 		return databaseManager;
 	}
 
@@ -48,11 +48,19 @@ public class RouteService {
 		this.databaseManager = databaseManager;
 	}
 
+    public ScenarioFactory getScenarioFactory() {
+        return scenarioFactory;
+    }
+
+    public void setScenarioFactory(ScenarioFactory scenarioFactory) {
+        this.scenarioFactory = scenarioFactory;
+    }
+
 	/**
      * This method generates the route timetables for a particular day - it is a very important method.
      * @param today a <code>Calendar</code> object with today's date.
      */
-    public long[] generateJourneyTimetables ( long routeId, Calendar today, long scenarioId, int direction ) {
+    public long[] generateJourneyTimetables ( long routeId, Calendar today, String scenarioName, int direction ) {
         logger.debug("I'm generating timetable for routeId " + routeId + " for " + DateFormats.DAY_MONTH_YEAR_FORMAT.getFormat().format(today.getTime()));
         //First of all, get the current timetable.
         Timetable currentTimetable = getCurrentTimetable(routeId, today);
@@ -97,7 +105,7 @@ public class RouteService {
                     newStop.setStopTime( (Calendar) journeyTime.clone());
                     for ( int i = 1; i < journeyStops.size(); i++ ) {
                         //Now add to journey time the difference between the two stops.
-                        journeyTime.add(Calendar.MINUTE, scenarioService.getDistance(scenarioId, journeyStops.get(i-1).getStopName(), journeyStops.get(i).getStopName()));
+                        journeyTime.add(Calendar.MINUTE, getDistance(scenarioName, journeyStops.get(i-1).getStopName(), journeyStops.get(i).getStopName()));
                         //Create stop.
                         Stop newStop2 = new Stop();
                         newStop2.setStopName(journeyStops.get(i).getStopName());
@@ -123,6 +131,24 @@ public class RouteService {
     }
 
     /**
+     * Get the distance between two stops.
+     * @param stop1 a <code>String</code> with the name of the first stop.
+     * @param stop2 a <code>String</code> with the name of the second stop.
+     * @return a <code>int</code> with the distance between two stops.
+     */
+    public int getDistance ( String scenarioName, String stop1, String stop2 ) {
+        int stop1Pos = -1; int stop2Pos = -1; int count = 0;
+        List<String> stopDistanceList = scenarioFactory.createScenarioByName(scenarioName).getStopDistances();
+        for ( String stopDistance : stopDistanceList ) {
+            String stopName = stopDistance.split(":")[0];
+            if ( stopName.equalsIgnoreCase(stop1) ) { stop1Pos = count; }
+            else if ( stopName.equalsIgnoreCase(stop2) ) { stop2Pos = count; }
+            count++;
+        }
+        return Integer.parseInt(stopDistanceList.get(stop1Pos).split(":")[1].split(",")[stop2Pos]);
+    }
+
+    /**
      * Check for duplicate journeys.
      * @param allJourneys a <code>LinkedList</code> with all journeys.
      * @param newJourney a <code>Journey</code> with the new journey.
@@ -144,11 +170,11 @@ public class RouteService {
      * @param returnJourneys a <code>LinkedList</code> with all return journeys.
      * @param sim a <code>Simulator</code> object for reference.
      */
-    public void generateRouteSchedules ( long routeId, Calendar currentTime, long scenarioId ) {
+    public void generateRouteSchedules ( long routeId, Calendar currentTime, String scenarioName ) {
     	//Initialise parameters.
     	Route route = getRouteById(routeId);
-    	long[] outgoingJourneyIds = generateJourneyTimetables(routeId, currentTime, scenarioId, RouteService.OUTWARD_DIRECTION);
-    	long[] returnJourneyIds = generateJourneyTimetables(routeId, currentTime, scenarioId, RouteService.RETURN_DIRECTION);
+    	long[] outgoingJourneyIds = generateJourneyTimetables(routeId, currentTime, scenarioName, RouteService.OUTWARD_DIRECTION);
+    	long[] returnJourneyIds = generateJourneyTimetables(routeId, currentTime, scenarioName, RouteService.RETURN_DIRECTION);
     	List<Journey> outgoingJourneys = new ArrayList<Journey>();
     	for ( int i = 0; i < outgoingJourneyIds.length; i++ ) {
     		outgoingJourneys.add(journeyService.getJourneyById(outgoingJourneyIds[i]));

@@ -48,19 +48,8 @@ public class ScenarioServiceTest {
 		Scenario scenario = scenarioService.getScenarioById(1);
 		assertNotNull(scenario);
 		assertEquals(scenario.getStopDistances().size(), 46);
-		assertEquals(scenarioService.getDistance(1, "Airport", "Cargo Terminal"), 12);
 	}
-	
-	@Test(expected=IndexOutOfBoundsException.class)
-	public void testStopDistanceNull1() {
-		assertEquals(scenarioService.getDistance(1, "Strasse 201", "Cargo Terminal"), 12);
-	}
-	
-	@Test(expected=IndexOutOfBoundsException.class)
-	public void testStopDistanceNull2() {
-		assertEquals(scenarioService.getDistance(1, "Airport", "Strasse 201"), 12);
-	}
-	
+
 	@Test
 	public void testCreateSuppliedVehicles() {
 		Calendar currentDate = Calendar.getInstance(); currentDate.set(Calendar.YEAR, 2014);

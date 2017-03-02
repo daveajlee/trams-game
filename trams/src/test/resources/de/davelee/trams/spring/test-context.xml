@@ -19,6 +19,7 @@
        </bean>
        
        <bean id="routeService" class="de.davelee.trams.services.RouteService">
+		   <property name="scenarioFactory" ref="scenarioFactory"/>
        </bean>
        
        <bean id="routeScheduleService" class="de.davelee.trams.services.RouteScheduleService">

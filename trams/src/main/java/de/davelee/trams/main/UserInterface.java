@@ -936,15 +936,15 @@ public class UserInterface implements Runnable {
     }
     
     public void generateRouteSchedules ( long selectedRouteId ) {
-    	routeService.generateRouteSchedules(selectedRouteId, getCurrentSimTime(), createScenarioObject(getScenarioName()));
+    	routeService.generateRouteSchedules(selectedRouteId, getCurrentSimTime(), getScenarioName());
     }
     
     public long[] generateOutwardJourneyTimetables ( long selectedRouteId, Calendar cal ) {
-    	return routeService.generateJourneyTimetables(selectedRouteId, cal, createScenarioObject(getScenarioName()), RouteService.OUTWARD_DIRECTION);
+    	return routeService.generateJourneyTimetables(selectedRouteId, cal, getScenarioName(), RouteService.OUTWARD_DIRECTION);
     }
     
     public long[] generateReturnJourneyTimetables ( long selectedRouteId, Calendar cal ) {
-    	return routeService.generateJourneyTimetables(selectedRouteId, cal, createScenarioObject(getScenarioName()), RouteService.RETURN_DIRECTION);
+    	return routeService.generateJourneyTimetables(selectedRouteId, cal, getScenarioName(), RouteService.RETURN_DIRECTION);
     }
     
     public String getScenarioTargets ( ) {

@@ -43,24 +43,6 @@ public class ScenarioService {
         return possStops;
     }
     
-    /**
-     * Get the distance between two stops.
-     * @param stop1 a <code>String</code> with the name of the first stop.
-     * @param stop2 a <code>String</code> with the name of the second stop.
-     * @return a <code>int</code> with the distance between two stops.
-     */
-    public int getDistance ( long scenarioId, String stop1, String stop2 ) {
-    	Scenario scenario = getScenarioById(scenarioId);
-    	int stop1Pos = -1; int stop2Pos = -1; int count = 0;
-    	for ( String stopDistance : scenario.getStopDistances() ) {
-    		String stopName = stopDistance.split(":")[0];
-    		if ( stopName.equalsIgnoreCase(stop1) ) { stop1Pos = count; }
-    		else if ( stopName.equalsIgnoreCase(stop2) ) { stop2Pos = count; }
-    		count++;
-    	}
-    	return Integer.parseInt(scenario.getStopDistances().get(stop1Pos).split(":")[1].split(",")[stop2Pos]);
-    }
-    
     public List<Vehicle> createSuppliedVehicles( HashMap<String, Integer> suppliedVehicles, Calendar currentTime,
     		VehicleService vehicleService, FactoryService factoryService) {
     	List<Vehicle> vehicles = new ArrayList<Vehicle>();

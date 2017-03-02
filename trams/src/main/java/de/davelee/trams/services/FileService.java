@@ -355,7 +355,7 @@ public class FileService {
                     route.addTimetable(timetableElement.getAttribute("name"), myTimetable);
                 }
                 //Generate timetables.
-                routeService.generateRouteSchedules(route.getId(), simulator.getCurrentTime(), myScenario.getId());
+                routeService.generateRouteSchedules(route.getId(), simulator.getCurrentTime(), myScenario.getScenarioName());
                 //Add route.
                 routeService.saveRoute(route);
             }
