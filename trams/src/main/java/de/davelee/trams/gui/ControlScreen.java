@@ -341,7 +341,7 @@ public class ControlScreen extends ButtonBar {
             tabbedPane.setSelectedIndex(1);
             //Now here we need to update satisfaction bar.
             timeLabel.setText(userInterface.formatDateString(userInterface.getCurrentSimTime(), DateFormats.FULL_TIME_FORMAT));
-            userInterface.computePassengerSatisfaction(userInterface.getCurrentSimTime(), userInterface.getDifficultyLevel());
+            userInterface.computePassengerSatisfaction(userInterface.getCurrentSimTime());
             int satValue = userInterface.getPassengerSatisfaction();
             if ( satValue < userInterface.getMinimumSatisfaction() ) {
                 userInterface.pauseSimulation();
@@ -429,7 +429,7 @@ public class ControlScreen extends ButtonBar {
             }*/
             timeLabel.setText(userInterface.formatDateString(userInterface.getCurrentSimTime(), DateFormats.FULL_TIME_FORMAT));
             //Now here we need to update satisfaction bar.
-            userInterface.computePassengerSatisfaction(userInterface.getCurrentSimTime(), userInterface.getDifficultyLevel());
+            userInterface.computePassengerSatisfaction(userInterface.getCurrentSimTime());
             int satValue = userInterface.getPassengerSatisfaction();
             if ( satValue < userInterface.getMinimumSatisfaction() ) {
                 userInterface.pauseSimulation();

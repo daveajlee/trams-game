@@ -4,11 +4,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -137,14 +133,15 @@ public class FileService {
         String time = currentTime.get(Calendar.YEAR) + "-" + month + "-" + date + "-" + hour + ":" + minute;
         game.setAttribute("time", time);
         game.setAttribute("increment", "" + simulationService.getSimulator().getTimeIncrement());
-        game.setAttribute("difficulty", "" + gameService.getGame().getDifficultyLevel());
+        Hashtable<String, String> gameTable = gameService.getGameAsString();
+        game.setAttribute("difficulty", "" + gameTable.get("DifficultyLevel"));
         doc.appendChild(game);
         //Create scenario name element.
         Element scenario = doc.createElement("scenario");
-        scenario.setAttribute("name", gameService.getGame().getScenarioName());
-        scenario.setAttribute("pName", gameService.getGame().getPlayerName());
-        scenario.setAttribute("balance", "" + gameService.getGame().getBalance());
-        scenario.setAttribute("satisfaction", "" + gameService.getGame().getPassengerSatisfaction());
+        scenario.setAttribute("name", gameTable.get("ScenarioName"));
+        scenario.setAttribute("pName", gameTable.get("PlayerName"));
+        scenario.setAttribute("balance", "" + gameTable.get("Balance"));
+        scenario.setAttribute("satisfaction", "" + gameTable.get("PassengerSatisfaction"));
         game.appendChild(scenario);
         //Create message elements.
         for ( int h = (messageService.getAllMessages().size()-1); h >= 0; h-- ) {
@@ -385,7 +382,7 @@ public class FileService {
                 //logger.debug("Adding vehicle with id " + v.getLast().getVehicleID() + " type " + v.getLast().getVehicleType() + " age " + v.getLast().getVehicleAge());
             }
             simulationService.setSimulator(simulator);
-            gameService.setGame(game);
+            gameService.createGame(game.getPlayerName(), game.getScenarioName(), game.getBalance(), game.getPassengerSatisfaction(), game.getDifficultyLevel());
         }
         catch (Exception e) {
             //logger.debug("Exception!");

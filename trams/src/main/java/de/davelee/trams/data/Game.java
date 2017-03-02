@@ -1,14 +1,10 @@
 package de.davelee.trams.data;
 
-import java.util.Hashtable;
-import java.util.LinkedList;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
 import de.davelee.trams.util.DifficultyLevel;
 
@@ -39,13 +35,8 @@ public class Game {
 	
 	@Column(name="SCENARIO_NAME")
 	private String scenarioName;
-	
-	@Transient
-	//TODO: Transient ausbauen!
-	private Hashtable<String, LinkedList<Integer>> scheduleIds;
     
     public Game() {
-    	scheduleIds = new Hashtable<String, LinkedList<Integer>>();
     }
     
     public int getId() {
@@ -129,12 +120,4 @@ public class Game {
         return scenarioName;
     }
 
-	public Hashtable<String, LinkedList<Integer>> getScheduleIds() {
-		return scheduleIds;
-	}
-
-	public void setScheduleIds(Hashtable<String, LinkedList<Integer>> scheduleIds) {
-		this.scheduleIds = scheduleIds;
-	}
-	
 }

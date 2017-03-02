@@ -242,7 +242,7 @@ public class UserInterface implements Runnable {
      * @return a <code>Enum</code> with the difficulty level.
      */
     public DifficultyLevel getDifficultyLevel ( ) {
-        return gameService.getGame().getDifficultyLevel();
+        return gameService.getDifficultyLevel();
     }
     
     /**
@@ -250,7 +250,7 @@ public class UserInterface implements Runnable {
      * @param diffLevel a <code>Enum</code> with the new difficulty level.
      */
     public void setDifficultyLevel ( DifficultyLevel diffLevel ) {
-        gameService.getGame().setDifficultyLevel(diffLevel);
+        gameService.setDifficultyLevel(diffLevel);
     }
     
     /**
@@ -721,7 +721,7 @@ public class UserInterface implements Runnable {
      * @return a <code>double</code> with the balance amount.
      */
     public double getBalance ( ) {
-        return gameService.getGame().getBalance();
+        return gameService.getCurrentBalance();
     }
     
     /**
@@ -850,21 +850,13 @@ public class UserInterface implements Runnable {
     public void sortVehicles ( ) {
         vehicleService.sortVehicles(vehicleService.getAllVehicles());
     }
-    
-    /**
-     * Set a new scenario name.
-     * @param scenarioName a <code>String</code> with the new scenario name.
-     */
-    public void setScenario ( String scenarioName ) {
-        gameService.getGame().setScenarioName(scenarioName);
-    }
-    
+
     /**
      * Get the current scenario name.
      * @return a <code>String</code> object.
      */
     public String getScenarioName ( ) {
-        return gameService.getGame().getScenarioName();
+        return gameService.getScenarioName();
     }
     
     public long createScenarioObject ( String scenarioName ) {
@@ -895,8 +887,8 @@ public class UserInterface implements Runnable {
         //LoadingScreen ls = new LoadingScreen();
     }
     
-    public void computePassengerSatisfaction ( Calendar currentTime, DifficultyLevel difficultyLevel ) {
-    	gameService.computePassengerSatisfaction(currentTime, difficultyLevel, routeService.getAllRoutes());
+    public void computePassengerSatisfaction ( Calendar currentTime ) {
+    	gameService.computeAndReturnPassengerSatisfaction(currentTime, routeService.getAllRoutes());
     }
     
     public String formatDateString ( Calendar currentTime, DateFormats dateFormat ) {
@@ -928,7 +920,7 @@ public class UserInterface implements Runnable {
     }
     
     public String getPlayerName ( ) {
-    	return gameService.getGame().getPlayerName();
+    	return gameService.getPlayerName();
     }
     
     public String getScenarioDescriptionByName ( String name ) {
@@ -968,7 +960,7 @@ public class UserInterface implements Runnable {
     }
     
     public int getPassengerSatisfaction ( ) {
-    	return gameService.getGame().getPassengerSatisfaction();
+    	return gameService.computeAndReturnPassengerSatisfaction(getCurrentSimTime(), routeService.getAllRoutes());
     }
     
     public int getMinimumSatisfaction ( ) {

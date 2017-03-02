@@ -6,6 +6,8 @@ import java.util.Random;
 
 import de.davelee.trams.data.RouteSchedule;
 import de.davelee.trams.data.Journey;
+import de.davelee.trams.data.Simulator;
+import de.davelee.trams.data.Vehicle;
 import de.davelee.trams.util.DifficultyLevel;
 import de.davelee.trams.util.JourneyStatus;
 
@@ -254,5 +256,22 @@ public class RouteScheduleService {
     	schedule.setDelayInMins(delayInMins);
     	return schedule;
     }
+
+    /**
+     * Check if any vehicles are presently running based on the current time.
+     * @param currentTime a <code>Calendar</code> object with the current time.
+     * @return a <code>boolean</code> which is true iff at least one vehicle is running.
+     */
+    public boolean areAnyVehiclesRunning (Calendar currentTime, Simulator simulator, List<Vehicle> vehicles, DifficultyLevel difficultyLevel) {
+        //Check if any vehicles are running....
+        for ( Vehicle myVehicle : vehicles ) {
+            //First one that is not in depot indicates that vehicles are running.
+            if ( !getCurrentStopName(myVehicle.getRouteScheduleId(), currentTime, difficultyLevel).equalsIgnoreCase("Depot") ) {
+                return true;
+            }
+        }
+        //Otherwise, return false;
+        return false;
+     }
 
 }

@@ -1,42 +1,33 @@
 package de.davelee.trams.services;
 
 import java.util.Calendar;
-import java.util.LinkedList;
+import java.util.Hashtable;
 import java.util.List;
 
 import de.davelee.trams.data.Game;
 import de.davelee.trams.data.Route;
 import de.davelee.trams.data.RouteSchedule;
-import de.davelee.trams.data.Simulator;
-import de.davelee.trams.data.Vehicle;
 import de.davelee.trams.util.DifficultyLevel;
 
 public class GameService {
 	
 	private Game game;
 	
-	private RouteScheduleService routeScheduleService;
-	
 	public GameService() {
-		game = new Game();
-	}
-	
-	public Game getGame() {
-		return game;
-	}
-
-	public void setGame(Game game) {
-		this.game = game;
 	}
 
 	public void createGame ( String playerName, String scenarioName ) {
-        Game game = new Game();
-        game.setPlayerName(playerName);
-        game.setBalance(80000.00);
-        game.setPassengerSatisfaction(100);
-        game.setScenarioName(scenarioName);
-        setGame(game);
+        createGame(playerName, scenarioName, 80000.00, 100, DifficultyLevel.EASY);
 	}
+
+    public void createGame ( String playerName, String scenarioName, double balance, int passengerSatisfaction, DifficultyLevel difficultyLevel ) {
+        game = new Game();
+        game.setPlayerName(playerName);
+        game.setBalance(balance);
+        game.setPassengerSatisfaction(passengerSatisfaction);
+        game.setScenarioName(scenarioName);
+        game.setDifficultyLevel(difficultyLevel);
+    }
     
     /**
      * Deduct money from the balance.
@@ -59,7 +50,7 @@ public class GameService {
      * @param currentTime a <code>Calendar</code> object with the current time.
      * @param difficultyLevel a <code>String</code> with the difficulty level.
      */
-    public void computePassengerSatisfaction ( Calendar currentTime, DifficultyLevel difficultyLevel, List<Route> routes ) {
+    public int computeAndReturnPassengerSatisfaction ( Calendar currentTime, List<Route> routes ) {
         //Essentially satisfaction is determined by the route schedules that are running on time.
         //Now count number of route schedules into three groups: 1 - 5 minutes late, 6 - 15 minutes late, 16+ minutes late.
         int numSmallLateSchedules = 0; int numMediumLateSchedules = 0; int numLargeLateSchedules = 0;
@@ -83,57 +74,54 @@ public class GameService {
         int totalSubtract = 0;
 
         //Easy: numSmallLateSchedules / 2 and numMediumLateSchedules and numLargeLateSchedules*2.
-        if ( difficultyLevel == DifficultyLevel.EASY ) {
+        if ( game.getDifficultyLevel() == DifficultyLevel.EASY ) {
             totalSubtract = (numSmallLateSchedules/2) + numMediumLateSchedules + (numLargeLateSchedules*2);
         }
-        else if ( difficultyLevel == DifficultyLevel.INTERMEDIATE ) {
+        else if ( game.getDifficultyLevel() == DifficultyLevel.INTERMEDIATE ) {
             totalSubtract = (numSmallLateSchedules) + (numMediumLateSchedules*2) + (numLargeLateSchedules*3);
         }
-        else if ( difficultyLevel == DifficultyLevel.MEDIUM ) {
+        else if ( game.getDifficultyLevel() == DifficultyLevel.MEDIUM ) {
             totalSubtract = (numSmallLateSchedules*2) + (numMediumLateSchedules*3) + (numLargeLateSchedules*4);
         }
-        else if ( difficultyLevel == DifficultyLevel.HARD ) {
+        else if ( game.getDifficultyLevel() == DifficultyLevel.HARD ) {
             totalSubtract = (numSmallLateSchedules*3) + (numMediumLateSchedules*4) + (numLargeLateSchedules*5);
         }
         //Subtract from passenger satisfaction.
         game.setPassengerSatisfaction(game.getPassengerSatisfaction() - totalSubtract);
         //After all of this check that passenger satisfaction is greater than 0.
         if ( game.getPassengerSatisfaction() < 0 ) { game.setPassengerSatisfaction(0); }
+        return game.getPassengerSatisfaction();
     }
-    
-    /**
-     * Check if any vehicles are presently running based on the current time.
-     * @param currentTime a <code>Calendar</code> object with the current time.
-     * @return a <code>boolean</code> which is true iff at least one vehicle is running.
-     */
-    public boolean areAnyVehiclesRunning (Calendar currentTime, Simulator simulator, List<Vehicle> vehicles) {
-        //Check if any vehicles are running....
-        for ( Vehicle myVehicle : vehicles ) {
-            //First one that is not in depot indicates that vehicles are running.
-            if ( !routeScheduleService.getCurrentStopName(myVehicle.getRouteScheduleId(), currentTime, game.getDifficultyLevel()).equalsIgnoreCase("Depot") ) {
-                return true;
-            }
-        }
-        //Otherwise, return false;
-        return false;
+
+    //TODO: Remove once File Service no longer needed.
+    public Hashtable<String, String> getGameAsString ( ) {
+        Hashtable<String, String> gameTable = new Hashtable<String, String>();
+        gameTable.put("DifficultyLevel", game.getDifficultyLevel().name());
+        gameTable.put("PassengerSatisfaction", "" + game.getPassengerSatisfaction());
+        gameTable.put("PlayerName", game.getPlayerName());
+        gameTable.put("scenarioName", game.getScenarioName());
+        gameTable.put("Balance", "" + game.getBalance());
+        return gameTable;
     }
-    
-    /**
-     * Check if a particular schedule id exists for a particular route.
-     * @param schedId a <code>int</code> with the schedule id.
-     * @param routeNumber a <code>String</code> with the route number.
-     * @return a <code>boolean</code> which is true iff the schedule does exist.
-     */
-    public boolean doesSchedIdExist ( int schedId, String routeNumber ) {
-        LinkedList<Integer> scheds = getGame().getScheduleIds().get(routeNumber);
-        if ( scheds != null ) {
-            for ( int i = 0; i < scheds.size(); i++ ) {
-                if ( scheds.get(i) == schedId ) {
-                    return true;
-                }
-            }
-        }
-        return false;
+
+    public DifficultyLevel getDifficultyLevel ( ) {
+        return game.getDifficultyLevel();
+    }
+
+    public void setDifficultyLevel ( DifficultyLevel difficultyLevel ) {
+        game.setDifficultyLevel(difficultyLevel);
+    }
+
+    public double getCurrentBalance ( ) {
+        return game.getBalance();
+    }
+
+    public String getScenarioName ( ) {
+        return game.getScenarioName();
+    }
+
+    public String getPlayerName ( ) {
+        return game.getPlayerName();
     }
     
 }
