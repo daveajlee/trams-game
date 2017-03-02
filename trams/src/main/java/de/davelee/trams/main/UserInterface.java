@@ -3,6 +3,9 @@ package de.davelee.trams.main;
 import javax.swing.*;
 import javax.swing.filechooser.*;
 
+import de.davelee.trams.data.RouteSchedule;
+import de.davelee.trams.data.Simulator;
+import de.davelee.trams.services.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,16 +15,6 @@ import de.davelee.trams.data.Vehicle;
 import de.davelee.trams.gui.ControlScreen;
 import de.davelee.trams.gui.SplashScreen;
 import de.davelee.trams.gui.WelcomeScreen;
-import de.davelee.trams.services.DriverService;
-import de.davelee.trams.services.FileService;
-import de.davelee.trams.services.GameService;
-import de.davelee.trams.services.MessageService;
-import de.davelee.trams.services.RouteScheduleService;
-import de.davelee.trams.services.RouteService;
-import de.davelee.trams.services.ScenarioService;
-import de.davelee.trams.services.SimulationService;
-import de.davelee.trams.services.FactoryService;
-import de.davelee.trams.services.VehicleService;
 import de.davelee.trams.util.DateFormats;
 import de.davelee.trams.util.DifficultyLevel;
 import de.davelee.trams.util.MessageFolder;
@@ -53,6 +46,7 @@ public class UserInterface implements Runnable {
     LinkedList<String> tipMessages = new LinkedList<String>();
     
     private RouteScheduleService routeScheduleService;
+    private JourneyService journeyService;
     private VehicleService vehicleService;
     private DriverService driverService;
     private GameService gameService;
@@ -86,6 +80,7 @@ public class UserInterface implements Runnable {
         scenarioService = new ScenarioService();
         fileService = new FileService();
         routeService = new RouteService();
+        journeyService = new JourneyService();
     }
     
     /**
@@ -337,10 +332,10 @@ public class UserInterface implements Runnable {
             if ( routeService.getRoute(routeNumber).getAssignedVehicle(routeService.getRoute(routeNumber).getRouteSchedules().get(min).toString()) == null ) {
                 logger.debug("A schedule was null");
             }
-            if ( routeScheduleService.getCurrentStopName(routeService.getRoute(routeNumber).getRouteSchedules().get(min).getId(), currentTime, getDifficultyLevel()).equalsIgnoreCase("Depot") ) {
+            if ( getCurrentStopName(routeService.getRoute(routeNumber).getRouteSchedules().get(min).getId(), currentTime, getDifficultyLevel()).equalsIgnoreCase("Depot") ) {
                 logger.debug("Vehicle in depot!");
             }
-            if ( routeService.getRoute(routeNumber).getAssignedVehicle( routeService.getRoute(routeNumber).getRouteSchedules().get(min).toString()) != null && !routeScheduleService.getCurrentStopName( routeService.getRoute(routeNumber).getRouteSchedules().get(min).getId(), currentTime, getDifficultyLevel()).equalsIgnoreCase("Depot") ) {
+            if ( routeService.getRoute(routeNumber).getAssignedVehicle( routeService.getRoute(routeNumber).getRouteSchedules().get(min).toString()) != null && !getCurrentStopName( routeService.getRoute(routeNumber).getRouteSchedules().get(min).getId(), currentTime, getDifficultyLevel()).equalsIgnoreCase("Depot") ) {
                 //logger.debug("Adding Route Detail " + routeDetails.get(i).getId());
                 routeDetailPos.add(0);
             }
@@ -355,10 +350,10 @@ public class UserInterface implements Runnable {
             if ( routeService.getRoute(routeNumber).getAssignedVehicle(routeService.getRoute(routeNumber).getRouteSchedules().get(i).toString()) == null ) {
                 logger.debug("A schedule was null");
             }
-            if ( routeScheduleService.getCurrentStopName(routeService.getRoute(routeNumber).getRouteSchedules().get(i).getId(), currentTime, getDifficultyLevel()).equalsIgnoreCase("Depot") ) {
+            if ( getCurrentStopName(routeService.getRoute(routeNumber).getRouteSchedules().get(i).getId(), currentTime, getDifficultyLevel()).equalsIgnoreCase("Depot") ) {
                 logger.debug("Vehicle in depot!");
             }
-            if ( routeService.getRoute(routeNumber).getAssignedVehicle(routeService.getRoute(routeNumber).getRouteSchedules().get(i).toString()) != null && !routeScheduleService.getCurrentStopName(routeService.getRoute(routeNumber).getRouteSchedules().get(i).getId(), currentTime, getDifficultyLevel()).equalsIgnoreCase("Depot") ) {
+            if ( routeService.getRoute(routeNumber).getAssignedVehicle(routeService.getRoute(routeNumber).getRouteSchedules().get(i).toString()) != null && !getCurrentStopName(routeService.getRoute(routeNumber).getRouteSchedules().get(i).getId(), currentTime, getDifficultyLevel()).equalsIgnoreCase("Depot") ) {
                 //logger.debug("Adding Route Detail " + routeDetails.get(i).getId());
                 routeDetailPos.add(i);
             }
@@ -369,6 +364,92 @@ public class UserInterface implements Runnable {
                 //logger.debug("Route Detail " + routeDetails.get(i).getId() + " was null - maxVehicles is now " + max);
             }
         }
+    }
+
+    /**
+     * Get the current stop name which this route schedule is on based on the current date.
+     * @param currentDate a <code>Calendar</code> object.
+     * @return a <code>String</code> array with the stop details.
+     */
+    public String getCurrentStopName ( long routeScheduleId, Calendar currentDate, DifficultyLevel difficultyLevel ) {
+        //Copy current Date to current Time and then use delay to determine position.
+        Calendar currentTime = (Calendar) currentDate.clone();
+        currentTime.add(Calendar.MINUTE, -routeScheduleService.getRouteScheduleById(routeScheduleId).getDelayInMins());
+        String stopName = journeyService.getCurrentStopName(routeScheduleService.getJourneyList(routeScheduleService.getRouteScheduleById(routeScheduleId)), currentTime);
+        if ( stopName.contentEquals("Depot") ) {
+            routeScheduleService.getRouteScheduleById(routeScheduleId).setDelayInMins(0); //Finished for the day or not started.
+        }
+        else {
+            //Now fiddle delay!
+            routeScheduleService.calculateNewDelay(routeScheduleService.getRouteScheduleById(routeScheduleId), difficultyLevel);
+        }
+        return stopName;
+    }
+
+    public String getLastStopName ( long routeScheduleId, Calendar currentDate, DifficultyLevel difficultyLevel) {
+        //Copy current Date to current Time and then use delay to determine position.
+        Calendar currentTime = (Calendar) currentDate.clone();
+        currentTime.add(Calendar.MINUTE, -routeScheduleService.getRouteScheduleById(routeScheduleId).getDelayInMins());
+        String stopName = journeyService.getLastStopName(routeScheduleService.getJourneyList(routeScheduleService.getRouteScheduleById(routeScheduleId)), currentTime);
+        if ( stopName.contentEquals("Depot")) {
+            routeScheduleService.getRouteScheduleById(routeScheduleId).setDelayInMins(0); //Finished for the day.
+        }
+        else {
+            //Now fiddle delay!
+            routeScheduleService.calculateNewDelay(routeScheduleService.getRouteScheduleById(routeScheduleId), difficultyLevel);
+        }
+        return stopName;
+    }
+
+    /**
+     * Shorten schedule to the specific stop stated and reduce the delay accordingly.
+     * @param stop a <code>String</code> with the stop to terminate at.
+     * @param currentTime a <code>Calendar</code> with the current time.
+     */
+    public void shortenSchedule ( long routeScheduleId, String stop, Calendar currentTime ) {
+        RouteSchedule schedule = routeScheduleService.getRouteScheduleById(routeScheduleId);
+        //Shorten schedule to the specific stop stated and reduce the delay accordingly - for current service remove stops after the specified stop.
+        //logger.debug("Service was ending at: " + theAssignedSchedule.getCurrentService().getEndDestination());
+        String oldEnd = journeyService.getStop(journeyService.getCurrentJourney(schedule.getJourneyList(), currentTime).getId(), journeyService.getNumStops(journeyService.getCurrentJourney(schedule.getJourneyList(), currentTime))-1).getStopName();
+        //Now we need to remove the stops in beteen!
+        long timeDiff = journeyService.removeStopsBetween(journeyService.getCurrentJourney(schedule.getJourneyList(), currentTime), stop, oldEnd, false, true);
+        //Now for the next service we need to remove stops between first stop and stop.
+        long timeDiff2 = journeyService.removeStopsBetween(journeyService.getNextJourney(schedule.getJourneyList(), currentTime), journeyService.getStartTerminus(journeyService.getNextJourney(schedule.getJourneyList(), currentTime)), stop, false, true);
+        //Divide both timeDiff's by 60 to convert to minutes and then use that to reduce vehicle delay.
+        long delayReduction = (timeDiff/60) + (timeDiff2/60);
+        //Reduce delay!
+        routeScheduleService.reduceDelay(schedule, (int) delayReduction);
+    }
+
+    /**
+     * Put this vehicle out of service from the current stop until the new stop.
+     * @param currentStop a <code>String</code> with the stop to go out of service from.
+     * @param newStop a <code>String</code> with the stop to resume service from.
+     * @param currentTime a <code>Calendar</code> object with the current time.
+     */
+     public void outOfService ( long routeScheduleId, String currentStop, String newStop, Calendar currentTime ) {
+        //Get the time difference between current stop and new stop.
+        RouteSchedule schedule = routeScheduleService.getRouteScheduleById(routeScheduleId);
+        long timeDiff = journeyService.getStopTimeDifference(journeyService.getCurrentJourney(schedule.getJourneyList(), currentTime), currentStop, newStop);
+        routeScheduleService.reduceDelay(schedule, (int) (timeDiff/2));
+        //logger.debug("Vehicle delay reduced from " + oldDelay + " mins to " + getVehicleDelay() + " mins.");
+     }
+
+    /**
+     * Check if any vehicles are presently running based on the current time.
+     * @param currentTime a <code>Calendar</code> object with the current time.
+     * @return a <code>boolean</code> which is true iff at least one vehicle is running.
+     */
+    public boolean areAnyVehiclesRunning (Calendar currentTime, Simulator simulator, List<Vehicle> vehicles, DifficultyLevel difficultyLevel) {
+        //Check if any vehicles are running....
+        for ( Vehicle myVehicle : vehicles ) {
+            //First one that is not in depot indicates that vehicles are running.
+            if ( !getCurrentStopName(myVehicle.getRouteScheduleId(), currentTime, difficultyLevel).equalsIgnoreCase("Depot") ) {
+                return true;
+            }
+        }
+        //Otherwise, return false;
+        return false;
     }
     
     /**

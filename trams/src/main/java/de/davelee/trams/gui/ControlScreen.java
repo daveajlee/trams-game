@@ -677,7 +677,7 @@ public class ControlScreen extends ButtonBar {
         for ( int i = 0; i < userInterface.getNumCurrentDisplaySchedules(); i++ ) {
             //Get the schedule id and vehicle position.
             long routeScheduleId = userInterface.getDisplaySchedule(routeList.getSelectedValue().toString().split(":")[0], i);
-            String vehiclePos =  routeScheduleService.getCurrentStopName(routeScheduleId, userInterface.getCurrentSimTime(), userInterface.getDifficultyLevel());
+            String vehiclePos =  userInterface.getCurrentStopName(routeScheduleId, userInterface.getCurrentSimTime(), userInterface.getDifficultyLevel());
             logger.debug(routeScheduleId + " is at " + vehiclePos + " seconds with delay " + routeScheduleService.getDelay(routeScheduleId) + " minutes.");
             /*if ( rs.hasDelay() ) {
                 theInterface.addMessage(theSimulator.getMessageDisplaySimTime() + ": Vehicle " + schedId + " is running " + rs.getDelay() + " minutes late.");
@@ -688,10 +688,10 @@ public class ControlScreen extends ButtonBar {
                 outwardStops.add(((JLabel) stopPanels.get(j).getComponent(0)).getText());
             }
             int direction = DrawingPanel.RIGHT_TO_LEFT;
-            if ( routeScheduleService.getCurrentJourney(routeScheduleId, userInterface.getCurrentSimTime()) == null ) {
+            if ( journeyService.getCurrentJourney(routeScheduleService.getRouteScheduleById(routeScheduleId).getJourneyList(), userInterface.getCurrentSimTime()) == null ) {
                 continue; //Don't print if the vehicle is at a terminus.
             }
-            if ( journeyService.isOutwardJourney(routeScheduleService.getCurrentJourney(routeScheduleId, userInterface.getCurrentSimTime()), outwardStops) ) {
+            if ( journeyService.isOutwardJourney(journeyService.getCurrentJourney(routeScheduleService.getRouteScheduleById(routeScheduleId).getJourneyList(), userInterface.getCurrentSimTime()), outwardStops) ) {
                 direction = DrawingPanel.LEFT_TO_RIGHT; 
             }
             //Now we want to find the position where we draw the triangle i.e. position of JLabel.
@@ -716,7 +716,7 @@ public class ControlScreen extends ButtonBar {
                         xPos = startPos;
                     }
                     else {
-                        long maxTimeDiff = Math.abs(journeyService.getStopMaxTimeDiff(routeScheduleService.getCurrentJourney(routeScheduleId, userInterface.getCurrentSimTime()), previousStop, myLabel.getText()));
+                        long maxTimeDiff = Math.abs(journeyService.getStopMaxTimeDiff(journeyService.getCurrentJourney(routeScheduleService.getRouteScheduleById(routeScheduleId).getJourneyList(), userInterface.getCurrentSimTime()), previousStop, myLabel.getText()));
                         if ( maxTimeDiff == Integer.MAX_VALUE ) {
                             xPos = startPos;
                         } 

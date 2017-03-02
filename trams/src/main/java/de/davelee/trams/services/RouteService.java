@@ -236,7 +236,7 @@ public class RouteService {
                             //We have found our journey - its an outgoing one!!!
                             mySchedule.addJourney(outgoingJourneys.get(loopPos));
                             //Set calendar equal to last stop time.
-                            myCal = (Calendar) journeyService.getLastStop(outgoingJourneys.get(loopPos)).getStopTime().clone();
+                            myCal = (Calendar) journeyService.getStop(outgoingJourneys.get(loopPos).getId(), journeyService.getLastStopName(outgoingJourneys, currentTime)).getStopTime().clone();
                             //myCal.add(Calendar.MINUTE, -1); //This prevents bad effect of adding one later!
                             //Remove this journey from the list.
                             outgoingJourneys.remove(loopPos);
@@ -253,7 +253,7 @@ public class RouteService {
                             //We have found our journey - its a return one!!!
                             mySchedule.addJourney(returnJourneys.get(loopPos));
                             //Set calendar equal to last stop time.
-                            myCal = (Calendar) journeyService.getLastStop(returnJourneys.get(loopPos)).getStopTime().clone();
+                            myCal = (Calendar) journeyService.getStop(returnJourneys.get(loopPos).getId(), journeyService.getLastStopName(outgoingJourneys, currentTime)).getStopTime().clone();
                             //myCal.add(Calendar.MINUTE, -1); //This prevents bad effect of adding one later!
                             //Remove this journey from the list.
                             returnJourneys.remove(loopPos);

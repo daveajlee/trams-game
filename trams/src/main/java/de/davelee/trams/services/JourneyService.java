@@ -25,7 +25,7 @@ public class JourneyService {
     	//Did the journey start?
         if ( checkTimeDiff(currentTime, journey.getJourneyStops().get(0).getStopTime() ) > -1 ) {
         	//Has the journey already ended?
-        	if ( checkTimeDiff(currentTime, getLastStop(journey).getStopTime() ) > 0 ) {
+        	if ( checkTimeDiff(currentTime, journey.getJourneyStops().get(journey.getJourneyStops().size()-1).getStopTime() ) > 0 ) {
                 return JourneyStatus.FINISHED;
             }
             return JourneyStatus.RUNNING;
@@ -38,15 +38,25 @@ public class JourneyService {
      * @param currentTime a <code>Calendar</code> object. 
      * @return a <code>String</code> array with the current stop.
      */
-    public String getCurrentStopName(Journey journey, Calendar currentTime) {
-        for ( Stop myJourneyStop : journey.getJourneyStops() ) {
-            if ( checkTimeDiff(myJourneyStop.getStopTime(), currentTime) >= 0 ) {
-                //logger.debug("I will be at " + myServiceStop.getStopName() + " in " + checkTimeDiff(myServiceStop.getStopTime(), currentTime) + " seconds.");
-                return myJourneyStop.getStopName();
-                //return "I will be at " + myServiceStop.getStopName() + " in " + checkTimeDiff(myServiceStop.getStopTime(), currentTime) + " seconds.";
+    public String getCurrentStopName(List<Journey> journeyList, Calendar currentTime) {
+        for (int i = 0; i < journeyList.size(); i++) {
+            if (checkJourneyStatus(journeyList.get(i), currentTime) == JourneyStatus.RUNNING) {
+                for (Stop myJourneyStop : journeyList.get(i).getJourneyStops()) {
+                    if (checkTimeDiff(myJourneyStop.getStopTime(), currentTime) >= 0) {
+                        //logger.debug("I will be at " + myServiceStop.getStopName() + " in " + checkTimeDiff(myServiceStop.getStopTime(), currentTime) + " seconds.");
+                        return myJourneyStop.getStopName();
+                        //return "I will be at " + myServiceStop.getStopName() + " in " + checkTimeDiff(myServiceStop.getStopTime(), currentTime) + " seconds.";
+                    }
+                }
+                return null;
+            }
+            if (checkJourneyStatus(journeyList.get(i), currentTime) == JourneyStatus.YET_TO_RUN) {
+                if ( journeyList.get(i).getId() != 1 ) {
+                    return getStartTerminus(journeyList.get(i));
+                }
             }
         }
-        return "No Stop Found";
+        return "Depot";
     }
     
     /**
@@ -75,8 +85,49 @@ public class JourneyService {
      * Get the last stop.
      * @return a <code>Stop</code> object representing the last stop in this journey.
      */
-    public Stop getLastStop ( Journey journey ) {
-        return journey.getJourneyStops().get(journey.getJourneyStops().size()-1);
+    public String getLastStopName ( List<Journey> journeyList, Calendar currentTime ) {
+        for (int i = 0; i < journeyList.size(); i++) {
+            if (checkJourneyStatus(journeyList.get(i), currentTime) == JourneyStatus.RUNNING) {
+                return journeyList.get(i).getJourneyStops().get(journeyList.get(i).getJourneyStops().size()-1).getStopName();
+            }
+            else if (checkJourneyStatus(journeyList.get(i), currentTime) == JourneyStatus.YET_TO_RUN) {
+                if ( journeyList.get(i).getId() != 1 ) {
+                    return journeyList.get(i).getJourneyStops().get(journeyList.get(i).getJourneyStops().size()-1).getStopName();
+                }
+            }
+        }
+        return "Depot";
+    }
+
+    /**
+     * Get the current journey running on this schedule based on the current date.
+     * @param currentTime a <code>Calendar</code> object with current time.
+     * @return a <code>Service</code> object.
+     */
+    public Journey getCurrentJourney ( List<Journey> journeyList, Calendar currentTime ) {
+        for ( int i = 0; i < journeyList.size(); i++ ) {
+            if ( checkJourneyStatus(journeyList.get(i), currentTime) == JourneyStatus.RUNNING) {
+                //TODO: Clean up for loop.
+                if (  i != (journeyList.size()-1) && checkJourneyStatus(journeyList.get(i+1), currentTime) == JourneyStatus.YET_TO_RUN )  {
+                    return journeyList.get(i);
+                }
+                return journeyList.get(i);
+            }
+        }
+        return null;
+    }
+
+    public Journey getNextJourney ( List<Journey> journeyList, Calendar currentTime ) {
+        boolean returnNextJourney = false;
+        for ( Journey myJourney : journeyList ) {
+            if ( returnNextJourney ) {
+                return myJourney;
+            }
+            if ( checkJourneyStatus(myJourney, currentTime) == JourneyStatus.RUNNING) {
+                returnNextJourney = true;
+            }
+        }
+        return null;
     }
     
     /**

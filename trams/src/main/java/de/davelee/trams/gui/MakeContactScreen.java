@@ -6,6 +6,7 @@ import java.awt.event.*;
 import javax.swing.*;
 
 import de.davelee.trams.main.UserInterface;
+import de.davelee.trams.services.JourneyService;
 import de.davelee.trams.services.RouteScheduleService;
 
 
@@ -31,6 +32,7 @@ public class MakeContactScreen extends JFrame {
     private long routeScheduleId;
     
     private RouteScheduleService routeScheduleService;
+    private JourneyService journeyService;
 
     /**
      * Create a new make contact screen.
@@ -103,7 +105,7 @@ public class MakeContactScreen extends JFrame {
                         "\n\n Control: Vehicle " + userInterface.getAllocatedRegistrationNumber(routeScheduleId) + ", please terminate at " + stopBox.getSelectedItem().toString() + " and proceed in service in the reverse direction. Over!" +
                         "\n\n Vehicle " + userInterface.getAllocatedRegistrationNumber(routeScheduleId) + ": Message acknowledeged. Thanks. Over!");
                 //Ask vehicle to shorten current route to the specified destination.
-                routeScheduleService.shortenSchedule(routeScheduleId, stopBox.getSelectedItem().toString(), userInterface.getCurrentSimTime());
+                userInterface.shortenSchedule(routeScheduleId, stopBox.getSelectedItem().toString(), userInterface.getCurrentSimTime());
             }
         });
         alterButtonPanel.add(shortenRouteButton);
@@ -114,7 +116,7 @@ public class MakeContactScreen extends JFrame {
                         "\n\n Control: Vehicle " + userInterface.getAllocatedRegistrationNumber(routeScheduleId) + ", please go out of service until " + stopBox.getSelectedItem().toString() + ". Over!" +
                         "\n\n Vehicle " + userInterface.getAllocatedRegistrationNumber(routeScheduleId) + ": Message acknowledeged. Thanks. Over!");
                 //Request vehicle to go out of service.
-                routeScheduleService.outOfService(routeScheduleId, routeScheduleService.getCurrentStopName(routeScheduleId, userInterface.getCurrentSimTime(), userInterface.getDifficultyLevel()), stopBox.getSelectedItem().toString(), userInterface.getCurrentSimTime());
+                userInterface.outOfService(routeScheduleId, userInterface.getCurrentStopName(routeScheduleId, userInterface.getCurrentSimTime(), userInterface.getDifficultyLevel()), stopBox.getSelectedItem().toString(), userInterface.getCurrentSimTime());
             }
         });
         alterButtonPanel.add(goOutOfServiceButton);
@@ -128,7 +130,7 @@ public class MakeContactScreen extends JFrame {
         communicationArea = new JTextArea(3,5);
         communicationArea.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         communicationArea.setText("Control: Vehicle " + userInterface.getAllocatedRegistrationNumber(routeScheduleId) + ", please state your current position. Over!");
-        communicationArea.setText(communicationArea.getText() + "\n\n Vehicle " + userInterface.getAllocatedRegistrationNumber(routeScheduleId) + ": At " + routeScheduleService.getCurrentStopName(routeScheduleId, userInterface.getCurrentSimTime(), userInterface.getDifficultyLevel()) + " heading towards " + getCurrentDestination() + " with delay of " + routeScheduleService.getDelay(routeScheduleId) + " mins. Over!");
+        communicationArea.setText(communicationArea.getText() + "\n\n Vehicle " + userInterface.getAllocatedRegistrationNumber(routeScheduleId) + ": At " + userInterface.getCurrentStopName(routeScheduleId, userInterface.getCurrentSimTime(), userInterface.getDifficultyLevel()) + " heading towards " + getCurrentDestination() + " with delay of " + routeScheduleService.getDelay(routeScheduleId) + " mins. Over!");
         communicationArea.setFont(new Font("Arial", Font.ITALIC, 12));
         communicationArea.setEditable(false);
         communicationArea.setLineWrap(true);
@@ -178,7 +180,7 @@ public class MakeContactScreen extends JFrame {
      * @return a <code>String</code> with the current destination.
      */
     public String getCurrentDestination ( ) {
-        return routeScheduleService.getLastStop(routeScheduleId, userInterface.getCurrentSimTime(), userInterface.getDifficultyLevel())[0];
+        return userInterface.getLastStopName(routeScheduleId, userInterface.getCurrentSimTime(), userInterface.getDifficultyLevel());
     }
     
     /**
@@ -187,9 +189,9 @@ public class MakeContactScreen extends JFrame {
      */
     public String[] getListOfStops() {
         //Create the String array.
-        String[] stops = new String[routeScheduleService.getCurrentJourney(routeScheduleId, userInterface.getCurrentSimTime()).getJourneyStops().size()];
+        String[] stops = new String[journeyService.getCurrentJourney(routeScheduleService.getRouteScheduleById(routeScheduleId).getJourneyList(), userInterface.getCurrentSimTime()).getJourneyStops().size()];
         for ( int i = 0; i < stops.length; i++ ) {
-            stops[i] = routeScheduleService.getCurrentJourney(routeScheduleId, userInterface.getCurrentSimTime()).getJourneyStops().get(i).getStopName();
+            stops[i] = journeyService.getCurrentJourney(routeScheduleService.getRouteScheduleById(routeScheduleId).getJourneyList(), userInterface.getCurrentSimTime()).getJourneyStops().get(i).getStopName();
         }
         return stops;
     }
