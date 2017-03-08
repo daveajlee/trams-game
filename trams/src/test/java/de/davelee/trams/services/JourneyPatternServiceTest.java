@@ -47,14 +47,6 @@ public class JourneyPatternServiceTest {
 	}
 	
 	@Test
-	public void testDayOfOperation() {
-		List<Integer> daysOfOperations = new ArrayList<Integer>(); daysOfOperations.add(Calendar.MONDAY);
-		daysOfOperations.add(Calendar.TUESDAY); daysOfOperations.add(Calendar.THURSDAY);
-		assertEquals(journeyPatternService.isDayOfOperation(daysOfOperations, Calendar.THURSDAY), true);
-		assertEquals(journeyPatternService.isDayOfOperation(daysOfOperations, Calendar.WEDNESDAY), false);
-	}
-	
-	@Test
 	public void testGetDriverById ( ) {
 		Calendar startDate = Calendar.getInstance(); startDate.set(2014, 4, 28);
 		Calendar endDate = Calendar.getInstance(); endDate.set(2014, 4, 30);

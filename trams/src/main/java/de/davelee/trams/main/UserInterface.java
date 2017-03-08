@@ -3,15 +3,13 @@ package de.davelee.trams.main;
 import javax.swing.*;
 import javax.swing.filechooser.*;
 
-import de.davelee.trams.data.RouteSchedule;
-import de.davelee.trams.data.Simulator;
+import de.davelee.trams.data.*;
 import de.davelee.trams.services.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
-import de.davelee.trams.data.Vehicle;
 import de.davelee.trams.gui.ControlScreen;
 import de.davelee.trams.gui.SplashScreen;
 import de.davelee.trams.gui.WelcomeScreen;
@@ -466,6 +464,23 @@ public class UserInterface implements Runnable {
      */
     public int getCurrentMaxVehicle ( ) {
         return routeDetailPos.getLast();
+    }
+
+    public void generateRouteSchedules ( long routeId, Calendar currentTime, String scenarioName ) {
+        //Initialise parameters.
+        Route route = routeService.getRouteById(routeId);
+        long[] outgoingJourneyIds = routeService.generateJourneyTimetables(routeId, currentTime, scenarioName, RouteService.OUTWARD_DIRECTION);
+        long[] returnJourneyIds = routeService.generateJourneyTimetables(routeId, currentTime, scenarioName, RouteService.RETURN_DIRECTION);
+        List<Journey> outgoingJourneys = new ArrayList<Journey>();
+        for ( int i = 0; i < outgoingJourneyIds.length; i++ ) {
+            outgoingJourneys.add(journeyService.getJourneyById(outgoingJourneyIds[i]));
+        }
+        List<Journey> returnJourneys = new ArrayList<Journey>();
+        for ( int i = 0; i < returnJourneyIds.length; i++ ) {
+            returnJourneys.add(journeyService.getJourneyById(returnJourneyIds[i]));
+        }
+        //Rest can route service now!
+        routeService.generateRouteSchedules(route, outgoingJourneys, returnJourneys);
     }
     
     /**
@@ -1017,7 +1032,7 @@ public class UserInterface implements Runnable {
     }
     
     public void generateRouteSchedules ( long selectedRouteId ) {
-    	routeService.generateRouteSchedules(selectedRouteId, getCurrentSimTime(), getScenarioName());
+        generateRouteSchedules(selectedRouteId, getCurrentSimTime(), getScenarioName());
     }
     
     public long[] generateOutwardJourneyTimetables ( long selectedRouteId, Calendar cal ) {

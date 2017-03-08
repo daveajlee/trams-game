@@ -26,8 +26,6 @@ public class RouteService {
 	
 	private static final Logger logger = LoggerFactory.getLogger(RouteService.class);
 
-    private JourneyPatternService journeyPatternService;
-    private JourneyService journeyService;
     private ScenarioFactory scenarioFactory;
     
     private DatabaseManager databaseManager;
@@ -36,8 +34,6 @@ public class RouteService {
     public static int RETURN_DIRECTION = 1;
 	
 	public RouteService() {
-        journeyPatternService = new JourneyPatternService();
-        journeyService = new JourneyService();
 	}
 	
     public DatabaseManager getDatabaseManager() {
@@ -74,7 +70,7 @@ public class RouteService {
             //Clone the time so that we can add to it but keep it the same for next iteration.
             Calendar myTime = (Calendar) today.clone();
             //If this service pattern is not valid for this date then don't bother.
-            if ( !journeyPatternService.isDayOfOperation(myJourneyPattern.getDaysOfOperation(), myTime.get(Calendar.DAY_OF_WEEK)) ) { continue; }
+            if ( myJourneyPattern.getDaysOfOperation().contains(myTime.get(Calendar.DAY_OF_WEEK))) { continue; }
             //Set myTime hour and minute to the start time of the service pattern.
             myTime.set(Calendar.HOUR_OF_DAY, myJourneyPattern.getStartTime().get(Calendar.HOUR_OF_DAY));
             myTime.set(Calendar.MINUTE, myJourneyPattern.getStartTime().get(Calendar.MINUTE));
@@ -170,19 +166,7 @@ public class RouteService {
      * @param returnJourneys a <code>LinkedList</code> with all return journeys.
      * @param sim a <code>Simulator</code> object for reference.
      */
-    public void generateRouteSchedules ( long routeId, Calendar currentTime, String scenarioName ) {
-    	//Initialise parameters.
-    	Route route = getRouteById(routeId);
-    	long[] outgoingJourneyIds = generateJourneyTimetables(routeId, currentTime, scenarioName, RouteService.OUTWARD_DIRECTION);
-    	long[] returnJourneyIds = generateJourneyTimetables(routeId, currentTime, scenarioName, RouteService.RETURN_DIRECTION);
-    	List<Journey> outgoingJourneys = new ArrayList<Journey>();
-    	for ( int i = 0; i < outgoingJourneyIds.length; i++ ) {
-    		outgoingJourneys.add(journeyService.getJourneyById(outgoingJourneyIds[i]));
-    	}
-    	List<Journey> returnJourneys = new ArrayList<Journey>();
-    	for ( int i = 0; i < returnJourneyIds.length; i++ ) {
-    		returnJourneys.add(journeyService.getJourneyById(returnJourneyIds[i]));
-    	}
+    public void generateRouteSchedules ( Route route, List<Journey> outgoingJourneys, List<Journey> returnJourneys ) {
         //Initialise list.
     	List<RouteSchedule> mySchedules = new ArrayList<RouteSchedule>();
         //We need to repeat this loop until both outgoingJourneys and returnJourneys are empty!
@@ -236,7 +220,7 @@ public class RouteService {
                             //We have found our journey - its an outgoing one!!!
                             mySchedule.addJourney(outgoingJourneys.get(loopPos));
                             //Set calendar equal to last stop time.
-                            myCal = (Calendar) journeyService.getStop(outgoingJourneys.get(loopPos).getId(), journeyService.getLastStopName(outgoingJourneys, currentTime)).getStopTime().clone();
+                            myCal = (Calendar) outgoingJourneys.get(loopPos).getJourneyStops().get(outgoingJourneys.get(loopPos).getJourneyStops().size()-1).getStopTime().clone();
                             //myCal.add(Calendar.MINUTE, -1); //This prevents bad effect of adding one later!
                             //Remove this journey from the list.
                             outgoingJourneys.remove(loopPos);
@@ -253,7 +237,7 @@ public class RouteService {
                             //We have found our journey - its a return one!!!
                             mySchedule.addJourney(returnJourneys.get(loopPos));
                             //Set calendar equal to last stop time.
-                            myCal = (Calendar) journeyService.getStop(returnJourneys.get(loopPos).getId(), journeyService.getLastStopName(outgoingJourneys, currentTime)).getStopTime().clone();
+                            myCal = (Calendar) returnJourneys.get(loopPos).getJourneyStops().get(returnJourneys.get(loopPos).getJourneyStops().size()-1).getStopTime().clone();
                             //myCal.add(Calendar.MINUTE, -1); //This prevents bad effect of adding one later!
                             //Remove this journey from the list.
                             returnJourneys.remove(loopPos);
@@ -298,8 +282,8 @@ public class RouteService {
                     //Finally check that at least one of the journey patterns has an operating service on this day.
                     Iterator<String> patternNames = timeT.getJourneyPatternNames().iterator();
                     while ( patternNames.hasNext() ) {
-                        JourneyPattern sp = timeT.getJourneyPattern(patternNames.next());
-                        if ( journeyPatternService.isDayOfOperation(sp.getDaysOfOperation(), thisDate.get(Calendar.DAY_OF_WEEK)) ) {
+                        JourneyPattern jp = timeT.getJourneyPattern(patternNames.next());
+                        if ( jp.getDaysOfOperation().contains(thisDate.get(Calendar.DAY_OF_WEEK)) ) {
                             myCalendar.add(thisDate);
                             break;
                         }

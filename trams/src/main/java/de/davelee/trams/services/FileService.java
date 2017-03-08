@@ -17,20 +17,12 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 
+import de.davelee.trams.data.*;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import de.davelee.trams.data.Game;
-import de.davelee.trams.data.JourneyPattern;
-import de.davelee.trams.data.Message;
-import de.davelee.trams.data.Route;
-import de.davelee.trams.data.Scenario;
-import de.davelee.trams.data.Simulator;
-import de.davelee.trams.data.Stop;
-import de.davelee.trams.data.Timetable;
-import de.davelee.trams.data.Vehicle;
 import de.davelee.trams.util.DifficultyLevel;
 import de.davelee.trams.util.MessageFolder;
 
@@ -39,6 +31,7 @@ public class FileService {
 	private SimulationService simulationService;
 	private GameService gameService;
 	private FactoryService springService;
+	private JourneyService journeyService;
 	private RouteService routeService;
 	private MessageService messageService;
 	private VehicleService vehicleService;
@@ -48,6 +41,7 @@ public class FileService {
         gameService = new GameService();
         simulationService = new SimulationService();
         springService = new FactoryService();
+        journeyService = new JourneyService();
         messageService = new MessageService();
         vehicleService = new VehicleService();
 	}
@@ -269,7 +263,6 @@ public class FileService {
             double balance = Double.parseDouble(scenario.getAttribute("balance"));
             int psgSatisfaction = Integer.parseInt(scenario.getAttribute("satisfaction"));
             //Now create the scenario object.
-            Scenario myScenario = springService.createScenarioObject(scenarioName);
             Game game = new Game();
             game.setPassengerSatisfaction(psgSatisfaction);
             game.setBalance(balance);
@@ -355,7 +348,18 @@ public class FileService {
                     route.addTimetable(timetableElement.getAttribute("name"), myTimetable);
                 }
                 //Generate timetables.
-                routeService.generateRouteSchedules(route.getId(), simulator.getCurrentTime(), myScenario.getScenarioName());
+                long[] outgoingJourneyIds = routeService.generateJourneyTimetables(route.getId(), simulator.getCurrentTime(), scenarioName, RouteService.OUTWARD_DIRECTION);
+                long[] returnJourneyIds = routeService.generateJourneyTimetables(route.getId(), simulator.getCurrentTime(), scenarioName, RouteService.RETURN_DIRECTION);
+                List<Journey> outgoingJourneys = new ArrayList<Journey>();
+                for ( int k = 0; k < outgoingJourneyIds.length; k++ ) {
+                    outgoingJourneys.add(journeyService.getJourneyById(outgoingJourneyIds[i]));
+                }
+                List<Journey> returnJourneys = new ArrayList<Journey>();
+                for ( int k = 0; k < returnJourneyIds.length; k++ ) {
+                    returnJourneys.add(journeyService.getJourneyById(returnJourneyIds[i]));
+                }
+                //Rest can route service now!
+                routeService.generateRouteSchedules(route, outgoingJourneys, returnJourneys);
                 //Add route.
                 routeService.saveRoute(route);
             }

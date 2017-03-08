@@ -21,15 +21,6 @@ public class JourneyPatternService {
 	public void setDatabaseManager(DatabaseManager databaseManager) {
 		this.databaseManager = databaseManager;
 	}
-	
-	/**
-     * Check if the supplied day is a day of operation for this journey pattern.
-     * @param dayNum a <code>int</code> with the day number in the week.
-     * @return a <code>boolean</code> which is true iff this is a day of operation.
-     */
-    public boolean isDayOfOperation ( List<Integer> daysOfOperation, int dayNum ) {
-    	return daysOfOperation.contains(dayNum);
-    }
     
     public JourneyPattern getJourneyPatternById(long id) {
     	return databaseManager.getJourneyPatternById(id);
