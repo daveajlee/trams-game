@@ -171,7 +171,7 @@ public class DatabaseManagerTest {
 		daysOfOperation.add(Calendar.TUESDAY); daysOfOperation.add(Calendar.WEDNESDAY); daysOfOperation.add(Calendar.THURSDAY);
 		daysOfOperation.add(Calendar.FRIDAY);
 		JourneyPattern journeyPattern = journeyPatternService.createJourneyPattern("Mon-Fri", daysOfOperation, "Rathaus Pankow", "S+U Pankow", Calendar.getInstance(), 
-				Calendar.getInstance(), 15, 3);
+				Calendar.getInstance(), 15, 3, 1);
 		databaseManager.createAndStoreJourneyPattern(journeyPattern);
 		assertEquals(journeyPattern.getId(), 1);
 		JourneyPattern journeyPattern2 = databaseManager.getJourneyPatternById(1);
@@ -190,9 +190,7 @@ public class DatabaseManagerTest {
 		daysOfOperation.add(Calendar.TUESDAY); daysOfOperation.add(Calendar.WEDNESDAY); daysOfOperation.add(Calendar.THURSDAY);
 		daysOfOperation.add(Calendar.FRIDAY);
 		Timetable timetable = timetableService.createTimetable("myTimetable", 
-				Calendar.getInstance(), Calendar.getInstance(), journeyPatternService.createJourneyPattern("Mon-Fri", 
-						daysOfOperation, "Rathaus Pankow", "S+U Pankow", Calendar.getInstance(), 
-        				Calendar.getInstance(), 15, 3));
+				Calendar.getInstance(), Calendar.getInstance());
 		databaseManager.createAndStoreTimetable(timetable);
 		assertEquals(timetable.getId(), 1);
 		Timetable timetable2 = databaseManager.getTimetableById(1);

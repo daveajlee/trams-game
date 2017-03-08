@@ -40,9 +40,7 @@ public class TimetableServiceTest {
 		daysOfOperation.add(Calendar.TUESDAY); daysOfOperation.add(Calendar.WEDNESDAY); daysOfOperation.add(Calendar.THURSDAY);
 		daysOfOperation.add(Calendar.FRIDAY);
 		Timetable timetable = timetableService.createTimetable("myTimetable", 
-				testDate, testDate2, journeyPatternService.createJourneyPattern("Mon-Fri", 
-						daysOfOperation, "Rathaus Pankow", "S+U Pankow", testDate, 
-        				testDate2, 15, 3));
+				testDate, testDate2);
 		assertNotNull(timetable);
 		assertEquals(timetable.getName(), "myTimetable");
 		assertEquals(timetable.getValidFromDate().get(Calendar.YEAR), 2014);
@@ -51,7 +49,6 @@ public class TimetableServiceTest {
 		assertEquals(timetable.getValidToDate().get(Calendar.YEAR), 2014);
 		assertEquals(timetable.getValidToDate().get(Calendar.MONTH), 5);
 		assertEquals(timetable.getValidToDate().get(Calendar.DAY_OF_MONTH), 20);
-		assertNotNull(timetable.getJourneyPatterns());
 	}
 
 }

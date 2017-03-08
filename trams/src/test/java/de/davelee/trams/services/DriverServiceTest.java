@@ -67,11 +67,14 @@ public class DriverServiceTest {
 	public void testGetDriverById ( ) {
 		Calendar startDate = Calendar.getInstance();
 		startDate.set(2014, 4, 20);
-		//Double needed so that test works in both Maven and JUnit.
+		//Treble needed so that test works in both Maven and JUnit.
 		databaseManager.createAndStoreDriver(driverService.createDriver("Dave Lee", 40, startDate));
 		databaseManager.createAndStoreDriver(driverService.createDriver("Dave Lee", 40, startDate));
 		assertNotNull(databaseManager.getDriverById(2));
 		assertEquals(databaseManager.getDriverById(2).getName(), "Dave Lee");
+		databaseManager.createAndStoreDriver(driverService.createDriver("Dave Lee", 40, startDate));
+		assertNotNull(databaseManager.getDriverById(3));
+		assertEquals(databaseManager.getDriverById(3).getName(), "Dave Lee");
 		assertNull(databaseManager.getDriverById(40));
 	}
 

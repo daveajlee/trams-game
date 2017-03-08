@@ -33,7 +33,7 @@ public class JourneyPatternServiceTest {
 		Calendar endDate = Calendar.getInstance(); endDate.set(2014, 4, 30);
 		List<Integer> daysOfOperation = new ArrayList<Integer>(); daysOfOperation.add(Calendar.MONDAY);
 		daysOfOperation.add(Calendar.TUESDAY); daysOfOperation.add(Calendar.WEDNESDAY);
-		JourneyPattern journeyPattern = journeyPatternService.createJourneyPattern("Test", daysOfOperation, "S+U Pankow", "Rathaus Pankow", startDate, endDate, 15, 3);
+		JourneyPattern journeyPattern = journeyPatternService.createJourneyPattern("Test", daysOfOperation, "S+U Pankow", "Rathaus Pankow", startDate, endDate, 15, 3, 1);
 		assertEquals(journeyPattern.getName(), "Test");
 		assertEquals(journeyPattern.getDaysOfOperation().size(), 3);
 		assertEquals(journeyPattern.getStartTime().get(Calendar.DAY_OF_MONTH), 28);
@@ -52,7 +52,7 @@ public class JourneyPatternServiceTest {
 		Calendar endDate = Calendar.getInstance(); endDate.set(2014, 4, 30);
 		List<Integer> daysOfOperation = new ArrayList<Integer>(); daysOfOperation.add(Calendar.MONDAY);
 		daysOfOperation.add(Calendar.TUESDAY); daysOfOperation.add(Calendar.WEDNESDAY);
-		databaseManager.createAndStoreJourneyPattern(journeyPatternService.createJourneyPattern("Mon-Fri", daysOfOperation, "S+U Pankow", "Rathaus Pankow", startDate, endDate, 15, 3));
+		databaseManager.createAndStoreJourneyPattern(journeyPatternService.createJourneyPattern("Mon-Fri", daysOfOperation, "S+U Pankow", "Rathaus Pankow", startDate, endDate, 15, 3, 1));
 		assertNotNull(databaseManager.getJourneyPatternById(1));
 		assertEquals(databaseManager.getJourneyPatternById(1).getName(), "Mon-Fri");
 		assertNull(databaseManager.getJourneyPatternById(40));

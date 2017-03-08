@@ -3,6 +3,7 @@ package de.davelee.trams.gui;
 import javax.swing.*;
 import javax.swing.event.*;
 
+import de.davelee.trams.data.JourneyPattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -819,12 +820,10 @@ public class ManagePanel {
         journeyPatternModel = new DefaultListModel();
         //Now get all the journey pattern which we have at the moment.
         try {
-            Iterator<String> patternKeys = routeService.getRouteById(selectedRouteId).
-            		getTimetable(timetableNameField.getText()).getJourneyPatternNames().iterator();
-            while ( patternKeys.hasNext() ) {
-                String journeyPatternName = patternKeys.next();
-                journeyPatternModel.addElement(routeService.getRouteById(selectedRouteId).
-                		getTimetable(timetableNameField.getText()).getJourneyPattern(journeyPatternName).getName());
+            List<JourneyPattern> journeyPatterns = journeyPatternService.getJourneyPatterns( routeService.getRouteById(selectedRouteId).
+                    getTimetable(timetableNameField.getText()).getId());
+            for ( JourneyPattern journeyPattern : journeyPatterns ) {
+                journeyPatternModel.addElement(journeyPattern.getName());
             }
         } 
         catch (NullPointerException npe) { }
@@ -870,7 +869,8 @@ public class ManagePanel {
         });
         journeyPatternButtonPanel.add(createJourneyPatternButton);
         modifyJourneyPatternButton = new JButton("Modify");
-        modifyJourneyPatternButton.addActionListener( new ActionListener() {
+        //TODO: reimplement modify!
+        /*modifyJourneyPatternButton.addActionListener( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
                 long journeyPatternId = routeService.getRouteById(selectedRouteId).
                 		getTimetable(timetableNameField.getText()).getJourneyPattern(journeyPatternList.
@@ -884,11 +884,12 @@ public class ManagePanel {
                 }
                 controlScreen.redrawManagement(ManagePanel.this.makeJourneyPatternPanel(stops, timetableNameField.getText(), journeyPatternId));
             }
-        });
+        });*/
         if ( journeyPatternModel.getSize() == 0 ) { modifyJourneyPatternButton.setEnabled(false); }
         journeyPatternButtonPanel.add(modifyJourneyPatternButton);
         deleteJourneyPatternButton = new JButton("Delete");
-        deleteJourneyPatternButton.addActionListener( new ActionListener() {
+        //TODO: reimplement delete.
+        /*deleteJourneyPatternButton.addActionListener( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
                 routeService.getRouteById(selectedRouteId).getTimetable(timetableNameField.getText()).
                 	deleteJourneyPattern(journeyPatternList.getSelectedValue().toString());
@@ -901,7 +902,7 @@ public class ManagePanel {
                     journeyPatternList.setSelectedIndex(0);
                 }
             }
-        });
+        });*/
         if ( journeyPatternModel.getSize() == 0 ) { deleteJourneyPatternButton.setEnabled(false); }
         journeyPatternButtonPanel.add(deleteJourneyPatternButton);
         journeyPatternListPanel.add(journeyPatternButtonPanel, BorderLayout.SOUTH);
@@ -1172,11 +1173,11 @@ public class ManagePanel {
                 }
                 else {
                     logger.debug("I am calling add method with timetable name " + selectedTimetableName + "!");
-                    routeService.getRouteById(selectedRouteId).getTimetable(selectedTimetableName).addJourneyPattern(journeyPatternNameField.getText(), 
-                    		journeyPatternService.createJourneyPattern(journeyPatternNameField.getText(), operatingDays, 
-                    				terminus1Box.getSelectedItem().toString(), terminus2Box.getSelectedItem().toString(), timeFrom,
-                    				timeTo, Integer.parseInt(everyMinuteSpinner.getValue().toString()), 
-                    				getCurrentRouteDuration(Integer.parseInt(everyMinuteSpinner.getValue().toString()))));
+                    journeyPatternService.createJourneyPattern(journeyPatternNameField.getText(), operatingDays,
+                            terminus1Box.getSelectedItem().toString(), terminus2Box.getSelectedItem().toString(), timeFrom,
+                            timeTo, Integer.parseInt(everyMinuteSpinner.getValue().toString()),
+                            getCurrentRouteDuration(Integer.parseInt(everyMinuteSpinner.getValue().toString())),
+                            routeService.getRouteById(selectedRouteId).getTimetable(selectedTimetableName).getId());
                 }
                 //Now return to the timetable screen.
                 controlScreen.redrawManagement(ManagePanel.this.makeCreateTimetablePanel(selectedTimetableName));

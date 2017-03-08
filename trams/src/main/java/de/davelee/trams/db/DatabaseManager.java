@@ -70,6 +70,16 @@ public class DatabaseManager {
 		if ( list.isEmpty() ) { return null; }
 		return (Stop) list.get(0);
 	}
+
+	@Transactional
+	public List<Stop> getAllStops ( ) {
+		Session session = sessionFactory.getCurrentSession();
+		Query query = session.createQuery("from Stop");
+		@SuppressWarnings("unchecked")
+		List<Stop> list = (List<Stop>) query.list();
+		if ( list.isEmpty() ) { return null; }
+		return list;
+	}
     
 	@Transactional
     public void createAndStoreJourney(Journey journey) {
@@ -91,7 +101,7 @@ public class DatabaseManager {
 	@Transactional
     public void createAndStoreJourneyPattern(JourneyPattern journeyPattern) {
         Session session = sessionFactory.getCurrentSession();
-        session.saveOrUpdate(journeyPattern);
+        session.save(journeyPattern);
     }
 	
 	@Transactional
@@ -104,12 +114,43 @@ public class DatabaseManager {
 		if ( list.isEmpty() ) { return null; }
 		return (JourneyPattern) list.get(0);
 	}
+
+	@Transactional
+	public List<JourneyPattern> getJourneyPatternsByTimetableId ( long timetableId ) {
+		Session session = sessionFactory.getCurrentSession();
+		Query query = session.createQuery("from JourneyPattern where timetableId = :timetableId");
+		query.setParameter("timetableId", timetableId);
+		@SuppressWarnings("rawtypes")
+		List list = query.list();
+		if ( list.isEmpty() ) { return null; }
+		return list;
+	}
+
+	@Transactional
+	public List<JourneyPattern> getAllJourneyPatterns ( ) {
+		Session session = sessionFactory.getCurrentSession();
+		Query query = session.createQuery("from JourneyPattern");
+		@SuppressWarnings("unchecked")
+		List<JourneyPattern> list = (List<JourneyPattern>) query.list();
+		if ( list.isEmpty() ) { return null; }
+		return list;
+	}
     
 	@Transactional
     public void createAndStoreTimetable(Timetable timetable) {
         Session session = sessionFactory.getCurrentSession();
         session.saveOrUpdate(timetable);
     }
+
+	@Transactional
+	public List<Timetable> getAllTimetables ( ) {
+		Session session = sessionFactory.getCurrentSession();
+		Query query = session.createQuery("from Timetable");
+		@SuppressWarnings("unchecked")
+		List<Timetable> list = (List<Timetable>) query.list();
+		if ( list.isEmpty() ) { return null; }
+		return list;
+	}
 	
 	@Transactional
 	public Timetable getTimetableById ( long id ) {
@@ -238,7 +279,7 @@ public class DatabaseManager {
     }
     
     @Transactional
-    public void saveMessage ( Message message ) {
+    public void createAndStoreMessage ( Message message ) {
     	Session session = sessionFactory.getCurrentSession();
     	session.saveOrUpdate(message);
     }

@@ -20,6 +20,14 @@ public class MessageService {
 	public MessageService() {
 		
 	}
+
+    public DatabaseManager getDatabaseManager() {
+        return databaseManager;
+    }
+
+    public void setDatabaseManager(DatabaseManager databaseManager) {
+        this.databaseManager = databaseManager;
+    }
 	
 	/**
      * Create a new message.
@@ -79,7 +87,7 @@ public class MessageService {
     }
     
     public void saveMessage(Message message) {
-    	databaseManager.saveMessage(message);
+    	databaseManager.createAndStoreMessage(message);
     }
     
     public List<Message> getAllMessages() {

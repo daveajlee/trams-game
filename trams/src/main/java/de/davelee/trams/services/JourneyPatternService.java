@@ -27,7 +27,7 @@ public class JourneyPatternService {
     }
     
     public JourneyPattern createJourneyPattern ( String name, List<Integer> operatingDays, String outgoingTerminus, String returnTerminus,
-    		Calendar timeFrom, Calendar timeTo, int frequency, int routeDuration ) {
+    		Calendar timeFrom, Calendar timeTo, int frequency, int routeDuration, long timetableId ) {
     	JourneyPattern journeyPattern = new JourneyPattern();
         journeyPattern.setName(name);
         journeyPattern.setDaysOfOperation(operatingDays);
@@ -37,7 +37,12 @@ public class JourneyPatternService {
         journeyPattern.setEndTime(timeTo);
         journeyPattern.setFrequency(frequency);
         journeyPattern.setRouteDuration(routeDuration);
+        journeyPattern.setTimetableId(timetableId);
         return journeyPattern;
+    }
+
+    public List<JourneyPattern> getJourneyPatterns ( long timetableId ) {
+        return databaseManager.getJourneyPatternsByTimetableId(timetableId);
     }
 
 }

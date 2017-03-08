@@ -53,6 +53,9 @@ public class JourneyPattern {
 	
 	@Column(name="ROUTE_DURATION")
     private int routeDuration;
+
+	@Column(name="TIMETABLE_ID")
+	private long timetableId;
     
 	/**
      * Create a new JourneyPattern object.
@@ -157,6 +160,14 @@ public class JourneyPattern {
 
 	public void setFrequency(int frequency) {
 		this.frequency = frequency;
+	}
+
+	public long getTimetableId() {
+		return id;
+	}
+
+	public void setTimetableId(long id) {
+		this.id = id;
 	}
 
 }

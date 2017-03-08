@@ -63,10 +63,8 @@ public class RouteService {
         //Create a list to store journeys.
         List<Journey> allJourneys = new ArrayList<Journey>();
         //Now we need to go through the journey patterns.
-        Iterator<String> patternNames = currentTimetable.getJourneyPatternNames().iterator();
-        while ( patternNames.hasNext() ) {
-            //Store the journey pattern.
-            JourneyPattern myJourneyPattern = currentTimetable.getJourneyPattern(patternNames.next());
+        List<JourneyPattern> journeyPatterns = databaseManager.getJourneyPatternsByTimetableId(currentTimetable.getId());
+        for ( JourneyPattern myJourneyPattern : journeyPatterns ) {
             //Clone the time so that we can add to it but keep it the same for next iteration.
             Calendar myTime = (Calendar) today.clone();
             //If this service pattern is not valid for this date then don't bother.
@@ -280,9 +278,8 @@ public class RouteService {
                 //Check if we have added this date before...
                 if ( !myCalendar.contains(thisDate) ) {
                     //Finally check that at least one of the journey patterns has an operating service on this day.
-                    Iterator<String> patternNames = timeT.getJourneyPatternNames().iterator();
-                    while ( patternNames.hasNext() ) {
-                        JourneyPattern jp = timeT.getJourneyPattern(patternNames.next());
+                    List<JourneyPattern> journeyPatterns = databaseManager.getJourneyPatternsByTimetableId(timeT.getId());
+                    for ( JourneyPattern jp : journeyPatterns ) {
                         if ( jp.getDaysOfOperation().contains(thisDate.get(Calendar.DAY_OF_WEEK)) ) {
                             myCalendar.add(thisDate);
                             break;

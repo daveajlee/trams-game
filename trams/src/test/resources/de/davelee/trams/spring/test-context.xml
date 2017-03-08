@@ -55,6 +55,10 @@
        		<property name="vehicleFactory" ref="vehicleFactory"/>
        		<property name="scenarioFactory" ref="scenarioFactory"/>
        </bean>
+
+		<bean id="messageService" class="de.davelee.trams.services.MessageService">
+			<property name="databaseManager" ref="databaseManager"/>
+		</bean>
        
        <bean id="sessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
     		<property name="dataSource" ref="dataSource"/>
@@ -72,6 +76,7 @@
         			<value>de.davelee.trams.data.Game</value>
         			<value>de.davelee.trams.data.Journey</value>
         			<value>de.davelee.trams.data.JourneyPattern</value>
+					<value>de.davelee.trams.data.Message</value>
         			<value>de.davelee.trams.data.Route</value>
         			<value>de.davelee.trams.data.RouteSchedule</value>
         			<value>de.davelee.trams.data.Scenario</value>

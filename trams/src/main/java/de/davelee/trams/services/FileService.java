@@ -186,7 +186,7 @@ public class FileService {
                 int vtDateNum = validToDate.get(Calendar.DATE); String vtDate = "" + vtDateNum; if ( vtDateNum < 10 ) { vtDate = "0" + vtDateNum; }
                 timetable.setAttribute("validTo", validToDate.get(Calendar.YEAR) + "-" + vtMonth + "-" + vtDate );
                 //Now for all journey patterns.
-                Iterator<String> journeyPatternNames = myTimetable.getJourneyPatternNames().iterator();
+                /*Iterator<String> journeyPatternNames = myTimetable.getJourneyPatternNames().iterator();
                 while ( journeyPatternNames.hasNext() ) {
                     JourneyPattern myJourneyPattern = myTimetable.getJourneyPattern(journeyPatternNames.next());
                     //Create element with appropriate attributes.
@@ -200,7 +200,7 @@ public class FileService {
                     journeyPattern.setAttribute("frequency", "" + myJourneyPattern.getFrequency());
                     journeyPattern.setAttribute("duration", "" + myJourneyPattern.getRouteDuration());
                     timetable.appendChild(journeyPattern);
-                }
+                }*/
                 route.appendChild(timetable);
             }
             //Finally, add route to scenario.
@@ -342,7 +342,7 @@ public class FileService {
                         myJourney.setRouteDuration( Integer.parseInt(journeyElement.getAttribute("duration")));
                         
                         //Add to timetable.
-                        myTimetable.addJourneyPattern(journeyElement.getAttribute("name"), myJourney);
+                        //myTimetable.addJourneyPattern(journeyElement.getAttribute("name"), myJourney);
                     }
                     //Finally add this timetable to the route.
                     route.addTimetable(timetableElement.getAttribute("name"), myTimetable);
@@ -396,13 +396,13 @@ public class FileService {
         return true;
     }
     
-    private String createStringFromList ( List<Integer> list ) {
+    /*private String createStringFromList ( List<Integer> list ) {
     	String returnString = "";
     	for ( Integer myInt : list ) {
     		returnString += myInt + ",";
     	}
     	return returnString;
-    }
+    }*/
     
     private List<Integer> createListFromString ( String string ) {
     	String[] splitString = string.split(",");
