@@ -40,7 +40,7 @@ public class TimetableServiceTest {
 		daysOfOperation.add(Calendar.TUESDAY); daysOfOperation.add(Calendar.WEDNESDAY); daysOfOperation.add(Calendar.THURSDAY);
 		daysOfOperation.add(Calendar.FRIDAY);
 		Timetable timetable = timetableService.createTimetable("myTimetable", 
-				testDate, testDate2);
+				testDate, testDate2, 1);
 		assertNotNull(timetable);
 		assertEquals(timetable.getName(), "myTimetable");
 		assertEquals(timetable.getValidFromDate().get(Calendar.YEAR), 2014);

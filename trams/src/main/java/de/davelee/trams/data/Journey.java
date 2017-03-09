@@ -29,6 +29,9 @@ public class Journey {
 	
 	@OneToMany(fetch = FetchType.EAGER, cascade=CascadeType.ALL)
     private List<Stop> journeyStops;
+
+    @Column(name="ROUTE_SCHEDULE_ID")
+	private long routeScheduleId;
     
     /**
      * Create a new journey.
@@ -48,6 +51,14 @@ public class Journey {
     public void setId(long id) {
 		this.id = id;
 	}
+
+    public long getRouteScheduleId() {
+        return routeScheduleId;
+    }
+
+    public void setRouteScheduleId(long routeScheduleId) {
+        this.routeScheduleId = routeScheduleId;
+    }
     
     public List<Stop> getJourneyStops() {
 		return journeyStops;

@@ -688,10 +688,10 @@ public class ControlScreen extends ButtonBar {
                 outwardStops.add(((JLabel) stopPanels.get(j).getComponent(0)).getText());
             }
             int direction = DrawingPanel.RIGHT_TO_LEFT;
-            if ( journeyService.getCurrentJourney(routeScheduleService.getRouteScheduleById(routeScheduleId).getJourneyList(), userInterface.getCurrentSimTime()) == null ) {
+            if ( journeyService.getCurrentJourney(journeyService.getJourneysByRouteScheduleId(routeScheduleId), userInterface.getCurrentSimTime()) == null ) {
                 continue; //Don't print if the vehicle is at a terminus.
             }
-            if ( journeyService.isOutwardJourney(journeyService.getCurrentJourney(routeScheduleService.getRouteScheduleById(routeScheduleId).getJourneyList(), userInterface.getCurrentSimTime()), outwardStops) ) {
+            if ( journeyService.isOutwardJourney(journeyService.getCurrentJourney(journeyService.getJourneysByRouteScheduleId(routeScheduleId), userInterface.getCurrentSimTime()), outwardStops) ) {
                 direction = DrawingPanel.LEFT_TO_RIGHT; 
             }
             //Now we want to find the position where we draw the triangle i.e. position of JLabel.
@@ -716,7 +716,7 @@ public class ControlScreen extends ButtonBar {
                         xPos = startPos;
                     }
                     else {
-                        long maxTimeDiff = Math.abs(journeyService.getStopMaxTimeDiff(journeyService.getCurrentJourney(routeScheduleService.getRouteScheduleById(routeScheduleId).getJourneyList(), userInterface.getCurrentSimTime()), previousStop, myLabel.getText()));
+                        long maxTimeDiff = Math.abs(journeyService.getStopMaxTimeDiff(journeyService.getCurrentJourney(journeyService.getJourneysByRouteScheduleId(routeScheduleId), userInterface.getCurrentSimTime()), previousStop, myLabel.getText()));
                         if ( maxTimeDiff == Integer.MAX_VALUE ) {
                             xPos = startPos;
                         } 

@@ -155,12 +155,7 @@ public class VehicleService {
     
     //TODO: Exception when null?
     public Vehicle getVehicleByRouteScheduleId ( long routeScheduleId ) {
-    	for ( Vehicle vehicle : getAllVehicles() ) {
-    		if ( vehicle.getRouteScheduleId() == routeScheduleId ) {
-    			return vehicle;
-    		}
-    	}
-    	return null;
+        return databaseManager.getVehicleByRouteScheduleId(routeScheduleId);
     }
     
     /**

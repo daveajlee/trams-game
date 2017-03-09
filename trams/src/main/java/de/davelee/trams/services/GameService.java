@@ -7,14 +7,24 @@ import java.util.List;
 import de.davelee.trams.data.Game;
 import de.davelee.trams.data.Route;
 import de.davelee.trams.data.RouteSchedule;
+import de.davelee.trams.db.DatabaseManager;
 import de.davelee.trams.util.DifficultyLevel;
 
 public class GameService {
 	
 	private Game game;
+    private DatabaseManager databaseManager;
 	
 	public GameService() {
 	}
+
+    public DatabaseManager getDatabaseManager() {
+        return databaseManager;
+    }
+
+    public void setDatabaseManager(DatabaseManager databaseManager) {
+        this.databaseManager = databaseManager;
+    }
 
 	public void createGame ( String playerName, String scenarioName ) {
         createGame(playerName, scenarioName, 80000.00, 100, DifficultyLevel.EASY);
@@ -56,7 +66,7 @@ public class GameService {
         int numSmallLateSchedules = 0; int numMediumLateSchedules = 0; int numLargeLateSchedules = 0;
         //Now go through all routes.
         for ( Route myRoute : routes ) {
-        	for ( RouteSchedule mySchedule : myRoute.getRouteSchedules()) {
+            for ( RouteSchedule mySchedule : databaseManager.getRouteSchedulesByRouteId(myRoute.getId())) {
         		//Running... 1 - 5 minutes late.
                 if ( mySchedule.getDelayInMins() > 0 && mySchedule.getDelayInMins() < 6 ) {
                     numSmallLateSchedules++;

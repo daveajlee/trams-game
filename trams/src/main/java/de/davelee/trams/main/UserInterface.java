@@ -227,7 +227,7 @@ public class UserInterface implements Runnable {
      */
     public int getNumRouteDisplayVehicles ( String routeNumber ) {
         if ( routeNumber.equalsIgnoreCase("<No Routes Currently Registered>") ) { return 0; }
-        return routeService.getRoute(routeNumber).getRouteSchedules().size();
+        return routeScheduleService.getRouteSchedulesByRouteId(routeService.getRoute(routeNumber).getId()).size();
     }
     
     /**
@@ -322,43 +322,43 @@ public class UserInterface implements Runnable {
         //Determine the route ids we will display using these parameters.
         logger.debug("Route number is " + routeNumber);
         logger.debug(routeService.getRoute(routeNumber).toString());
-        logger.debug("Number of possible display schedules: " +  routeService.getRoute(routeNumber).getRouteSchedules().size());
-        if ( routeService.getRoute(routeNumber).getRouteSchedules().size() < max ) { max = routeService.getRoute(routeNumber).getRouteSchedules().size(); }
+        logger.debug("Number of possible display schedules: " +  routeScheduleService.getRouteSchedulesByRouteId(routeService.getRoute(routeNumber).getId()).size());
+        if ( routeScheduleService.getRouteSchedulesByRouteId(routeService.getRoute(routeNumber).getId()).size() < max ) { max = routeScheduleService.getRouteSchedulesByRouteId(routeService.getRoute(routeNumber).getId()).size(); }
         //logger.debug("Max vehicles starts at " + max + " - routeDetails size is " + routeDetails.size());
         logger.debug("Min is " + min + " & Max is " + max);
         if ( min == max ) {
-            if ( routeService.getRoute(routeNumber).getAssignedVehicle(routeService.getRoute(routeNumber).getRouteSchedules().get(min).toString()) == null ) {
+            if ( vehicleService.getVehicleByRouteScheduleId(routeScheduleService.getRouteSchedulesByRouteId(routeService.getRoute(routeNumber).getId()).get(min).getId()) == null ) {
                 logger.debug("A schedule was null");
             }
-            if ( getCurrentStopName(routeService.getRoute(routeNumber).getRouteSchedules().get(min).getId(), currentTime, getDifficultyLevel()).equalsIgnoreCase("Depot") ) {
+            if ( getCurrentStopName(routeScheduleService.getRouteSchedulesByRouteId(routeService.getRoute(routeNumber).getId()).get(min).getId(), currentTime, getDifficultyLevel()).equalsIgnoreCase("Depot") ) {
                 logger.debug("Vehicle in depot!");
             }
-            if ( routeService.getRoute(routeNumber).getAssignedVehicle( routeService.getRoute(routeNumber).getRouteSchedules().get(min).toString()) != null && !getCurrentStopName( routeService.getRoute(routeNumber).getRouteSchedules().get(min).getId(), currentTime, getDifficultyLevel()).equalsIgnoreCase("Depot") ) {
+            if ( vehicleService.getVehicleByRouteScheduleId(routeScheduleService.getRouteSchedulesByRouteId(routeService.getRoute(routeNumber).getId()).get(min).getId()) != null && !getCurrentStopName( routeScheduleService.getRouteSchedulesByRouteId(routeService.getRoute(routeNumber).getId()).get(min).getId(), currentTime, getDifficultyLevel()).equalsIgnoreCase("Depot") ) {
                 //logger.debug("Adding Route Detail " + routeDetails.get(i).getId());
                 routeDetailPos.add(0);
             }
             else {
                 max++;
                 //logger.debug("Max is now " + max + " - routeDetails size is: " + routeDetails.size());
-                if ( routeService.getRoute(routeNumber).getRouteSchedules().size() < max ) { max = routeService.getRoute(routeNumber).getRouteSchedules().size(); }
+                if ( routeScheduleService.getRouteSchedulesByRouteId(routeService.getRoute(routeNumber).getId()).size() < max ) { max = routeScheduleService.getRouteSchedulesByRouteId(routeService.getRoute(routeNumber).getId()).size(); }
                 //logger.debug("Route Detail " + routeDetails.get(i).getId() + " was null - maxVehicles is now " + max);
             }
         }
         for ( int i = min; i < max; i++ ) { //Changed from i = 0; i < routeDetails.size().
-            if ( routeService.getRoute(routeNumber).getAssignedVehicle(routeService.getRoute(routeNumber).getRouteSchedules().get(i).toString()) == null ) {
+            if ( vehicleService.getVehicleByRouteScheduleId(routeScheduleService.getRouteSchedulesByRouteId(routeService.getRoute(routeNumber).getId()).get(i).getId()) == null ) {
                 logger.debug("A schedule was null");
             }
-            if ( getCurrentStopName(routeService.getRoute(routeNumber).getRouteSchedules().get(i).getId(), currentTime, getDifficultyLevel()).equalsIgnoreCase("Depot") ) {
+            if ( getCurrentStopName(routeScheduleService.getRouteSchedulesByRouteId(routeService.getRoute(routeNumber).getId()).get(i).getId(), currentTime, getDifficultyLevel()).equalsIgnoreCase("Depot") ) {
                 logger.debug("Vehicle in depot!");
             }
-            if ( routeService.getRoute(routeNumber).getAssignedVehicle(routeService.getRoute(routeNumber).getRouteSchedules().get(i).toString()) != null && !getCurrentStopName(routeService.getRoute(routeNumber).getRouteSchedules().get(i).getId(), currentTime, getDifficultyLevel()).equalsIgnoreCase("Depot") ) {
+            if ( vehicleService.getVehicleByRouteScheduleId(routeScheduleService.getRouteSchedulesByRouteId(routeService.getRoute(routeNumber).getId()).get(i).getId()) != null && !getCurrentStopName(routeScheduleService.getRouteSchedulesByRouteId(routeService.getRoute(routeNumber).getId()).get(i).getId(), currentTime, getDifficultyLevel()).equalsIgnoreCase("Depot") ) {
                 //logger.debug("Adding Route Detail " + routeDetails.get(i).getId());
                 routeDetailPos.add(i);
             }
             else {
                 max++;
                 //logger.debug("Max is now " + max + " - routeDetails size is: " + routeDetails.size());
-                if ( routeService.getRoute(routeNumber).getRouteSchedules().size() < max ) { max = routeService.getRoute(routeNumber).getRouteSchedules().size(); }
+                if ( routeScheduleService.getRouteSchedulesByRouteId(routeService.getRoute(routeNumber).getId()).size() < max ) { max = routeScheduleService.getRouteSchedulesByRouteId(routeService.getRoute(routeNumber).getId()).size(); }
                 //logger.debug("Route Detail " + routeDetails.get(i).getId() + " was null - maxVehicles is now " + max);
             }
         }
@@ -373,7 +373,7 @@ public class UserInterface implements Runnable {
         //Copy current Date to current Time and then use delay to determine position.
         Calendar currentTime = (Calendar) currentDate.clone();
         currentTime.add(Calendar.MINUTE, -routeScheduleService.getRouteScheduleById(routeScheduleId).getDelayInMins());
-        String stopName = journeyService.getCurrentStopName(routeScheduleService.getJourneyList(routeScheduleService.getRouteScheduleById(routeScheduleId)), currentTime);
+        String stopName = journeyService.getCurrentStopName(journeyService.getJourneysByRouteScheduleId(routeScheduleId), currentTime);
         if ( stopName.contentEquals("Depot") ) {
             routeScheduleService.getRouteScheduleById(routeScheduleId).setDelayInMins(0); //Finished for the day or not started.
         }
@@ -388,7 +388,7 @@ public class UserInterface implements Runnable {
         //Copy current Date to current Time and then use delay to determine position.
         Calendar currentTime = (Calendar) currentDate.clone();
         currentTime.add(Calendar.MINUTE, -routeScheduleService.getRouteScheduleById(routeScheduleId).getDelayInMins());
-        String stopName = journeyService.getLastStopName(routeScheduleService.getJourneyList(routeScheduleService.getRouteScheduleById(routeScheduleId)), currentTime);
+        String stopName = journeyService.getLastStopName(journeyService.getJourneysByRouteScheduleId(routeScheduleId), currentTime);
         if ( stopName.contentEquals("Depot")) {
             routeScheduleService.getRouteScheduleById(routeScheduleId).setDelayInMins(0); //Finished for the day.
         }
@@ -408,11 +408,11 @@ public class UserInterface implements Runnable {
         RouteSchedule schedule = routeScheduleService.getRouteScheduleById(routeScheduleId);
         //Shorten schedule to the specific stop stated and reduce the delay accordingly - for current service remove stops after the specified stop.
         //logger.debug("Service was ending at: " + theAssignedSchedule.getCurrentService().getEndDestination());
-        String oldEnd = journeyService.getStop(journeyService.getCurrentJourney(schedule.getJourneyList(), currentTime).getId(), journeyService.getNumStops(journeyService.getCurrentJourney(schedule.getJourneyList(), currentTime))-1).getStopName();
+        String oldEnd = journeyService.getStop(journeyService.getCurrentJourney(journeyService.getJourneysByRouteScheduleId(routeScheduleId), currentTime).getId(), journeyService.getNumStops(journeyService.getCurrentJourney(journeyService.getJourneysByRouteScheduleId(routeScheduleId), currentTime))-1).getStopName();
         //Now we need to remove the stops in beteen!
-        long timeDiff = journeyService.removeStopsBetween(journeyService.getCurrentJourney(schedule.getJourneyList(), currentTime), stop, oldEnd, false, true);
+        long timeDiff = journeyService.removeStopsBetween(journeyService.getCurrentJourney(journeyService.getJourneysByRouteScheduleId(routeScheduleId), currentTime), stop, oldEnd, false, true);
         //Now for the next service we need to remove stops between first stop and stop.
-        long timeDiff2 = journeyService.removeStopsBetween(journeyService.getNextJourney(schedule.getJourneyList(), currentTime), journeyService.getStartTerminus(journeyService.getNextJourney(schedule.getJourneyList(), currentTime)), stop, false, true);
+        long timeDiff2 = journeyService.removeStopsBetween(journeyService.getNextJourney(journeyService.getJourneysByRouteScheduleId(routeScheduleId), currentTime), journeyService.getStartTerminus(journeyService.getNextJourney(journeyService.getJourneysByRouteScheduleId(routeScheduleId), currentTime)), stop, false, true);
         //Divide both timeDiff's by 60 to convert to minutes and then use that to reduce vehicle delay.
         long delayReduction = (timeDiff/60) + (timeDiff2/60);
         //Reduce delay!
@@ -428,7 +428,7 @@ public class UserInterface implements Runnable {
      public void outOfService ( long routeScheduleId, String currentStop, String newStop, Calendar currentTime ) {
         //Get the time difference between current stop and new stop.
         RouteSchedule schedule = routeScheduleService.getRouteScheduleById(routeScheduleId);
-        long timeDiff = journeyService.getStopTimeDifference(journeyService.getCurrentJourney(schedule.getJourneyList(), currentTime), currentStop, newStop);
+        long timeDiff = journeyService.getStopTimeDifference(journeyService.getCurrentJourney(journeyService.getJourneysByRouteScheduleId(routeScheduleId), currentTime), currentStop, newStop);
         routeScheduleService.reduceDelay(schedule, (int) (timeDiff/2));
         //logger.debug("Vehicle delay reduced from " + oldDelay + " mins to " + getVehicleDelay() + " mins.");
      }
@@ -479,8 +479,8 @@ public class UserInterface implements Runnable {
         for ( int i = 0; i < returnJourneyIds.length; i++ ) {
             returnJourneys.add(journeyService.getJourneyById(returnJourneyIds[i]));
         }
-        //Rest can route service now!
-        routeService.generateRouteSchedules(route, outgoingJourneys, returnJourneys);
+        //Rest can route schedule service now!
+        routeScheduleService.generateRouteSchedules(route.getId(), outgoingJourneys, returnJourneys);
     }
     
     /**
@@ -499,7 +499,7 @@ public class UserInterface implements Runnable {
      */
     public long getDisplaySchedule ( String routeNumber, int pos ) {
         //Store the currentDate - we will need it for display schedules.
-        return routeService.getRoute(routeNumber).getRouteSchedules().get(routeDetailPos.get(pos)).getId();
+        return routeScheduleService.getRouteSchedulesByRouteId(routeService.getRoute(routeNumber).getId()).get(routeDetailPos.get(pos)).getId();
     }
     
     /**
@@ -756,8 +756,8 @@ public class UserInterface implements Runnable {
         ArrayList<String> allAllocations = vehicleService.getAllocations();
         ArrayList<String> runningIds = new ArrayList<String>();
         for ( int h = 0; h < routeService.getAllRoutes().size(); h++ ) {
-            for ( int i = 0; i < (routeService.getRoute(routeService.getAllRoutes().get(h).getRouteNumber()).getRouteSchedules().size()); i++ ) {
-                runningIds.add(routeService.getRoute(routeService.getAllRoutes().get(h).getRouteNumber()).getRouteSchedules().get(i).toString());
+            for ( int i = 0; i < (routeScheduleService.getRouteSchedulesByRouteId(routeService.getRoute(routeService.getAllRoutes().get(h).getRouteNumber()).getId()).size()); i++ ) {
+                runningIds.add(routeScheduleService.getRouteSchedulesByRouteId(routeService.getRoute(routeService.getAllRoutes().get(h).getRouteNumber()).getId()).get(i).toString());
             }
         }
         for ( int i = 0; i < allAllocations.size(); i++ ) {

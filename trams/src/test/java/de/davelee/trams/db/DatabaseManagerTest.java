@@ -106,17 +106,14 @@ public class DatabaseManagerTest {
 		stops.put("Rathaus Pankow", Calendar.getInstance());
 		stops.put("Pankow Kirche", Calendar.getInstance());
 		stops.put("S+U Pankow", Calendar.getInstance());
-		List<Journey> journeyList = new ArrayList<Journey>();
-        journeyList.add(journeyService.createJourney(stops));
-        RouteSchedule schedule = routeScheduleService.createRouteSchedule("2A", 1, journeyList, 5);
+		RouteSchedule schedule = routeScheduleService.createRouteSchedule(1, 1, 5);
         databaseManager.createAndStoreRouteSchedule(schedule);
         assertEquals(schedule.getId(), 1);
         RouteSchedule schedule2 = databaseManager.getRouteScheduleById(1);
         assertNotNull(schedule2);
         assertEquals(schedule2.getDelayInMins(), 5);
-        assertEquals(schedule2.getRouteNumber(), "2A");
+		assertEquals(schedule2.getRouteId(), 1);
         assertEquals(schedule2.getScheduleNumber(), 1);
-        assertEquals(schedule2.getJourneyList().size(), 1);
 	}
 	
 	@Test
@@ -145,8 +142,8 @@ public class DatabaseManagerTest {
 	public void stopTest() {
 		Stop stop = stopService.createStop("Rathaus Pankow", Calendar.getInstance());
 		databaseManager.createAndStoreStop(stop);
-		assertEquals(stop.getId(), 7);
-		Stop stop2 = databaseManager.getStopById(7);
+		assertEquals(stop.getId(), 4);
+		Stop stop2 = databaseManager.getStopById(1);
 		assertNotNull(stop2);
 		assertEquals(stop2.getStopName(), "Rathaus Pankow");
 	}
@@ -157,10 +154,11 @@ public class DatabaseManagerTest {
 		stops.put("Rathaus Pankow", Calendar.getInstance());
 		stops.put("Pankow Kirche", Calendar.getInstance());
 		stops.put("S+U Pankow", Calendar.getInstance());
-        Journey journey = journeyService.createJourney(stops);
+        Journey journey = journeyService.createJourney(stops, 1);
 		databaseManager.createAndStoreJourney(journey);
-		assertEquals(journey.getId(), 2);
-		Journey journey2 = databaseManager.getJourneyById(2);
+		assertEquals(journey.getId(), 1);
+		assertEquals(journey.getRouteScheduleId(), 1);
+		Journey journey2 = databaseManager.getJourneyById(1);
 		assertNotNull(journey2);
 		assertEquals(journey2.getJourneyStops().size(), 3);
 	}
@@ -190,7 +188,7 @@ public class DatabaseManagerTest {
 		daysOfOperation.add(Calendar.TUESDAY); daysOfOperation.add(Calendar.WEDNESDAY); daysOfOperation.add(Calendar.THURSDAY);
 		daysOfOperation.add(Calendar.FRIDAY);
 		Timetable timetable = timetableService.createTimetable("myTimetable", 
-				Calendar.getInstance(), Calendar.getInstance());
+				Calendar.getInstance(), Calendar.getInstance(), 1);
 		databaseManager.createAndStoreTimetable(timetable);
 		assertEquals(timetable.getId(), 1);
 		Timetable timetable2 = databaseManager.getTimetableById(1);

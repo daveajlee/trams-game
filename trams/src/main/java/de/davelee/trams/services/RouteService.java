@@ -3,8 +3,6 @@ package de.davelee.trams.services;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.GregorianCalendar;
-import java.util.Iterator;
 import java.util.List;
 
 import de.davelee.trams.factory.ScenarioFactory;
@@ -14,7 +12,6 @@ import org.slf4j.LoggerFactory;
 import de.davelee.trams.data.Journey;
 import de.davelee.trams.data.JourneyPattern;
 import de.davelee.trams.data.Route;
-import de.davelee.trams.data.RouteSchedule;
 import de.davelee.trams.data.Stop;
 import de.davelee.trams.data.Timetable;
 import de.davelee.trams.db.DatabaseManager;
@@ -157,107 +154,6 @@ public class RouteService {
         //Otherwise return false.
         return false;
     }
-
-    /**
-     * Generate route schedules.
-     * @param outgoingJourneys a <code>LinkedList</code> with all outgoing journeys.
-     * @param returnJourneys a <code>LinkedList</code> with all return journeys.
-     * @param sim a <code>Simulator</code> object for reference.
-     */
-    public void generateRouteSchedules ( Route route, List<Journey> outgoingJourneys, List<Journey> returnJourneys ) {
-        //Initialise list.
-    	List<RouteSchedule> mySchedules = new ArrayList<RouteSchedule>();
-        //We need to repeat this loop until both outgoingJourneys and returnJourneys are empty!
-        int counter = 1;
-        while ( outgoingJourneys.size() > 0 || returnJourneys.size() > 0 ) {
-            //Control what journey we want - initially we don't care.
-            boolean wantOutgoing = true; boolean wantReturn = true;
-            //Create a new route schedule.
-            RouteSchedule mySchedule = new RouteSchedule ( );
-            mySchedule.setRouteNumber(route.getRouteNumber());
-            mySchedule.setScheduleNumber(counter);
-            //Create our calendar object and set it to midnight.
-            Calendar myCal = new GregorianCalendar(2009,7,7,0,0);
-            //Find whether the first outgoing journey time is before the first return journey time.
-            logger.debug("Outgoing journeys has size: " + outgoingJourneys.size());
-            logger.debug("Return journeys has size: " + returnJourneys.size());
-            if ( returnJourneys.size() > 0 && outgoingJourneys.size() > 0 && outgoingJourneys.get(0).getJourneyStops().get(0).getStopTime().after(returnJourneys.get(0).getJourneyStops().get(0).getStopTime()) ) {
-                myCal = (Calendar) returnJourneys.get(0).getJourneyStops().get(0).getStopTime().clone();
-            }
-            else if ( outgoingJourneys.size() == 0 ) {
-                myCal = (Calendar) returnJourneys.get(0).getJourneyStops().get(0).getStopTime().clone();
-            }
-            else {
-                myCal = (Calendar) outgoingJourneys.get(0).getJourneyStops().get(0).getStopTime().clone();
-            }
-            //Here's the loop.
-            while ( true ) {
-                //logger.debug("Schedule " + counter + " Time is now " + myCal.get(Calendar.HOUR_OF_DAY) + ":" + myCal.get(Calendar.MINUTE));
-                if ( outgoingJourneys.size() > 0 && returnJourneys.size() > 0 ) {
-                    if ( myCal.after(outgoingJourneys.get(outgoingJourneys.size()-1).getJourneyStops().get(0).getStopTime()) && myCal.after(returnJourneys.get(returnJourneys.size()-1).getJourneyStops().get(0).getStopTime())) {
-                        break;
-                    }
-                } else if ( outgoingJourneys.size() > 0 ) {
-                    if ( myCal.after(outgoingJourneys.get(outgoingJourneys.size()-1).getJourneyStops().get(0).getStopTime()) ) {
-                        break;
-                    }
-                } else if ( returnJourneys.size() > 0 ) {
-                    if ( myCal.after(returnJourneys.get(outgoingJourneys.size()-1).getJourneyStops().get(0).getStopTime()) ) {
-                        break;
-                    }
-                } else {
-                    break; //Both outgoing journeys and return journeys were 0 so finished.
-                }
-                int loopPos = 0;
-                while ( true ) {
-                    if ( loopPos >= outgoingJourneys.size() && loopPos >= returnJourneys.size() ) { break; }
-                    if ( loopPos < outgoingJourneys.size() ) {
-                        //if ( wantOutgoing ) { logger.debug("I want an outgoing service so trying: " + returnServices.get(loopPos).getAllDisplayStops() + " to route schedule " + counter); }
-                        if ( wantOutgoing && outgoingJourneys.get(loopPos).getJourneyStops().get(0).getStopTime().get(Calendar.HOUR_OF_DAY) == myCal.get(Calendar.HOUR_OF_DAY) && outgoingJourneys.get(loopPos).getJourneyStops().get(0).getStopTime().get(Calendar.MINUTE) == myCal.get(Calendar.MINUTE)) {
-                            //logger.debug("Adding service " + outgoingServices.get(loopPos).getAllDisplayStops() + " to route schedule " + counter);
-                            //We have found our journey - its an outgoing one!!!
-                            mySchedule.addJourney(outgoingJourneys.get(loopPos));
-                            //Set calendar equal to last stop time.
-                            myCal = (Calendar) outgoingJourneys.get(loopPos).getJourneyStops().get(outgoingJourneys.get(loopPos).getJourneyStops().size()-1).getStopTime().clone();
-                            //myCal.add(Calendar.MINUTE, -1); //This prevents bad effect of adding one later!
-                            //Remove this journey from the list.
-                            outgoingJourneys.remove(loopPos);
-                            //Note that we next want a return one.
-                            wantOutgoing = false; wantReturn = true;
-                            //Continue loop.
-                            continue;
-                        }
-                    }
-                    if ( loopPos < returnJourneys.size() ) {
-                        //if ( wantReturn ) { logger.debug("I want a return service so trying: " + returnServices.get(loopPos).getAllDisplayStops() + " to route schedule " + counter); }
-                        if ( wantReturn && returnJourneys.get(loopPos).getJourneyStops().get(0).getStopTime().get(Calendar.HOUR_OF_DAY) == myCal.get(Calendar.HOUR_OF_DAY) && returnJourneys.get(loopPos).getJourneyStops().get(0).getStopTime().get(Calendar.MINUTE) == myCal.get(Calendar.MINUTE)) {
-                            //logger.debug("Adding service " + returnServices.get(loopPos).getAllDisplayStops() + " to route schedule " + counter);
-                            //We have found our journey - its a return one!!!
-                            mySchedule.addJourney(returnJourneys.get(loopPos));
-                            //Set calendar equal to last stop time.
-                            myCal = (Calendar) returnJourneys.get(loopPos).getJourneyStops().get(returnJourneys.get(loopPos).getJourneyStops().size()-1).getStopTime().clone();
-                            //myCal.add(Calendar.MINUTE, -1); //This prevents bad effect of adding one later!
-                            //Remove this journey from the list.
-                            returnJourneys.remove(loopPos);
-                            //Note that we next want an outgoing one.
-                            wantReturn = false; wantOutgoing = true;
-                            //Continue loop.
-                            continue;
-                        }
-                    }
-                    //Increment loopPos.
-                    loopPos++;
-                }
-                //Increment calendar and loopPos.
-                myCal.add(Calendar.MINUTE, 1);
-            }
-            //Add route schedule to route.
-            mySchedules.add(mySchedule);
-            //Increment counter.
-            counter++;
-        }
-        route.setRouteSchedules(mySchedules);
-    }
     
     /**
      * Return a formatted String array of schedule dates from today.
@@ -268,10 +164,9 @@ public class RouteService {
         //Create the list.
         List<Calendar> myCalendar = new ArrayList<Calendar>();
         //Go through all of the timetables and add them if they are not already in.
-        Iterator<String> timeNames = getRouteById(routeId).getTimetableNames();
+        List<Timetable> timetables = databaseManager.getTimetablesByRouteId(routeId);
         Calendar thisDate;
-        while (timeNames.hasNext()) {
-            Timetable timeT = getRouteById(routeId).getTimetable(timeNames.next());
+        for (Timetable timeT : timetables) {
             thisDate = (Calendar) today.clone();
             //Now check if we have passed the valid to date.
             while ( !thisDate.after(timeT.getValidToDate()) ) {
@@ -378,9 +273,8 @@ public class RouteService {
      * @return a <code>Timetable</code> object.
      */
     public Timetable getCurrentTimetable ( long routeId, Calendar today ) {
-        Iterator<String> timetableNames = getRouteById(routeId).getTimetableNames();
-        while ( timetableNames.hasNext() ) {
-            Timetable myTimetable = getRouteById(routeId).getTimetable(timetableNames.next());
+        List<Timetable> timetables = databaseManager.getTimetablesByRouteId(routeId);
+        for ( Timetable myTimetable : timetables ) {
             if ( (myTimetable.getValidFromDate().before(today) || myTimetable.getValidFromDate().equals(today)) && (myTimetable.getValidToDate().after(today) || myTimetable.getValidToDate().equals(today))  ) {
                 return myTimetable;
             }

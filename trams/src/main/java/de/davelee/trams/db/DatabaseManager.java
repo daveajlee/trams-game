@@ -97,6 +97,17 @@ public class DatabaseManager {
 		if ( list.isEmpty() ) { return null; }
 		return (Journey) list.get(0);
 	}
+
+	@Transactional
+	public List<Journey> getJourneysByRouteScheduleId ( long routeScheduleId ) {
+		Session session = sessionFactory.getCurrentSession();
+		Query query = session.createQuery("from Journey where routeScheduleId = :routeScheduleId");
+		query.setParameter("routeScheduleId", routeScheduleId);
+		@SuppressWarnings({ "unchecked" })
+		List<Journey> list = (List<Journey>) query.list();
+		if ( list.isEmpty() ) { return null; }
+		return list;
+	}
     
 	@Transactional
     public void createAndStoreJourneyPattern(JourneyPattern journeyPattern) {
@@ -162,6 +173,35 @@ public class DatabaseManager {
 		if ( list.isEmpty() ) { return null; }
 		return (Timetable) list.get(0);
 	}
+
+	@Transactional
+	public List<Timetable> getTimetablesByRouteId ( long routeId ) {
+		Session session = sessionFactory.getCurrentSession();
+		Query query = session.createQuery("from Timetable where routeId = :routeId");
+		query.setParameter("routeId", routeId);
+		@SuppressWarnings("unchecked")
+		List<Timetable> list = (List<Timetable>) query.list();
+		if ( list.isEmpty() ) { return null; }
+		return list;
+	}
+
+	@Transactional
+	public Timetable getTimetableByRouteIdAndName ( long routeId, String timetableName ) {
+		Session session = sessionFactory.getCurrentSession();
+		Query query = session.createQuery("from Timetable where routeId = :routeId and timetableName = :timetableName");
+		query.setParameter("routeId", routeId);
+		query.setParameter("timetableName", timetableName);
+		@SuppressWarnings("rawtypes")
+		List list = query.list();
+		if ( list.isEmpty() ) { return null; }
+		return (Timetable) list.get(0);
+	}
+
+	@Transactional
+	public void deleteTimetable ( Timetable timetable ) {
+		Session session = sessionFactory.getCurrentSession();
+		session.delete(timetable);
+	}
     
 	@Transactional
     public void createAndStoreRouteSchedule(RouteSchedule routeSchedule) {
@@ -179,6 +219,16 @@ public class DatabaseManager {
 		if ( list.isEmpty() ) { return null; }
 		return (RouteSchedule) list.get(0);
 	}
+
+	public List<RouteSchedule> getRouteSchedulesByRouteId ( long routeId ) {
+		Session session = sessionFactory.getCurrentSession();
+		Query query = session.createQuery("from RouteSchedule where routeId = :routeId");
+		query.setParameter("routeId", routeId);
+		@SuppressWarnings({ "unchecked" })
+		List<RouteSchedule> list = (List<RouteSchedule>) query.list();
+		if ( list.isEmpty() ) { return null; }
+		return list;
+	}
 	
 	@Transactional
     public void createAndStoreVehicle(Vehicle vehicle) {
@@ -191,6 +241,17 @@ public class DatabaseManager {
 		Session session = sessionFactory.getCurrentSession();
 		Query query = session.createQuery("from Vehicle where id = :id");
 		query.setParameter("id", id);
+		@SuppressWarnings("rawtypes")
+		List list = query.list();
+		if ( list.isEmpty() ) { return null; }
+		return (Vehicle) list.get(0);
+	}
+
+	@Transactional
+	public Vehicle getVehicleByRouteScheduleId ( long routeScheduleId ) {
+		Session session = sessionFactory.getCurrentSession();
+		Query query = session.createQuery("from Vehicle where routeScheduleId = :routeScheduleId");
+		query.setParameter("routeScheduleId", routeScheduleId);
 		@SuppressWarnings("rawtypes")
 		List list = query.list();
 		if ( list.isEmpty() ) { return null; }

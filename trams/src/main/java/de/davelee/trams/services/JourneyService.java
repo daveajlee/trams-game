@@ -1,20 +1,30 @@
 package de.davelee.trams.services;
 
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 import de.davelee.trams.data.Journey;
+import de.davelee.trams.data.RouteSchedule;
 import de.davelee.trams.data.Stop;
+import de.davelee.trams.db.DatabaseManager;
 import de.davelee.trams.util.DateFormats;
 import de.davelee.trams.util.JourneyStatus;
+import de.davelee.trams.util.SortedJourneys;
 
 public class JourneyService {
+
+    private DatabaseManager databaseManager;
 	
 	public JourneyService() {
 		
 	}
+
+    public DatabaseManager getDatabaseManager() {
+        return databaseManager;
+    }
+
+    public void setDatabaseManager(DatabaseManager databaseManager) {
+        this.databaseManager = databaseManager;
+    }
 	
 	/**
      * Get the status of the journey based on the current time - either not yet run, running or finished.
@@ -248,13 +258,12 @@ public class JourneyService {
     public String getDateInfo ( Calendar stopTime ) {
     	return DateFormats.FULL_FORMAT.getFormat().format(stopTime.getTime());
     }
-    
-    //TODO: Implement properly and not mock!
+
     public Journey getJourneyById(long id) {
-    	return new Journey();
+        return databaseManager.getJourneyById(id);
     }
-    
-    public Journey createJourney ( HashMap<String, Calendar> stops ) {
+
+    public Journey createJourney ( HashMap<String, Calendar> stops, long routeScheduleId ) {
     	Journey journey = new Journey();
     	Iterator<String> stopKeysIterator = stops.keySet().iterator();
     	while ( stopKeysIterator.hasNext() ) {
@@ -262,7 +271,68 @@ public class JourneyService {
     		stop.setStopName(stopKeysIterator.next()); stop.setStopTime(stops.get(stop.getStopName()));
     		journey.addStop(stop);
     	}
+        journey.setRouteScheduleId(routeScheduleId);
     	return journey;
     }
-    
+
+    /**
+     * Return all outgoing journeys for a particular day.
+     */
+    public List<Journey> getAllOutgoingJourneys ( List<RouteSchedule> schedules, List<Stop> stops, String day ) {
+        //Initialise list to store the journeys.
+        List<Journey> outgoingJourneys = new ArrayList<Journey>();
+        //Get the route schedules for that day!
+        for ( int h = 0;  h < schedules.size(); h++ ) {
+            for ( int i = 0; i < databaseManager.getJourneysByRouteScheduleId(schedules.get(h).getId()).size(); i++ ) {
+                Journey myJourney = databaseManager.getJourneysByRouteScheduleId(schedules.get(h).getId()).get(i);
+                if ( isOutwardJourney(stops, myJourney.getJourneyStops().get(0).getStopName(), myJourney.getJourneyStops().get(1).getStopName()) ) {
+                    outgoingJourneys.add(myJourney);
+                }
+            }
+        }
+        Collections.sort(outgoingJourneys, new SortedJourneys());
+        return outgoingJourneys;
+    }
+
+    /**
+     * This method checks using two stops if the service is an outward or inward service.
+     * @return a <code>boolean</code> which is true iff the service is an outward service.
+     */
+    public boolean isOutwardJourney ( List<Stop> stops, String stop1, String stop2 ) {
+        //Go through the stops - if we find the 1st one before the 2nd one - it is outward.
+        //Otherwise it is inward.
+        for ( int i = 0; i < stops.size(); i++ ) {
+            if ( stops.get(i).getStopName().equalsIgnoreCase(stop1) ) {
+                return true;
+            }
+            else if ( stops.get(i).getStopName().equalsIgnoreCase(stop2) ) {
+                return false;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Return all return services for a particular day.
+     */
+    public List<Journey> getAllReturnJourneys (List<RouteSchedule> schedules, List<Stop> stops, String day ) {
+        //Initialise list to store the journeys.
+        List<Journey> returnServices = new ArrayList<Journey>();
+        //Get the route schedules for that day!
+        for ( int h = 0; h < schedules.size(); h++ ) {
+            for ( int i = 0; i < databaseManager.getJourneysByRouteScheduleId(schedules.get(h).getId()).size(); i++ ) {
+                Journey myJourney = databaseManager.getJourneysByRouteScheduleId(schedules.get(h).getId()).get(i);
+                if ( !isOutwardJourney(stops, myJourney.getJourneyStops().get(0).getStopName(), myJourney.getJourneyStops().get(1).getStopName()) ) {
+                    returnServices.add(myJourney);
+                }
+            }
+        }
+        Collections.sort(returnServices, new SortedJourneys());
+        return returnServices;
+    }
+
+    public List<Journey> getJourneysByRouteScheduleId ( long routeScheduleId ) {
+        return databaseManager.getJourneysByRouteScheduleId(routeScheduleId);
+    }
+
 }

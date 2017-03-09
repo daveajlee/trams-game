@@ -8,6 +8,7 @@ import javax.swing.*;
 import de.davelee.trams.main.UserInterface;
 import de.davelee.trams.services.JourneyService;
 import de.davelee.trams.services.RouteScheduleService;
+import de.davelee.trams.services.RouteService;
 
 
 /**
@@ -32,6 +33,7 @@ public class MakeContactScreen extends JFrame {
     private long routeScheduleId;
     
     private RouteScheduleService routeScheduleService;
+    private RouteService routeService;
     private JourneyService journeyService;
 
     /**
@@ -48,13 +50,14 @@ public class MakeContactScreen extends JFrame {
         this.routeScheduleId = routeScheduleId;
         
         routeScheduleService = new RouteScheduleService();
+        routeService = new RouteService();
         
         //Set image icon.
         Image img = Toolkit.getDefaultToolkit().getImage(MakeContactScreen.class.getResource("/TraMSlogo.png"));
         setIconImage(img);
         
         //Initialise GUI with title and close attributes.
-        this.setTitle ("Contact With " + userInterface.getAllocatedRegistrationNumber(routeScheduleId) + " On Route " + routeScheduleService.getRouteScheduleById(routeScheduleId).getRouteNumber());
+        this.setTitle ("Contact With " + userInterface.getAllocatedRegistrationNumber(routeScheduleId) + " On Route " + routeService.getRouteById(routeScheduleService.getRouteScheduleById(routeScheduleId).getRouteId()).getRouteNumber());
         this.setResizable (false);
         this.setDefaultCloseOperation (DO_NOTHING_ON_CLOSE);
         this.setBackground(Color.WHITE);
@@ -189,9 +192,9 @@ public class MakeContactScreen extends JFrame {
      */
     public String[] getListOfStops() {
         //Create the String array.
-        String[] stops = new String[journeyService.getCurrentJourney(routeScheduleService.getRouteScheduleById(routeScheduleId).getJourneyList(), userInterface.getCurrentSimTime()).getJourneyStops().size()];
+        String[] stops = new String[journeyService.getCurrentJourney(journeyService.getJourneysByRouteScheduleId(routeScheduleId), userInterface.getCurrentSimTime()).getJourneyStops().size()];
         for ( int i = 0; i < stops.length; i++ ) {
-            stops[i] = journeyService.getCurrentJourney(routeScheduleService.getRouteScheduleById(routeScheduleId).getJourneyList(), userInterface.getCurrentSimTime()).getJourneyStops().get(i).getStopName();
+            stops[i] = journeyService.getCurrentJourney(journeyService.getJourneysByRouteScheduleId(routeScheduleId), userInterface.getCurrentSimTime()).getJourneyStops().get(i).getStopName();
         }
         return stops;
     }

@@ -33,11 +33,15 @@ public class FileService {
 	private FactoryService springService;
 	private JourneyService journeyService;
 	private RouteService routeService;
+	private RouteScheduleService routeScheduleService;
+	private TimetableService timetableService;
 	private MessageService messageService;
 	private VehicleService vehicleService;
 	
 	public FileService() {
 		routeService = new RouteService();
+		routeScheduleService = new RouteScheduleService();
+		timetableService = new TimetableService();
         gameService = new GameService();
         simulationService = new SimulationService();
         springService = new FactoryService();
@@ -169,10 +173,9 @@ public class FileService {
             }
             route.appendChild(outstops);
             //Now do timetables for this route.
-            Iterator<String> timetableNames = myRoute.getTimetableNames();
-            while ( timetableNames.hasNext() ) {
+            List<Timetable> timetables = timetableService.getTimetablesByRouteId(myRoute.getId());
+            for ( Timetable myTimetable : timetables ) {
                 //Create a timetable element with attributes name, validFrom and validTo dates.
-                Timetable myTimetable = myRoute.getTimetable(timetableNames.next());
                 Element timetable = doc.createElement("timetable");
                 timetable.setAttribute("name", myTimetable.getName());
                 //Do valid from date.
@@ -320,6 +323,7 @@ public class FileService {
                     myTimetable.setName(timetableElement.getAttribute("name"));
                     myTimetable.setValidFromDate(validFrom);
                     myTimetable.setValidToDate(validTo);
+                    myTimetable.setRouteId(route.getId());
                     //Now add all journey patterns.
                     NodeList journeyNodes = timetableElement.getElementsByTagName("journeyPattern");
                     for ( int k = 0; k < journeyNodes.getLength(); k++ ) {
@@ -344,8 +348,6 @@ public class FileService {
                         //Add to timetable.
                         //myTimetable.addJourneyPattern(journeyElement.getAttribute("name"), myJourney);
                     }
-                    //Finally add this timetable to the route.
-                    route.addTimetable(timetableElement.getAttribute("name"), myTimetable);
                 }
                 //Generate timetables.
                 long[] outgoingJourneyIds = routeService.generateJourneyTimetables(route.getId(), simulator.getCurrentTime(), scenarioName, RouteService.OUTWARD_DIRECTION);
@@ -358,8 +360,8 @@ public class FileService {
                 for ( int k = 0; k < returnJourneyIds.length; k++ ) {
                     returnJourneys.add(journeyService.getJourneyById(returnJourneyIds[i]));
                 }
-                //Rest can route service now!
-                routeService.generateRouteSchedules(route, outgoingJourneys, returnJourneys);
+                //Rest can route schedule service now!
+                routeScheduleService.generateRouteSchedules(route.getId(), outgoingJourneys, returnJourneys);
                 //Add route.
                 routeService.saveRoute(route);
             }
@@ -373,13 +375,12 @@ public class FileService {
                 myVeh.setRouteScheduleId(0);
                 vehicleService.saveVehicle(myVeh);
                 //Add allocation to route.
-                String schedId = thisElem.getAttribute("route") + "/" + thisElem.getAttribute("schedId");
                 for ( int j = 0; j < routeService.getAllRoutes().size(); j++ ) {
                     if ( routeService.getAllRoutes().get(j).getRouteNumber().equalsIgnoreCase(thisElem.getAttribute("route")) ) {
                         String[] dates = document.getDocumentElement().getAttribute("time").split("-");
                         String day = dates[2];
                         if ( day.substring(0,1).equalsIgnoreCase("0") ) { day = day.substring(1,2); }
-                        routeService.getAllRoutes().get(j).addAllocation(schedId, myVeh);
+                        myVeh.setRouteScheduleId(Integer.parseInt(thisElem.getAttribute("schedId")));
                         break;
                     }
                 }
