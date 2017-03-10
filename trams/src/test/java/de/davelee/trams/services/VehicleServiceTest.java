@@ -125,4 +125,22 @@ public class VehicleServiceTest {
 		assertEquals(vehicleService.getAllVehicles().size(), 2);
 	}
 
+	@Test
+	public void testCreateVehicleObject() {
+		assertNotNull(vehicleService.createVehicleObject("MyBus Single Decker", "CV58 2DD", Calendar.getInstance()));
+		assertNull(vehicleService.createVehicleObject("MyTrain", "123", Calendar.getInstance()));
+	}
+
+	@Test
+	public void testGetModelPos() {
+		assertNotNull(vehicleService.getVehicleModel(1));
+		assertEquals(vehicleService.getVehicleModel(1), "MyBus Double Decker");
+		assertNull(vehicleService.getVehicleModel(7));
+	}
+
+	@Test
+	public void testVehicleSize() {
+		assertEquals(vehicleService.getNumberAvailableVehicles(), 4);
+	}
+
 }

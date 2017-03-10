@@ -20,13 +20,11 @@ import de.davelee.trams.data.Journey;
 import de.davelee.trams.data.JourneyPattern;
 import de.davelee.trams.data.Route;
 import de.davelee.trams.data.RouteSchedule;
-import de.davelee.trams.data.Scenario;
+import de.davelee.trams.beans.Scenario;
 import de.davelee.trams.data.Stop;
 import de.davelee.trams.data.Timetable;
 import de.davelee.trams.data.Vehicle;
-import de.davelee.trams.db.DatabaseManager;
 import de.davelee.trams.services.DriverService;
-import de.davelee.trams.services.FactoryService;
 import de.davelee.trams.services.JourneyPatternService;
 import de.davelee.trams.services.JourneyService;
 import de.davelee.trams.services.RouteScheduleService;
@@ -62,9 +60,6 @@ public class DatabaseManagerTest {
 	
 	@Autowired
 	private TimetableService timetableService;
-	
-	@Autowired
-	private FactoryService factoryService;
 	
 	@Autowired
 	private ScenarioService scenarioService;
@@ -189,17 +184,6 @@ public class DatabaseManagerTest {
 		Timetable timetable2 = databaseManager.getTimetableById(1);
 		assertNotNull(timetable2);
 		assertEquals(timetable2.getName(), "myTimetable");
-	}
-	
-	@Test
-	public void scenarioTest() {
-		Scenario scenario = factoryService.createScenarioObject("Landuff Transport Company");
-		databaseManager.createAndStoreScenario(scenario);
-		assertEquals(scenario.getId(), 1);
-		Scenario scenario2 = databaseManager.getScenarioById(1);
-		assertNotNull(scenario2);
-		assertEquals(scenario2.getScenarioName(), "Landuff Transport Company");
-		assertEquals(scenario2.getLocationMapFileName(), "landuffmappic.jpg");
 	}
 	
 }

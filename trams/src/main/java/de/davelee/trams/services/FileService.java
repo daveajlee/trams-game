@@ -30,7 +30,6 @@ public class FileService {
 
 	private SimulationService simulationService;
 	private GameService gameService;
-	private FactoryService springService;
 	private JourneyService journeyService;
 	private RouteService routeService;
 	private TimetableService timetableService;
@@ -42,7 +41,6 @@ public class FileService {
 		timetableService = new TimetableService();
         gameService = new GameService();
         simulationService = new SimulationService();
-        springService = new FactoryService();
         journeyService = new JourneyService();
         messageService = new MessageService();
         vehicleService = new VehicleService();
@@ -369,7 +367,7 @@ public class FileService {
                 Element thisElem = (Element) vehicleList.item(i);
                 String[] deliveryDates = thisElem.getAttribute("deliveryDate").split("-");
                 Calendar deliveryDate = new GregorianCalendar(Integer.parseInt(deliveryDates[0]), Integer.parseInt(deliveryDates[1])-1, Integer.parseInt(deliveryDates[2]));
-                Vehicle myVeh = springService.createVehicleObject(thisElem.getAttribute("type"), thisElem.getAttribute("id"), deliveryDate);
+                Vehicle myVeh = vehicleService.createVehicleObject(thisElem.getAttribute("type"), thisElem.getAttribute("id"), deliveryDate);
                 myVeh.setRouteScheduleId(0);
                 vehicleService.saveVehicle(myVeh);
                 //Add allocation to route.

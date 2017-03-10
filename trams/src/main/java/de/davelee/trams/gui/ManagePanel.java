@@ -484,7 +484,7 @@ public class ManagePanel {
             JLabel stopLabel = new JLabel("Stop " + (i+1) + ":");
             stopLabel.setFont(new Font("Arial", Font.ITALIC, 16));
             stopPanels[i].add(stopLabel);
-            stopBoxes[i] = new JComboBox(scenarioService.getStopNames(userInterface.createScenarioObject(userInterface.getScenarioName())));
+            stopBoxes[i] = new JComboBox(scenarioService.getStopNames(userInterface.getScenarioName()));
             stopBoxes[i].setFont(new Font("Arial", Font.PLAIN, 14));
             stopBoxes[i].setSelectedIndex(stopBoxes[i].getItemCount()-1);
             if ( amendRouteId != -1 ) { 

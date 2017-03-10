@@ -8,11 +8,13 @@ import java.util.Random;
 
 import de.davelee.trams.data.Vehicle;
 import de.davelee.trams.db.DatabaseManager;
+import de.davelee.trams.factory.VehicleFactory;
 import de.davelee.trams.util.SortedVehicles;
 
 public class VehicleService {
 	
 	private DatabaseManager databaseManager;
+    private VehicleFactory vehicleFactory;
 	
 	public VehicleService() {
 	}
@@ -24,6 +26,14 @@ public class VehicleService {
 	public void setDatabaseManager(DatabaseManager databaseManager) {
 		this.databaseManager = databaseManager;
 	}
+
+    public VehicleFactory getVehicleFactory() {
+        return vehicleFactory;
+    }
+
+    public void setVehicleFactory(VehicleFactory vehicleFactory) {
+        this.vehicleFactory = vehicleFactory;
+    }
 
 	/**
      * Check if the vehicle has been delivered yet!
@@ -163,6 +173,26 @@ public class VehicleService {
      */
     public void sortVehicles ( List<Vehicle> vehicles ) {
         Collections.sort(vehicles, new SortedVehicles());
+    }
+
+    public Vehicle createVehicleObject ( String model, String registrationNumber, Calendar deliveryDate ) {
+        Vehicle vehicle = vehicleFactory.createVehicleByModel(model);
+        if ( vehicle != null ) {
+            vehicle.setRegistrationNumber(registrationNumber);
+            vehicle.setDeliveryDate(deliveryDate);
+        }
+        return vehicle;
+    }
+
+    public String getVehicleModel ( int pos ) {
+        if ( pos < getNumberAvailableVehicles() ) {
+            return vehicleFactory.getAvailableVehicles().get(pos).getModel();
+        }
+        return null;
+    }
+
+    public int getNumberAvailableVehicles ( ) {
+        return vehicleFactory.getAvailableVehicles().size();
     }
     
 }

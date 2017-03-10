@@ -10,13 +10,13 @@
        		<property name="availableScenarios" ref="availableScenariosList"/>
        </bean>
        
-       <util:list id="availableScenariosList" value-type="de.davelee.trams.data.Scenario">
+       <util:list id="availableScenariosList" value-type="de.davelee.trams.beans.Scenario">
        		<ref bean="landuffScenario"/>
        		<ref bean="longtsScenario"/>
        		<ref bean="mDorfScenario"/>
        </util:list>
        
-       <bean id="landuffScenario" class="de.davelee.trams.data.Scenario">
+       <bean id="landuffScenario" class="de.davelee.trams.beans.Scenario">
        		<property name="scenarioName" value="Landuff Transport Company"/>
        		<property name="stopDistances" ref="landuffStopDistancesList"/>
        		<property name="cityDescription" value="Landuff Town is a small town with a very friendly town council. They want to work with you in providing an efficient and effective transport service for Landuff Town."/>
@@ -78,7 +78,7 @@
        		<value>Mile Inn:11,8,7,7,6,17,11,14,19,18,19,3,8,6,7,10,20,19,15,12,3,8,9,1,11,3,15,13,11,10,6,8,9,8,13,15,13,11,13,10,7,6,8,7,4,0</value>
        </util:list>	
        
-       <bean id="longtsScenario" class="de.davelee.trams.data.Scenario">
+       <bean id="longtsScenario" class="de.davelee.trams.beans.Scenario">
        		<property name="scenarioName" value="Longts Transport Company"/>
        		<property name="stopDistances" ref="longtsStopDistancesList"/>
        		<property name="minimumSatisfaction" value="50"/>
@@ -147,7 +147,7 @@
        		<value>Park South:7,9,11,13,15,14,16,12,10,10,11,13,16,14,16,17,18,16,12,13,15,17,11,9,10,10,11,13,14,13,9,17,18,23,17,19,21,23,20,19,8,9,7,8,17,8,15,14,15,0</value>
        </util:list>
        
-       <bean id="mDorfScenario" class="de.davelee.trams.data.Scenario">
+       <bean id="mDorfScenario" class="de.davelee.trams.beans.Scenario">
        		<property name="scenarioName" value="MDorf Transport Company"/>
        		<property name="stopDistances" ref="mDorfStopDistancesList"/>
        		<property name="minimumSatisfaction" value="35"/>

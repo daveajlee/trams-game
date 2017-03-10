@@ -15,7 +15,6 @@ public class TramsFile {
 	private List<Message> messages;
 	private List<Route> routes;
 	private List<RouteSchedule> routeSchedules;
-	/*private List<Scenario> scenarios;*/
     private List<Stop> stops;
     private List<StopTime> stopTimes;
 	private List<Timetable> timetables;
@@ -24,7 +23,7 @@ public class TramsFile {
     public TramsFile ( ) { }
 
     public TramsFile ( List<Driver> drivers, /*Game game,*/ List<Journey> journeys, List<JourneyPattern> journeyPatterns,
-			List<Message> messages, List<Route> routes, List<RouteSchedule> routeSchedules, /*List<Scenario> scenarios,*/
+			List<Message> messages, List<Route> routes, List<RouteSchedule> routeSchedules,
 			List<Stop> stops, List<StopTime> stopTimes, List<Timetable> timetables, List<Vehicle> vehicles) {
                 this.drivers = drivers;
                 /*this.game = game;*/
@@ -33,7 +32,6 @@ public class TramsFile {
                 this.messages = messages;
                 this.routes = routes;
                 this.routeSchedules = routeSchedules;
-				/*this.scenarios = scenarios;*/
                 this.stops = stops;
                 this.stopTimes = stopTimes;
                 this.timetables = timetables;
@@ -95,14 +93,6 @@ public class TramsFile {
 	public void setRouteSchedules(List<RouteSchedule> routeSchedules) {
 		this.routeSchedules = routeSchedules;
 	}
-
-	/*public List<Scenario> getScenarios() {
-		return scenarios;
-	}
-
-	public void setScenarios(List<Scenario> scenarios) {
-		this.scenarios = scenarios;
-	}*/
 
     public List<Stop> getStops() {
         return stops;

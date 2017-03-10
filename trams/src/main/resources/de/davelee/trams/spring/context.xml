@@ -2,7 +2,7 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
-	<bean id="LanduffScenario" class="de.davelee.trams.data.Scenario">
+	<bean id="LanduffScenario" class="de.davelee.trams.beans.Scenario">
 		<property name="scenarioName" value="Landuff Transport Company"/>
 		<property name="description" value=" has been appointed Managing Director of the Landuff Transport Company saying "I am delighted to be taking on this role and look forward to delivering a transport system
             worthy of the fantastic town of Landuff. \n\nLanduff Town Council are committed to supplying 46 

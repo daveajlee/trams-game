@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import de.davelee.trams.data.Scenario;
+import de.davelee.trams.beans.Scenario;
 import de.davelee.trams.services.ScenarioService;
 
 @RunWith(SpringJUnit4ClassRunner.class)

@@ -49,7 +49,6 @@ public class UserInterface implements Runnable {
     private DriverService driverService;
     private GameService gameService;
     private SimulationService simulationService;
-    private FactoryService springService;
     private ScenarioService scenarioService;
     private FileService fileService;
     private MessageService messageService;
@@ -74,7 +73,6 @@ public class UserInterface implements Runnable {
         driverService = new DriverService();
         gameService = new GameService();
         simulationService = new SimulationService();
-        springService = new FactoryService();
         scenarioService = new ScenarioService();
         fileService = new FileService();
         routeService = new RouteService();
@@ -615,13 +613,12 @@ public class UserInterface implements Runnable {
      */
     public void loadScenario ( String scenarioName, String playerName ) {
         simulationService.createSimulator();
-        List<Vehicle> vehicles = scenarioService.createSuppliedVehicles(springService.createScenarioObject(scenarioName).getSuppliedVehicles(),
-    			simulationService.getSimulator().getCurrentTime(), vehicleService, springService);
+        List<Vehicle> vehicles = createSuppliedVehicles(scenarioName, simulationService.getSimulator().getCurrentTime());
         for ( int i = 0; i < vehicles.size(); i++ ) {
     		vehicleService.saveVehicle(vehicles.get(i));
     	}
        //Create welcome message.
-       messageService.createMessage("Welcome Message", "Congratulations on your appointment as Managing Director of the " + getScenarioName() + "! \n\n Your targets for the coming days and months are: " + springService.createScenarioObject(getScenarioName()).getTargets(),"Council",MessageFolder.INBOX,simulationService.getSimulator().getCurrentTime());
+        messageService.createMessage("Welcome Message", "Congratulations on your appointment as Managing Director of the " + getScenarioName() + "! \n\n Your targets for the coming days and months are: " + scenarioService.retrieveScenarioObject(getScenarioName()).getTargets(),"Council",MessageFolder.INBOX,simulationService.getSimulator().getCurrentTime());
     }
     
     /**
@@ -890,7 +887,7 @@ public class UserInterface implements Runnable {
      * @return a <code>boolean</code> which is true iff the vehicle has been purchased successfully.
      */
     public void purchaseVehicle ( String type, Calendar deliveryDate ) {
-        Vehicle vehicle = springService.createVehicleObject(type, vehicleService.generateRandomReg(
+        Vehicle vehicle = vehicleService.createVehicleObject(type, vehicleService.generateRandomReg(
         		simulationService.getSimulator().getCurrentTime().get(Calendar.YEAR)), deliveryDate);
         gameService.withdrawBalance(vehicle.getPurchasePrice());
         vehicleService.saveVehicle(vehicle);
@@ -911,7 +908,7 @@ public class UserInterface implements Runnable {
      * @return a <code>Vehicle</code> object.
      */
     public long createVehicleObject ( int pos ) {
-    	return springService.createVehicleObject ( springService.getVehicleModel(pos), "AA", getCurrentSimTime() ).getId();
+        return vehicleService.createVehicleObject ( vehicleService.getVehicleModel(pos), "AA", getCurrentSimTime() ).getId();
     }
     
     /**
@@ -919,7 +916,7 @@ public class UserInterface implements Runnable {
      * @return a <code>int</code> with the number of available vehicle types.
      */
     public int getNumVehicleTypes ( ) {
-        return springService.getNumberAvailableVehicles();
+        return vehicleService.getNumberAvailableVehicles();
     }
     
     /**
@@ -1039,10 +1036,6 @@ public class UserInterface implements Runnable {
         return gameService.getScenarioName();
     }
     
-    public long createScenarioObject ( String scenarioName ) {
-    	return springService.createScenarioObject(scenarioName).getId();
-    }
-    
     /**
      * Main method to run the TraMS program.
      * @param args a <code>String</code> array which is not presently being used.
@@ -1088,15 +1081,15 @@ public class UserInterface implements Runnable {
     }
     
     public int getNumberScenarios ( ) {
-    	return springService.getNumberAvailableScenarios();
+        return scenarioService.getNumberAvailableScenarios();
     }
     
     public String getScenarioNameByPosition ( int position ) {
-    	return springService.getAvailableScenarioNames()[position];
+        return scenarioService.getAvailableScenarioNames()[position];
     }
     
     public String getScenarioCityDescriptionByPosition ( int position ) {
-    	return springService.getAvailableScenarioCityDescriptions()[position];
+        return scenarioService.getAvailableScenarioCityDescriptions()[position];
     }
     
     public String getPlayerName ( ) {
@@ -1104,7 +1097,7 @@ public class UserInterface implements Runnable {
     }
     
     public String getScenarioDescriptionByName ( String name ) {
-    	return springService.createScenarioObject(name).getDescription();
+        return scenarioService.retrieveScenarioObject(name).getDescription();
     }
     
     public String getAllocatedRegistrationNumber ( long routeScheduleId ) {
@@ -1128,11 +1121,11 @@ public class UserInterface implements Runnable {
     }
     
     public String getScenarioTargets ( ) {
-    	return scenarioService.getScenarioById(createScenarioObject(getScenarioName())).getTargets();
+        return scenarioService.retrieveScenarioObject(getScenarioName()).getTargets();
     }
     
     public String getScenarioLocationMap ( ) {
-    	return scenarioService.getScenarioById(createScenarioObject(getScenarioName())).getLocationMapFileName();
+        return scenarioService.retrieveScenarioObject(getScenarioName()).getLocationMapFileName();
     }
     
     public boolean areRoutesDefined ( ) {
@@ -1144,7 +1137,7 @@ public class UserInterface implements Runnable {
     }
     
     public int getMinimumSatisfaction ( ) {
-    	return springService.createScenarioObject(getScenarioName()).getMinimumSatisfaction();
+        return scenarioService.retrieveScenarioObject(getScenarioName()).getMinimumSatisfaction();
     }
     
     public Calendar getMessageDateByPosition ( int position ) {
@@ -1153,6 +1146,35 @@ public class UserInterface implements Runnable {
     
     public String getRouteNumber ( long id ) {
     	return routeService.getRouteById(id).getRouteNumber();
+    }
+
+    public List<Vehicle> createSuppliedVehicles( final String scenarioName, Calendar currentTime) {
+        List<Vehicle> vehicles = new ArrayList<Vehicle>();
+        Iterator<String> vehicleModels = scenarioService.retrieveScenarioObject(scenarioName).getSuppliedVehicles().keySet().iterator();
+        while (vehicleModels.hasNext()) {
+            String vehicleModel = vehicleModels.next();
+            for ( int i = 0; i < scenarioService.retrieveScenarioObject(scenarioName).getSuppliedVehicles().get(vehicleModel); i++ )  {
+                vehicles.add(vehicleService.createVehicleObject(vehicleModel, vehicleService.generateRandomReg(
+                        currentTime.get(Calendar.YEAR)), currentTime));
+            }
+        }
+        return vehicles;
+    }
+
+    public VehicleService getVehicleService() {
+        return vehicleService;
+    }
+
+    public void setVehicleService(VehicleService vehicleService) {
+        this.vehicleService = vehicleService;
+    }
+
+    public ScenarioService getScenarioService() {
+        return scenarioService;
+    }
+
+    public void setScenarioService(ScenarioService scenarioService) {
+        this.scenarioService = scenarioService;
     }
     
 }

@@ -2,7 +2,7 @@ package de.davelee.trams.factory;
 
 import java.util.List;
 
-import de.davelee.trams.data.Scenario;
+import de.davelee.trams.beans.Scenario;
 
 public class ScenarioFactory {
 	

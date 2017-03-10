@@ -2,6 +2,7 @@ package de.davelee.trams.db;
 
 import java.util.List;
 
+import de.davelee.trams.beans.Scenario;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -410,23 +411,6 @@ public class DatabaseManager {
 		Session session = sessionFactory.getCurrentSession();
         session.delete(route);
 	}
-    
-    @Transactional
-    public void createAndStoreScenario ( Scenario scenario ) {
-    	Session session = sessionFactory.getCurrentSession();
-    	session.saveOrUpdate(scenario);
-    }
-    
-    @Transactional
-    public Scenario getScenarioById ( long id ) {
-    	Session session = sessionFactory.getCurrentSession();
-    	Query query = session.createQuery("from Scenario where id = :id");
-    	query.setParameter("id", id);
-    	@SuppressWarnings("rawtypes")
-    	List list = query.list();
-    	if ( list.isEmpty() ) { return null; }
-    	return (Scenario) list.get(0);
-    }
     
     public void closeSession() {
     	sessionFactory.close();

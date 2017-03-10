@@ -4,17 +4,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
-import java.util.Calendar;
-import java.util.List;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import de.davelee.trams.data.Scenario;
-import de.davelee.trams.data.Vehicle;
+import de.davelee.trams.beans.Scenario;
 import de.davelee.trams.db.DatabaseManager;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -25,9 +21,6 @@ public class ScenarioServiceTest {
 	private ScenarioService scenarioService;
 	
 	@Autowired
-	private FactoryService factoryService;
-	
-	@Autowired
 	private VehicleService vehicleService;
 	
 	@Autowired
@@ -35,9 +28,8 @@ public class ScenarioServiceTest {
 	
 	@Test
 	public void testStopNames() {
-		databaseManager.createAndStoreScenario(factoryService.createScenarioObject("Landuff Transport Company"));
-		String[] stopNames = scenarioService.getStopNames(1);
-		assertEquals(scenarioService.getScenarioById(1).getScenarioName(), "Landuff Transport Company");
+		String[] stopNames = scenarioService.getStopNames("Landuff Transport Company");
+		assertEquals(scenarioService.retrieveScenarioObject("Landuff Transport Company").getScenarioName(), "Landuff Transport Company");
 		assertEquals(stopNames[0], "Airport");
 		assertEquals(stopNames[46], "-");
 		assertEquals(stopNames.length, 47);
@@ -45,23 +37,38 @@ public class ScenarioServiceTest {
 
 	@Test
 	public void testStopDistances() {
-		Scenario scenario = scenarioService.getScenarioById(1);
+		Scenario scenario = scenarioService.retrieveScenarioObject("Landuff Transport Company");
 		assertNotNull(scenario);
 		assertEquals(scenario.getStopDistances().size(), 46);
 	}
 
-	@Test
-	public void testCreateSuppliedVehicles() {
-		Calendar currentDate = Calendar.getInstance(); currentDate.set(Calendar.YEAR, 2014);
-		List<Vehicle> vehicles = scenarioService.createSuppliedVehicles(scenarioService.getScenarioById(1).getSuppliedVehicles(), 
-				currentDate, vehicleService, factoryService);
-		assertEquals(vehicles.size(), 4);
+	public void testRetrieveScenarioObject() {
+		assertEquals(scenarioService.retrieveScenarioObject("Landuff Transport Company").getScenarioName(), "Landuff Transport Company");
+		assertNull(scenarioService.retrieveScenarioObject("Berlin Transport Company"));
 	}
-	
+
 	@Test
-	public void testScenarioById() {
-		assertEquals(scenarioService.getScenarioById(1).getScenarioName(), "Landuff Transport Company");
-		assertNull(scenarioService.getScenarioById(40));
+	public void testCreateScenario() {
+		assertNotNull(scenarioService.retrieveScenarioObject("Landuff Transport Company"));
+		assertNull(scenarioService.retrieveScenarioObject("Londuff Transport Company"));
+	}
+
+	@Test
+	public void testScenarioSize() {
+		assertEquals(scenarioService.getNumberAvailableScenarios(), 3);
+	}
+
+	@Test
+	public void testScenarioNames() {
+		String[] scenarioNames = scenarioService.getAvailableScenarioNames();
+		assertEquals(scenarioNames.length, 3);
+		assertEquals(scenarioNames[0], "Landuff Transport Company");
+	}
+
+	@Test
+	public void testScenarioDescriptions() {
+		String[] scenarioDescriptions = scenarioService.getAvailableScenarioCityDescriptions();
+		assertEquals(scenarioDescriptions.length, 3);
 	}
 	
 }

@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import de.davelee.trams.data.Scenario;
+import de.davelee.trams.beans.Scenario;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("/de/davelee/trams/spring/scenario-context.xml")

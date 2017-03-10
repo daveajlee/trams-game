@@ -31,6 +31,7 @@
        
        <bean id="vehicleService" class="de.davelee.trams.services.VehicleService">
        		<property name="databaseManager" ref="databaseManager"/>
+		    <property name="vehicleFactory" ref="vehicleFactory"/>
        </bean>
        
        <bean id="journeyPatternService" class="de.davelee.trams.services.JourneyPatternService">
@@ -40,18 +41,13 @@
        </bean>
        
        <bean id="scenarioService" class="de.davelee.trams.services.ScenarioService">
-       		<property name="databaseManager" ref="databaseManager"/>
+		    <property name="scenarioFactory" ref="scenarioFactory"/>
        </bean>
        
        <bean id="simulationService" class="de.davelee.trams.services.SimulationService">
        </bean>
        
        <bean id="gameService" class="de.davelee.trams.services.GameService">
-       </bean>
-       
-       <bean id="factoryService" class="de.davelee.trams.services.FactoryService">
-       		<property name="vehicleFactory" ref="vehicleFactory"/>
-       		<property name="scenarioFactory" ref="scenarioFactory"/>
        </bean>
 
 		<bean id="messageService" class="de.davelee.trams.services.MessageService">
@@ -77,7 +73,6 @@
 					<value>de.davelee.trams.data.Message</value>
         			<value>de.davelee.trams.data.Route</value>
         			<value>de.davelee.trams.data.RouteSchedule</value>
-        			<value>de.davelee.trams.data.Scenario</value>
         			<value>de.davelee.trams.data.Simulator</value>
         			<value>de.davelee.trams.data.Stop</value>
 					<value>de.davelee.trams.data.StopTime</value>
