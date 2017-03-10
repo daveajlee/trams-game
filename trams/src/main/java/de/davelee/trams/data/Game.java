@@ -8,6 +8,8 @@ import javax.persistence.Table;
 
 import de.davelee.trams.util.DifficultyLevel;
 
+import java.util.Calendar;
+
 /**
  * Class representing a game in TraMS.
  * @author Dave Lee
@@ -35,6 +37,15 @@ public class Game {
 	
 	@Column(name="SCENARIO_NAME")
 	private String scenarioName;
+
+    @Column(name="CURRENT_TIME")
+	private Calendar currentTime;
+
+    @Column(name="TIME_INCREMENT")
+    private int timeIncrement;
+
+    @Column(name="PREVIOUS_TIME")
+    private Calendar previousTime;
     
     public Game() {
     }
@@ -118,6 +129,46 @@ public class Game {
      */
     public String getScenarioName ( ) {
         return scenarioName;
+    }
+
+    /**
+     * Get the time increment.
+     * @return a <code>int</code> with the time increment.
+      */
+    public int getTimeIncrement ( ) {
+        return timeIncrement;
+    }
+
+    /**
+     * Set a new time increment
+     * @param newIncrement a <code>int</code> with the new time increment.
+     */
+    public void setTimeIncrement ( int newIncrement ) {
+        timeIncrement = newIncrement;
+    }
+
+    /**
+     * Get the current time.
+     * @return a <code>Calendar</code> representing the current time.
+     */
+    public Calendar getCurrentTime ( ) {
+        return currentTime;
+    }
+
+    public void setCurrentTime(Calendar currentTime) {
+        this.currentTime = currentTime;
+    }
+
+    /**
+     * Get the previous time.
+     * @return a <code>Calendar</code> representing the previous time.
+     */
+    public Calendar getPreviousTime ( ) {
+        return previousTime;
+    }
+
+    public void setPreviousTime(Calendar previousTime) {
+        this.previousTime = currentTime;
     }
 
 }

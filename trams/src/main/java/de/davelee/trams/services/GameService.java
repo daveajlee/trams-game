@@ -1,18 +1,16 @@
 package de.davelee.trams.services;
 
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.Hashtable;
-import java.util.List;
 
 import de.davelee.trams.data.Game;
-import de.davelee.trams.data.Route;
-import de.davelee.trams.data.RouteSchedule;
 import de.davelee.trams.db.DatabaseManager;
+import de.davelee.trams.util.DateFormats;
 import de.davelee.trams.util.DifficultyLevel;
 
 public class GameService {
-	
-	private Game game;
+
     private DatabaseManager databaseManager;
 	
 	public GameService() {
@@ -26,17 +24,25 @@ public class GameService {
         this.databaseManager = databaseManager;
     }
 
-	public void createGame ( String playerName, String scenarioName ) {
-        createGame(playerName, scenarioName, 80000.00, 100, DifficultyLevel.EASY);
+	public Game createGame ( String playerName, String scenarioName ) {
+        return createGame(playerName, scenarioName, 80000.00, 100, DifficultyLevel.EASY);
 	}
 
-    public void createGame ( String playerName, String scenarioName, double balance, int passengerSatisfaction, DifficultyLevel difficultyLevel ) {
-        game = new Game();
+    public Game createGame ( String playerName, String scenarioName, double balance, int passengerSatisfaction, DifficultyLevel difficultyLevel ) {
+        Game game = new Game();
         game.setPlayerName(playerName);
         game.setBalance(balance);
         game.setPassengerSatisfaction(passengerSatisfaction);
         game.setScenarioName(scenarioName);
         game.setDifficultyLevel(difficultyLevel);
+        game.setCurrentTime(new GregorianCalendar(2009,Calendar.AUGUST,20,5,0,0));
+        game.setTimeIncrement(15);
+        game.setPreviousTime((Calendar) game.getCurrentTime().clone());
+        return game;
+    }
+
+    public Game getGame ( )  {
+        return databaseManager.getCurrentGame();
     }
     
     /**
@@ -44,7 +50,7 @@ public class GameService {
      * @param amount a <code>double</code> with the amount to deduct from the balance.
      */
     public void withdrawBalance ( double amount ) {
-    	game.setBalance(game.getBalance()-amount);
+        getGame().setBalance(getGame().getBalance()-amount);
     }
     
     /**
@@ -52,7 +58,7 @@ public class GameService {
      * @param amount a <code>double</code> with the amount to credit the balance.
      */
     public void creditBalance ( double amount ) {
-        game.setBalance(game.getBalance()+amount);
+        getGame().setBalance(getGame().getBalance()+amount);
     }
 
     /**
@@ -60,28 +66,8 @@ public class GameService {
      * @param currentTime a <code>Calendar</code> object with the current time.
      * @param difficultyLevel a <code>String</code> with the difficulty level.
      */
-    public int computeAndReturnPassengerSatisfaction ( Calendar currentTime, List<Route> routes ) {
-        //Essentially satisfaction is determined by the route schedules that are running on time.
-        //Now count number of route schedules into three groups: 1 - 5 minutes late, 6 - 15 minutes late, 16+ minutes late.
-        int numSmallLateSchedules = 0; int numMediumLateSchedules = 0; int numLargeLateSchedules = 0;
-        //Now go through all routes.
-        for ( Route myRoute : routes ) {
-            for ( RouteSchedule mySchedule : databaseManager.getRouteSchedulesByRouteId(myRoute.getId())) {
-        		//Running... 1 - 5 minutes late.
-                if ( mySchedule.getDelayInMins() > 0 && mySchedule.getDelayInMins() < 6 ) {
-                    numSmallLateSchedules++;
-                }
-                //Running... 6 - 15 minutes late.
-                else if ( mySchedule.getDelayInMins() > 5 && mySchedule.getDelayInMins() < 16 ) {
-                    numMediumLateSchedules++;
-                }
-                //Running... 16+ minutes late.
-                else if ( mySchedule.getDelayInMins() > 15 ) {
-                    numLargeLateSchedules++;
-                }
-        	}
-        }
-        int totalSubtract = 0;
+    public int computeAndReturnPassengerSatisfaction ( final int numSmallLateSchedules, final int numMediumLateSchedules, final int numLargeLateSchedules ) {
+        int totalSubtract = 0; Game game = getGame();
 
         //Easy: numSmallLateSchedules / 2 and numMediumLateSchedules and numLargeLateSchedules*2.
         if ( game.getDifficultyLevel() == DifficultyLevel.EASY ) {
@@ -105,6 +91,7 @@ public class GameService {
 
     //TODO: Remove once File Service no longer needed.
     public Hashtable<String, String> getGameAsString ( ) {
+        Game game = getGame();
         Hashtable<String, String> gameTable = new Hashtable<String, String>();
         gameTable.put("DifficultyLevel", game.getDifficultyLevel().name());
         gameTable.put("PassengerSatisfaction", "" + game.getPassengerSatisfaction());
@@ -115,23 +102,63 @@ public class GameService {
     }
 
     public DifficultyLevel getDifficultyLevel ( ) {
-        return game.getDifficultyLevel();
+        return getGame().getDifficultyLevel();
     }
 
     public void setDifficultyLevel ( DifficultyLevel difficultyLevel ) {
-        game.setDifficultyLevel(difficultyLevel);
+        getGame().setDifficultyLevel(difficultyLevel);
     }
 
     public double getCurrentBalance ( ) {
-        return game.getBalance();
+        return getGame().getBalance();
     }
 
     public String getScenarioName ( ) {
-        return game.getScenarioName();
+        return getGame().getScenarioName();
     }
 
     public String getPlayerName ( ) {
-        return game.getPlayerName();
+        return getGame().getPlayerName();
     }
+
+
+    /**
+     * Increment the current time.
+     */
+    public void incrementTime ( ) {
+        Game game = getGame();
+        //Copy previous time first.
+        game.setPreviousTime(getCurrentTime());
+        //Increment time.
+        Calendar newCurrentTime = game.getCurrentTime();
+        newCurrentTime.add(Calendar.MINUTE, game.getTimeIncrement());
+        game.setCurrentTime(newCurrentTime);
+        databaseManager.createAndStoreGame(game);
+    }
+
+    /**
+     * Return the supplied calendar object as a formatted string.
+     * @param calDate a <code>Calendar</code> object to format.
+     * @return a <code>String</code> with the formatted string.
+     */
+     public String formatDateString ( Calendar calDate, DateFormats dateFormat ) {
+        return dateFormat.getFormat().format(calDate.getTime());
+     }
+
+     public Calendar getCurrentTime ( ) {
+        return (Calendar) getGame().getCurrentTime().clone();
+     }
+
+     public int getTimeIncrement ( ) {
+        return getGame().getTimeIncrement();
+     }
+
+     public void setTimeIncrement ( final int timeIncrement ) {
+        getGame().setTimeIncrement(timeIncrement);
+     }
+
+     public Calendar getPreviousTime ( ) {
+        return (Calendar) getGame().getPreviousTime().clone();
+     }
     
 }

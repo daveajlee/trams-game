@@ -230,7 +230,7 @@ public class ControlScreen extends ButtonBar {
         JPanel passengerSatisfactionPanel = new JPanel();
         passengerSatisfactionPanel.setBackground(Color.WHITE);
         passengerSatisfactionBar = new JProgressBar(0, 100);
-        passengerSatisfactionBar.setValue(userInterface.getPassengerSatisfaction());
+        passengerSatisfactionBar.setValue(userInterface.computeAndReturnPassengerSatisfaction());
         passengerSatisfactionBar.setString("Passenger Satisfaction Rating - " + passengerSatisfactionBar.getValue() + "%");
         passengerSatisfactionBar.setFont(new Font("Arial", Font.ITALIC, 20));
         passengerSatisfactionBar.setStringPainted(true);
@@ -316,7 +316,7 @@ public class ControlScreen extends ButtonBar {
         //Now check if it is past midnight! If it is dispose, and create Allocation Screen.
         if ( isPastMidnight(userInterface.getCurrentSimTime(), userInterface.getPreviousSimTime()) && !doneAllocations ) {
             //Now add a message to summarise days events!!!
-            userInterface.addMessage("Passenger Satisfaction for " + userInterface.formatDateString(userInterface.getPreviousSimTime(), DateFormats.FULL_FORMAT), "Congratulations you have successfully completed transport operations for " + userInterface.getScenarioName() + " on " + userInterface.formatDateString(userInterface.getPreviousSimTime(), DateFormats.FULL_FORMAT) + " with a passenger satisfaction of " + userInterface.getPassengerSatisfaction() + "%.\n\nNow you need to allocate vehicles to routes for " + userInterface.formatDateString(userInterface.getCurrentSimTime(), DateFormats.FULL_FORMAT) + " and keep the passenger satisfaction up! Click on the Management tab and then choose Allocations. Good luck!", "Council", MessageFolder.INBOX, userInterface.getCurrentSimTime());
+            userInterface.addMessage("Passenger Satisfaction for " + userInterface.formatDateString(userInterface.getPreviousSimTime(), DateFormats.FULL_FORMAT), "Congratulations you have successfully completed transport operations for " + userInterface.getScenarioName() + " on " + userInterface.formatDateString(userInterface.getPreviousSimTime(), DateFormats.FULL_FORMAT) + " with a passenger satisfaction of " + userInterface.computeAndReturnPassengerSatisfaction() + "%.\n\nNow you need to allocate vehicles to routes for " + userInterface.formatDateString(userInterface.getCurrentSimTime(), DateFormats.FULL_FORMAT) + " and keep the passenger satisfaction up! Click on the Management tab and then choose Allocations. Good luck!", "Council", MessageFolder.INBOX, userInterface.getCurrentSimTime());
             //Refresh messages.
             String[] messageSubjects = userInterface.getMessageSubjects(MessageFolder.valueOf(foldersBox.getSelectedItem().toString()),dateBox.getSelectedItem().toString(),"Council");
             messagesModel.removeAllElements();
@@ -341,8 +341,7 @@ public class ControlScreen extends ButtonBar {
             tabbedPane.setSelectedIndex(1);
             //Now here we need to update satisfaction bar.
             timeLabel.setText(userInterface.formatDateString(userInterface.getCurrentSimTime(), DateFormats.FULL_TIME_FORMAT));
-            userInterface.computePassengerSatisfaction(userInterface.getCurrentSimTime());
-            int satValue = userInterface.getPassengerSatisfaction();
+            int satValue = userInterface.computeAndReturnPassengerSatisfaction();
             if ( satValue < userInterface.getMinimumSatisfaction() ) {
                 userInterface.pauseSimulation();
                 JOptionPane.showMessageDialog(ControlScreen.this, userInterface.getScenarioName() + " have relunctanly decided to relieve you of your duties as managing director as passenger satisfaction is now " + satValue + "%.", "Sorry You Have Been Sacked!", JOptionPane.ERROR_MESSAGE);
@@ -429,8 +428,7 @@ public class ControlScreen extends ButtonBar {
             }*/
             timeLabel.setText(userInterface.formatDateString(userInterface.getCurrentSimTime(), DateFormats.FULL_TIME_FORMAT));
             //Now here we need to update satisfaction bar.
-            userInterface.computePassengerSatisfaction(userInterface.getCurrentSimTime());
-            int satValue = userInterface.getPassengerSatisfaction();
+            int satValue = userInterface.computeAndReturnPassengerSatisfaction();
             if ( satValue < userInterface.getMinimumSatisfaction() ) {
                 userInterface.pauseSimulation();
                 JOptionPane.showMessageDialog(ControlScreen.this, userInterface.getScenarioName() + " have relunctanly decided to relieve you of your duties as managing director as passenger satisfaction is now " + satValue + "%.", "Sorry You Have Been Sacked!", JOptionPane.ERROR_MESSAGE);

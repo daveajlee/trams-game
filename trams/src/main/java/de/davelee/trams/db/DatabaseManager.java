@@ -405,6 +405,24 @@ public class DatabaseManager {
 		if ( list.isEmpty() ) { return null; }
 		return list;
 	}
+
+	@Transactional
+    public void createAndStoreGame ( final Game game ) {
+		Session session = sessionFactory.getCurrentSession();
+		session.saveOrUpdate(game);
+	}
+
+	@Transactional
+	public Game getCurrentGame ( ) {
+		Session session = sessionFactory.getCurrentSession();
+		Query query = session.createQuery("from Game");
+		@SuppressWarnings("unchecked")
+		List<Game> list = (List<Game>) query.list();
+		if ( list.isEmpty() ) { return null; }
+		//TODO: If more than one game: exception?
+		if ( list.size() > 1 ) { return null; }
+		return list.get(0);
+	}
 	
 	@Transactional
 	public void removeRoute ( Route route ) {

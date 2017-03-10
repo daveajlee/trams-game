@@ -9,7 +9,7 @@ import de.davelee.trams.data.*;
 public class TramsFile {
 
     private List<Driver> drivers;
-    /*private Game game;*/
+    private Game game;
     private List<Journey> journeys;
     private List<JourneyPattern> journeyPatterns;
 	private List<Message> messages;
@@ -22,7 +22,7 @@ public class TramsFile {
 
     public TramsFile ( ) { }
 
-    public TramsFile ( List<Driver> drivers, /*Game game,*/ List<Journey> journeys, List<JourneyPattern> journeyPatterns,
+    public TramsFile ( List<Driver> drivers, Game game, List<Journey> journeys, List<JourneyPattern> journeyPatterns,
 			List<Message> messages, List<Route> routes, List<RouteSchedule> routeSchedules,
 			List<Stop> stops, List<StopTime> stopTimes, List<Timetable> timetables, List<Vehicle> vehicles) {
                 this.drivers = drivers;
@@ -46,13 +46,13 @@ public class TramsFile {
         this.drivers = drivers;
     }
 
-    /*public Game getGame() {
+    public Game getGame() {
 		return game;
 	}
 
 	public void setGame(Game game) {
 		this.game = game;
-	}*/
+	}
 
 	public List<Journey> getJourneys() {
 		return journeys;

@@ -3,7 +3,6 @@ package de.davelee.trams.services;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.util.*;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -28,7 +27,6 @@ import de.davelee.trams.util.MessageFolder;
 
 public class FileService {
 
-	private SimulationService simulationService;
 	private GameService gameService;
 	private JourneyService journeyService;
 	private RouteService routeService;
@@ -40,7 +38,6 @@ public class FileService {
 		routeService = new RouteService();
 		timetableService = new TimetableService();
         gameService = new GameService();
-        simulationService = new SimulationService();
         journeyService = new JourneyService();
         messageService = new MessageService();
         vehicleService = new VehicleService();
@@ -119,14 +116,14 @@ public class FileService {
     public Document createXMLDocument ( Document doc ) {
         //Create root element.
         Element game = doc.createElement("game");
-        Calendar currentTime = simulationService.getSimulator().getCurrentTime();
+        Calendar currentTime = gameService.getCurrentTime();
         int hourNum = currentTime.get(Calendar.HOUR); String hour = "" + hourNum; if ( hourNum < 10 ) { hour = "0" + hourNum; } if ( currentTime.get(Calendar.AM_PM) == Calendar.PM ) { hourNum += 12; hour = "" + hourNum; } 
         int minNum = currentTime.get(Calendar.MINUTE); String minute = "" + minNum; if ( minNum < 10 ) { minute = "0" + minNum; }
         int monthNum = currentTime.get(Calendar.MONTH)+1; String month = "" + monthNum; if ( monthNum < 10 ) { month = "0" + monthNum; }
         int dateNum = currentTime.get(Calendar.DATE); String date = "" + dateNum; if ( dateNum < 10 ) { date = "0" + dateNum; }
         String time = currentTime.get(Calendar.YEAR) + "-" + month + "-" + date + "-" + hour + ":" + minute;
         game.setAttribute("time", time);
-        game.setAttribute("increment", "" + simulationService.getSimulator().getTimeIncrement());
+        game.setAttribute("increment", "" + gameService.getTimeIncrement());
         Hashtable<String, String> gameTable = gameService.getGameAsString();
         game.setAttribute("difficulty", "" + gameTable.get("DifficultyLevel"));
         doc.appendChild(game);
@@ -230,22 +227,6 @@ public class FileService {
         return doc;
     }
     
-    public boolean saveObjFile ( File f ) {
-        //Check it has correct extension!
-        if ( !f.getName().endsWith(".tra") ) { f = new File(f.getName() + ".tra"); }
-        //Save file using object stream.
-        try {
-            FileOutputStream fout = new FileOutputStream(f.getPath());
-            ObjectOutputStream objout = new ObjectOutputStream(fout);
-            objout.writeObject(simulationService.getSimulator());
-            objout.close();
-            return true;
-        } catch ( Exception e ) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-    
     /**
      * Create simulation from file - for load.
      * @param document a <code>Document</code> object.
@@ -269,13 +250,12 @@ public class FileService {
             game.setScenarioName(scenarioName);
             game.setDifficultyLevel(DifficultyLevel.valueOf(document.getDocumentElement().getAttribute("difficulty")));
             //Seventhly, create the simulation object.
-            Simulator simulator = new Simulator();
-            String[] dateTimes = document.getDocumentElement().getAttribute("time").split("-");
+            /*String[] dateTimes = document.getDocumentElement().getAttribute("time").split("-");
             String[] times = dateTimes[3].split(":");
             Calendar theCalendar = new GregorianCalendar(Integer.parseInt(dateTimes[0]), Integer.parseInt(dateTimes[1])-1, Integer.parseInt(dateTimes[2]), Integer.parseInt(times[0]), Integer.parseInt(times[1]), 0); 
             simulator.setCurrentTime(theCalendar);
             simulator.setTimeIncrement(Integer.parseInt(document.getDocumentElement().getAttribute("increment")));
-            simulator.setPreviousTime((Calendar) simulator.getCurrentTime().clone());
+            simulator.setPreviousTime((Calendar) simulator.getCurrentTime().clone());*/
             //Now add the messages!!!!
             NodeList messageNode = (NodeList) xpath.evaluate("//scenario/message", document.getDocumentElement(), XPathConstants.NODESET);
             for ( int i = 0; i < messageNode.getLength(); i++ ) {
@@ -346,8 +326,8 @@ public class FileService {
                     }
                 }
                 //Generate timetables.
-                long[] outgoingJourneyIds = routeService.generateJourneyTimetables(route.getId(), simulator.getCurrentTime(), scenarioName, RouteService.OUTWARD_DIRECTION);
-                long[] returnJourneyIds = routeService.generateJourneyTimetables(route.getId(), simulator.getCurrentTime(), scenarioName, RouteService.RETURN_DIRECTION);
+                long[] outgoingJourneyIds = routeService.generateJourneyTimetables(route.getId(), gameService.getCurrentTime(), scenarioName, RouteService.OUTWARD_DIRECTION);
+                long[] returnJourneyIds = routeService.generateJourneyTimetables(route.getId(), gameService.getCurrentTime(), scenarioName, RouteService.RETURN_DIRECTION);
                 List<Journey> outgoingJourneys = new ArrayList<Journey>();
                 for ( int k = 0; k < outgoingJourneyIds.length; k++ ) {
                     outgoingJourneys.add(journeyService.getJourneyById(outgoingJourneyIds[i]));
@@ -382,7 +362,6 @@ public class FileService {
                 }
                 //logger.debug("Adding vehicle with id " + v.getLast().getVehicleID() + " type " + v.getLast().getVehicleType() + " age " + v.getLast().getVehicleAge());
             }
-            simulationService.setSimulator(simulator);
             gameService.createGame(game.getPlayerName(), game.getScenarioName(), game.getBalance(), game.getPassengerSatisfaction(), game.getDifficultyLevel());
         }
         catch (Exception e) {

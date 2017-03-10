@@ -48,7 +48,6 @@ public class UserInterface implements Runnable {
     private VehicleService vehicleService;
     private DriverService driverService;
     private GameService gameService;
-    private SimulationService simulationService;
     private ScenarioService scenarioService;
     private FileService fileService;
     private MessageService messageService;
@@ -72,7 +71,6 @@ public class UserInterface implements Runnable {
         vehicleService = new VehicleService();
         driverService = new DriverService();
         gameService = new GameService();
-        simulationService = new SimulationService();
         scenarioService = new ScenarioService();
         fileService = new FileService();
         routeService = new RouteService();
@@ -175,7 +173,7 @@ public class UserInterface implements Runnable {
         //Keep running this until pause.
         while ( !end ) {
             //Increment time.
-        	simulationService.incrementTime();
+        	gameService.incrementTime();
             controlScreen.drawVehicles(true);
             //Now sleep!
             try { runningThread.sleep(simulationSpeed); } catch (InterruptedException ie) {}
@@ -316,7 +314,7 @@ public class UserInterface implements Runnable {
         //Clear the original matrix for which routes to display.
         routeDetailPos = new LinkedList<Integer>();
         //Store the currentDate - we will need it for display schedules.
-        Calendar currentTime = simulationService.getSimulator().getCurrentTime();
+        Calendar currentTime = gameService.getCurrentTime();
         //Determine the route ids we will display using these parameters.
         logger.debug("Route number is " + routeNumber);
         logger.debug(routeService.getRoute(routeNumber).toString());
@@ -437,7 +435,7 @@ public class UserInterface implements Runnable {
      * @param currentTime a <code>Calendar</code> object with the current time.
      * @return a <code>boolean</code> which is true iff at least one vehicle is running.
      */
-    public boolean areAnyVehiclesRunning (Calendar currentTime, Simulator simulator, List<Vehicle> vehicles, DifficultyLevel difficultyLevel) {
+    public boolean areAnyVehiclesRunning (Calendar currentTime, List<Vehicle> vehicles, DifficultyLevel difficultyLevel) {
         //Check if any vehicles are running....
         for ( Vehicle myVehicle : vehicles ) {
             //First one that is not in depot indicates that vehicles are running.
@@ -612,13 +610,12 @@ public class UserInterface implements Runnable {
      * @return a <code>boolean</code> which is true iff the scenario has been created successfully.
      */
     public void loadScenario ( String scenarioName, String playerName ) {
-        simulationService.createSimulator();
-        List<Vehicle> vehicles = createSuppliedVehicles(scenarioName, simulationService.getSimulator().getCurrentTime());
+        List<Vehicle> vehicles = createSuppliedVehicles(scenarioName, gameService.getCurrentTime());
         for ( int i = 0; i < vehicles.size(); i++ ) {
     		vehicleService.saveVehicle(vehicles.get(i));
     	}
-       //Create welcome message.
-        messageService.createMessage("Welcome Message", "Congratulations on your appointment as Managing Director of the " + getScenarioName() + "! \n\n Your targets for the coming days and months are: " + scenarioService.retrieveScenarioObject(getScenarioName()).getTargets(),"Council",MessageFolder.INBOX,simulationService.getSimulator().getCurrentTime());
+        //Create welcome message.
+        messageService.createMessage("Welcome Message", "Congratulations on your appointment as Managing Director of the " + getScenarioName() + "! \n\n Your targets for the coming days and months are: " + scenarioService.retrieveScenarioObject(getScenarioName()).getTargets(),"Council",MessageFolder.INBOX,gameService.getCurrentTime());
     }
     
     /**
@@ -747,7 +744,7 @@ public class UserInterface implements Runnable {
      * @return a <code>Calendar</code> representing the current simulated time.
      */
     public Calendar getCurrentSimTime ( ) {
-        return simulationService.getSimulator().getCurrentTime();
+        return gameService.getCurrentTime();
     }
     
     /**
@@ -888,7 +885,7 @@ public class UserInterface implements Runnable {
      */
     public void purchaseVehicle ( String type, Calendar deliveryDate ) {
         Vehicle vehicle = vehicleService.createVehicleObject(type, vehicleService.generateRandomReg(
-        		simulationService.getSimulator().getCurrentTime().get(Calendar.YEAR)), deliveryDate);
+        		gameService.getCurrentTime().get(Calendar.YEAR)), deliveryDate);
         gameService.withdrawBalance(vehicle.getPurchasePrice());
         vehicleService.saveVehicle(vehicle);
     }
@@ -938,7 +935,7 @@ public class UserInterface implements Runnable {
      */
     public void sellVehicle ( long vehicleId ) {
         Vehicle vehicle = vehicleService.getVehicleById(vehicleId);
-        gameService.creditBalance(vehicleService.getValue(vehicle.getPurchasePrice(), vehicle.getDepreciationFactor(), vehicle.getDeliveryDate(), simulationService.getSimulator().getCurrentTime()));
+        gameService.creditBalance(vehicleService.getValue(vehicle.getPurchasePrice(), vehicle.getDepreciationFactor(), vehicle.getDeliveryDate(), gameService.getCurrentTime()));
         vehicleService.removeVehicle(vehicle);
     }
     
@@ -1060,24 +1057,20 @@ public class UserInterface implements Runnable {
         //LoadingScreen ls = new LoadingScreen();
     }
     
-    public void computePassengerSatisfaction ( Calendar currentTime ) {
-    	gameService.computeAndReturnPassengerSatisfaction(currentTime, routeService.getAllRoutes());
-    }
-    
     public String formatDateString ( Calendar currentTime, DateFormats dateFormat ) {
-    	return simulationService.formatDateString(currentTime, dateFormat);
+    	return gameService.formatDateString(currentTime, dateFormat);
     }
     
     public void setTimeIncrement ( int timeIncrement ) {
-    	simulationService.getSimulator().setTimeIncrement(timeIncrement);
+    	gameService.setTimeIncrement(timeIncrement);
     }
     
     public int getTimeIncrement ( ) {
-    	return simulationService.getSimulator().getTimeIncrement();
+    	return gameService.getTimeIncrement();
     }
     
     public Calendar getPreviousSimTime ( ) {
-    	return simulationService.getSimulator().getPreviousTime();
+    	return gameService.getPreviousTime();
     }
     
     public int getNumberScenarios ( ) {
@@ -1131,9 +1124,29 @@ public class UserInterface implements Runnable {
     public boolean areRoutesDefined ( ) {
     	return routeService.getAllRoutes().size() > 0;
     }
-    
-    public int getPassengerSatisfaction ( ) {
-    	return gameService.computeAndReturnPassengerSatisfaction(getCurrentSimTime(), routeService.getAllRoutes());
+
+    public int computeAndReturnPassengerSatisfaction ( ) {
+        //Essentially satisfaction is determined by the route schedules that are running on time.
+        //Now count number of route schedules into three groups: 1 - 5 minutes late, 6 - 15 minutes late, 16+ minutes late.
+        int numSmallLateSchedules = 0; int numMediumLateSchedules = 0; int numLargeLateSchedules = 0;
+        //Now go through all routes.
+        for ( Route myRoute : routeService.getAllRoutes() ) {
+             for ( RouteSchedule mySchedule : routeScheduleService.getRouteSchedulesByRouteId(myRoute.getId())) {
+                //Running... 1 - 5 minutes late.
+                if ( mySchedule.getDelayInMins() > 0 && mySchedule.getDelayInMins() < 6 ) {
+                    numSmallLateSchedules++;
+                }
+                //Running... 6 - 15 minutes late.
+                else if ( mySchedule.getDelayInMins() > 5 && mySchedule.getDelayInMins() < 16 ) {
+                    numMediumLateSchedules++;
+                }
+                //Running... 16+ minutes late.
+                else if ( mySchedule.getDelayInMins() > 15 ) {
+                    numLargeLateSchedules++;
+                }
+             }
+        }
+        return gameService.computeAndReturnPassengerSatisfaction(numSmallLateSchedules, numMediumLateSchedules, numLargeLateSchedules);
     }
     
     public int getMinimumSatisfaction ( ) {

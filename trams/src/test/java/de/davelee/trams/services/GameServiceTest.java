@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.Calendar;
 
+import de.davelee.trams.db.DatabaseManager;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,30 +16,31 @@ import de.davelee.trams.util.DateFormats;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("/de/davelee/trams/spring/test-context.xml")
-public class SimulationServiceTest {
+public class GameServiceTest {
 	
 	@Autowired
-	private SimulationService simulationService;
+	private GameService gameService;
+
+	@Autowired
+	private DatabaseManager databaseManager;
 	
 	@Before
 	public void before() {
-		simulationService.createSimulator();
+		databaseManager.createAndStoreGame(gameService.createGame("Dave Lee", "Landuff Transport Company"));
 	}
 	
 	@Test
 	public void testIncrement() {
-		Calendar calendar = Calendar.getInstance(); calendar.set(2014,4,20,22,57);
-		simulationService.getSimulator().setCurrentTime(calendar);
-		assertEquals(DateFormats.HOUR_MINUTE_FORMAT.getFormat().format(calendar.getTime()), "22:57");
-		simulationService.getSimulator().setTimeIncrement(15);
-		simulationService.incrementTime();
-		assertEquals(DateFormats.HOUR_MINUTE_FORMAT.getFormat().format(calendar.getTime()), "23:12");
+		assertEquals(DateFormats.HOUR_MINUTE_FORMAT.getFormat().format(gameService.getCurrentTime().getTime()), "05:00");
+		gameService.setTimeIncrement(15);
+		gameService.incrementTime();
+		assertEquals(DateFormats.HOUR_MINUTE_FORMAT.getFormat().format(gameService.getCurrentTime().getTime()), "05:15");
 	}
 	
 	@Test
 	public void testFormat() {
 		Calendar calendar = Calendar.getInstance(); calendar.set(2014,4,20,22,57);
-		assertEquals(simulationService.formatDateString(calendar, DateFormats.FULL_FORMAT), "Tuesday, 20 May 2014");
+		assertEquals(gameService.formatDateString(calendar, DateFormats.FULL_FORMAT), "Tuesday, 20 May 2014");
 	}
 
 }
