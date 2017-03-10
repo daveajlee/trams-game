@@ -9,13 +9,53 @@
 
        <import resource="scenario-context.xml"/>
        <import resource="vehicle-context.xml"/>
-       
-       <bean id="databaseManager" class="de.davelee.trams.db.DatabaseManager">
-       		<property name="sessionFactory" ref="sessionFactory"/>
-       </bean>
+
+		<bean id="driverDao" class="de.davelee.trams.dao.DriverDao">
+			<property name="sessionFactory" ref="sessionFactory"/>
+		</bean>
+
+		<bean id="gameDao" class="de.davelee.trams.dao.GameDao">
+			<property name="sessionFactory" ref="sessionFactory"/>
+		</bean>
+
+		<bean id="journeyDao" class="de.davelee.trams.dao.JourneyDao">
+			<property name="sessionFactory" ref="sessionFactory"/>
+	   	</bean>
+
+		<bean id="journeyPatternDao" class="de.davelee.trams.dao.JourneyPatternDao">
+			<property name="sessionFactory" ref="sessionFactory"/>
+		</bean>
+
+		<bean id="messageDao" class="de.davelee.trams.dao.MessageDao">
+			<property name="sessionFactory" ref="sessionFactory"/>
+		</bean>
+
+		<bean id="routeDao" class="de.davelee.trams.dao.RouteDao">
+			<property name="sessionFactory" ref="sessionFactory"/>
+		</bean>
+
+		<bean id="routeScheduleDao" class="de.davelee.trams.dao.RouteScheduleDao">
+			<property name="sessionFactory" ref="sessionFactory"/>
+		</bean>
+
+		<bean id="stopDao" class="de.davelee.trams.dao.StopDao">
+			<property name="sessionFactory" ref="sessionFactory"/>
+		</bean>
+
+		<bean id="stopTimeDao" class="de.davelee.trams.dao.StopTimeDao">
+			<property name="sessionFactory" ref="sessionFactory"/>
+		</bean>
+
+		<bean id="timetableDao" class="de.davelee.trams.dao.TimetableDao">
+			<property name="sessionFactory" ref="sessionFactory"/>
+		</bean>
+
+		<bean id="vehicleDao" class="de.davelee.trams.dao.VehicleDao">
+			<property name="sessionFactory" ref="sessionFactory"/>
+		</bean>
        
        <bean id="driverService" class="de.davelee.trams.services.DriverService">
-       		<property name="databaseManager" ref="databaseManager"/>
+		   <property name="driverDao" ref="driverDao"/>
        </bean>
        
        <bean id="routeService" class="de.davelee.trams.services.RouteService">
@@ -26,11 +66,11 @@
        </bean>
        
        <bean id="journeyService" class="de.davelee.trams.services.JourneyService">
-		   <property name="databaseManager" ref="databaseManager"/>
+		   <property name="journeyDao" ref="journeyDao"/>
        </bean>
        
        <bean id="vehicleService" class="de.davelee.trams.services.VehicleService">
-       		<property name="databaseManager" ref="databaseManager"/>
+		    <property name="vehicleDao" ref="vehicleDao"/>
 		    <property name="vehicleFactory" ref="vehicleFactory"/>
        </bean>
        
@@ -45,11 +85,11 @@
        </bean>
        
        <bean id="gameService" class="de.davelee.trams.services.GameService">
-		   <property name="databaseManager" ref="databaseManager"/>
+		   <property name="gameDao" ref="gameDao"/>
        </bean>
 
 		<bean id="messageService" class="de.davelee.trams.services.MessageService">
-			<property name="databaseManager" ref="databaseManager"/>
+			<property name="messageDao" ref="messageDao"/>
 		</bean>
 
 		<bean id="fileService" class="de.davelee.trams.services.FileService">

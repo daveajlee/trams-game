@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import de.davelee.trams.dao.JourneyPatternDao;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +16,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import de.davelee.trams.data.JourneyPattern;
-import de.davelee.trams.db.DatabaseManager;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("/de/davelee/trams/spring/test-context.xml")
@@ -25,7 +25,7 @@ public class JourneyPatternServiceTest {
 	private JourneyPatternService journeyPatternService;
 	
 	@Autowired
-	private DatabaseManager databaseManager;
+	private JourneyPatternDao journeyPatternDao;
 
 	@Test
 	public void testCreateJourneyPattern() {
@@ -52,10 +52,10 @@ public class JourneyPatternServiceTest {
 		Calendar endDate = Calendar.getInstance(); endDate.set(2014, 4, 30);
 		List<Integer> daysOfOperation = new ArrayList<Integer>(); daysOfOperation.add(Calendar.MONDAY);
 		daysOfOperation.add(Calendar.TUESDAY); daysOfOperation.add(Calendar.WEDNESDAY);
-		databaseManager.createAndStoreJourneyPattern(journeyPatternService.createJourneyPattern("Mon-Fri", daysOfOperation, "S+U Pankow", "Rathaus Pankow", startDate, endDate, 15, 3, 1));
-		assertNotNull(databaseManager.getJourneyPatternById(1));
-		assertEquals(databaseManager.getJourneyPatternById(1).getName(), "Mon-Fri");
-		assertNull(databaseManager.getJourneyPatternById(40));
+		journeyPatternDao.createAndStoreJourneyPattern(journeyPatternService.createJourneyPattern("Mon-Fri", daysOfOperation, "S+U Pankow", "Rathaus Pankow", startDate, endDate, 15, 3, 1));
+		assertNotNull(journeyPatternDao.getJourneyPatternById(1));
+		assertEquals(journeyPatternDao.getJourneyPatternById(1).getName(), "Mon-Fri");
+		assertNull(journeyPatternDao.getJourneyPatternById(40));
 	}
 
 }

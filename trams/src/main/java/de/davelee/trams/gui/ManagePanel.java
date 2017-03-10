@@ -811,7 +811,7 @@ public class ManagePanel {
         journeyPatternModel = new DefaultListModel();
         //Now get all the journey pattern which we have at the moment.
         try {
-            List<JourneyPattern> journeyPatterns = journeyPatternService.getJourneyPatterns(
+            List<JourneyPattern> journeyPatterns = journeyPatternService.getJourneyPatternsByTimetableId(
                     timetableService.getTimetableByRouteIdAndName(selectedRouteId, timetableNameField.getText()).getId());
             for ( JourneyPattern journeyPattern : journeyPatterns ) {
                 journeyPatternModel.addElement(journeyPattern.getName());
@@ -1295,10 +1295,10 @@ public class ManagePanel {
         //Show valid information.
         JPanel validityPanel = new JPanel(new BorderLayout());
         validityPanel.setBackground(Color.WHITE);
-        JLabel validFromDateLabel = new JLabel("Valid From: " + timetableService.getDateInfo(routeService.getCurrentTimetable(selectedRouteId, userInterface.getCurrentSimTime()).getValidFromDate()));
+        JLabel validFromDateLabel = new JLabel("Valid From: " + timetableService.getDateInfo(timetableService.getCurrentTimetable(selectedRouteId, userInterface.getCurrentSimTime()).getValidFromDate()));
         validFromDateLabel.setFont(new Font("Arial", Font.ITALIC, 14));
         validityPanel.add(validFromDateLabel, BorderLayout.NORTH);
-        JLabel validToDateLabel = new JLabel("Valid To: " + timetableService.getDateInfo(routeService.getCurrentTimetable(selectedRouteId, userInterface.getCurrentSimTime()).getValidToDate()));
+        JLabel validToDateLabel = new JLabel("Valid To: " + timetableService.getDateInfo(timetableService.getCurrentTimetable(selectedRouteId, userInterface.getCurrentSimTime()).getValidToDate()));
         validToDateLabel.setFont(new Font("Arial", Font.ITALIC, 14));
         validityPanel.add(validToDateLabel, BorderLayout.SOUTH);
         topPanel.add(validityPanel, BorderLayout.SOUTH);
@@ -1311,7 +1311,7 @@ public class ManagePanel {
         datesPanel.setBackground(Color.WHITE);
         JLabel datesLabel = new JLabel("Dates:");
         datesLabel.setFont(new Font("Arial", Font.BOLD, 16));
-        datesComboBox = new JComboBox ( routeService.getPossibleSchedulesDates(selectedRouteId, userInterface.getCurrentSimTime()) );
+        datesComboBox = new JComboBox ( userInterface.getPossibleSchedulesDates(selectedRouteId, userInterface.getCurrentSimTime()) );
         datesComboBox.setSelectedIndex(dateIndex);
         datesComboBox.addItemListener(new ItemListener() {
             public void itemStateChanged ( ItemEvent e ) {

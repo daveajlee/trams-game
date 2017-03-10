@@ -6,26 +6,26 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
+import de.davelee.trams.dao.VehicleDao;
 import de.davelee.trams.data.Vehicle;
-import de.davelee.trams.db.DatabaseManager;
 import de.davelee.trams.factory.VehicleFactory;
 import de.davelee.trams.util.SortedVehicles;
 
 public class VehicleService {
-	
-	private DatabaseManager databaseManager;
+
+    private VehicleDao vehicleDao;
     private VehicleFactory vehicleFactory;
 	
 	public VehicleService() {
 	}
 
-	public DatabaseManager getDatabaseManager() {
-		return databaseManager;
-	}
+    public VehicleDao getVehicleDao() {
+        return vehicleDao;
+    }
 
-	public void setDatabaseManager(DatabaseManager databaseManager) {
-		this.databaseManager = databaseManager;
-	}
+    public void setVehicleDao(VehicleDao vehicleDao) {
+        this.vehicleDao = vehicleDao;
+    }
 
     public VehicleFactory getVehicleFactory() {
         return vehicleFactory;
@@ -69,7 +69,7 @@ public class VehicleService {
     }
     
     public Vehicle getVehicleById(long id) {
-    	return databaseManager.getVehicleById(id);
+    	return vehicleDao.getVehicleById(id);
     }
     
     /**
@@ -87,7 +87,7 @@ public class VehicleService {
     }
     
     public List<Vehicle> getAllVehicles ( ) {
-    	return databaseManager.getAllVehicles();
+    	return vehicleDao.getAllVehicles();
     }
     
     public Vehicle createVehicle ( final String registrationNumber, final Calendar deliveryDate, final double depreciationFactor,
@@ -107,11 +107,11 @@ public class VehicleService {
     }
     
     public void saveVehicle ( final Vehicle vehicle ) {
-    	databaseManager.createAndStoreVehicle(vehicle);
+    	vehicleDao.createAndStoreVehicle(vehicle);
     }
     
     public void removeVehicle ( final Vehicle vehicle ) {
-    	databaseManager.removeVehicle(vehicle);
+    	vehicleDao.removeVehicle(vehicle);
     }
     
     /**
@@ -165,7 +165,7 @@ public class VehicleService {
     
     //TODO: Exception when null?
     public Vehicle getVehicleByRouteScheduleId ( long routeScheduleId ) {
-        return databaseManager.getVehicleByRouteScheduleId(routeScheduleId);
+        return vehicleDao.getVehicleByRouteScheduleId(routeScheduleId);
     }
     
     /**

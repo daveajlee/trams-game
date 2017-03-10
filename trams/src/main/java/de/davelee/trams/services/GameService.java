@@ -4,24 +4,24 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Hashtable;
 
+import de.davelee.trams.dao.GameDao;
 import de.davelee.trams.data.Game;
-import de.davelee.trams.db.DatabaseManager;
 import de.davelee.trams.util.DateFormats;
 import de.davelee.trams.util.DifficultyLevel;
 
 public class GameService {
 
-    private DatabaseManager databaseManager;
+    private GameDao gameDao;
 	
 	public GameService() {
 	}
 
-    public DatabaseManager getDatabaseManager() {
-        return databaseManager;
+    public GameDao getGameDao() {
+        return gameDao;
     }
 
-    public void setDatabaseManager(DatabaseManager databaseManager) {
-        this.databaseManager = databaseManager;
+    public void setGameDao(GameDao gameDao) {
+        this.gameDao = gameDao;
     }
 
 	public Game createGame ( String playerName, String scenarioName ) {
@@ -42,7 +42,7 @@ public class GameService {
     }
 
     public Game getGame ( )  {
-        return databaseManager.getCurrentGame();
+        return gameDao.getCurrentGame();
     }
     
     /**
@@ -133,7 +133,7 @@ public class GameService {
         Calendar newCurrentTime = game.getCurrentTime();
         newCurrentTime.add(Calendar.MINUTE, game.getTimeIncrement());
         game.setCurrentTime(newCurrentTime);
-        databaseManager.createAndStoreGame(game);
+        gameDao.createAndStoreGame(game);
     }
 
     /**

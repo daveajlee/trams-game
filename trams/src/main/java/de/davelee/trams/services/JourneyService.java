@@ -2,29 +2,49 @@ package de.davelee.trams.services;
 
 import java.util.*;
 
+import de.davelee.trams.dao.JourneyDao;
+import de.davelee.trams.dao.StopDao;
+import de.davelee.trams.dao.StopTimeDao;
 import de.davelee.trams.data.Journey;
 import de.davelee.trams.data.RouteSchedule;
 import de.davelee.trams.data.Stop;
 import de.davelee.trams.data.StopTime;
-import de.davelee.trams.db.DatabaseManager;
 import de.davelee.trams.util.DateFormats;
 import de.davelee.trams.util.JourneyStatus;
 import de.davelee.trams.util.SortedJourneys;
 
 public class JourneyService {
 
-    private DatabaseManager databaseManager;
+    private JourneyDao journeyDao;
+	private StopDao stopDao;
+	private StopTimeDao stopTimeDao;
 	
 	public JourneyService() {
 		
 	}
 
-    public DatabaseManager getDatabaseManager() {
-        return databaseManager;
+    public JourneyDao getJourneyDao() {
+        return journeyDao;
     }
 
-    public void setDatabaseManager(DatabaseManager databaseManager) {
-        this.databaseManager = databaseManager;
+    public void setJourneyDao(JourneyDao journeyDao) {
+        this.journeyDao = journeyDao;
+    }
+
+    public StopDao getStopDao() {
+        return stopDao;
+    }
+
+    public void setStopDao(StopDao stopDao) {
+        this.stopDao = stopDao;
+    }
+
+    public StopTimeDao getStopTimeDao() {
+        return stopTimeDao;
+    }
+
+    public void setStopTimeDao(StopTimeDao stopTimeDao) {
+        this.stopTimeDao = stopTimeDao;
     }
 	
 	/**
@@ -55,7 +75,7 @@ public class JourneyService {
                 for ( StopTime myJourneyStop : getStopTimesByJourneyId(journeyList.get(i).getId()) ) {
                     if ( checkTimeDiff(myJourneyStop.getTime(), currentTime) >= 0 ) {
                         //logger.debug("I will be at " + myServiceStop.getStopName() + " in " + checkTimeDiff(myServiceStop.getStopTime(), currentTime) + " seconds.");
-                        return databaseManager.getStopById(myJourneyStop.getStopId()).getStopName();
+                        return stopDao.getStopById(myJourneyStop.getStopId()).getStopName();
                         //return "I will be at " + myServiceStop.getStopName() + " in " + checkTimeDiff(myServiceStop.getStopTime(), currentTime) + " seconds.";
                     }
                 }
@@ -75,7 +95,7 @@ public class JourneyService {
      * @return a <code>String</code> with the start terminus.
      */
     public String getStartTerminus (Journey journey) {
-        return databaseManager.getStopById(getStopTimesByJourneyId(journey.getId()).get(0).getStopId()).getStopName();
+        return stopDao.getStopById(getStopTimesByJourneyId(journey.getId()).get(0).getStopId()).getStopName();
     }
     
     /**
@@ -85,7 +105,7 @@ public class JourneyService {
      */
     public StopTime getStopTime ( long journeyId, String name ) {
         for ( StopTime myStop : getStopTimesByJourneyId(journeyId) ) {
-            if ( databaseManager.getStopById(myStop.getStopId()).getStopName().equalsIgnoreCase(name) ) {
+            if ( stopDao.getStopById(myStop.getStopId()).getStopName().equalsIgnoreCase(name) ) {
                 return myStop;
             }
         }
@@ -100,12 +120,12 @@ public class JourneyService {
         for (int i = 0; i < journeyList.size(); i++) {
             if (checkJourneyStatus(journeyList.get(i), currentTime) == JourneyStatus.RUNNING) {
                 StopTime stopTime = getStopTimesByJourneyId(journeyList.get(i).getId()).get(getStopTimesByJourneyId(journeyList.get(i).getId()).size()-1);
-                return databaseManager.getStopById(stopTime.getStopId()).getStopName();
+                return stopDao.getStopById(stopTime.getStopId()).getStopName();
             }
             else if (checkJourneyStatus(journeyList.get(i), currentTime) == JourneyStatus.YET_TO_RUN) {
                 if ( journeyList.get(i).getId() != 1 ) {
                     StopTime stopTime = getStopTimesByJourneyId(journeyList.get(i).getId()).get(getStopTimesByJourneyId(journeyList.get(i).getId()).size()-1);
-                    return databaseManager.getStopById(stopTime.getStopId()).getStopName();
+                    return stopDao.getStopById(stopTime.getStopId()).getStopName();
                 }
             }
         }
@@ -174,15 +194,15 @@ public class JourneyService {
         //Now remove stops between the two and possibly first and last as appropriate.
         boolean removeFlag = false;
         for ( StopTime myStop : getStopTimesByJourneyId(journey.getId()) ) {
-            if ( databaseManager.getStopById(myStop.getStopId()).getStopName().equalsIgnoreCase(secondStop) ) {
-                if ( includeLast ) { databaseManager.removeStopTime(myStop); }
+            if ( stopDao.getStopById(myStop.getStopId()).getStopName().equalsIgnoreCase(secondStop) ) {
+                if ( includeLast ) { stopTimeDao.removeStopTime(myStop); }
                 removeFlag = false;
             }
             if ( removeFlag ) {
-                databaseManager.removeStopTime(myStop);
+                stopTimeDao.removeStopTime(myStop);
             }
-            if ( databaseManager.getStopById(myStop.getStopId()).getStopName().equalsIgnoreCase(firstStop) ) {
-                if ( includeFirst ) { databaseManager.removeStopTime(myStop); }
+            if ( stopDao.getStopById(myStop.getStopId()).getStopName().equalsIgnoreCase(firstStop) ) {
+                if ( includeFirst ) { stopTimeDao.removeStopTime(myStop); }
                 removeFlag = true;
             }
         }
@@ -207,9 +227,9 @@ public class JourneyService {
      */
     public boolean isOutwardJourney ( Journey journey, List<String> outwardStops ) {
         //First of all get the index of the first stop of this journey in outwardStops.
-        int firstIndex = outwardStops.indexOf(databaseManager.getStopById(getStopTimesByJourneyId(journey.getId()).get(0).getStopId()).getStopName());
+        int firstIndex = outwardStops.indexOf(stopDao.getStopById(getStopTimesByJourneyId(journey.getId()).get(0).getStopId()).getStopName());
         //Now get the index of the second stop.
-        int secondIndex = outwardStops.indexOf(databaseManager.getStopById(getStopTimesByJourneyId(journey.getId()).get(1).getStopId()).getStopName());
+        int secondIndex = outwardStops.indexOf(stopDao.getStopById(getStopTimesByJourneyId(journey.getId()).get(1).getStopId()).getStopName());
         //If the indexes are consecutive i.e. difference of 1 then it is an outward journey.
         if ( secondIndex - firstIndex == 1 ) { return true; }
         //Otherwise it is not.
@@ -263,7 +283,7 @@ public class JourneyService {
     }
 
     public Journey getJourneyById(long id) {
-        return databaseManager.getJourneyById(id);
+        return journeyDao.getJourneyById(id);
     }
 
     public Journey createJourney ( long routeScheduleId ) {
@@ -280,11 +300,11 @@ public class JourneyService {
         List<Journey> outgoingJourneys = new ArrayList<Journey>();
         //Get the route schedules for that day!
         for ( int h = 0;  h < schedules.size(); h++ ) {
-            for ( int i = 0; i < databaseManager.getJourneysByRouteScheduleId(schedules.get(h).getId()).size(); i++ ) {
-                Journey myJourney = databaseManager.getJourneysByRouteScheduleId(schedules.get(h).getId()).get(i);
+            for ( int i = 0; i < journeyDao.getJourneysByRouteScheduleId(schedules.get(h).getId()).size(); i++ ) {
+                Journey myJourney = journeyDao.getJourneysByRouteScheduleId(schedules.get(h).getId()).get(i);
                 if ( isOutwardJourney(stops,
-                        databaseManager.getStopById(getStopTimesByJourneyId(myJourney.getId()).get(0).getId()).getStopName(),
-                        databaseManager.getStopById(getStopTimesByJourneyId(myJourney.getId()).get(1).getId()).getStopName()) ) {
+                        stopDao.getStopById(getStopTimesByJourneyId(myJourney.getId()).get(0).getId()).getStopName(),
+                        stopDao.getStopById(getStopTimesByJourneyId(myJourney.getId()).get(1).getId()).getStopName()) ) {
                     outgoingJourneys.add(myJourney);
                 }
             }
@@ -319,11 +339,11 @@ public class JourneyService {
         List<Journey> returnServices = new ArrayList<Journey>();
         //Get the route schedules for that day!
         for ( int h = 0; h < schedules.size(); h++ ) {
-            for ( int i = 0; i < databaseManager.getJourneysByRouteScheduleId(schedules.get(h).getId()).size(); i++ ) {
-                Journey myJourney = databaseManager.getJourneysByRouteScheduleId(schedules.get(h).getId()).get(i);
+            for ( int i = 0; i < journeyDao.getJourneysByRouteScheduleId(schedules.get(h).getId()).size(); i++ ) {
+                Journey myJourney = journeyDao.getJourneysByRouteScheduleId(schedules.get(h).getId()).get(i);
                 if ( !isOutwardJourney(stops,
-                        databaseManager.getStopById(getStopTimesByJourneyId(myJourney.getId()).get(0).getId()).getStopName(),
-                        databaseManager.getStopById(getStopTimesByJourneyId(myJourney.getId()).get(1).getId()).getStopName()) ) {
+                        stopDao.getStopById(getStopTimesByJourneyId(myJourney.getId()).get(0).getId()).getStopName(),
+                        stopDao.getStopById(getStopTimesByJourneyId(myJourney.getId()).get(1).getId()).getStopName()) ) {
                     returnServices.add(myJourney);
                 }
             }
@@ -333,7 +353,7 @@ public class JourneyService {
     }
 
     public List<Journey> getJourneysByRouteScheduleId ( long routeScheduleId ) {
-        return databaseManager.getJourneysByRouteScheduleId(routeScheduleId);
+        return journeyDao.getJourneysByRouteScheduleId(routeScheduleId);
     }
 
     /**
@@ -359,23 +379,27 @@ public class JourneyService {
     }
 
     public List<StopTime> getStopTimesByJourneyId ( final long journeyId ) {
-        return databaseManager.getStopTimesByJourneyId(journeyId);
+        return stopTimeDao.getStopTimesByJourneyId(journeyId);
     }
 
     public String getStopNameByStopId ( final long stopId ) {
-        return databaseManager.getStopById(stopId).getStopName();
+        return stopDao.getStopById(stopId).getStopName();
+    }
+
+    public Stop getStopByStopName ( final String stopName ) {
+        return stopDao.getStopByStopName(stopName);
     }
 
     public List<Journey> getAllJourneys() {
-        return databaseManager.getAllJourneys();
+        return journeyDao.getAllJourneys();
     }
 
     public List<Stop> getAllStops() {
-        return databaseManager.getAllStops();
+        return stopDao.getAllStops();
     }
 
     public List<StopTime> getAllStopTimes() {
-        return databaseManager.getAllStopTimes();
+        return stopTimeDao.getAllStopTimes();
     }
 
 }

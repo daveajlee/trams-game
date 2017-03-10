@@ -3,19 +3,19 @@ package de.davelee.trams.services;
 import java.util.Calendar;
 import java.util.List;
 
+import de.davelee.trams.dao.DriverDao;
 import de.davelee.trams.data.Driver;
-import de.davelee.trams.db.DatabaseManager;
 
 public class DriverService {
 
-	private DatabaseManager databaseManager;
-	
-	public DatabaseManager getDatabaseManager() {
-		return databaseManager;
+	private DriverDao driverDao;
+
+	public DriverDao getDriverDao() {
+		return driverDao;
 	}
 
-	public void setDatabaseManager(DatabaseManager databaseManager) {
-		this.databaseManager = databaseManager;
+	public void setDriverDao(DriverDao driverDao) {
+		this.driverDao = driverDao;
 	}
 
 	/**
@@ -39,19 +39,19 @@ public class DriverService {
     }
 
     public Driver getDriverById(long id) {
-    	return databaseManager.getDriverById(id);
+    	return driverDao.getDriverById(id);
     }
     
     public List<Driver> getAllDrivers ( ) {
-    	return databaseManager.getAllDrivers();
+    	return driverDao.getAllDrivers();
     }
     
     public void saveDriver ( final Driver driver ) {
-    	databaseManager.createAndStoreDriver(driver);
+    	driverDao.createAndStoreDriver(driver);
     }
 
     public void removeDriver ( final Driver driver ) {
-    	databaseManager.removeDriver(driver);
+    	driverDao.removeDriver(driver);
     }
     
 }

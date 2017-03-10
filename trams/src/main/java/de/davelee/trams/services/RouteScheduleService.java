@@ -2,23 +2,23 @@ package de.davelee.trams.services;
 
 import java.util.*;
 
+import de.davelee.trams.dao.RouteScheduleDao;
 import de.davelee.trams.data.*;
-import de.davelee.trams.db.DatabaseManager;
 import de.davelee.trams.util.DifficultyLevel;
 
 public class RouteScheduleService {
 
-    private DatabaseManager databaseManager;
+    private RouteScheduleDao routeScheduleDao;
 	
 	public RouteScheduleService() {
 	}
 
-    public DatabaseManager getDatabaseManager() {
-        return databaseManager;
+    public RouteScheduleDao getRouteScheduleDao() {
+        return routeScheduleDao;
     }
 
-    public void setDatabaseManager(DatabaseManager databaseManager) {
-        this.databaseManager = databaseManager;
+    public void setRouteScheduleDao(RouteScheduleDao routeScheduleDao) {
+        this.routeScheduleDao = routeScheduleDao;
     }
 
     /**
@@ -109,7 +109,7 @@ public class RouteScheduleService {
     }
 
     public RouteSchedule getRouteScheduleById(long id) {
-        return databaseManager.getRouteScheduleById(id);
+        return routeScheduleDao.getRouteScheduleById(id);
     }
 
     public RouteSchedule createRouteSchedule ( final long routeId, final int scheduleNumber, final int delayInMins ) {
@@ -121,15 +121,15 @@ public class RouteScheduleService {
     }
 
     public void saveRouteSchedule ( final RouteSchedule schedule ) {
-        databaseManager.createAndStoreRouteSchedule(schedule);
+        routeScheduleDao.createAndStoreRouteSchedule(schedule);
     }
 
     public List<RouteSchedule> getRouteSchedulesByRouteId ( long routeId ) {
-        return databaseManager.getRouteSchedulesByRouteId(routeId);
+        return routeScheduleDao.getRouteSchedulesByRouteId(routeId);
     }
 
     public List<RouteSchedule> getAllRouteSchedules ( ) {
-        return databaseManager.getAllRouteSchedules();
+        return routeScheduleDao.getAllRouteSchedules();
     }
 
 }

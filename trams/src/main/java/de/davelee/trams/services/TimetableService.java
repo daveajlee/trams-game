@@ -3,25 +3,24 @@ package de.davelee.trams.services;
 import java.util.Calendar;
 import java.util.List;
 
-import de.davelee.trams.data.JourneyPattern;
+import de.davelee.trams.dao.TimetableDao;
 import de.davelee.trams.data.Timetable;
-import de.davelee.trams.db.DatabaseManager;
 import de.davelee.trams.util.DateFormats;
 
 public class TimetableService {
 
-    private DatabaseManager databaseManager;
+    private TimetableDao timetableDao;
 	
 	public TimetableService() {
 		
 	}
 
-    public DatabaseManager getDatabaseManager() {
-        return databaseManager;
+    public TimetableDao getTimetableDao() {
+        return timetableDao;
     }
 
-    public void setDatabaseManager(DatabaseManager databaseManager) {
-        this.databaseManager = databaseManager;
+    public void setTimetableDao(TimetableDao timetableDao) {
+        this.timetableDao = timetableDao;
     }
 	
 	/**
@@ -42,19 +41,35 @@ public class TimetableService {
     }
 
     public List<Timetable> getTimetablesByRouteId (long routeId ) {
-        return databaseManager.getTimetablesByRouteId(routeId);
+        return timetableDao.getTimetablesByRouteId(routeId);
     }
 
     public Timetable getTimetableByRouteIdAndName ( long routeId, String timetableName ) {
-        return databaseManager.getTimetableByRouteIdAndName(routeId, timetableName);
+        return timetableDao.getTimetableByRouteIdAndName(routeId, timetableName);
     }
 
     public void deleteTimetable ( Timetable timetable ) {
-        databaseManager.deleteTimetable(timetable);
+        timetableDao.deleteTimetable(timetable);
     }
 
     public List<Timetable> getAllTimetables ( ) {
-        return databaseManager.getAllTimetables();
+        return timetableDao.getAllTimetables();
+    }
+
+    /**
+     * This method gets the current timetable which is valid for day.
+     * It is specifically used for getting the days which this timetable is valid for.
+     * @param today a <code>Calendar</code> object with today's date.
+     * @return a <code>Timetable</code> object.
+     */
+    public Timetable getCurrentTimetable ( long routeId, Calendar today ) {
+        List<Timetable> timetables = timetableDao.getTimetablesByRouteId(routeId);
+        for ( Timetable myTimetable : timetables ) {
+            if ( (myTimetable.getValidFromDate().before(today) || myTimetable.getValidFromDate().equals(today)) && (myTimetable.getValidToDate().after(today) || myTimetable.getValidToDate().equals(today))  ) {
+                return myTimetable;
+            }
+        }
+        return null; //If can't find timetable.
     }
 
 }

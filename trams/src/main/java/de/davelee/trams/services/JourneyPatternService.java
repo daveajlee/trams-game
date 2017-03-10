@@ -3,27 +3,27 @@ package de.davelee.trams.services;
 import java.util.Calendar;
 import java.util.List;
 
+import de.davelee.trams.dao.JourneyPatternDao;
 import de.davelee.trams.data.JourneyPattern;
-import de.davelee.trams.db.DatabaseManager;
 
 public class JourneyPatternService {
-	
-	private DatabaseManager databaseManager;
+
+    private JourneyPatternDao journeyPatternDao;
 	
 	public JourneyPatternService() {
 		
 	}
-	
-	public DatabaseManager getDatabaseManager() {
-		return databaseManager;
-	}
 
-	public void setDatabaseManager(DatabaseManager databaseManager) {
-		this.databaseManager = databaseManager;
-	}
+    public JourneyPatternDao getJourneyPatternDao() {
+	    return journeyPatternDao;
+    }
+
+    public void setJourneyPatternDao(JourneyPatternDao journeyPatternDao) {
+        this.journeyPatternDao = journeyPatternDao;
+    }
     
     public JourneyPattern getJourneyPatternById(long id) {
-    	return databaseManager.getJourneyPatternById(id);
+    	return journeyPatternDao.getJourneyPatternById(id);
     }
     
     public JourneyPattern createJourneyPattern ( String name, List<Integer> operatingDays, String outgoingTerminus, String returnTerminus,
@@ -41,12 +41,12 @@ public class JourneyPatternService {
         return journeyPattern;
     }
 
-    public List<JourneyPattern> getJourneyPatterns ( long timetableId ) {
-        return databaseManager.getJourneyPatternsByTimetableId(timetableId);
+    public List<JourneyPattern> getAllJourneyPatterns() {
+        return journeyPatternDao.getAllJourneyPatterns();
     }
 
-    public List<JourneyPattern> getAllJourneyPatterns() {
-        return databaseManager.getAllJourneyPatterns();
+    public List<JourneyPattern> getJourneyPatternsByTimetableId ( long timetableId ) {
+        return journeyPatternDao.getJourneyPatternsByTimetableId(timetableId);
     }
 
 }

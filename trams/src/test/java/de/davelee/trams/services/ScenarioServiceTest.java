@@ -11,7 +11,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import de.davelee.trams.beans.Scenario;
-import de.davelee.trams.db.DatabaseManager;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("/de/davelee/trams/spring/test-context.xml")
@@ -22,9 +21,6 @@ public class ScenarioServiceTest {
 	
 	@Autowired
 	private VehicleService vehicleService;
-	
-	@Autowired
-	private DatabaseManager databaseManager;
 	
 	@Test
 	public void testStopNames() {
