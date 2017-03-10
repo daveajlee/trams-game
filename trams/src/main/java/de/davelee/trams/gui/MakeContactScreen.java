@@ -192,9 +192,9 @@ public class MakeContactScreen extends JFrame {
      */
     public String[] getListOfStops() {
         //Create the String array.
-        String[] stops = new String[journeyService.getCurrentJourney(journeyService.getJourneysByRouteScheduleId(routeScheduleId), userInterface.getCurrentSimTime()).getJourneyStops().size()];
+        String[] stops = new String[journeyService.getStopTimesByJourneyId(journeyService.getCurrentJourney(journeyService.getJourneysByRouteScheduleId(routeScheduleId), userInterface.getCurrentSimTime()).getId()).size()];
         for ( int i = 0; i < stops.length; i++ ) {
-            stops[i] = journeyService.getCurrentJourney(journeyService.getJourneysByRouteScheduleId(routeScheduleId), userInterface.getCurrentSimTime()).getJourneyStops().get(i).getStopName();
+            stops[i] = journeyService.getStopNameByStopId(journeyService.getStopTimesByJourneyId(journeyService.getCurrentJourney(journeyService.getJourneysByRouteScheduleId(routeScheduleId), userInterface.getCurrentSimTime()).getId()).get(i).getStopId());
         }
         return stops;
     }

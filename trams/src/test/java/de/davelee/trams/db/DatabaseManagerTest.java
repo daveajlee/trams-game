@@ -32,7 +32,6 @@ import de.davelee.trams.services.JourneyService;
 import de.davelee.trams.services.RouteScheduleService;
 import de.davelee.trams.services.RouteService;
 import de.davelee.trams.services.ScenarioService;
-import de.davelee.trams.services.StopService;
 import de.davelee.trams.services.TimetableService;
 import de.davelee.trams.services.VehicleService;
 
@@ -57,9 +56,6 @@ public class DatabaseManagerTest {
 	
 	@Autowired
 	private VehicleService vehicleService;
-	
-	@Autowired
-	private StopService stopService;
 	
 	@Autowired
 	private JourneyPatternService journeyPatternService;
@@ -140,7 +136,7 @@ public class DatabaseManagerTest {
 	
 	@Test
 	public void stopTest() {
-		Stop stop = stopService.createStop("Rathaus Pankow", Calendar.getInstance());
+		Stop stop = journeyService.createStop("Rathaus Pankow");
 		databaseManager.createAndStoreStop(stop);
 		assertEquals(stop.getId(), 4);
 		Stop stop2 = databaseManager.getStopById(1);
@@ -154,13 +150,12 @@ public class DatabaseManagerTest {
 		stops.put("Rathaus Pankow", Calendar.getInstance());
 		stops.put("Pankow Kirche", Calendar.getInstance());
 		stops.put("S+U Pankow", Calendar.getInstance());
-        Journey journey = journeyService.createJourney(stops, 1);
+        Journey journey = journeyService.createJourney(1);
 		databaseManager.createAndStoreJourney(journey);
 		assertEquals(journey.getId(), 1);
 		assertEquals(journey.getRouteScheduleId(), 1);
 		Journey journey2 = databaseManager.getJourneyById(1);
 		assertNotNull(journey2);
-		assertEquals(journey2.getJourneyStops().size(), 3);
 	}
 	
 	@Test

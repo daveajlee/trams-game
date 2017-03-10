@@ -5,15 +5,11 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 
+import de.davelee.trams.data.*;
 import de.davelee.trams.factory.ScenarioFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.davelee.trams.data.Journey;
-import de.davelee.trams.data.JourneyPattern;
-import de.davelee.trams.data.Route;
-import de.davelee.trams.data.Stop;
-import de.davelee.trams.data.Timetable;
 import de.davelee.trams.db.DatabaseManager;
 import de.davelee.trams.util.DateFormats;
 import de.davelee.trams.util.SortedJourneys;
@@ -91,21 +87,23 @@ public class RouteService {
                     else {
                         journeyStops = getStopsBetween(getRouteById(routeId), myJourneyPattern.getOutgoingTerminus(), myJourneyPattern.getReturnTerminus(), direction);
                     }
-                    Stop newStop = new Stop();
-                    newStop.setStopName(journeyStops.get(0).getStopName());
-                    newStop.setStopTime( (Calendar) journeyTime.clone());
+                    long stopId = databaseManager.getStopByStopName(journeyStops.get(0).getStopName()).getId();
+                    StopTime newStopTime = new StopTime();
+                    newStopTime.setJourneyId(newJourney.getId());
+                    newStopTime.setStopId(stopId);
+                    newStopTime.setTime( (Calendar) journeyTime.clone());
                     for ( int i = 1; i < journeyStops.size(); i++ ) {
                         //Now add to journey time the difference between the two stops.
                         journeyTime.add(Calendar.MINUTE, getDistance(scenarioName, journeyStops.get(i-1).getStopName(), journeyStops.get(i).getStopName()));
                         //Create stop.
-                        Stop newStop2 = new Stop();
-                        newStop2.setStopName(journeyStops.get(i).getStopName());
-                        newStop2.setStopTime( (Calendar) journeyTime.clone());
+                        long stop2Id = databaseManager.getStopByStopName(journeyStops.get(i).getStopName()).getId();
+                        StopTime newStopTime2 = new StopTime();
+                        newStopTime2.setJourneyId(newJourney.getId());
+                        newStopTime2.setStopId(stop2Id);
+                        newStopTime.setTime( (Calendar) journeyTime.clone());
                     }
-                    //logger.debug("Service #" + serviceId + ": " + newService.getAllDisplayStops());
-                    if ( !isDuplicateJourney(allJourneys, newJourney) ) {
-                        allJourneys.add(newJourney);
-                    }
+                    //logger.debug("Service #" + serviceId + ": " + newService.getAllDisplayStops());{
+                    allJourneys.add(newJourney);
                     //Increment calendar.
                     myTime.add(Calendar.MINUTE, myJourneyPattern.getFrequency());
                 }
@@ -137,22 +135,6 @@ public class RouteService {
             count++;
         }
         return Integer.parseInt(stopDistanceList.get(stop1Pos).split(":")[1].split(",")[stop2Pos]);
-    }
-
-    /**
-     * Check for duplicate journeys.
-     * @param allJourneys a <code>LinkedList</code> with all journeys.
-     * @param newJourney a <code>Journey</code> with the new journey.
-     */
-    public boolean isDuplicateJourney ( List<Journey> allJourneys, Journey newJourney ) {
-        //Go through all journey and see if one equals it.
-        for ( int i = 0; i < allJourneys.size(); i++ ) {
-        	if ( newJourney.compareTo(allJourneys.get(i)) == 0 ) {
-        		return true;
-        	}
-        }
-        //Otherwise return false.
-        return false;
     }
     
     /**

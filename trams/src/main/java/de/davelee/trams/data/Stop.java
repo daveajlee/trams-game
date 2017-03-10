@@ -1,7 +1,5 @@
 package de.davelee.trams.data;
 
-import java.util.*;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -26,9 +24,6 @@ public class Stop {
 	
 	@Column(name="STOP_NAME")
 	private String stopName;
-	
-	@Column(name="STOP_TIME")
-    private Calendar stopTime;
     
 	/**
      * Create a new stop. 
@@ -55,18 +50,6 @@ public class Stop {
 
 	public void setStopName(String stopName) {
 		this.stopName = stopName;
-	}
-	
-	/**
-     * Get the stop time.
-     * @return a <code>Calendar</code> object with the stop time.
-     */
-    public Calendar getStopTime( ) {
-        return stopTime;
-    }
-
-	public void setStopTime(Calendar stopTime) {
-		this.stopTime = stopTime;
 	}
     
     /**

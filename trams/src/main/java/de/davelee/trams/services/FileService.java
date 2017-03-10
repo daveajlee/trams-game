@@ -33,14 +33,12 @@ public class FileService {
 	private FactoryService springService;
 	private JourneyService journeyService;
 	private RouteService routeService;
-	private RouteScheduleService routeScheduleService;
 	private TimetableService timetableService;
 	private MessageService messageService;
 	private VehicleService vehicleService;
 	
 	public FileService() {
 		routeService = new RouteService();
-		routeScheduleService = new RouteScheduleService();
 		timetableService = new TimetableService();
         gameService = new GameService();
         simulationService = new SimulationService();
@@ -360,8 +358,8 @@ public class FileService {
                 for ( int k = 0; k < returnJourneyIds.length; k++ ) {
                     returnJourneys.add(journeyService.getJourneyById(returnJourneyIds[i]));
                 }
-                //Rest can route schedule service now!
-                routeScheduleService.generateRouteSchedules(route.getId(), outgoingJourneys, returnJourneys);
+                //TODO: Reimplement route schedules - through new FileService!
+                //routeScheduleService.generateRouteSchedules(route.getId(), outgoingJourneys, returnJourneys);
                 //Add route.
                 routeService.saveRoute(route);
             }

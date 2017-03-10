@@ -408,7 +408,8 @@ public class UserInterface implements Runnable {
         RouteSchedule schedule = routeScheduleService.getRouteScheduleById(routeScheduleId);
         //Shorten schedule to the specific stop stated and reduce the delay accordingly - for current service remove stops after the specified stop.
         //logger.debug("Service was ending at: " + theAssignedSchedule.getCurrentService().getEndDestination());
-        String oldEnd = journeyService.getStop(journeyService.getCurrentJourney(journeyService.getJourneysByRouteScheduleId(routeScheduleId), currentTime).getId(), journeyService.getNumStops(journeyService.getCurrentJourney(journeyService.getJourneysByRouteScheduleId(routeScheduleId), currentTime))-1).getStopName();
+        String oldEnd = journeyService.getStopNameByStopId(journeyService.getStopTime(journeyService.getCurrentJourney(journeyService.getJourneysByRouteScheduleId(routeScheduleId), currentTime).getId(),
+                journeyService.getNumStops(journeyService.getCurrentJourney(journeyService.getJourneysByRouteScheduleId(routeScheduleId), currentTime))-1).getStopId());
         //Now we need to remove the stops in beteen!
         long timeDiff = journeyService.removeStopsBetween(journeyService.getCurrentJourney(journeyService.getJourneysByRouteScheduleId(routeScheduleId), currentTime), stop, oldEnd, false, true);
         //Now for the next service we need to remove stops between first stop and stop.
@@ -468,7 +469,6 @@ public class UserInterface implements Runnable {
 
     public void generateRouteSchedules ( long routeId, Calendar currentTime, String scenarioName ) {
         //Initialise parameters.
-        Route route = routeService.getRouteById(routeId);
         long[] outgoingJourneyIds = routeService.generateJourneyTimetables(routeId, currentTime, scenarioName, RouteService.OUTWARD_DIRECTION);
         long[] returnJourneyIds = routeService.generateJourneyTimetables(routeId, currentTime, scenarioName, RouteService.RETURN_DIRECTION);
         List<Journey> outgoingJourneys = new ArrayList<Journey>();
@@ -479,8 +479,92 @@ public class UserInterface implements Runnable {
         for ( int i = 0; i < returnJourneyIds.length; i++ ) {
             returnJourneys.add(journeyService.getJourneyById(returnJourneyIds[i]));
         }
-        //Rest can route schedule service now!
-        routeScheduleService.generateRouteSchedules(route.getId(), outgoingJourneys, returnJourneys);
+        //We need to repeat this loop until both outgoingJourneys and returnJourneys are empty!
+        int counter = 1;
+        while ( outgoingJourneys.size() > 0 || returnJourneys.size() > 0 ) {
+            //Control what journey we want - initially we don't care.
+            boolean wantOutgoing = true; boolean wantReturn = true;
+            //Create a new route schedule.
+            RouteSchedule mySchedule = new RouteSchedule ( );
+            mySchedule.setScheduleNumber(counter);
+            //Create our calendar object and set it to midnight.
+            Calendar myCal = new GregorianCalendar(2009,7,7,0,0);
+            //Find whether the first outgoing journey time is before the first return journey time.
+            if ( returnJourneys.size() > 0 && outgoingJourneys.size() > 0 && journeyService.getStopTimesByJourneyId(outgoingJourneys.get(0).getId()).get(0).getTime().after(journeyService.getStopTimesByJourneyId(returnJourneys.get(0).getId()).get(0).getTime()) ) {
+                myCal = (Calendar) journeyService.getStopTimesByJourneyId(returnJourneys.get(0).getId()).get(0).getTime().clone();
+            }
+            else if ( outgoingJourneys.size() == 0 ) {
+                myCal = (Calendar) journeyService.getStopTimesByJourneyId(returnJourneys.get(0).getId()).get(0).getTime().clone();
+            }
+            else {
+                myCal = (Calendar) journeyService.getStopTimesByJourneyId(outgoingJourneys.get(0).getId()).get(0).getTime().clone();
+            }
+            //Here's the loop.
+            while ( true ) {
+                //logger.debug("Schedule " + counter + " Time is now " + myCal.get(Calendar.HOUR_OF_DAY) + ":" + myCal.get(Calendar.MINUTE));
+                if ( outgoingJourneys.size() > 0 && returnJourneys.size() > 0 ) {
+                    if ( myCal.after(journeyService.getStopTimesByJourneyId(outgoingJourneys.get(outgoingJourneys.size()-1).getId()).get(0).getTime()) && myCal.after(journeyService.getStopTimesByJourneyId(returnJourneys.get(returnJourneys.size()-1).getId()).get(0).getTime())) {
+                        break;
+                    }
+                } else if ( outgoingJourneys.size() > 0 ) {
+                    if ( myCal.after(journeyService.getStopTimesByJourneyId(outgoingJourneys.get(outgoingJourneys.size()-1).getId()).get(0).getTime()) ) {
+                        break;
+                    }
+                } else if ( returnJourneys.size() > 0 ) {
+                    if ( myCal.after(journeyService.getStopTimesByJourneyId(returnJourneys.get(outgoingJourneys.size()-1).getId()).get(0).getTime()) ) {
+                        break;
+                    }
+                } else {
+                    break; //Both outgoing journeys and return journeys were 0 so finished.
+                }
+                int loopPos = 0;
+                while ( true ) {
+                    if ( loopPos >= outgoingJourneys.size() && loopPos >= returnJourneys.size() ) { break; }
+                    if ( loopPos < outgoingJourneys.size() ) {
+                        //if ( wantOutgoing ) { logger.debug("I want an outgoing service so trying: " + returnServices.get(loopPos).getAllDisplayStops() + " to route schedule " + counter); }
+                        if ( wantOutgoing && journeyService.getStopTimesByJourneyId(outgoingJourneys.get(loopPos).getId()).get(0).getTime().get(Calendar.HOUR_OF_DAY) == myCal.get(Calendar.HOUR_OF_DAY) && journeyService.getStopTimesByJourneyId(outgoingJourneys.get(loopPos).getId()).get(0).getTime().get(Calendar.MINUTE) == myCal.get(Calendar.MINUTE)) {
+                            //logger.debug("Adding service " + outgoingServices.get(loopPos).getAllDisplayStops() + " to route schedule " + counter);
+                            //We have found our journey - its an outgoing one!!!
+                            outgoingJourneys.get(loopPos).setRouteScheduleId(mySchedule.getId());
+                            //Set calendar equal to last stop time.
+                            myCal = (Calendar) journeyService.getStopTimesByJourneyId(outgoingJourneys.get(loopPos).getId()).get(journeyService.getStopTimesByJourneyId(outgoingJourneys.get(loopPos).getId()).size()-1).getTime().clone();
+                            //myCal.add(Calendar.MINUTE, -1); //This prevents bad effect of adding one later!
+                            //Remove this journey from the list.
+                            outgoingJourneys.remove(loopPos);
+                            //Note that we next want a return one.
+                            wantOutgoing = false; wantReturn = true;
+                            //Continue loop.
+                            continue;
+                        }
+                    }
+                    if ( loopPos < returnJourneys.size() ) {
+                        //if ( wantReturn ) { logger.debug("I want a return service so trying: " + returnServices.get(loopPos).getAllDisplayStops() + " to route schedule " + counter); }
+                        if ( wantReturn && journeyService.getStopTimesByJourneyId(returnJourneys.get(loopPos).getId()).get(0).getTime().get(Calendar.HOUR_OF_DAY) == myCal.get(Calendar.HOUR_OF_DAY) && journeyService.getStopTimesByJourneyId(returnJourneys.get(loopPos).getId()).get(0).getTime().get(Calendar.MINUTE) == myCal.get(Calendar.MINUTE)) {
+                            //logger.debug("Adding service " + returnServices.get(loopPos).getAllDisplayStops() + " to route schedule " + counter);
+                            //We have found our journey - its a return one!!!
+                            returnJourneys.get(loopPos).setRouteScheduleId(mySchedule.getId());
+                            //Set calendar equal to last stop time.
+                            myCal = (Calendar) journeyService.getStopTimesByJourneyId(returnJourneys.get(loopPos).getId()).get(journeyService.getStopTimesByJourneyId(returnJourneys.get(loopPos).getId()).size()-1).getTime().clone();
+                            //myCal.add(Calendar.MINUTE, -1); //This prevents bad effect of adding one later!
+                            //Remove this journey from the list.
+                            returnJourneys.remove(loopPos);
+                            //Note that we next want an outgoing one.
+                            wantReturn = false; wantOutgoing = true;
+                            //Continue loop.
+                            continue;
+                        }
+                    }
+                    //Increment loopPos.
+                    loopPos++;
+                }
+                //Increment calendar and loopPos.
+                myCal.add(Calendar.MINUTE, 1);
+            }
+            //Add route schedule to database.
+            routeScheduleService.saveRouteSchedule(mySchedule);
+            //Increment counter.
+            counter++;
+        }
     }
     
     /**

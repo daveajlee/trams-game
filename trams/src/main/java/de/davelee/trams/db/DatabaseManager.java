@@ -12,221 +12,325 @@ import de.davelee.trams.data.*;
 public class DatabaseManager {
 
 	private SessionFactory sessionFactory;
-	
-	public void setSessionFactory ( SessionFactory sessionFactory ) {
+
+	public void setSessionFactory(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
-	
+
 	public SessionFactory getSessionFactory() {
 		return sessionFactory;
 	}
-	
+
 	@Transactional
-    public void createAndStoreDriver(Driver driver) {
+	public void createAndStoreDriver(Driver driver) {
 		Session session = sessionFactory.getCurrentSession();
-        session.saveOrUpdate(driver);
-    }
-	
+		session.saveOrUpdate(driver);
+	}
+
 	@Transactional
-	public Driver getDriverById ( long id )  {
+	public Driver getDriverById(long id) {
 		Session session = sessionFactory.getCurrentSession();
 		Query query = session.createQuery("from Driver where id = :id");
 		query.setParameter("id", id);
 		@SuppressWarnings("rawtypes")
 		List list = query.list();
-		if ( list.isEmpty() ) { return null; }
+		if (list.isEmpty()) {
+			return null;
+		}
 		return (Driver) list.get(0);
 	}
-	
+
 	@Transactional
-	public List<Driver> getAllDrivers ( ) {
+	public List<Driver> getAllDrivers() {
 		Session session = sessionFactory.getCurrentSession();
 		Query query = session.createQuery("from Driver");
 		@SuppressWarnings("unchecked")
 		List<Driver> list = (List<Driver>) query.list();
-		if ( list.isEmpty() ) { return null; }
+		if (list.isEmpty()) {
+			return null;
+		}
 		return list;
 	}
-	
+
 	@Transactional
-	public void removeDriver ( Driver driver ) {
+	public void removeDriver(Driver driver) {
 		Session session = sessionFactory.getCurrentSession();
-        session.delete(driver);
+		session.delete(driver);
 	}
-    
+
 	@Transactional
-    public void createAndStoreStop(Stop stop) {
-        Session session = sessionFactory.getCurrentSession();
-        session.saveOrUpdate(stop);
-    }
-	
+	public void createAndStoreStop(Stop stop) {
+		Session session = sessionFactory.getCurrentSession();
+		session.saveOrUpdate(stop);
+	}
+
 	@Transactional
-	public Stop getStopById ( long id ) {
+	public Stop getStopById(long id) {
 		Session session = sessionFactory.getCurrentSession();
 		Query query = session.createQuery("from Stop where id = :id");
 		query.setParameter("id", id);
 		@SuppressWarnings("rawtypes")
 		List list = query.list();
-		if ( list.isEmpty() ) { return null; }
+		if (list.isEmpty()) {
+			return null;
+		}
 		return (Stop) list.get(0);
 	}
 
 	@Transactional
-	public List<Stop> getAllStops ( ) {
+	public Stop getStopByStopName(final String stopName) {
+		Session session = sessionFactory.getCurrentSession();
+		Query query = session.createQuery("from Stop where stopName = :stopName");
+		query.setParameter("stopName", stopName);
+		@SuppressWarnings("rawtypes")
+		List list = query.list();
+		if (list.isEmpty()) {
+			return null;
+		}
+		return (Stop) list.get(0);
+	}
+
+	@Transactional
+	public List<Stop> getAllStops() {
 		Session session = sessionFactory.getCurrentSession();
 		Query query = session.createQuery("from Stop");
 		@SuppressWarnings("unchecked")
 		List<Stop> list = (List<Stop>) query.list();
-		if ( list.isEmpty() ) { return null; }
+		if (list.isEmpty()) {
+			return null;
+		}
 		return list;
 	}
-    
+
 	@Transactional
-    public void createAndStoreJourney(Journey journey) {
-        Session session = sessionFactory.getCurrentSession();
-        session.saveOrUpdate(journey);
-    }
-	
+	public void createAndStoreStopTime(StopTime stopTime) {
+		Session session = sessionFactory.getCurrentSession();
+		session.save(stopTime);
+	}
+
 	@Transactional
-	public Journey getJourneyById ( long id ) {
+	public List<StopTime> getStopTimesByJourneyId(long journeyId) {
+		Session session = sessionFactory.getCurrentSession();
+		Query query = session.createQuery("from StopTime where journeyId = :journeyId");
+		query.setParameter("journeyId", journeyId);
+		@SuppressWarnings("unchecked")
+		List<StopTime> list = (List<StopTime>) query.list();
+		if (list.isEmpty()) {
+			return null;
+		}
+		return list;
+	}
+
+	@Transactional
+	public List<StopTime> getAllStopTimes() {
+		Session session = sessionFactory.getCurrentSession();
+		Query query = session.createQuery("from StopTime");
+		@SuppressWarnings("unchecked")
+		List<StopTime> list = (List<StopTime>) query.list();
+		if (list.isEmpty()) {
+			return null;
+		}
+		return list;
+	}
+
+	@Transactional
+	public void removeStopTime(final StopTime stopTime) {
+		Session session = sessionFactory.getCurrentSession();
+		session.delete(stopTime);
+	}
+
+	@Transactional
+	public void createAndStoreJourney(Journey journey) {
+		Session session = sessionFactory.getCurrentSession();
+		session.saveOrUpdate(journey);
+	}
+
+	@Transactional
+	public Journey getJourneyById(long id) {
 		Session session = sessionFactory.getCurrentSession();
 		Query query = session.createQuery("from Journey where id = :id");
 		query.setParameter("id", id);
 		@SuppressWarnings("rawtypes")
 		List list = query.list();
-		if ( list.isEmpty() ) { return null; }
+		if (list.isEmpty()) {
+			return null;
+		}
 		return (Journey) list.get(0);
 	}
 
 	@Transactional
-	public List<Journey> getJourneysByRouteScheduleId ( long routeScheduleId ) {
+	public List<Journey> getJourneysByRouteScheduleId(long routeScheduleId) {
 		Session session = sessionFactory.getCurrentSession();
 		Query query = session.createQuery("from Journey where routeScheduleId = :routeScheduleId");
 		query.setParameter("routeScheduleId", routeScheduleId);
-		@SuppressWarnings({ "unchecked" })
+		@SuppressWarnings({"unchecked"})
 		List<Journey> list = (List<Journey>) query.list();
-		if ( list.isEmpty() ) { return null; }
+		if (list.isEmpty()) {
+			return null;
+		}
 		return list;
 	}
-    
+
 	@Transactional
-    public void createAndStoreJourneyPattern(JourneyPattern journeyPattern) {
-        Session session = sessionFactory.getCurrentSession();
-        session.save(journeyPattern);
-    }
-	
+	public List<Journey> getAllJourneys() {
+		Session session = sessionFactory.getCurrentSession();
+		Query query = session.createQuery("from Journey");
+		@SuppressWarnings("unchecked")
+		List<Journey> list = (List<Journey>) query.list();
+		if (list.isEmpty()) {
+			return null;
+		}
+		return list;
+	}
+
 	@Transactional
-	public JourneyPattern getJourneyPatternById ( long id ) {
+	public void createAndStoreJourneyPattern(JourneyPattern journeyPattern) {
+		Session session = sessionFactory.getCurrentSession();
+		session.save(journeyPattern);
+	}
+
+	@Transactional
+	public JourneyPattern getJourneyPatternById(long id) {
 		Session session = sessionFactory.getCurrentSession();
 		Query query = session.createQuery("from JourneyPattern where id = :id");
 		query.setParameter("id", id);
 		@SuppressWarnings("rawtypes")
 		List list = query.list();
-		if ( list.isEmpty() ) { return null; }
+		if (list.isEmpty()) {
+			return null;
+		}
 		return (JourneyPattern) list.get(0);
 	}
 
 	@Transactional
-	public List<JourneyPattern> getJourneyPatternsByTimetableId ( long timetableId ) {
+	public List<JourneyPattern> getJourneyPatternsByTimetableId(long timetableId) {
 		Session session = sessionFactory.getCurrentSession();
 		Query query = session.createQuery("from JourneyPattern where timetableId = :timetableId");
 		query.setParameter("timetableId", timetableId);
-		@SuppressWarnings("rawtypes")
-		List list = query.list();
-		if ( list.isEmpty() ) { return null; }
+		@SuppressWarnings({"unchecked"})
+		List<JourneyPattern> list = (List<JourneyPattern>) query.list();
+		if (list.isEmpty()) {
+			return null;
+		}
 		return list;
 	}
 
 	@Transactional
-	public List<JourneyPattern> getAllJourneyPatterns ( ) {
+	public List<JourneyPattern> getAllJourneyPatterns() {
 		Session session = sessionFactory.getCurrentSession();
 		Query query = session.createQuery("from JourneyPattern");
 		@SuppressWarnings("unchecked")
 		List<JourneyPattern> list = (List<JourneyPattern>) query.list();
-		if ( list.isEmpty() ) { return null; }
+		if (list.isEmpty()) {
+			return null;
+		}
 		return list;
 	}
-    
-	@Transactional
-    public void createAndStoreTimetable(Timetable timetable) {
-        Session session = sessionFactory.getCurrentSession();
-        session.saveOrUpdate(timetable);
-    }
 
 	@Transactional
-	public List<Timetable> getAllTimetables ( ) {
+	public void createAndStoreTimetable(Timetable timetable) {
+		Session session = sessionFactory.getCurrentSession();
+		session.saveOrUpdate(timetable);
+	}
+
+	@Transactional
+	public List<Timetable> getAllTimetables() {
 		Session session = sessionFactory.getCurrentSession();
 		Query query = session.createQuery("from Timetable");
 		@SuppressWarnings("unchecked")
 		List<Timetable> list = (List<Timetable>) query.list();
-		if ( list.isEmpty() ) { return null; }
+		if (list.isEmpty()) {
+			return null;
+		}
 		return list;
 	}
-	
+
 	@Transactional
-	public Timetable getTimetableById ( long id ) {
+	public Timetable getTimetableById(long id) {
 		Session session = sessionFactory.getCurrentSession();
 		Query query = session.createQuery("from Timetable where id = :id");
 		query.setParameter("id", id);
 		@SuppressWarnings("rawtypes")
 		List list = query.list();
-		if ( list.isEmpty() ) { return null; }
+		if (list.isEmpty()) {
+			return null;
+		}
 		return (Timetable) list.get(0);
 	}
 
 	@Transactional
-	public List<Timetable> getTimetablesByRouteId ( long routeId ) {
+	public List<Timetable> getTimetablesByRouteId(long routeId) {
 		Session session = sessionFactory.getCurrentSession();
 		Query query = session.createQuery("from Timetable where routeId = :routeId");
 		query.setParameter("routeId", routeId);
 		@SuppressWarnings("unchecked")
 		List<Timetable> list = (List<Timetable>) query.list();
-		if ( list.isEmpty() ) { return null; }
+		if (list.isEmpty()) {
+			return null;
+		}
 		return list;
 	}
 
 	@Transactional
-	public Timetable getTimetableByRouteIdAndName ( long routeId, String timetableName ) {
+	public Timetable getTimetableByRouteIdAndName(long routeId, String timetableName) {
 		Session session = sessionFactory.getCurrentSession();
 		Query query = session.createQuery("from Timetable where routeId = :routeId and timetableName = :timetableName");
 		query.setParameter("routeId", routeId);
 		query.setParameter("timetableName", timetableName);
 		@SuppressWarnings("rawtypes")
 		List list = query.list();
-		if ( list.isEmpty() ) { return null; }
+		if (list.isEmpty()) {
+			return null;
+		}
 		return (Timetable) list.get(0);
 	}
 
 	@Transactional
-	public void deleteTimetable ( Timetable timetable ) {
+	public void deleteTimetable(Timetable timetable) {
 		Session session = sessionFactory.getCurrentSession();
 		session.delete(timetable);
 	}
-    
+
 	@Transactional
-    public void createAndStoreRouteSchedule(RouteSchedule routeSchedule) {
-        Session session = sessionFactory.getCurrentSession();
-        session.saveOrUpdate(routeSchedule);
-    }
-    
+	public void createAndStoreRouteSchedule(RouteSchedule routeSchedule) {
+		Session session = sessionFactory.getCurrentSession();
+		session.saveOrUpdate(routeSchedule);
+	}
+
 	@Transactional
-	public RouteSchedule getRouteScheduleById ( long id ) {
+	public RouteSchedule getRouteScheduleById(long id) {
 		Session session = sessionFactory.getCurrentSession();
 		Query query = session.createQuery("from RouteSchedule where id = :id");
 		query.setParameter("id", id);
 		@SuppressWarnings("rawtypes")
 		List list = query.list();
-		if ( list.isEmpty() ) { return null; }
+		if (list.isEmpty()) {
+			return null;
+		}
 		return (RouteSchedule) list.get(0);
 	}
 
-	public List<RouteSchedule> getRouteSchedulesByRouteId ( long routeId ) {
+	public List<RouteSchedule> getRouteSchedulesByRouteId(long routeId) {
 		Session session = sessionFactory.getCurrentSession();
 		Query query = session.createQuery("from RouteSchedule where routeId = :routeId");
 		query.setParameter("routeId", routeId);
-		@SuppressWarnings({ "unchecked" })
+		@SuppressWarnings({"unchecked"})
 		List<RouteSchedule> list = (List<RouteSchedule>) query.list();
-		if ( list.isEmpty() ) { return null; }
+		if (list.isEmpty()) {
+			return null;
+		}
+		return list;
+	}
+
+	@Transactional
+	public List<RouteSchedule> getAllRouteSchedules() {
+		Session session = sessionFactory.getCurrentSession();
+		Query query = session.createQuery("from RouteSchedule");
+		@SuppressWarnings("unchecked")
+		List<RouteSchedule> list = (List<RouteSchedule>) query.list();
+		if (list.isEmpty()) {
+			return null;
+		}
 		return list;
 	}
 	

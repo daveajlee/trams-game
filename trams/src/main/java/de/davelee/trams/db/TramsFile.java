@@ -2,47 +2,40 @@ package de.davelee.trams.db;
 
 import java.util.List;
 import javax.xml.bind.annotation.XmlRootElement;
-import de.davelee.trams.data.Driver;
-import de.davelee.trams.data.Game;
-import de.davelee.trams.data.Journey;
-import de.davelee.trams.data.JourneyPattern;
-import de.davelee.trams.data.Message;
-import de.davelee.trams.data.Route;
-import de.davelee.trams.data.RouteSchedule;
-import de.davelee.trams.data.Scenario;
-import de.davelee.trams.data.Stop;
-import de.davelee.trams.data.Timetable;
-import de.davelee.trams.data.Vehicle;
+
+import de.davelee.trams.data.*;
 
 @XmlRootElement
 public class TramsFile {
 
     private List<Driver> drivers;
-    /*private Game game;
-    private List<Journey> journeys;*/
+    /*private Game game;*/
+    private List<Journey> journeys;
     private List<JourneyPattern> journeyPatterns;
 	private List<Message> messages;
 	private List<Route> routes;
-	/*private List<RouteSchedule> routeSchedules;
-	private List<Scenario> scenarios;*/
+	private List<RouteSchedule> routeSchedules;
+	/*private List<Scenario> scenarios;*/
     private List<Stop> stops;
+    private List<StopTime> stopTimes;
 	private List<Timetable> timetables;
 	private List<Vehicle> vehicles;
 
     public TramsFile ( ) { }
 
-    public TramsFile ( List<Driver> drivers, /*Game game, List<Journey> journeys,*/ List<JourneyPattern> journeyPatterns,
-			List<Message> messages, List<Route> routes, /*List<RouteSchedule> routeSchedules, List<Scenario> scenarios,*/
-			List<Stop> stops, List<Timetable> timetables, List<Vehicle> vehicles) {
+    public TramsFile ( List<Driver> drivers, /*Game game,*/ List<Journey> journeys, List<JourneyPattern> journeyPatterns,
+			List<Message> messages, List<Route> routes, List<RouteSchedule> routeSchedules, /*List<Scenario> scenarios,*/
+			List<Stop> stops, List<StopTime> stopTimes, List<Timetable> timetables, List<Vehicle> vehicles) {
                 this.drivers = drivers;
-                /*this.game = game;
-				this.journeys = journeys;*/
+                /*this.game = game;*/
+				this.journeys = journeys;
                 this.journeyPatterns = journeyPatterns;
                 this.messages = messages;
                 this.routes = routes;
-                /*this.routeSchedules = routeSchedules;
-+				this.scenarios = scenarios;*/
+                this.routeSchedules = routeSchedules;
+				/*this.scenarios = scenarios;*/
                 this.stops = stops;
+                this.stopTimes = stopTimes;
                 this.timetables = timetables;
                 this.vehicles = vehicles;
     }
@@ -61,7 +54,7 @@ public class TramsFile {
 
 	public void setGame(Game game) {
 		this.game = game;
-	}
+	}*/
 
 	public List<Journey> getJourneys() {
 		return journeys;
@@ -69,7 +62,7 @@ public class TramsFile {
 
 	public void setJourneys(List<Journey> journeys) {
 		this.journeys = journeys;
-	}*/
+	}
 
     public List<JourneyPattern> getJourneyPatterns() {
         return journeyPatterns;
@@ -95,7 +88,7 @@ public class TramsFile {
         this.routes = routes;
     }
 
-    /*public List<RouteSchedule> getRouteSchedules() {
+    public List<RouteSchedule> getRouteSchedules() {
 		return routeSchedules;
 	}
 
@@ -103,7 +96,7 @@ public class TramsFile {
 		this.routeSchedules = routeSchedules;
 	}
 
-	public List<Scenario> getScenarios() {
+	/*public List<Scenario> getScenarios() {
 		return scenarios;
 	}
 
@@ -117,6 +110,14 @@ public class TramsFile {
 
     public void setStops(List<Stop> stops) {
         this.stops = stops;
+    }
+
+    public List<StopTime> getStopTimes() {
+        return stopTimes;
+    }
+
+	public void setStopTimes(List<StopTime> stopTimes) {
+        this.stopTimes = stopTimes;
     }
 
     public List<Timetable> getTimetables() {

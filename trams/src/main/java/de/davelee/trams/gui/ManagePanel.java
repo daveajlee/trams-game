@@ -121,7 +121,6 @@ public class ManagePanel {
     private JComboBox datesComboBox;
     
     private VehicleService vehicleService;
-    private StopService stopService;
     private JourneyService journeyService;
     private TimetableService timetableService;
     private RouteService routeService;
@@ -134,7 +133,6 @@ public class ManagePanel {
         controlScreen = cs;
         routeScheduleService = new RouteScheduleService();
         vehicleService = new VehicleService();
-        stopService = new StopService();
         journeyService = new JourneyService();
         timetableService = new TimetableService();
         routeService = new RouteService();
@@ -1351,12 +1349,12 @@ public class ManagePanel {
                     logger.debug("No more services!");
                     outgoingData[i][j+1] = "";
                 }
-                else if ( journeyService.getStop(journeyIds[min+j], routeService.getRouteById(selectedRouteId).getStops().get(i).getStopName()) == null ) {
+                else if ( journeyService.getStopTime(journeyIds[min+j], routeService.getRouteById(selectedRouteId).getStops().get(i).getStopName()) == null ) {
                     logger.debug("Blank data!");
                     outgoingData[i][j+1] = "";
                 }
                 else {
-                    outgoingData[i][j+1] = stopService.getDisplayStopTime(journeyService.getStop(journeyIds[min+j], routeService.getRouteById(selectedRouteId).getStops().get(i).getStopName()).getStopTime());
+                    outgoingData[i][j+1] = journeyService.getDisplayStopTime(journeyService.getStopTime(journeyIds[min+j], routeService.getRouteById(selectedRouteId).getStops().get(i).getStopName()).getTime());
                 }
             }
         }
