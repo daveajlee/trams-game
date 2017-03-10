@@ -366,4 +366,16 @@ public class JourneyService {
         return databaseManager.getStopById(stopId).getStopName();
     }
 
+    public List<Journey> getAllJourneys() {
+        return databaseManager.getAllJourneys();
+    }
+
+    public List<Stop> getAllStops() {
+        return databaseManager.getAllStops();
+    }
+
+    public List<StopTime> getAllStopTimes() {
+        return databaseManager.getAllStopTimes();
+    }
+
 }

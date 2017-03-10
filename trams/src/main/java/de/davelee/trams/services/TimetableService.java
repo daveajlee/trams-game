@@ -53,5 +53,8 @@ public class TimetableService {
         databaseManager.deleteTimetable(timetable);
     }
 
+    public List<Timetable> getAllTimetables ( ) {
+        return databaseManager.getAllTimetables();
+    }
 
 }

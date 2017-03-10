@@ -1,11 +1,11 @@
 package de.davelee.trams.services;
 
+import static junit.framework.Assert.assertNotNull;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Calendar;
 
 import de.davelee.trams.db.DatabaseManager;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,13 +24,10 @@ public class GameServiceTest {
 	@Autowired
 	private DatabaseManager databaseManager;
 	
-	@Before
-	public void before() {
-		databaseManager.createAndStoreGame(gameService.createGame("Dave Lee", "Landuff Transport Company"));
-	}
-	
 	@Test
 	public void testIncrement() {
+		databaseManager.createAndStoreGame(gameService.createGame("Dave Lee", "Landuff Transport Company"));
+		assertNotNull(gameService.getGame());
 		assertEquals(DateFormats.HOUR_MINUTE_FORMAT.getFormat().format(gameService.getCurrentTime().getTime()), "05:00");
 		gameService.setTimeIncrement(15);
 		gameService.incrementTime();

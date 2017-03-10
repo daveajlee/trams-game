@@ -45,4 +45,8 @@ public class JourneyPatternService {
         return databaseManager.getJourneyPatternsByTimetableId(timetableId);
     }
 
+    public List<JourneyPattern> getAllJourneyPatterns() {
+        return databaseManager.getAllJourneyPatterns();
+    }
+
 }

@@ -4,6 +4,7 @@ import javax.swing.*;
 import javax.swing.filechooser.*;
 
 import de.davelee.trams.data.*;
+import de.davelee.trams.db.TramsFile;
 import de.davelee.trams.services.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,6 +53,8 @@ public class UserInterface implements Runnable {
     private FileService fileService;
     private MessageService messageService;
     private RouteService routeService;
+    private JourneyPatternService journeyPatternService;
+    private TimetableService timetableService;
     
     /**
      * Create a new user interface - default constructor.
@@ -75,6 +78,8 @@ public class UserInterface implements Runnable {
         fileService = new FileService();
         routeService = new RouteService();
         journeyService = new JourneyService();
+        journeyPatternService = new JourneyPatternService();
+        timetableService = new TimetableService();
     }
     
     /**
@@ -683,7 +688,7 @@ public class UserInterface implements Runnable {
         int returnVal = fileDialog.showSaveDialog(currentFrame);
         //Check if user submitted file.
         if ( returnVal == JFileChooser.APPROVE_OPTION ) {
-            if ( fileService.saveFile(fileDialog.getSelectedFile()) ) {
+            if ( fileService.saveFile(fileDialog.getSelectedFile(), prepareTramsFile()) ) {
                 String fileName = fileDialog.getSelectedFile().getPath();
                 if ( !fileName.endsWith(".tms") ) { fileName += ".tms"; }
                 JOptionPane.showMessageDialog(currentFrame, "The current simulation has been successfully saved to " + fileName, "File Saved Successfully", JOptionPane.INFORMATION_MESSAGE);
@@ -692,6 +697,17 @@ public class UserInterface implements Runnable {
             JOptionPane.showMessageDialog(currentFrame, "The file could not be saved. Please try again later.", "ERROR: File Could Not Be Saved", JOptionPane.ERROR_MESSAGE);
         }
         return false;
+    }
+
+    public TramsFile prepareTramsFile ( ) {
+        return new TramsFile(driverService.getAllDrivers(), gameService.getGame(), journeyService.getAllJourneys(),
+                journeyPatternService.getAllJourneyPatterns(), messageService.getAllMessages(), routeService.getAllRoutes(),
+                routeScheduleService.getAllRouteSchedules(), journeyService.getAllStops(), journeyService.getAllStopTimes(),
+                timetableService.getAllTimetables(), vehicleService.getAllVehicles());
+    }
+
+    public void reloadDatabaseWithFile ( TramsFile myFile ) {
+        //TODO: Load file into database!
     }
     
     /**
@@ -710,7 +726,9 @@ public class UserInterface implements Runnable {
         //Check if user submitted file and print coming soon.
         boolean validFile = true;
         if ( returnVal == JFileChooser.APPROVE_OPTION) {
-            if ( fileService.loadFile(fileDialog.getSelectedFile()) ) {
+            TramsFile myFile = fileService.loadFile(fileDialog.getSelectedFile());
+            if ( myFile != null ) {
+                reloadDatabaseWithFile(myFile);
                 JFrame oldFrame = currentFrame;
                 setManagementScreen(true);
                 ControlScreen cs = new ControlScreen(this, "", 0, 4, false);

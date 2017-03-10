@@ -420,7 +420,7 @@ public class DatabaseManager {
 		List<Game> list = (List<Game>) query.list();
 		if ( list.isEmpty() ) { return null; }
 		//TODO: If more than one game: exception?
-		if ( list.size() > 1 ) { return null; }
+		if ( list.size() > 1 ) { return list.get(0); }
 		return list.get(0);
 	}
 	

@@ -128,4 +128,8 @@ public class RouteScheduleService {
         return databaseManager.getRouteSchedulesByRouteId(routeId);
     }
 
+    public List<RouteSchedule> getAllRouteSchedules ( ) {
+        return databaseManager.getAllRouteSchedules();
+    }
+
 }
