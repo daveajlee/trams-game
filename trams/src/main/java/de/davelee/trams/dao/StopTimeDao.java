@@ -2,57 +2,52 @@ package de.davelee.trams.dao;
 
 import java.util.List;
 
-import org.hibernate.Query;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 import de.davelee.trams.data.StopTime;
 
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
+
 public class StopTimeDao {
-	
-	private SessionFactory sessionFactory;
 
-	public SessionFactory getSessionFactory() {
-		return sessionFactory;
+	private EntityManager entityManager;
+
+	public EntityManager getEntityManager() {
+		return entityManager;
 	}
 
-	public void setSessionFactory(SessionFactory sessionFactory) {
-		this.sessionFactory = sessionFactory;
+	public void setEntityManager(final EntityManager entityManager) {
+		this.entityManager = entityManager;
 	}
-	
 
 	@Transactional
-    public void createAndStoreStopTime(StopTime stopTime) {
-        Session session = sessionFactory.getCurrentSession();
-        session.save(stopTime);
+    public void createAndStoreStopTime(final StopTime stopTime) {
+		entityManager.persist(stopTime);
     }
 	
 	@Transactional
-	public List<StopTime> getStopTimesByJourneyId ( long journeyId ) {
-		Session session = sessionFactory.getCurrentSession();
-		Query query = session.createQuery("from StopTime where journeyId = :journeyId");
+	public List<StopTime> getStopTimesByJourneyId ( final long journeyId ) {
+		Query query = entityManager.createQuery("SELECT st from StopTime st where journeyId = :journeyId");
 		query.setParameter("journeyId", journeyId);
 		@SuppressWarnings("unchecked")
-		List<StopTime> list = (List<StopTime>) query.list();
-		if ( list.isEmpty() ) { return null; }
-		return list;
+		List<StopTime> stopTimes = (List<StopTime>) query.getResultList();
+		if ( stopTimes.isEmpty() ) { return null; }
+		return stopTimes;
 	}
 	
 	@Transactional
 	public List<StopTime> getAllStopTimes ( ) {
-		Session session = sessionFactory.getCurrentSession();
-		Query query = session.createQuery("from StopTime");
+		Query query = entityManager.createQuery("SELECT st from StopTime st");
 		@SuppressWarnings("unchecked")
-		List<StopTime> list = (List<StopTime>) query.list();
-		if ( list.isEmpty() ) { return null; }
-		return list;
+		List<StopTime> stopTimes = (List<StopTime>) query.getResultList();
+		if ( stopTimes.isEmpty() ) { return null; }
+		return stopTimes;
 	}
 	
 	@Transactional
 	public void removeStopTime ( final StopTime stopTime ) {
-		Session session = sessionFactory.getCurrentSession();
-		session.delete(stopTime);
+		entityManager.remove(stopTime);
 	}
 
 }

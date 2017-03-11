@@ -133,7 +133,7 @@ public class GameService {
         Calendar newCurrentTime = game.getCurrentTime();
         newCurrentTime.add(Calendar.MINUTE, game.getTimeIncrement());
         game.setCurrentTime(newCurrentTime);
-        gameDao.createAndStoreGame(game);
+        gameDao.updateGame(game);
     }
 
     /**

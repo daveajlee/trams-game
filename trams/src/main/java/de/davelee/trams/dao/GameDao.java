@@ -2,41 +2,44 @@ package de.davelee.trams.dao;
 
 import java.util.List;
 
-import org.hibernate.Query;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 import de.davelee.trams.data.Game;
 
-public class GameDao {
-	
-	private SessionFactory sessionFactory;
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
 
-	public SessionFactory getSessionFactory() {
-		return sessionFactory;
+public class GameDao {
+
+	private EntityManager entityManager;
+
+	public EntityManager getEntityManager() {
+		return entityManager;
 	}
 
-	public void setSessionFactory(SessionFactory sessionFactory) {
-		this.sessionFactory = sessionFactory;
+	public void setEntityManager(EntityManager entityManager) {
+		this.entityManager = entityManager;
 	}
 	
 	@Transactional
     public void createAndStoreGame ( final Game game ) {
-    	Session session = sessionFactory.getCurrentSession();
-    	session.saveOrUpdate(game);
+		entityManager.persist(game);
     }
+
+	@Transactional
+	public void updateGame ( final Game game ) {
+		entityManager.merge(game);
+	}
     
     @Transactional
 	public Game getCurrentGame ( ) {
-		Session session = sessionFactory.getCurrentSession();
-		Query query = session.createQuery("from Game");
+		Query query = entityManager.createQuery("SELECT g from Game g", Game.class);
 		@SuppressWarnings("unchecked")
-		List<Game> list = (List<Game>) query.list();
-		if ( list.isEmpty() ) { return null; }
+		List<Game> games = (List<Game>) query.getResultList();
+		if ( games.isEmpty() ) { return null; }
 		//TODO: If more than one game: exception?
-		if ( list.size() > 1 ) { return list.get(0); }
-		return list.get(0);
+		if ( games.size() > 1 ) { return games.get(0); }
+		return games.get(0);
 	}
 
 }

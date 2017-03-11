@@ -2,61 +2,52 @@ package de.davelee.trams.dao;
 
 import java.util.List;
 
-import org.hibernate.Query;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 import de.davelee.trams.data.Stop;
 
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
+
 public class StopDao {
 
-	private SessionFactory sessionFactory;
+	private EntityManager entityManager;
 
-	public SessionFactory getSessionFactory() {
-		return sessionFactory;
+	public EntityManager getEntityManager() {
+		return entityManager;
 	}
 
-	public void setSessionFactory(SessionFactory sessionFactory) {
-		this.sessionFactory = sessionFactory;
+	public void setEntityManager(final EntityManager entityManager) {
+		this.entityManager = entityManager;
 	}
 	
 	@Transactional
-    public void createAndStoreStop(Stop stop) {
-        Session session = sessionFactory.getCurrentSession();
-        session.saveOrUpdate(stop);
+    public void createAndStoreStop(final Stop stop) {
+		entityManager.persist(stop);
     }
 	
 	@Transactional
-	public Stop getStopById ( long id ) {
-		Session session = sessionFactory.getCurrentSession();
-		Query query = session.createQuery("from Stop where id = :id");
-		query.setParameter("id", id);
-		@SuppressWarnings("rawtypes")
-		List list = query.list();
-		if ( list.isEmpty() ) { return null; }
-		return (Stop) list.get(0);
+	public Stop getStopById ( final long id ) {
+		return entityManager.find(Stop.class, id);
 	}
 	
 	@Transactional
 	public Stop getStopByStopName ( final String stopName ) {
-		Session session = sessionFactory.getCurrentSession();
-		Query query = session.createQuery("from Stop where stopName = :stopName");
+		Query query = entityManager.createQuery("SELECT s from Stop s where stopName = :stopName");
 		query.setParameter("stopName", stopName);
 		@SuppressWarnings("rawtypes")
-		List list = query.list();
-		if ( list.isEmpty() ) { return null; }
-		return (Stop) list.get(0);
+		List<Stop> stops = (List<Stop>) query.getResultList();
+		if ( stops.isEmpty() ) { return null; }
+		return (Stop) stops.get(0);
 	}
 	
 	@Transactional
 	public List<Stop> getAllStops ( ) {
-		Session session = sessionFactory.getCurrentSession();
-		Query query = session.createQuery("from Stop");
+		Query query = entityManager.createQuery("SELECT s from Stop s");
 		@SuppressWarnings("unchecked")
-		List<Stop> list = (List<Stop>) query.list();
-		if ( list.isEmpty() ) { return null; }
-		return list;
+		List<Stop> stops = (List<Stop>) query.getResultList();
+		if ( stops.isEmpty() ) { return null; }
+		return stops;
 	}
 	
 }

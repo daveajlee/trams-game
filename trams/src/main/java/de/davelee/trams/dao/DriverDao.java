@@ -2,56 +2,46 @@ package de.davelee.trams.dao;
 
 import java.util.List;
 
-import org.hibernate.Query;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 import de.davelee.trams.data.Driver;
 
-public class DriverDao {
-	
-	private SessionFactory sessionFactory;
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
 
-	public SessionFactory getSessionFactory() {
-		return sessionFactory;
+public class DriverDao {
+
+	private EntityManager entityManager;
+
+	public EntityManager getEntityManager() {
+		return entityManager;
 	}
 
-	public void setSessionFactory(SessionFactory sessionFactory) {
-		this.sessionFactory = sessionFactory;
+	public void setEntityManager(EntityManager entityManager) {
+		this.entityManager = entityManager;
 	}
 	
 	@Transactional
     public void createAndStoreDriver(Driver driver) {
-		Session session = sessionFactory.getCurrentSession();
-        session.saveOrUpdate(driver);
+		entityManager.persist(driver);
     }
 	
 	@Transactional
 	public Driver getDriverById ( long id )  {
-		Session session = sessionFactory.getCurrentSession();
-		Query query = session.createQuery("from Driver where id = :id");
-		query.setParameter("id", id);
-		@SuppressWarnings("rawtypes")
-		List list = query.list();
-		if ( list.isEmpty() ) { return null; }
-		return (Driver) list.get(0);
+		return entityManager.find(Driver.class, id);
 	}
 	
 	@Transactional
 	public List<Driver> getAllDrivers ( ) {
-		Session session = sessionFactory.getCurrentSession();
-		Query query = session.createQuery("from Driver");
-		@SuppressWarnings("unchecked")
-		List<Driver> list = (List<Driver>) query.list();
-		if ( list.isEmpty() ) { return null; }
-		return list;
+		Query query = entityManager.createQuery("SELECT d from Driver d");
+		List<Driver> drivers = (List<Driver>) query.getResultList();
+		if ( drivers.isEmpty() ) { return null; }
+		return drivers;
 	}
 	
 	@Transactional
 	public void removeDriver ( Driver driver ) {
-		Session session = sessionFactory.getCurrentSession();
-        session.delete(driver);
+		entityManager.remove(entityManager.merge(driver));
 	}
 
 }

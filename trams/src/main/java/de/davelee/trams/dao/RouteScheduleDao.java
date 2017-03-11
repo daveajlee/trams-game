@@ -2,61 +2,52 @@ package de.davelee.trams.dao;
 
 import java.util.List;
 
-import org.hibernate.Query;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 import de.davelee.trams.data.RouteSchedule;
 
-public class RouteScheduleDao {
-	
-	private SessionFactory sessionFactory;
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
 
-	public SessionFactory getSessionFactory() {
-		return sessionFactory;
+public class RouteScheduleDao {
+
+	private EntityManager entityManager;
+
+	public EntityManager getEntityManager() {
+		return entityManager;
 	}
 
-	public void setSessionFactory(SessionFactory sessionFactory) {
-		this.sessionFactory = sessionFactory;
+	public void setEntityManager(final EntityManager entityManager) {
+		this.entityManager = entityManager;
 	}
 	
 	@Transactional
-    public void createAndStoreRouteSchedule(RouteSchedule routeSchedule) {
-        Session session = sessionFactory.getCurrentSession();
-        session.saveOrUpdate(routeSchedule);
+    public void createAndStoreRouteSchedule(final RouteSchedule routeSchedule) {
+		entityManager.persist(routeSchedule);
     }
     
 	@Transactional
-	public RouteSchedule getRouteScheduleById ( long id ) {
-		Session session = sessionFactory.getCurrentSession();
-		Query query = session.createQuery("from RouteSchedule where id = :id");
-		query.setParameter("id", id);
-		@SuppressWarnings("rawtypes")
-		List list = query.list();
-		if ( list.isEmpty() ) { return null; }
-		return (RouteSchedule) list.get(0);
+	public RouteSchedule getRouteScheduleById ( final long id ) {
+		return entityManager.find(RouteSchedule.class, id);
 	}
 	
 	@Transactional
 	public List<RouteSchedule> getRouteSchedulesByRouteId ( long routeId ) {
-		Session session = sessionFactory.getCurrentSession();
-		Query query = session.createQuery("from RouteSchedule where routeId = :routeId");
+		Query query = entityManager.createQuery("SELECT rs from RouteSchedule rs where routeId = :routeId");
 		query.setParameter("routeId", routeId);
 		@SuppressWarnings({ "unchecked" })
-		List<RouteSchedule> list = (List<RouteSchedule>) query.list();
-		if ( list.isEmpty() ) { return null; }
-		return list;
+		List<RouteSchedule> routeSchedules = (List<RouteSchedule>) query.getResultList();
+		if ( routeSchedules.isEmpty() ) { return null; }
+		return routeSchedules;
 	}
 	
 	@Transactional
 	public List<RouteSchedule> getAllRouteSchedules ( ) {
-		Session session = sessionFactory.getCurrentSession();
-		Query query = session.createQuery("from RouteSchedule");
+		Query query = entityManager.createQuery("SELECT rs from RouteSchedule rs");
 		@SuppressWarnings("unchecked")
-		List<RouteSchedule> list = (List<RouteSchedule>) query.list();
-		if ( list.isEmpty() ) { return null; }
-		return list;
+		List<RouteSchedule> routeSchedules = (List<RouteSchedule>) query.getResultList();
+		if ( routeSchedules.isEmpty() ) { return null; }
+		return routeSchedules;
 	}
 
 }

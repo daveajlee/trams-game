@@ -1,57 +1,98 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:jdbc="http://www.springframework.org/schema/jdbc"
-       xmlns:tx="http://www.springframework.org/schema/tx"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-       						http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-3.0.xsd
-       						http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd">
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
        <import resource="scenario-context.xml"/>
        <import resource="vehicle-context.xml"/>
+	   <import resource="database-context.xml"/>
 
 		<bean id="driverDao" class="de.davelee.trams.dao.DriverDao">
-			<property name="sessionFactory" ref="sessionFactory"/>
+			<property name="entityManager">
+				<bean class = "org.springframework.orm.jpa.support.SharedEntityManagerBean">
+					<property name = "entityManagerFactory" ref="entityManagerFactory"/>
+				</bean>
+			</property>
 		</bean>
 
 		<bean id="gameDao" class="de.davelee.trams.dao.GameDao">
-			<property name="sessionFactory" ref="sessionFactory"/>
+			<property name="entityManager">
+				<bean class = "org.springframework.orm.jpa.support.SharedEntityManagerBean">
+					<property name = "entityManagerFactory" ref="entityManagerFactory"/>
+				</bean>
+			</property>
 		</bean>
 
 		<bean id="journeyDao" class="de.davelee.trams.dao.JourneyDao">
-			<property name="sessionFactory" ref="sessionFactory"/>
+			<property name="entityManager">
+				<bean class = "org.springframework.orm.jpa.support.SharedEntityManagerBean">
+					<property name = "entityManagerFactory" ref="entityManagerFactory"/>
+				</bean>
+			</property>
 	   	</bean>
 
 		<bean id="journeyPatternDao" class="de.davelee.trams.dao.JourneyPatternDao">
-			<property name="sessionFactory" ref="sessionFactory"/>
+			<property name="entityManager">
+				<bean class = "org.springframework.orm.jpa.support.SharedEntityManagerBean">
+					<property name = "entityManagerFactory" ref="entityManagerFactory"/>
+				</bean>
+			</property>
 		</bean>
 
 		<bean id="messageDao" class="de.davelee.trams.dao.MessageDao">
-			<property name="sessionFactory" ref="sessionFactory"/>
+			<property name="entityManager">
+				<bean class = "org.springframework.orm.jpa.support.SharedEntityManagerBean">
+					<property name = "entityManagerFactory" ref="entityManagerFactory"/>
+				</bean>
+			</property>
 		</bean>
 
 		<bean id="routeDao" class="de.davelee.trams.dao.RouteDao">
-			<property name="sessionFactory" ref="sessionFactory"/>
+			<property name="entityManager">
+				<bean class = "org.springframework.orm.jpa.support.SharedEntityManagerBean">
+					<property name = "entityManagerFactory" ref="entityManagerFactory"/>
+				</bean>
+			</property>
 		</bean>
 
 		<bean id="routeScheduleDao" class="de.davelee.trams.dao.RouteScheduleDao">
-			<property name="sessionFactory" ref="sessionFactory"/>
+			<property name="entityManager">
+				<bean class = "org.springframework.orm.jpa.support.SharedEntityManagerBean">
+					<property name = "entityManagerFactory" ref="entityManagerFactory"/>
+				</bean>
+			</property>
 		</bean>
 
 		<bean id="stopDao" class="de.davelee.trams.dao.StopDao">
-			<property name="sessionFactory" ref="sessionFactory"/>
+			<property name="entityManager">
+				<bean class = "org.springframework.orm.jpa.support.SharedEntityManagerBean">
+					<property name = "entityManagerFactory" ref="entityManagerFactory"/>
+				</bean>
+			</property>
 		</bean>
 
 		<bean id="stopTimeDao" class="de.davelee.trams.dao.StopTimeDao">
-			<property name="sessionFactory" ref="sessionFactory"/>
+			<property name="entityManager">
+				<bean class = "org.springframework.orm.jpa.support.SharedEntityManagerBean">
+					<property name = "entityManagerFactory" ref="entityManagerFactory"/>
+				</bean>
+			</property>
 		</bean>
 
 		<bean id="timetableDao" class="de.davelee.trams.dao.TimetableDao">
-			<property name="sessionFactory" ref="sessionFactory"/>
+			<property name="entityManager">
+				<bean class = "org.springframework.orm.jpa.support.SharedEntityManagerBean">
+					<property name = "entityManagerFactory" ref="entityManagerFactory"/>
+				</bean>
+			</property>
 		</bean>
 
 		<bean id="vehicleDao" class="de.davelee.trams.dao.VehicleDao">
-			<property name="sessionFactory" ref="sessionFactory"/>
+			<property name="entityManager">
+				<bean class = "org.springframework.orm.jpa.support.SharedEntityManagerBean">
+					<property name = "entityManagerFactory" ref="entityManagerFactory"/>
+				</bean>
+			</property>
 		</bean>
        
        <bean id="driverService" class="de.davelee.trams.services.DriverService">
@@ -94,41 +135,5 @@
 
 		<bean id="fileService" class="de.davelee.trams.services.FileService">
 		</bean>
-       
-       <bean id="sessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
-    		<property name="dataSource" ref="dataSource"/>
-    		<property name="hibernateProperties">
- 				<props>
-    				<prop key="hibernate.dialect">org.hibernate.dialect.HSQLDialect</prop> 
-    				<prop key="hibernate.show_sql">true</prop> 
-    				<prop key="hibernate.hbm2ddl.auto">create</prop> 
-    				<prop key="hibernate.show_sql">true</prop> 
-  				</props>
-     		</property>
-        	<property name="annotatedClasses">
-      			<list>
-        			<value>de.davelee.trams.data.Driver</value>
-        			<value>de.davelee.trams.data.Game</value>
-        			<value>de.davelee.trams.data.Journey</value>
-        			<value>de.davelee.trams.data.JourneyPattern</value>
-					<value>de.davelee.trams.data.Message</value>
-        			<value>de.davelee.trams.data.Route</value>
-        			<value>de.davelee.trams.data.RouteSchedule</value>
-        			<value>de.davelee.trams.data.Stop</value>
-					<value>de.davelee.trams.data.StopTime</value>
-        			<value>de.davelee.trams.data.Timetable</value>
-        			<value>de.davelee.trams.data.Vehicle</value>
-         		</list>
-    		</property>
-  		</bean>
-  		
-  		<tx:annotation-driven transaction-manager="txManager"/>
-  		
-  		<bean id="txManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
-  			<property name="sessionFactory" ref="sessionFactory" />
-		</bean>
-  		
-  		<jdbc:embedded-database id="dataSource" type="HSQL">
-  		</jdbc:embedded-database>
-       
+
 </beans>

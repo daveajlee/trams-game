@@ -2,61 +2,52 @@ package de.davelee.trams.dao;
 
 import java.util.List;
 
-import org.hibernate.Query;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 import de.davelee.trams.data.Journey;
 
-public class JourneyDao {
-	
-	private SessionFactory sessionFactory;
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
 
-	public SessionFactory getSessionFactory() {
-		return sessionFactory;
+public class JourneyDao {
+
+	private EntityManager entityManager;
+
+	public EntityManager getEntityManager() {
+		return entityManager;
 	}
 
-	public void setSessionFactory(SessionFactory sessionFactory) {
-		this.sessionFactory = sessionFactory;
+	public void setEntityManager(EntityManager entityManager) {
+		this.entityManager = entityManager;
 	}
 	
 	@Transactional
     public void createAndStoreJourney(Journey journey) {
-        Session session = sessionFactory.getCurrentSession();
-        session.saveOrUpdate(journey);
+		entityManager.persist(journey);
     }
 	
 	@Transactional
 	public Journey getJourneyById ( long id ) {
-		Session session = sessionFactory.getCurrentSession();
-		Query query = session.createQuery("from Journey where id = :id");
-		query.setParameter("id", id);
-		@SuppressWarnings("rawtypes")
-		List list = query.list();
-		if ( list.isEmpty() ) { return null; }
-		return (Journey) list.get(0);
+		return entityManager.find(Journey.class, id);
 	}
 	
 	@Transactional
 	public List<Journey> getJourneysByRouteScheduleId ( long routeScheduleId ) {
-		Session session = sessionFactory.getCurrentSession();
-		Query query = session.createQuery("from Journey where routeScheduleId = :routeScheduleId");
+		Query query = entityManager.createQuery("SELECT j from Journey j where routeScheduleId = :routeScheduleId", Journey.class);
 		query.setParameter("routeScheduleId", routeScheduleId);
 		@SuppressWarnings({ "unchecked" })
-		List<Journey> list = (List<Journey>) query.list();
-		if ( list.isEmpty() ) { return null; }
-		return list;
+		List<Journey> journeys = (List<Journey>) query.getResultList();
+		if ( journeys.isEmpty() ) { return null; }
+		return journeys;
 	}
 	
 	@Transactional
 	public List<Journey> getAllJourneys ( ) {
-		Session session = sessionFactory.getCurrentSession();
-		Query query = session.createQuery("from Journey");
+		Query query = entityManager.createQuery("SELECT j from Journey j", Journey.class);
 		@SuppressWarnings("unchecked")
-		List<Journey> list = (List<Journey>) query.list();
-		if ( list.isEmpty() ) { return null; }
-		return list;
+		List<Journey> journeys = (List<Journey>) query.getResultList();
+		if ( journeys.isEmpty() ) { return null; }
+		return journeys;
 	}
 
 }

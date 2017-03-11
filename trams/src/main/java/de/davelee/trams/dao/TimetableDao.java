@@ -2,79 +2,68 @@ package de.davelee.trams.dao;
 
 import java.util.List;
 
-import org.hibernate.Query;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 import de.davelee.trams.data.Timetable;
 
-public class TimetableDao {
-	
-	private SessionFactory sessionFactory;
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
 
-	public SessionFactory getSessionFactory() {
-		return sessionFactory;
+public class TimetableDao {
+
+	private EntityManager entityManager;
+
+	public EntityManager getEntityManager() {
+		return entityManager;
 	}
 
-	public void setSessionFactory(SessionFactory sessionFactory) {
-		this.sessionFactory = sessionFactory;
+	public void setEntityManager(final EntityManager entityManager) {
+		this.entityManager = entityManager;
 	}
 	
 	@Transactional
     public void createAndStoreTimetable(Timetable timetable) {
-        Session session = sessionFactory.getCurrentSession();
-        session.saveOrUpdate(timetable);
+		entityManager.persist(timetable);
     }
 	
 	@Transactional
 	public Timetable getTimetableById ( long id ) {
-		Session session = sessionFactory.getCurrentSession();
-		Query query = session.createQuery("from Timetable where id = :id");
-		query.setParameter("id", id);
-		@SuppressWarnings("rawtypes")
-		List list = query.list();
-		if ( list.isEmpty() ) { return null; }
-		return (Timetable) list.get(0);
+		return entityManager.find(Timetable.class, id);
 	}
 	
 	@Transactional
 	public List<Timetable> getAllTimetables ( ) {
-		Session session = sessionFactory.getCurrentSession();
-		Query query = session.createQuery("from Timetable");
+		Query query = entityManager.createQuery("SELECT t from Timetable t");
 		@SuppressWarnings("unchecked")
-		List<Timetable> list = (List<Timetable>) query.list();
-		if ( list.isEmpty() ) { return null; }
-		return list;
+		List<Timetable> timetables = (List<Timetable>) query.getResultList();
+		if ( timetables.isEmpty() ) { return null; }
+		return timetables;
 	}
 	
 	@Transactional
-	public List<Timetable> getTimetablesByRouteId ( long routeId ) {
-		Session session = sessionFactory.getCurrentSession();
-		Query query = session.createQuery("from Timetable where routeId = :routeId");
+	public List<Timetable> getTimetablesByRouteId ( final long routeId ) {
+		Query query = entityManager.createQuery("SELECT t from Timetable t where routeId = :routeId");
 		query.setParameter("routeId", routeId);
 		@SuppressWarnings("unchecked")
-		List<Timetable> list = (List<Timetable>) query.list();
-		if ( list.isEmpty() ) { return null; }
-		return list;
+		List<Timetable> timetables = (List<Timetable>) query.getResultList();
+		if ( timetables.isEmpty() ) { return null; }
+		return timetables;
 	}
 	
 	@Transactional
-	public Timetable getTimetableByRouteIdAndName ( long routeId, String timetableName ) {
-		Session session = sessionFactory.getCurrentSession();
-		Query query = session.createQuery("from Timetable where routeId = :routeId and timetableName = :timetableName");
+	public Timetable getTimetableByRouteIdAndName ( final long routeId, final String timetableName ) {
+		Query query = entityManager.createQuery("SELECT t from Timetable t where routeId = :routeId AND timetableName = :timetableName");
 		query.setParameter("routeId", routeId);
 		query.setParameter("timetableName", timetableName);
-		@SuppressWarnings("rawtypes")
-		List list = query.list();
+		@SuppressWarnings("unchecked")
+		List<Timetable> list = (List<Timetable>) query.getResultList();
 		if ( list.isEmpty() ) { return null; }
-		return (Timetable) list.get(0);
+		return list.get(0);
 	}
 	
 	@Transactional
-	public void deleteTimetable ( Timetable timetable ) {
-		Session session = sessionFactory.getCurrentSession();
-        session.delete(timetable);
+	public void deleteTimetable ( final Timetable timetable ) {
+		entityManager.remove(timetable);
 	}
 
 }

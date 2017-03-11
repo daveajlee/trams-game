@@ -2,50 +2,42 @@ package de.davelee.trams.dao;
 
 import java.util.List;
 
-import org.hibernate.Query;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 import de.davelee.trams.data.Message;
 
-public class MessageDao {
-	
-	private SessionFactory sessionFactory;
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
 
-	public SessionFactory getSessionFactory() {
-		return sessionFactory;
+public class MessageDao {
+
+	private EntityManager entityManager;
+
+	public EntityManager getEntityManager() {
+		return entityManager;
 	}
 
-	public void setSessionFactory(SessionFactory sessionFactory) {
-		this.sessionFactory = sessionFactory;
+	public void setEntityManager(final EntityManager entityManager) {
+		this.entityManager = entityManager;
 	}
 	
 	@Transactional
-    public Message getMessageById ( long id ) {
-    	Session session = sessionFactory.getCurrentSession();
-    	Query query = session.createQuery("from Message where id = :id");
-    	query.setParameter("id", id);
-    	@SuppressWarnings("rawtypes")
-    	List list = query.list();
-    	if ( list.isEmpty() ) { return null; }
-    	return (Message) list.get(0);
+    public Message getMessageById ( final long id ) {
+		return entityManager.find(Message.class, id);
     }
     
     @Transactional
-    public void createAndStoreMessage ( Message message ) {
-    	Session session = sessionFactory.getCurrentSession();
-    	session.saveOrUpdate(message);
+    public void createAndStoreMessage ( final Message message ) {
+		entityManager.persist(message);
     }
     
     @Transactional
 	public List<Message> getAllMessages ( ) {
-		Session session = sessionFactory.getCurrentSession();
-		Query query = session.createQuery("from Message");
+		Query query = entityManager.createQuery("SELECT m from Message m", Message.class);
 		@SuppressWarnings("unchecked")
-		List<Message> list = (List<Message>) query.list();
-		if ( list.isEmpty() ) { return null; }
-		return list;
+		List<Message> messages = (List<Message>) query.getResultList();
+		if ( messages.isEmpty() ) { return null; }
+		return messages;
 	}
 
 }
