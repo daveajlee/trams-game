@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import de.davelee.trams.dao.JourneyPatternDao;
+import de.davelee.trams.repository.JourneyPatternRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +25,7 @@ public class JourneyPatternServiceTest {
 	private JourneyPatternService journeyPatternService;
 	
 	@Autowired
-	private JourneyPatternDao journeyPatternDao;
+	private JourneyPatternRepository journeyPatternRepository;
 
 	@Test
 	public void testCreateJourneyPattern() {
@@ -52,10 +52,10 @@ public class JourneyPatternServiceTest {
 		Calendar endDate = Calendar.getInstance(); endDate.set(2014, 4, 30);
 		List<Integer> daysOfOperation = new ArrayList<Integer>(); daysOfOperation.add(Calendar.MONDAY);
 		daysOfOperation.add(Calendar.TUESDAY); daysOfOperation.add(Calendar.WEDNESDAY);
-		journeyPatternDao.createAndStoreJourneyPattern(journeyPatternService.createJourneyPattern("Mon-Fri", daysOfOperation, "S+U Pankow", "Rathaus Pankow", startDate, endDate, 15, 3, 1));
-		assertNotNull(journeyPatternDao.getJourneyPatternById(1));
-		assertEquals(journeyPatternDao.getJourneyPatternById(1).getName(), "Mon-Fri");
-		assertNull(journeyPatternDao.getJourneyPatternById(40));
+		journeyPatternRepository.saveAndFlush(journeyPatternService.createJourneyPattern("Mon-Fri", daysOfOperation, "S+U Pankow", "Rathaus Pankow", startDate, endDate, 15, 3, 1));
+		assertNotNull(journeyPatternRepository.findOne(new Long(1)));
+		assertEquals(journeyPatternRepository.findOne(new Long(1)).getName(), "Mon-Fri");
+		assertNull(journeyPatternRepository.findOne(new Long(40)));
 	}
 
 }

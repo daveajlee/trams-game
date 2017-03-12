@@ -8,7 +8,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Calendar;
 
-import de.davelee.trams.dao.DriverDao;
+import de.davelee.trams.repository.DriverRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +25,7 @@ public class DriverServiceTest {
 	private DriverService driverService;
 	
 	@Autowired
-	private DriverDao driverDao;
+	private DriverRepository driverRepository;
 	
 	@Test
 	public void testCreateDriver() {
@@ -68,12 +68,12 @@ public class DriverServiceTest {
 		Calendar startDate = Calendar.getInstance();
 		startDate.set(2014, 4, 20);
 		//Treble needed so that test works in both Maven and JUnit.
-		driverDao.createAndStoreDriver(driverService.createDriver("Dave Lee", 40, startDate));
-		driverDao.createAndStoreDriver(driverService.createDriver("Dave Lee", 40, startDate));
-		driverDao.createAndStoreDriver(driverService.createDriver("Dave Lee", 40, startDate));
-		assertNotNull(driverDao.getDriverById(3));
-		assertEquals(driverDao.getDriverById(3).getName(), "Dave Lee");
-		assertNull(driverDao.getDriverById(40));
+		driverRepository.saveAndFlush(driverService.createDriver("Dave Lee", 40, startDate));
+		driverRepository.saveAndFlush(driverService.createDriver("Dave Lee", 40, startDate));
+		driverRepository.saveAndFlush(driverService.createDriver("Dave Lee", 40, startDate));
+		assertNotNull(driverRepository.findOne(new Long(3)));
+		assertEquals(driverRepository.findOne(new Long(3)).getName(), "Dave Lee");
+		assertNull(driverRepository.findOne(new Long(40)));
 	}
 
 }

@@ -5,7 +5,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.Calendar;
 
-import de.davelee.trams.dao.GameDao;
+import de.davelee.trams.repository.GameRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,11 +22,11 @@ public class GameServiceTest {
 	private GameService gameService;
 
 	@Autowired
-	private GameDao gameDao;
+	private GameRepository gameRepository;
 	
 	@Test
 	public void testIncrement() {
-		gameDao.createAndStoreGame(gameService.createGame("Dave Lee", "Landuff Transport Company"));
+		gameRepository.saveAndFlush(gameService.createGame("Dave Lee", "Landuff Transport Company"));
 		assertNotNull(gameService.getGame());
 		assertEquals(DateFormats.HOUR_MINUTE_FORMAT.getFormat().format(gameService.getCurrentTime().getTime()), "05:00");
 		gameService.setTimeIncrement(15);

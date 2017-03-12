@@ -6,26 +6,20 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-import de.davelee.trams.dao.VehicleDao;
 import de.davelee.trams.data.Vehicle;
 import de.davelee.trams.factory.VehicleFactory;
+import de.davelee.trams.repository.VehicleRepository;
 import de.davelee.trams.util.SortedVehicles;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class VehicleService {
 
-    private VehicleDao vehicleDao;
+    @Autowired
+    private VehicleRepository vehicleRepository;
     private VehicleFactory vehicleFactory;
 	
 	public VehicleService() {
 	}
-
-    public VehicleDao getVehicleDao() {
-        return vehicleDao;
-    }
-
-    public void setVehicleDao(VehicleDao vehicleDao) {
-        this.vehicleDao = vehicleDao;
-    }
 
     public VehicleFactory getVehicleFactory() {
         return vehicleFactory;
@@ -69,7 +63,7 @@ public class VehicleService {
     }
     
     public Vehicle getVehicleById(long id) {
-    	return vehicleDao.getVehicleById(id);
+    	return vehicleRepository.findOne(new Long(id));
     }
     
     /**
@@ -87,7 +81,7 @@ public class VehicleService {
     }
     
     public List<Vehicle> getAllVehicles ( ) {
-    	return vehicleDao.getAllVehicles();
+    	return vehicleRepository.findAll();
     }
     
     public Vehicle createVehicle ( final String registrationNumber, final Calendar deliveryDate, final double depreciationFactor,
@@ -107,11 +101,11 @@ public class VehicleService {
     }
     
     public void saveVehicle ( final Vehicle vehicle ) {
-    	vehicleDao.createAndStoreVehicle(vehicle);
+        vehicleRepository.saveAndFlush(vehicle);
     }
     
     public void removeVehicle ( final Vehicle vehicle ) {
-    	vehicleDao.removeVehicle(vehicle);
+        vehicleRepository.delete(vehicle);
     }
     
     /**
@@ -165,7 +159,7 @@ public class VehicleService {
     
     //TODO: Exception when null?
     public Vehicle getVehicleByRouteScheduleId ( long routeScheduleId ) {
-        return vehicleDao.getVehicleByRouteScheduleId(routeScheduleId);
+        return vehicleRepository.findByRouteScheduleId(routeScheduleId);
     }
     
     /**

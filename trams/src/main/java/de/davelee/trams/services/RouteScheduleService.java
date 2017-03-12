@@ -2,24 +2,18 @@ package de.davelee.trams.services;
 
 import java.util.*;
 
-import de.davelee.trams.dao.RouteScheduleDao;
 import de.davelee.trams.data.*;
+import de.davelee.trams.repository.RouteScheduleRepository;
 import de.davelee.trams.util.DifficultyLevel;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class RouteScheduleService {
 
-    private RouteScheduleDao routeScheduleDao;
+    @Autowired
+    private RouteScheduleRepository routeScheduleRepository;
 	
 	public RouteScheduleService() {
 	}
-
-    public RouteScheduleDao getRouteScheduleDao() {
-        return routeScheduleDao;
-    }
-
-    public void setRouteScheduleDao(RouteScheduleDao routeScheduleDao) {
-        this.routeScheduleDao = routeScheduleDao;
-    }
 
     /**
      * Calculate a new random delay for this route schedule.
@@ -109,7 +103,7 @@ public class RouteScheduleService {
     }
 
     public RouteSchedule getRouteScheduleById(long id) {
-        return routeScheduleDao.getRouteScheduleById(id);
+        return routeScheduleRepository.findOne(id);
     }
 
     public RouteSchedule createRouteSchedule ( final long routeId, final int scheduleNumber, final int delayInMins ) {
@@ -121,15 +115,15 @@ public class RouteScheduleService {
     }
 
     public void saveRouteSchedule ( final RouteSchedule schedule ) {
-        routeScheduleDao.createAndStoreRouteSchedule(schedule);
+        routeScheduleRepository.saveAndFlush(schedule);
     }
 
     public List<RouteSchedule> getRouteSchedulesByRouteId ( long routeId ) {
-        return routeScheduleDao.getRouteSchedulesByRouteId(routeId);
+        return routeScheduleRepository.findByRouteId(routeId);
     }
 
     public List<RouteSchedule> getAllRouteSchedules ( ) {
-        return routeScheduleDao.getAllRouteSchedules();
+        return routeScheduleRepository.findAll();
     }
 
 }

@@ -4,30 +4,24 @@ import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
 
-import de.davelee.trams.dao.MessageDao;
+import de.davelee.trams.repository.MessageRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.davelee.trams.data.Message;
 import de.davelee.trams.util.MessageFolder;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class MessageService {
 	
 	private static final Logger logger = LoggerFactory.getLogger(MessageService.class);
 
-    private MessageDao messageDao;
+	@Autowired
+    private MessageRepository messageRepository;
 	
 	public MessageService() {
 		
 	}
-
-    public MessageDao getMessageDao() {
-        return messageDao;
-    }
-
-    public void setMessageDao(MessageDao messageDao) {
-        this.messageDao = messageDao;
-    }
 	
 	/**
      * Create a new message.
@@ -83,15 +77,15 @@ public class MessageService {
     }
     
     public Message getMessageById(long id) {
-    	return messageDao.getMessageById(id);
+    	return messageRepository.findOne(id);
     }
     
     public void saveMessage(Message message) {
-    	messageDao.createAndStoreMessage(message);
+        messageRepository.saveAndFlush(message);
     }
     
     public List<Message> getAllMessages() {
-    	return messageDao.getAllMessages();
+    	return messageRepository.findAll();
     }
 
 }

@@ -4,25 +4,19 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Hashtable;
 
-import de.davelee.trams.dao.GameDao;
 import de.davelee.trams.data.Game;
+import de.davelee.trams.repository.GameRepository;
 import de.davelee.trams.util.DateFormats;
 import de.davelee.trams.util.DifficultyLevel;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class GameService {
 
-    private GameDao gameDao;
+    @Autowired
+    private GameRepository gameRepository;
 	
 	public GameService() {
 	}
-
-    public GameDao getGameDao() {
-        return gameDao;
-    }
-
-    public void setGameDao(GameDao gameDao) {
-        this.gameDao = gameDao;
-    }
 
 	public Game createGame ( String playerName, String scenarioName ) {
         return createGame(playerName, scenarioName, 80000.00, 100, DifficultyLevel.EASY);
@@ -42,7 +36,7 @@ public class GameService {
     }
 
     public Game getGame ( )  {
-        return gameDao.getCurrentGame();
+        return gameRepository.findAll().get(0);
     }
     
     /**
@@ -133,7 +127,7 @@ public class GameService {
         Calendar newCurrentTime = game.getCurrentTime();
         newCurrentTime.add(Calendar.MINUTE, game.getTimeIncrement());
         game.setCurrentTime(newCurrentTime);
-        gameDao.updateGame(game);
+        gameRepository.saveAndFlush(game);
     }
 
     /**

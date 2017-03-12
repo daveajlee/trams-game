@@ -3,25 +3,19 @@ package de.davelee.trams.services;
 import java.util.Calendar;
 import java.util.List;
 
-import de.davelee.trams.dao.TimetableDao;
 import de.davelee.trams.data.Timetable;
+import de.davelee.trams.repository.TimetableRepository;
 import de.davelee.trams.util.DateFormats;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class TimetableService {
 
-    private TimetableDao timetableDao;
+    @Autowired
+    private TimetableRepository timetableRepository;
 	
 	public TimetableService() {
 		
 	}
-
-    public TimetableDao getTimetableDao() {
-        return timetableDao;
-    }
-
-    public void setTimetableDao(TimetableDao timetableDao) {
-        this.timetableDao = timetableDao;
-    }
 	
 	/**
      * Format timetable date.
@@ -41,19 +35,19 @@ public class TimetableService {
     }
 
     public List<Timetable> getTimetablesByRouteId (long routeId ) {
-        return timetableDao.getTimetablesByRouteId(routeId);
+        return timetableRepository.findByRouteId(routeId);
     }
 
     public Timetable getTimetableByRouteIdAndName ( long routeId, String timetableName ) {
-        return timetableDao.getTimetableByRouteIdAndName(routeId, timetableName);
+        return timetableRepository.findByRouteIdAndName(routeId, timetableName);
     }
 
     public void deleteTimetable ( Timetable timetable ) {
-        timetableDao.deleteTimetable(timetable);
+        timetableRepository.delete(timetable);
     }
 
     public List<Timetable> getAllTimetables ( ) {
-        return timetableDao.getAllTimetables();
+        return timetableRepository.findAll();
     }
 
     /**
@@ -63,7 +57,7 @@ public class TimetableService {
      * @return a <code>Timetable</code> object.
      */
     public Timetable getCurrentTimetable ( long routeId, Calendar today ) {
-        List<Timetable> timetables = timetableDao.getTimetablesByRouteId(routeId);
+        List<Timetable> timetables = timetableRepository.findByRouteId(routeId);
         for ( Timetable myTimetable : timetables ) {
             if ( (myTimetable.getValidFromDate().before(today) || myTimetable.getValidFromDate().equals(today)) && (myTimetable.getValidToDate().after(today) || myTimetable.getValidToDate().equals(today))  ) {
                 return myTimetable;

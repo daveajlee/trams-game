@@ -3,20 +3,14 @@ package de.davelee.trams.services;
 import java.util.Calendar;
 import java.util.List;
 
-import de.davelee.trams.dao.DriverDao;
 import de.davelee.trams.data.Driver;
+import de.davelee.trams.repository.DriverRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class DriverService {
 
-	private DriverDao driverDao;
-
-	public DriverDao getDriverDao() {
-		return driverDao;
-	}
-
-	public void setDriverDao(DriverDao driverDao) {
-		this.driverDao = driverDao;
-	}
+	@Autowired
+	private DriverRepository driverRepository;
 
 	/**
      * Check if the driver has started work or not.
@@ -39,19 +33,19 @@ public class DriverService {
     }
 
     public Driver getDriverById(long id) {
-    	return driverDao.getDriverById(id);
+    	return driverRepository.findOne(id);
     }
     
     public List<Driver> getAllDrivers ( ) {
-    	return driverDao.getAllDrivers();
+		return driverRepository.findAll();
     }
     
     public void saveDriver ( final Driver driver ) {
-    	driverDao.createAndStoreDriver(driver);
+		driverRepository.saveAndFlush(driver);
     }
 
     public void removeDriver ( final Driver driver ) {
-    	driverDao.removeDriver(driver);
+		driverRepository.delete(driver);
     }
     
 }

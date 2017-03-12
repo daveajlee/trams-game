@@ -3,27 +3,21 @@ package de.davelee.trams.services;
 import java.util.Calendar;
 import java.util.List;
 
-import de.davelee.trams.dao.JourneyPatternDao;
 import de.davelee.trams.data.JourneyPattern;
+import de.davelee.trams.repository.JourneyPatternRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class JourneyPatternService {
 
-    private JourneyPatternDao journeyPatternDao;
+    @Autowired
+    private JourneyPatternRepository journeyPatternRepository;
 	
 	public JourneyPatternService() {
 		
 	}
-
-    public JourneyPatternDao getJourneyPatternDao() {
-	    return journeyPatternDao;
-    }
-
-    public void setJourneyPatternDao(JourneyPatternDao journeyPatternDao) {
-        this.journeyPatternDao = journeyPatternDao;
-    }
     
     public JourneyPattern getJourneyPatternById(long id) {
-    	return journeyPatternDao.getJourneyPatternById(id);
+    	return journeyPatternRepository.findOne(id);
     }
     
     public JourneyPattern createJourneyPattern ( String name, List<Integer> operatingDays, String outgoingTerminus, String returnTerminus,
@@ -42,11 +36,11 @@ public class JourneyPatternService {
     }
 
     public List<JourneyPattern> getAllJourneyPatterns() {
-        return journeyPatternDao.getAllJourneyPatterns();
+        return journeyPatternRepository.findAll();
     }
 
     public List<JourneyPattern> getJourneyPatternsByTimetableId ( long timetableId ) {
-        return journeyPatternDao.getJourneyPatternsByTimetableId(timetableId);
+        return journeyPatternRepository.findByTimetableId(timetableId);
     }
 
 }

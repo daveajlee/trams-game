@@ -4,31 +4,25 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import de.davelee.trams.dao.RouteDao;
 import de.davelee.trams.data.*;
 import de.davelee.trams.factory.ScenarioFactory;
 
+import de.davelee.trams.repository.RouteRepository;
 import de.davelee.trams.util.SortedRoutes;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class RouteService {
 
     private ScenarioFactory scenarioFactory;
 
-    private RouteDao routeDao;
+    @Autowired
+    private RouteRepository routeRepository;
     
     public static int OUTWARD_DIRECTION = 0;
     public static int RETURN_DIRECTION = 1;
 	
 	public RouteService() {
 	}
-
-    public RouteDao getRouteDao() {
-        return routeDao;
-    }
-
-    public void setRouteDao(RouteDao routeDao) {
-        this.routeDao = routeDao;
-    }
 
     public ScenarioFactory getScenarioFactory() {
         return scenarioFactory;
@@ -160,7 +154,7 @@ public class RouteService {
     }
     
     public Route getRouteById(long id) {
-    	return routeDao.getRouteById(id);
+    	return routeRepository.findOne(id);
     }
     
     public Route createRoute ( String routeNumber, String[] stopNames ) {
@@ -198,15 +192,15 @@ public class RouteService {
     }
     
     public List<Route> getAllRoutes ( ) {
-    	return routeDao.getAllRoutes();
+    	return routeRepository.findAll();
     }
     
     public void saveRoute ( final Route route ) {
-    	routeDao.createAndStoreRoute(route);
+        routeRepository.saveAndFlush(route);
     }
 
     public void removeRoute ( final Route route ) {
-    	routeDao.removeRoute(route);
+        routeRepository.delete(route);
     }
 
 }
