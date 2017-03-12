@@ -12,15 +12,15 @@ import javax.swing.*;
 import javax.swing.event.*;
 
 import de.davelee.trams.controllers.GameController;
+import de.davelee.trams.controllers.JourneyController;
+import de.davelee.trams.controllers.MessageController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.text.*;
 
 import de.davelee.trams.main.UserInterface;
-import de.davelee.trams.services.JourneyService;
 import de.davelee.trams.util.DateFormats;
-import de.davelee.trams.util.MessageFolder;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -71,10 +71,15 @@ public class ControlScreen extends ButtonBar {
     private JComboBox dateBox;
 
     private boolean redrawOnRouteChange = true;
-    private JourneyService journeyService;
 
     @Autowired
     private GameController gameController;
+
+    @Autowired
+    private MessageController messageController;
+
+    @Autowired
+    private JourneyController journeyController;
 
     /**
      * Create a new control screen.
@@ -98,7 +103,6 @@ public class ControlScreen extends ButtonBar {
         
         //Initialise dialog panel.
         dialogPanel = new JPanel(new BorderLayout());
-        journeyService = new JourneyService();
         
         //Initialise GUI with title and close attributes.
         this.setTitle ("TraMS - Player: " + userInterface.getPlayerName() + " (" + userInterface.getScenarioName() + ")");
@@ -316,9 +320,9 @@ public class ControlScreen extends ButtonBar {
         //Now check if it is past midnight! If it is dispose, and create Allocation Screen.
         if ( isPastMidnight(gameController.getCurrentSimTime(), userInterface.getPreviousSimTime()) && !doneAllocations ) {
             //Now add a message to summarise days events!!!
-            userInterface.addMessage("Passenger Satisfaction for " + userInterface.formatDateString(userInterface.getPreviousSimTime(), DateFormats.FULL_FORMAT), "Congratulations you have successfully completed transport operations for " + userInterface.getScenarioName() + " on " + userInterface.formatDateString(userInterface.getPreviousSimTime(), DateFormats.FULL_FORMAT) + " with a passenger satisfaction of " + userInterface.computeAndReturnPassengerSatisfaction() + "%.\n\nNow you need to allocate vehicles to routes for " + userInterface.formatDateString(gameController.getCurrentSimTime(), DateFormats.FULL_FORMAT) + " and keep the passenger satisfaction up! Click on the Management tab and then choose Allocations. Good luck!", "Council", MessageFolder.INBOX, gameController.getCurrentSimTime());
+            messageController.addMessage("Passenger Satisfaction for " + userInterface.formatDateString(userInterface.getPreviousSimTime(), DateFormats.FULL_FORMAT), "Congratulations you have successfully completed transport operations for " + userInterface.getScenarioName() + " on " + userInterface.formatDateString(userInterface.getPreviousSimTime(), DateFormats.FULL_FORMAT) + " with a passenger satisfaction of " + userInterface.computeAndReturnPassengerSatisfaction() + "%.\n\nNow you need to allocate vehicles to routes for " + userInterface.formatDateString(gameController.getCurrentSimTime(), DateFormats.FULL_FORMAT) + " and keep the passenger satisfaction up! Click on the Management tab and then choose Allocations. Good luck!", "Council", "INBOX", gameController.getCurrentSimTime());
             //Refresh messages.
-            String[] messageSubjects = userInterface.getMessageSubjects(MessageFolder.valueOf(foldersBox.getSelectedItem().toString()),dateBox.getSelectedItem().toString(),"Council");
+            String[] messageSubjects = messageController.getMessageSubjects(foldersBox.getSelectedItem().toString(),dateBox.getSelectedItem().toString(),"Council");
             messagesModel.removeAllElements();
             for ( int i = 0; i < messageSubjects.length; i++ ) {
                 messagesModel.addElement(messageSubjects[i]);
@@ -331,7 +335,7 @@ public class ControlScreen extends ButtonBar {
                 messagesArea.setText("There are no messages in the " + foldersBox.getSelectedItem().toString() + " folder for the date " + dateBox.getSelectedItem().toString() + ".");
             }
             else {
-                messagesArea.setText(userInterface.getMessageText(MessageFolder.valueOf(foldersBox.getSelectedItem().toString()),dateBox.getSelectedItem().toString(), "Council", messagesList.getSelectedIndex()));
+                messagesArea.setText(messageController.getMessageText(foldersBox.getSelectedItem().toString(),dateBox.getSelectedItem().toString(), "Council", messagesList.getSelectedIndex()));
             }
             dateModel.addElement(userInterface.formatDateString(gameController.getCurrentSimTime(), DateFormats.FULL_TIME_FORMAT).split("-")[0]);
             //Then display it to the user.
@@ -461,7 +465,7 @@ public class ControlScreen extends ButtonBar {
         messagesList.addListSelectionListener( new ListSelectionListener() {
             public void valueChanged ( ListSelectionEvent lse ) {
                 if ( messagesList.getSelectedIndex() != -1 ) {
-                    messagesArea.setText(userInterface.getMessageText(MessageFolder.valueOf(foldersBox.getSelectedItem().toString()),dateBox.getSelectedItem().toString(),"Council",messagesList.getSelectedIndex()));
+                    messagesArea.setText(messageController.getMessageText(foldersBox.getSelectedItem().toString(),dateBox.getSelectedItem().toString(),"Council",messagesList.getSelectedIndex()));
                 }
             }
         });
@@ -480,17 +484,17 @@ public class ControlScreen extends ButtonBar {
         //Create combo box with date.
         dateModel = new DefaultComboBoxModel();
         dateModel.addElement("All Dates");
-        for ( int i = 0; i < userInterface.getNumberMessages(); i++ ) {
-            logger.debug("Index of " + dateModel.getIndexOf(userInterface.getMessageDateByPosition(i)));
-            if ( dateModel.getIndexOf(userInterface.getMessageDateByPosition(i)) == -1 ) {
-                dateModel.addElement(userInterface.getMessageDateByPosition(i));
+        for ( int i = 0; i < messageController.getNumberMessages(); i++ ) {
+            logger.debug("Index of " + dateModel.getIndexOf(messageController.getMessageDateByPosition(i)));
+            if ( dateModel.getIndexOf(messageController.getMessageDateByPosition(i)) == -1 ) {
+                dateModel.addElement(messageController.getMessageDateByPosition(i));
             }
         }
         dateBox = new JComboBox(dateModel);
         dateBox.setFont(new Font("Arial", Font.PLAIN, 12));
         dateBox.addItemListener( new ItemListener() {
             public void itemStateChanged ( ItemEvent e ) {
-                String[] subjects = userInterface.getMessageSubjects(MessageFolder.valueOf(foldersBox.getSelectedItem().toString()),dateBox.getSelectedItem().toString(), "Council");
+                String[] subjects = messageController.getMessageSubjects(foldersBox.getSelectedItem().toString(),dateBox.getSelectedItem().toString(), "Council");
                 messagesModel.removeAllElements();
                 for ( int i = 0; i < subjects.length; i++ ) {
                     messagesModel.addElement(subjects[i]);
@@ -503,7 +507,7 @@ public class ControlScreen extends ButtonBar {
                     messagesArea.setText("There are no messages in the " + foldersBox.getSelectedItem().toString() + " folder for the date " + dateBox.getSelectedItem().toString() + ".");
                 }
                 else {
-                    messagesArea.setText(userInterface.getMessageText(MessageFolder.valueOf(foldersBox.getSelectedItem().toString()),dateBox.getSelectedItem().toString(), "Council", messagesList.getSelectedIndex()));
+                    messagesArea.setText(messageController.getMessageText(foldersBox.getSelectedItem().toString(),dateBox.getSelectedItem().toString(), "Council", messagesList.getSelectedIndex()));
                 }
             }
         });
@@ -531,7 +535,7 @@ public class ControlScreen extends ButtonBar {
         foldersBox.setFont(new Font("Arial", Font.PLAIN, 12));
         foldersBox.addItemListener ( new ItemListener() {
             public void itemStateChanged ( ItemEvent e ) {
-                String[] subjects = userInterface.getMessageSubjects(MessageFolder.valueOf(foldersBox.getSelectedItem().toString()),dateBox.getSelectedItem().toString(),"Council");
+                String[] subjects = messageController.getMessageSubjects(foldersBox.getSelectedItem().toString(),dateBox.getSelectedItem().toString(),"Council");
                 messagesModel.removeAllElements();
                 for ( int i = 0; i < subjects.length; i++ ) {
                     messagesModel.addElement(subjects[i]);
@@ -544,7 +548,7 @@ public class ControlScreen extends ButtonBar {
                     messagesArea.setText("There are no messages in the " + foldersBox.getSelectedItem().toString() + " folder for the date " + dateBox.getSelectedItem().toString() + ".");
                 }
                 else {
-                    messagesArea.setText(userInterface.getMessageText(MessageFolder.valueOf(foldersBox.getSelectedItem().toString()),dateBox.getSelectedItem().toString(),"Council", messagesList.getSelectedIndex()));
+                    messagesArea.setText(messageController.getMessageText(foldersBox.getSelectedItem().toString(),dateBox.getSelectedItem().toString(),"Council", messagesList.getSelectedIndex()));
                 }
             }
         });
@@ -554,7 +558,7 @@ public class ControlScreen extends ButtonBar {
         //Add west panel to messages panel.
         messagesPanel.add(westPanel, BorderLayout.WEST);
         //Initialise the messages list now.
-        String[] subjects = userInterface.getMessageSubjects(MessageFolder.valueOf(foldersBox.getSelectedItem().toString()),dateBox.getSelectedItem().toString(),"Council");
+        String[] subjects = messageController.getMessageSubjects(foldersBox.getSelectedItem().toString(),dateBox.getSelectedItem().toString(),"Council");
         for ( int i = 0; i < subjects.length; i++ ) {
             messagesModel.addElement(subjects[i]);
         }
@@ -575,7 +579,7 @@ public class ControlScreen extends ButtonBar {
             messagesArea.setText("There are no messages in the " + foldersBox.getSelectedItem().toString() + " for the date " + dateBox.getSelectedItem().toString() + " folder.");
         }
         else {
-            messagesArea.setText(userInterface.getMessageText(MessageFolder.valueOf(foldersBox.getSelectedItem().toString()),dateBox.getSelectedItem().toString(),"Council", messagesList.getSelectedIndex()));
+            messagesArea.setText(messageController.getMessageText(foldersBox.getSelectedItem().toString(),dateBox.getSelectedItem().toString(),"Council", messagesList.getSelectedIndex()));
         }
         messagesArea.setFont(new Font("Arial", Font.ITALIC, 12));
         messagesArea.setWrapStyleWord(true);
@@ -686,10 +690,10 @@ public class ControlScreen extends ButtonBar {
                 outwardStops.add(((JLabel) stopPanels.get(j).getComponent(0)).getText());
             }
             int direction = DrawingPanel.RIGHT_TO_LEFT;
-            if ( journeyService.getCurrentJourney(journeyService.getJourneysByRouteScheduleId(routeScheduleId), gameController.getCurrentSimTime()) == null ) {
+            if ( journeyController.getCurrentJourney(routeScheduleId, gameController.getCurrentSimTime()) == null ) {
                 continue; //Don't print if the vehicle is at a terminus.
             }
-            if ( journeyService.isOutwardJourney(journeyService.getCurrentJourney(journeyService.getJourneysByRouteScheduleId(routeScheduleId), gameController.getCurrentSimTime()), outwardStops) ) {
+            if ( journeyController.isOutwardJourney(routeScheduleId, gameController.getCurrentSimTime(), outwardStops) ) {
                 direction = DrawingPanel.LEFT_TO_RIGHT;
                 direction = DrawingPanel.LEFT_TO_RIGHT; 
             }
@@ -715,7 +719,7 @@ public class ControlScreen extends ButtonBar {
                         xPos = startPos;
                     }
                     else {
-                        long maxTimeDiff = Math.abs(journeyService.getStopMaxTimeDiff(journeyService.getCurrentJourney(journeyService.getJourneysByRouteScheduleId(routeScheduleId), gameController.getCurrentSimTime()), previousStop, myLabel.getText()));
+                        long maxTimeDiff = Math.abs(journeyController.getStopMaxTimeDiff(routeScheduleId, gameController.getCurrentSimTime(), previousStop, myLabel.getText()));
                         if ( maxTimeDiff == Integer.MAX_VALUE ) {
                             xPos = startPos;
                         } 

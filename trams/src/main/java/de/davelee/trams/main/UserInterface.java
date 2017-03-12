@@ -5,6 +5,7 @@ import javax.swing.filechooser.*;
 
 import de.davelee.trams.controllers.DriverController;
 import de.davelee.trams.controllers.GameController;
+import de.davelee.trams.controllers.MessageController;
 import de.davelee.trams.data.*;
 import de.davelee.trams.db.TramsFile;
 import de.davelee.trams.services.*;
@@ -19,7 +20,6 @@ import de.davelee.trams.gui.SplashScreen;
 import de.davelee.trams.gui.WelcomeScreen;
 import de.davelee.trams.util.DateFormats;
 import de.davelee.trams.util.DifficultyLevel;
-import de.davelee.trams.util.MessageFolder;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -54,7 +54,6 @@ public class UserInterface implements Runnable {
     private GameService gameService;
     private ScenarioService scenarioService;
     private FileService fileService;
-    private MessageService messageService;
     private RouteService routeService;
     private JourneyPatternService journeyPatternService;
     private TimetableService timetableService;
@@ -64,6 +63,9 @@ public class UserInterface implements Runnable {
 
     @Autowired
     private GameController gameController;
+
+    @Autowired
+    private MessageController messageController;
     
     /**
      * Create a new user interface - default constructor.
@@ -104,15 +106,6 @@ public class UserInterface implements Runnable {
      */
     public JFrame getFrame ( ) {
         return currentFrame;
-    }
-    
-    /**
-     * Add a message to the message queue.
-     * @param msg a <code>Message</code> object!
-     */
-    public void addMessage ( String subject, String text, String sender, MessageFolder folder, Calendar date ) {
-        messageService.saveMessage( messageService.createMessage(subject, text, sender, 
-        		folder, date));
     }
     
     /**
@@ -253,49 +246,6 @@ public class UserInterface implements Runnable {
      */
     public void setDifficultyLevel ( DifficultyLevel diffLevel ) {
         gameService.setDifficultyLevel(diffLevel);
-    }
-    
-    /**
-     * Get a linked list of messages which are relevant for the specified folder, date and sender.
-     * @param folder a <code>String</code> with the name of the folder.
-     * @param date a <code>String</code> with the date.
-     * @param sender a <code>String</code> with the sender.
-     * @return a <code>LinkedList</code> with messages.
-     */
-    public long[] getMessageIds ( MessageFolder folder, String date, String sender ) {
-        //Return a message list.
-        return messageService.getMessageIds(messageService.getAllMessages(), folder, date, sender);
-    }
-    
-    public String[] getMessageSubjects ( MessageFolder folder, String date, String sender ) {
-    	long[] messageIds = messageService.getMessageIds(messageService.getAllMessages(), folder, date, sender);
-    	String[] subjects = new String[messageIds.length];
-    	for ( int i = 0; i < subjects.length; i++ ) {
-    		subjects[i] = messageService.getMessageById(messageIds[i]).getSubject();
-    	}
-    	return subjects;
-    }
-    
-    public String getMessageText ( MessageFolder folder, String date, String sender, int pos ) {
-    	return messageService.getMessageById(messageService.getMessageIds(messageService.getAllMessages(), folder, date, sender)
-    			[pos]).getText();
-    }
-    
-    /**
-     * Get the number of messages.
-     * @return a <code>int</code> with the number of messages.
-     */
-    public int getNumberMessages ( ) {
-        return messageService.getAllMessages().size();
-    }
-    
-    /**
-     * Get the message at the supplied position.
-     * @param pos a <code>int</code> with the position.
-     * @return a <code>Message</code> object which is at the supplied position.
-     */
-    public long getMessageId ( int pos ) {
-        return messageService.getAllMessages().get(pos).getId();
     }
 
     /**
@@ -628,7 +578,7 @@ public class UserInterface implements Runnable {
     		vehicleService.saveVehicle(vehicles.get(i));
     	}
         //Create welcome message.
-        messageService.createMessage("Welcome Message", "Congratulations on your appointment as Managing Director of the " + getScenarioName() + "! \n\n Your targets for the coming days and months are: " + scenarioService.retrieveScenarioObject(getScenarioName()).getTargets(),"Council",MessageFolder.INBOX,gameService.getCurrentTime());
+        messageController.addMessage("Welcome Message", "Congratulations on your appointment as Managing Director of the " + getScenarioName() + "! \n\n Your targets for the coming days and months are: " + scenarioService.retrieveScenarioObject(getScenarioName()).getTargets(),"Council","INBOX",gameService.getCurrentTime());
     }
     
     /**
@@ -709,7 +659,7 @@ public class UserInterface implements Runnable {
 
     public TramsFile prepareTramsFile ( ) {
         return new TramsFile(driverController.getAllDrivers(), gameService.getGame(), journeyService.getAllJourneys(),
-                journeyPatternService.getAllJourneyPatterns(), messageService.getAllMessages(), routeService.getAllRoutes(),
+                journeyPatternService.getAllJourneyPatterns(), messageController.getAllMessages(), routeService.getAllRoutes(),
                 routeScheduleService.getAllRouteSchedules(), journeyService.getAllStops(), journeyService.getAllStopTimes(),
                 timetableService.getAllTimetables(), vehicleService.getAllVehicles());
     }
@@ -1131,10 +1081,6 @@ public class UserInterface implements Runnable {
     
     public int getMinimumSatisfaction ( ) {
         return scenarioService.retrieveScenarioObject(getScenarioName()).getMinimumSatisfaction();
-    }
-    
-    public Calendar getMessageDateByPosition ( int position ) {
-    	return messageService.getMessageById(position).getDate();
     }
     
     public String getRouteNumber ( long id ) {

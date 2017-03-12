@@ -6,6 +6,9 @@ import java.awt.event.*;
 import javax.swing.*;
 
 import de.davelee.trams.controllers.GameController;
+import de.davelee.trams.controllers.JourneyController;
+import de.davelee.trams.controllers.RouteController;
+import de.davelee.trams.controllers.RouteScheduleController;
 import de.davelee.trams.main.UserInterface;
 import de.davelee.trams.services.JourneyService;
 import de.davelee.trams.services.RouteScheduleService;
@@ -33,13 +36,18 @@ public class MakeContactScreen extends JFrame {
     private JButton closeButton;
     
     private long routeScheduleId;
-    
-    private RouteScheduleService routeScheduleService;
-    private RouteService routeService;
-    private JourneyService journeyService;
 
     @Autowired
     private GameController gameController;
+
+    @Autowired
+    private JourneyController journeyController;
+
+    @Autowired
+    private RouteScheduleController routeScheduleController;
+
+    @Autowired
+    private RouteController routeController;
 
     /**
      * Create a new make contact screen.
@@ -54,15 +62,12 @@ public class MakeContactScreen extends JFrame {
         //Initialise route detail variables.
         this.routeScheduleId = routeScheduleId;
         
-        routeScheduleService = new RouteScheduleService();
-        routeService = new RouteService();
-        
         //Set image icon.
         Image img = Toolkit.getDefaultToolkit().getImage(MakeContactScreen.class.getResource("/TraMSlogo.png"));
         setIconImage(img);
         
         //Initialise GUI with title and close attributes.
-        this.setTitle ("Contact With " + userInterface.getAllocatedRegistrationNumber(routeScheduleId) + " On Route " + routeService.getRouteById(routeScheduleService.getRouteScheduleById(routeScheduleId).getRouteId()).getRouteNumber());
+        this.setTitle ("Contact With " + userInterface.getAllocatedRegistrationNumber(routeScheduleId) + " On Route " + routeController.getRouteNumber(routeScheduleId));
         this.setResizable (false);
         this.setDefaultCloseOperation (DO_NOTHING_ON_CLOSE);
         this.setBackground(Color.WHITE);
@@ -138,7 +143,7 @@ public class MakeContactScreen extends JFrame {
         communicationArea = new JTextArea(3,5);
         communicationArea.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         communicationArea.setText("Control: Vehicle " + userInterface.getAllocatedRegistrationNumber(routeScheduleId) + ", please state your current position. Over!");
-        communicationArea.setText(communicationArea.getText() + "\n\n Vehicle " + userInterface.getAllocatedRegistrationNumber(routeScheduleId) + ": At " + userInterface.getCurrentStopName(routeScheduleId, gameController.getCurrentSimTime(), userInterface.getDifficultyLevel()) + " heading towards " + getCurrentDestination() + " with delay of " + routeScheduleService.getDelay(routeScheduleId) + " mins. Over!");
+        communicationArea.setText(communicationArea.getText() + "\n\n Vehicle " + userInterface.getAllocatedRegistrationNumber(routeScheduleId) + ": At " + userInterface.getCurrentStopName(routeScheduleId, gameController.getCurrentSimTime(), userInterface.getDifficultyLevel()) + " heading towards " + getCurrentDestination() + " with delay of " + routeScheduleController.getDelay(routeScheduleId) + " mins. Over!");
         communicationArea.setFont(new Font("Arial", Font.ITALIC, 12));
         communicationArea.setEditable(false);
         communicationArea.setLineWrap(true);
@@ -197,9 +202,9 @@ public class MakeContactScreen extends JFrame {
      */
     public String[] getListOfStops() {
         //Create the String array.
-        String[] stops = new String[journeyService.getStopTimesByJourneyId(journeyService.getCurrentJourney(journeyService.getJourneysByRouteScheduleId(routeScheduleId), gameController.getCurrentSimTime()).getId()).size()];
+        String[] stops = new String[journeyController.getNumStopTimes(routeScheduleId, gameController.getCurrentSimTime())];
         for ( int i = 0; i < stops.length; i++ ) {
-            stops[i] = journeyService.getStopNameByStopId(journeyService.getStopTimesByJourneyId(journeyService.getCurrentJourney(journeyService.getJourneysByRouteScheduleId(routeScheduleId), gameController.getCurrentSimTime()).getId()).get(i).getStopId());
+            stops[i] = journeyController.getStopName(routeScheduleId, gameController.getCurrentSimTime(), i);
         }
         return stops;
     }
