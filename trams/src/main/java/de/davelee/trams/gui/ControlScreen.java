@@ -17,7 +17,6 @@ import org.slf4j.LoggerFactory;
 import java.text.*;
 
 import de.davelee.trams.main.UserInterface;
-import de.davelee.trams.services.RouteScheduleService;
 import de.davelee.trams.services.JourneyService;
 import de.davelee.trams.util.DateFormats;
 import de.davelee.trams.util.MessageFolder;
@@ -70,8 +69,6 @@ public class ControlScreen extends ButtonBar {
     private JComboBox dateBox;
 
     private boolean redrawOnRouteChange = true;
-    
-    private RouteScheduleService routeScheduleService;
     private JourneyService journeyService;
 
     /**
@@ -96,8 +93,6 @@ public class ControlScreen extends ButtonBar {
         
         //Initialise dialog panel.
         dialogPanel = new JPanel(new BorderLayout());
-        
-        routeScheduleService = new RouteScheduleService();
         journeyService = new JourneyService();
         
         //Initialise GUI with title and close attributes.
@@ -676,7 +671,7 @@ public class ControlScreen extends ButtonBar {
             //Get the schedule id and vehicle position.
             long routeScheduleId = userInterface.getDisplaySchedule(routeList.getSelectedValue().toString().split(":")[0], i);
             String vehiclePos =  userInterface.getCurrentStopName(routeScheduleId, userInterface.getCurrentSimTime(), userInterface.getDifficultyLevel());
-            logger.debug(routeScheduleId + " is at " + vehiclePos + " seconds with delay " + routeScheduleService.getDelay(routeScheduleId) + " minutes.");
+            logger.debug(routeScheduleId + " is at " + vehiclePos + " seconds with delay " + userInterface.getDelay(routeScheduleId) + " minutes.");
             /*if ( rs.hasDelay() ) {
                 theInterface.addMessage(theSimulator.getMessageDisplaySimTime() + ": Vehicle " + schedId + " is running " + rs.getDelay() + " minutes late.");
             }*/
@@ -736,7 +731,7 @@ public class ControlScreen extends ButtonBar {
                 }
             }
             logger.debug("I'm drawing route schedule " + routeScheduleId);
-            JPanel drawPanel = new DrawingPanel(xPos, direction, routeScheduleService.hasDelay(routeScheduleId) );
+            JPanel drawPanel = new DrawingPanel(xPos, direction, userInterface.getDelay(routeScheduleId) > 0 );
             drawPanel.addMouseListener(new BusMouseListener(userInterface.getDisplaySchedule(routeList.getSelectedValue().toString().split(":")[0], i), userInterface));
             vehiclePanel.add(drawPanel);
             allVehicleDisplayPanel.add(vehiclePanel, BorderLayout.CENTER);

@@ -1321,5 +1321,9 @@ public class UserInterface implements Runnable {
         }
         return journeyIds;
     }
-    
+
+    public int getDelay ( long routeScheduleId ) {
+        return routeScheduleService.getDelay(routeScheduleId);
+    }
+
 }

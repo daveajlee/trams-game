@@ -6,7 +6,6 @@ import java.awt.event.*;
 import javax.swing.*;
 
 import de.davelee.trams.main.UserInterface;
-import de.davelee.trams.services.RouteScheduleService;
 
 
 /**
@@ -30,9 +29,6 @@ public class BusInfoScreen extends JFrame {
     private JButton makeContactButton;
     private JButton closeButton;
     
-    //Service for access.
-    private RouteScheduleService routeScheduleService;
-    
     private UserInterface userInterface;
     
     
@@ -45,8 +41,6 @@ public class BusInfoScreen extends JFrame {
         
         //Initialise user interface variable.
         userInterface = ui;
-        
-        routeScheduleService = new RouteScheduleService();
         
         //Set image icon.
         Image img = Toolkit.getDefaultToolkit().getImage(BusInfoScreen.class.getResource("/TraMSlogo.png"));
@@ -106,7 +100,7 @@ public class BusInfoScreen extends JFrame {
         destinationLabel.setFont(new Font("Arial", Font.BOLD, 15));
         eastPanel.add(destinationLabel);
         //Delay.
-        delayLabel = new JLabel("Delay: " + routeScheduleService.getDelay(routeScheduleId) + " mins");
+        delayLabel = new JLabel("Delay: " + userInterface.getDelay(routeScheduleId) + " mins");
         delayLabel.setFont(new Font("Arial", Font.BOLD, 15));
         eastPanel.add(delayLabel);
         //Add east panel to screen panel.
