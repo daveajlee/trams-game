@@ -3,6 +3,8 @@ package de.davelee.trams.gui;
 import javax.swing.*;
 import javax.swing.event.*;
 
+import de.davelee.trams.controllers.DriverController;
+import de.davelee.trams.controllers.GameController;
 import de.davelee.trams.data.JourneyPattern;
 import de.davelee.trams.data.Timetable;
 import de.davelee.trams.services.*;
@@ -25,6 +27,7 @@ import java.util.List;
 
 import de.davelee.trams.main.UserInterface;
 import de.davelee.trams.util.DateFormats;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * This class displays the management options for the control screen in TraMS.
@@ -127,6 +130,12 @@ public class ManagePanel {
     private RouteScheduleService routeScheduleService;
     private ScenarioService scenarioService;
     private JourneyPatternService journeyPatternService;
+
+    @Autowired
+    private DriverController driverController;
+
+    @Autowired
+    private GameController gameController;
     
     public ManagePanel ( UserInterface ui, ControlScreen cs ) {
         userInterface = ui;
@@ -375,7 +384,7 @@ public class ManagePanel {
         JPanel viewDriversButtonPanel = new JPanel(new GridBagLayout());
         viewDriversButtonPanel.setBackground(Color.WHITE);
         viewDriversButton = new JButton("View Drivers");
-        if ( !userInterface.hasSomeDriversBeenEmployed() ) { viewDriversButton.setEnabled(false); }
+        if ( !driverController.hasSomeDriversBeenEmployed() ) { viewDriversButton.setEnabled(false); }
         viewDriversButton.addActionListener( new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 //Show the actual screen!
@@ -689,7 +698,7 @@ public class ManagePanel {
         validFromLabel.setFont(new Font("Arial", Font.ITALIC, 16));
         validityPanel.add(validFromLabel);
         //Get the calendar object with current time.
-        Calendar currTime = (Calendar) userInterface.getCurrentSimTime().clone();
+        Calendar currTime = (Calendar) gameController.getCurrentSimTime().clone();
         currTime.add(Calendar.HOUR, 0); //TODO: Change this to 48!!!!
         //Valid From Day.
         fromStartDay = currTime.get(Calendar.DAY_OF_MONTH);
@@ -741,7 +750,7 @@ public class ManagePanel {
         validToLabel.setFont(new Font("Arial", Font.ITALIC, 16));
         validityPanel.add(validToLabel);
         //Get the calendar object with current time.
-        Calendar myCurrTime = (Calendar) userInterface.getCurrentSimTime().clone();
+        Calendar myCurrTime = (Calendar) gameController.getCurrentSimTime().clone();
         myCurrTime.add(Calendar.HOUR, 72);
         //Valid To Day.
         toStartDay = myCurrTime.get(Calendar.DAY_OF_MONTH);
@@ -1295,11 +1304,10 @@ public class ManagePanel {
         //Show valid information.
         JPanel validityPanel = new JPanel(new BorderLayout());
         validityPanel.setBackground(Color.WHITE);
-        JLabel validFromDateLabel = new JLabel("Valid From: " + timetableService.getDateInfo(timetableService.getCurrentTimetable(selectedRouteId, userInterface.getCurrentSimTime()).getValidFromDate()));
+        JLabel validFromDateLabel = new JLabel("Valid From: " + timetableService.getDateInfo(timetableService.getCurrentTimetable(selectedRouteId, gameController.getCurrentSimTime()).getValidFromDate()));
         validFromDateLabel.setFont(new Font("Arial", Font.ITALIC, 14));
         validityPanel.add(validFromDateLabel, BorderLayout.NORTH);
-        JLabel validToDateLabel = new JLabel("Valid To: " + timetableService.getDateInfo(timetableService.getCurrentTimetable(selectedRouteId, userInterface.getCurrentSimTime()).getValidToDate()));
-        validToDateLabel.setFont(new Font("Arial", Font.ITALIC, 14));
+        JLabel validToDateLabel = new JLabel("Valid To: " + timetableService.getDateInfo(timetableService.getCurrentTimetable(selectedRouteId, gameController.getCurrentSimTime()).getValidToDate()));        validToDateLabel.setFont(new Font("Arial", Font.ITALIC, 14));
         validityPanel.add(validToDateLabel, BorderLayout.SOUTH);
         topPanel.add(validityPanel, BorderLayout.SOUTH);
         //Add top panel to topLabel panel and topLabel panel to screenPanel.
@@ -1311,7 +1319,7 @@ public class ManagePanel {
         datesPanel.setBackground(Color.WHITE);
         JLabel datesLabel = new JLabel("Dates:");
         datesLabel.setFont(new Font("Arial", Font.BOLD, 16));
-        datesComboBox = new JComboBox ( userInterface.getPossibleSchedulesDates(selectedRouteId, userInterface.getCurrentSimTime()) );
+        datesComboBox = new JComboBox ( userInterface.getPossibleSchedulesDates(selectedRouteId, gameController.getCurrentSimTime()) );
         datesComboBox.setSelectedIndex(dateIndex);
         datesComboBox.addItemListener(new ItemListener() {
             public void itemStateChanged ( ItemEvent e ) {
@@ -1493,7 +1501,7 @@ public class ManagePanel {
         JLabel startLabel = new JLabel("Start Date:", SwingConstants.CENTER);
         startLabel.setFont(new Font("Arial", Font.BOLD, 16));
         startLabelPanel.add(startLabel);
-        startDate = (Calendar) userInterface.getCurrentSimTime().clone();
+        startDate = (Calendar) gameController.getCurrentSimTime().clone();
         startDate.add(Calendar.HOUR, 72);
         JLabel startField = new JLabel("" + userInterface.formatDateString(startDate, DateFormats.FULL_FORMAT));
         startField.setFont(new Font("Arial", Font.ITALIC, 14));
@@ -1507,7 +1515,7 @@ public class ManagePanel {
         JButton employDriverButton = new JButton("Employ Driver");
         employDriverButton.addActionListener( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
-                userInterface.employDriver(driverNameField.getText(), (Integer) contractedHoursSpinner.getValue(), startDate);
+                driverController.employDriver(driverNameField.getText(), (Integer) contractedHoursSpinner.getValue(), startDate);
                 controlScreen.redrawManagement(ManagePanel.this.getDisplayPanel());
             }
         });
@@ -1645,7 +1653,7 @@ public class ManagePanel {
         deliveryLabel.setFont(new Font("Arial", Font.ITALIC, 14));
         deliveryLabelPanel.add(deliveryLabel);
         gridPanel.add(deliveryLabel);
-        deliveryDate = (Calendar) userInterface.getCurrentSimTime().clone();
+        deliveryDate = (Calendar) gameController.getCurrentSimTime().clone();
         deliveryDate.add(Calendar.HOUR, 72);
         JLabel deliveryField = new JLabel("" + userInterface.formatDateString(deliveryDate, DateFormats.FULL_FORMAT));
         deliveryField.setFont(new Font("Arial", Font.PLAIN, 12));
@@ -1766,7 +1774,7 @@ public class ManagePanel {
         vehiclesModel = new DefaultListModel();
         userInterface.sortVehicles();
         for ( int i = 0; i < userInterface.getNumberVehicles(); i++ ) {
-            if ( vehicleService.hasBeenDelivered(vehicleService.getVehicleById(userInterface.getVehicle(i)).getDeliveryDate(), userInterface.getCurrentSimTime()) ) {
+            if ( vehicleService.hasBeenDelivered(vehicleService.getVehicleById(userInterface.getVehicle(i)).getDeliveryDate(), gameController.getCurrentSimTime()) ) {
                 vehiclesModel.addElement(vehicleService.getVehicleById(userInterface.getVehicle(i)).getRegistrationNumber());
             }
         }
@@ -1817,7 +1825,7 @@ public class ManagePanel {
         ageLabelPanel.add(ageLabel);
         gridPanel.add(ageLabel);
         JLabel ageField = new JLabel(vehicleService.getAge(vehicleService.getVehicleById(vehicleId).getDeliveryDate(),
-        		userInterface.getCurrentSimTime()) + " months");
+                gameController.getCurrentSimTime()) + " months");
         ageField.setFont(new Font("Arial", Font.PLAIN, 12));
         gridPanel.add(ageField);
         //Create label and field for seating capacity and add it to the seating panel.
@@ -1860,7 +1868,7 @@ public class ManagePanel {
         format = new DecimalFormat("0.00");
         JLabel valueField = new JLabel("£" + format.format(vehicleService.getValue(
         		vehicleService.getVehicleById(vehicleId).getPurchasePrice(), vehicleService.getVehicleById(vehicleId).getDepreciationFactor(), 
-        		vehicleService.getVehicleById(vehicleId).getDeliveryDate(), userInterface.getCurrentSimTime())));
+        		vehicleService.getVehicleById(vehicleId).getDeliveryDate(), gameController.getCurrentSimTime())));
         valueField.setFont(new Font("Arial", Font.PLAIN, 12));
         gridPanel.add(valueField);
         
@@ -2054,7 +2062,7 @@ public class ManagePanel {
         topRightPanel.add(topLabel);
         JPanel dayPanel = new JPanel();
         dayPanel.setBackground(Color.WHITE);
-        JLabel dayLabel = new JLabel(userInterface.formatDateString(userInterface.getCurrentSimTime(), DateFormats.FULL_FORMAT), SwingConstants.CENTER);
+        JLabel dayLabel = new JLabel(userInterface.formatDateString(gameController.getCurrentSimTime(), DateFormats.FULL_FORMAT), SwingConstants.CENTER);
         dayLabel.setFont(new Font("Arial", Font.BOLD + Font.ITALIC, 20));
         dayPanel.add(dayLabel);
         topRightPanel.add(dayPanel);
@@ -2204,7 +2212,7 @@ public class ManagePanel {
         allocationListPanel.setBackground(Color.WHITE);
         allocationsModel = new DefaultListModel();
         ArrayList<String> allocations;
-        String currentDate = userInterface.getCurrentSimTime().get(Calendar.YEAR) + "-" + userInterface.getCurrentSimTime().get(Calendar.MONTH) + "-" + userInterface.getCurrentSimTime().get(Calendar.DATE);
+        String currentDate = gameController.getCurrentSimTime().get(Calendar.YEAR) + "-" + gameController.getCurrentSimTime().get(Calendar.MONTH) + "-" + gameController.getCurrentSimTime().get(Calendar.DATE);
         allocations = userInterface.getTodayAllocations(currentDate);
         for ( int i = 0; i < allocations.size(); i++ ) {
             allocationsModel.addElement(allocations.get(i).toString());

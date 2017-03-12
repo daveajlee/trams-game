@@ -11,6 +11,7 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
 
+import de.davelee.trams.controllers.GameController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,6 +21,7 @@ import de.davelee.trams.main.UserInterface;
 import de.davelee.trams.services.JourneyService;
 import de.davelee.trams.util.DateFormats;
 import de.davelee.trams.util.MessageFolder;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * This class represents the control screen display for the TraMS program.
@@ -71,6 +73,9 @@ public class ControlScreen extends ButtonBar {
     private boolean redrawOnRouteChange = true;
     private JourneyService journeyService;
 
+    @Autowired
+    private GameController gameController;
+
     /**
      * Create a new control screen.
      * @param ui a <code>UserInterface</code> with the current user interface.
@@ -120,7 +125,7 @@ public class ControlScreen extends ButtonBar {
         topPanel = new JPanel();
         topPanel.setLayout ( new BorderLayout () );
         topPanel.setBackground(Color.WHITE);
-        timeLabel = new JLabel(userInterface.formatDateString(userInterface.getCurrentSimTime(), DateFormats.FULL_TIME_FORMAT), SwingConstants.CENTER);
+        timeLabel = new JLabel(userInterface.formatDateString(gameController.getCurrentSimTime(), DateFormats.FULL_TIME_FORMAT), SwingConstants.CENTER);
         timeLabel.setFont(new Font("Arial", Font.ITALIC, 20));
         topPanel.add(timeLabel, BorderLayout.NORTH);
 
@@ -309,9 +314,9 @@ public class ControlScreen extends ButtonBar {
      */
     public void drawVehicles ( boolean isRedraw ) {
         //Now check if it is past midnight! If it is dispose, and create Allocation Screen.
-        if ( isPastMidnight(userInterface.getCurrentSimTime(), userInterface.getPreviousSimTime()) && !doneAllocations ) {
+        if ( isPastMidnight(gameController.getCurrentSimTime(), userInterface.getPreviousSimTime()) && !doneAllocations ) {
             //Now add a message to summarise days events!!!
-            userInterface.addMessage("Passenger Satisfaction for " + userInterface.formatDateString(userInterface.getPreviousSimTime(), DateFormats.FULL_FORMAT), "Congratulations you have successfully completed transport operations for " + userInterface.getScenarioName() + " on " + userInterface.formatDateString(userInterface.getPreviousSimTime(), DateFormats.FULL_FORMAT) + " with a passenger satisfaction of " + userInterface.computeAndReturnPassengerSatisfaction() + "%.\n\nNow you need to allocate vehicles to routes for " + userInterface.formatDateString(userInterface.getCurrentSimTime(), DateFormats.FULL_FORMAT) + " and keep the passenger satisfaction up! Click on the Management tab and then choose Allocations. Good luck!", "Council", MessageFolder.INBOX, userInterface.getCurrentSimTime());
+            userInterface.addMessage("Passenger Satisfaction for " + userInterface.formatDateString(userInterface.getPreviousSimTime(), DateFormats.FULL_FORMAT), "Congratulations you have successfully completed transport operations for " + userInterface.getScenarioName() + " on " + userInterface.formatDateString(userInterface.getPreviousSimTime(), DateFormats.FULL_FORMAT) + " with a passenger satisfaction of " + userInterface.computeAndReturnPassengerSatisfaction() + "%.\n\nNow you need to allocate vehicles to routes for " + userInterface.formatDateString(gameController.getCurrentSimTime(), DateFormats.FULL_FORMAT) + " and keep the passenger satisfaction up! Click on the Management tab and then choose Allocations. Good luck!", "Council", MessageFolder.INBOX, gameController.getCurrentSimTime());
             //Refresh messages.
             String[] messageSubjects = userInterface.getMessageSubjects(MessageFolder.valueOf(foldersBox.getSelectedItem().toString()),dateBox.getSelectedItem().toString(),"Council");
             messagesModel.removeAllElements();
@@ -328,14 +333,14 @@ public class ControlScreen extends ButtonBar {
             else {
                 messagesArea.setText(userInterface.getMessageText(MessageFolder.valueOf(foldersBox.getSelectedItem().toString()),dateBox.getSelectedItem().toString(), "Council", messagesList.getSelectedIndex()));
             }
-            dateModel.addElement(userInterface.formatDateString(userInterface.getCurrentSimTime(), DateFormats.FULL_TIME_FORMAT).split("-")[0]);
+            dateModel.addElement(userInterface.formatDateString(gameController.getCurrentSimTime(), DateFormats.FULL_TIME_FORMAT).split("-")[0]);
             //Then display it to the user.
             doneAllocations = true;
             userInterface.pauseSimulation();
             topPanel.getComponent(1).setVisible(false);
             tabbedPane.setSelectedIndex(1);
             //Now here we need to update satisfaction bar.
-            timeLabel.setText(userInterface.formatDateString(userInterface.getCurrentSimTime(), DateFormats.FULL_TIME_FORMAT));
+            timeLabel.setText(userInterface.formatDateString(gameController.getCurrentSimTime(), DateFormats.FULL_TIME_FORMAT));
             int satValue = userInterface.computeAndReturnPassengerSatisfaction();
             if ( satValue < userInterface.getMinimumSatisfaction() ) {
                 userInterface.pauseSimulation();
@@ -421,7 +426,7 @@ public class ControlScreen extends ButtonBar {
                     theDialogPanel.add(theGraphicsPanel, i);
                 }
             }*/
-            timeLabel.setText(userInterface.formatDateString(userInterface.getCurrentSimTime(), DateFormats.FULL_TIME_FORMAT));
+            timeLabel.setText(userInterface.formatDateString(gameController.getCurrentSimTime(), DateFormats.FULL_TIME_FORMAT));
             //Now here we need to update satisfaction bar.
             int satValue = userInterface.computeAndReturnPassengerSatisfaction();
             if ( satValue < userInterface.getMinimumSatisfaction() ) {
@@ -670,7 +675,7 @@ public class ControlScreen extends ButtonBar {
         for ( int i = 0; i < userInterface.getNumCurrentDisplaySchedules(); i++ ) {
             //Get the schedule id and vehicle position.
             long routeScheduleId = userInterface.getDisplaySchedule(routeList.getSelectedValue().toString().split(":")[0], i);
-            String vehiclePos =  userInterface.getCurrentStopName(routeScheduleId, userInterface.getCurrentSimTime(), userInterface.getDifficultyLevel());
+            String vehiclePos =  userInterface.getCurrentStopName(routeScheduleId, gameController.getCurrentSimTime(), userInterface.getDifficultyLevel());
             logger.debug(routeScheduleId + " is at " + vehiclePos + " seconds with delay " + userInterface.getDelay(routeScheduleId) + " minutes.");
             /*if ( rs.hasDelay() ) {
                 theInterface.addMessage(theSimulator.getMessageDisplaySimTime() + ": Vehicle " + schedId + " is running " + rs.getDelay() + " minutes late.");
@@ -681,10 +686,11 @@ public class ControlScreen extends ButtonBar {
                 outwardStops.add(((JLabel) stopPanels.get(j).getComponent(0)).getText());
             }
             int direction = DrawingPanel.RIGHT_TO_LEFT;
-            if ( journeyService.getCurrentJourney(journeyService.getJourneysByRouteScheduleId(routeScheduleId), userInterface.getCurrentSimTime()) == null ) {
+            if ( journeyService.getCurrentJourney(journeyService.getJourneysByRouteScheduleId(routeScheduleId), gameController.getCurrentSimTime()) == null ) {
                 continue; //Don't print if the vehicle is at a terminus.
             }
-            if ( journeyService.isOutwardJourney(journeyService.getCurrentJourney(journeyService.getJourneysByRouteScheduleId(routeScheduleId), userInterface.getCurrentSimTime()), outwardStops) ) {
+            if ( journeyService.isOutwardJourney(journeyService.getCurrentJourney(journeyService.getJourneysByRouteScheduleId(routeScheduleId), gameController.getCurrentSimTime()), outwardStops) ) {
+                direction = DrawingPanel.LEFT_TO_RIGHT;
                 direction = DrawingPanel.LEFT_TO_RIGHT; 
             }
             //Now we want to find the position where we draw the triangle i.e. position of JLabel.
@@ -709,7 +715,7 @@ public class ControlScreen extends ButtonBar {
                         xPos = startPos;
                     }
                     else {
-                        long maxTimeDiff = Math.abs(journeyService.getStopMaxTimeDiff(journeyService.getCurrentJourney(journeyService.getJourneysByRouteScheduleId(routeScheduleId), userInterface.getCurrentSimTime()), previousStop, myLabel.getText()));
+                        long maxTimeDiff = Math.abs(journeyService.getStopMaxTimeDiff(journeyService.getCurrentJourney(journeyService.getJourneysByRouteScheduleId(routeScheduleId), gameController.getCurrentSimTime()), previousStop, myLabel.getText()));
                         if ( maxTimeDiff == Integer.MAX_VALUE ) {
                             xPos = startPos;
                         } 

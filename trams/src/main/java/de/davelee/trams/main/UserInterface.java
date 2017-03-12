@@ -3,6 +3,8 @@ package de.davelee.trams.main;
 import javax.swing.*;
 import javax.swing.filechooser.*;
 
+import de.davelee.trams.controllers.DriverController;
+import de.davelee.trams.controllers.GameController;
 import de.davelee.trams.data.*;
 import de.davelee.trams.db.TramsFile;
 import de.davelee.trams.services.*;
@@ -18,6 +20,7 @@ import de.davelee.trams.gui.WelcomeScreen;
 import de.davelee.trams.util.DateFormats;
 import de.davelee.trams.util.DifficultyLevel;
 import de.davelee.trams.util.MessageFolder;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * This class controls the user interface of the TraMS program. 
@@ -48,7 +51,6 @@ public class UserInterface implements Runnable {
     private RouteScheduleService routeScheduleService;
     private JourneyService journeyService;
     private VehicleService vehicleService;
-    private DriverService driverService;
     private GameService gameService;
     private ScenarioService scenarioService;
     private FileService fileService;
@@ -56,6 +58,12 @@ public class UserInterface implements Runnable {
     private RouteService routeService;
     private JourneyPatternService journeyPatternService;
     private TimetableService timetableService;
+
+    @Autowired
+    private DriverController driverController;
+
+    @Autowired
+    private GameController gameController;
     
     /**
      * Create a new user interface - default constructor.
@@ -73,7 +81,6 @@ public class UserInterface implements Runnable {
     
         routeScheduleService = new RouteScheduleService();
         vehicleService = new VehicleService();
-        driverService = new DriverService();
         gameService = new GameService();
         scenarioService = new ScenarioService();
         fileService = new FileService();
@@ -701,7 +708,7 @@ public class UserInterface implements Runnable {
     }
 
     public TramsFile prepareTramsFile ( ) {
-        return new TramsFile(driverService.getAllDrivers(), gameService.getGame(), journeyService.getAllJourneys(),
+        return new TramsFile(driverController.getAllDrivers(), gameService.getGame(), journeyService.getAllJourneys(),
                 journeyPatternService.getAllJourneyPatterns(), messageService.getAllMessages(), routeService.getAllRoutes(),
                 routeScheduleService.getAllRouteSchedules(), journeyService.getAllStops(), journeyService.getAllStopTimes(),
                 timetableService.getAllTimetables(), vehicleService.getAllVehicles());
@@ -756,14 +763,6 @@ public class UserInterface implements Runnable {
         }
         //If we reach here then return false.
         return false;
-    }
-    
-    /**
-     * Get current simulated time. 
-     * @return a <code>Calendar</code> representing the current simulated time.
-     */
-    public Calendar getCurrentSimTime ( ) {
-        return gameService.getCurrentTime();
     }
     
     /**
@@ -884,19 +883,6 @@ public class UserInterface implements Runnable {
     }
     
     /**
-     * Employ a new driver.
-     * @param name a <code>String</code> with the driver's name.
-     * @param hours a <code>int</code> with the contracted hours.
-     * @param startDate a <code>Calendar</code> with the start date.
-     * @return a <code>boolean</code> which is true iff the driver has been successfully employed.
-     */
-    public void employDriver ( String name, int hours, Calendar startDate ) {
-    	//TODO: Employing drivers should cost money.
-    	gameService.withdrawBalance(0);
-    	driverService.saveDriver(driverService.createDriver(name, hours, startDate));
-    }
-    
-    /**
      * Purchase a new vehicle.
      * @param type a <code>String</code> with the vehicle type.
      * @param deliveryDate a <code>Calendar</code> with the delivery date.
@@ -924,7 +910,7 @@ public class UserInterface implements Runnable {
      * @return a <code>Vehicle</code> object.
      */
     public long createVehicleObject ( int pos ) {
-        return vehicleService.createVehicleObject ( vehicleService.getVehicleModel(pos), "AA", getCurrentSimTime() ).getId();
+        return vehicleService.createVehicleObject ( vehicleService.getVehicleModel(pos), "AA", gameController.getCurrentSimTime() ).getId();
     }
     
     /**
@@ -981,10 +967,6 @@ public class UserInterface implements Runnable {
     public int getNumberVehicles ( ) {
         return vehicleService.getAllVehicles().size();
     }
-
-    public int getNumberDrivers ( ) {
-        return driverService.getAllDrivers().size();
-    }
     
     /**
      * This method checks if any vehicles have been delivered to the company yet!
@@ -993,30 +975,9 @@ public class UserInterface implements Runnable {
     public boolean hasSomeVehiclesBeenDelivered ( ) {
         if ( getNumberVehicles() == 0 ) { return false; }
         for ( int i = 0; i < getNumberVehicles(); i++ ) {
-            if ( vehicleService.hasBeenDelivered(vehicleService.getVehicleById(getVehicle(i)).getDeliveryDate(), getCurrentSimTime()) ) { return true; }
+            if ( vehicleService.hasBeenDelivered(vehicleService.getVehicleById(getVehicle(i)).getDeliveryDate(), gameController.getCurrentSimTime()) ) { return true; }
         }
         return false;
-    }
-
-    /**
-     * This method checks if any employees have started working for the company!
-     * @return a <code>boolean</code> which is true iff some drivers have started working.
-     */
-    public boolean hasSomeDriversBeenEmployed ( ) {
-        if ( getNumberDrivers() == 0 ) { return false; }
-        for ( int i = 0; i < getNumberDrivers(); i++ ) {
-        	if ( driverService.hasStartedWork(driverService.getDriverById(getDriver(i)).getStartDate(), getCurrentSimTime()) ) { return true; }
-        }
-        return false;
-    }
-
-    /**
-     * Get a driver based on its position.
-     * @param pos a <code>int</code> with the position.
-     * @return a <code>Driver</code> object.
-     */
-    public long getDriver ( int pos ) {
-        return driverService.getAllDrivers().get(pos).getId();
     }
 
     /**
@@ -1121,7 +1082,7 @@ public class UserInterface implements Runnable {
     }
     
     public void generateRouteSchedules ( long selectedRouteId ) {
-        generateRouteSchedules(selectedRouteId, getCurrentSimTime(), getScenarioName());
+        generateRouteSchedules(selectedRouteId, gameController.getCurrentSimTime(), getScenarioName());
     }
     
     public long[] generateOutwardJourneyTimetables ( long selectedRouteId, Calendar cal ) {
