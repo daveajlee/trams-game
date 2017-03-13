@@ -11,6 +11,9 @@ public class RouteScheduleController {
 	
 	 @Autowired
 	 private RouteScheduleService routeScheduleService;
+
+	 @Autowired
+	 private RouteController routeController;
 	 
 	 public int getDelay ( final long routeScheduleId ) {
 		 return routeScheduleService.getDelay(routeScheduleId);
@@ -20,8 +23,8 @@ public class RouteScheduleController {
 		 return routeScheduleService.getRouteScheduleById(routeScheduleId).getRouteId();
 	 }
 
-	public String[] getRouteScheduleNames ( final long routeId ) {
-		List<RouteSchedule> schedules = routeScheduleService.getRouteSchedulesByRouteId(routeId);
+	public String[] getRouteScheduleNames ( final String routeNumber ) {
+		List<RouteSchedule> schedules = routeScheduleService.getRouteSchedulesByRouteId(routeController.getRouteId(routeNumber));
 		String[] names = new String[schedules.size()];
 		for ( int i = 0; i < names.length; i++ ) {
 			names[i] = "" + schedules.get(i).getScheduleNumber();

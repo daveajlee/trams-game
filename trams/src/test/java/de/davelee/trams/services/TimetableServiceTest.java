@@ -26,13 +26,6 @@ public class TimetableServiceTest {
 	private JourneyPatternService journeyPatternService;
 	
 	@Test
-	public void testDateInfo() {
-		Calendar testDate = Calendar.getInstance();
-		testDate.set(2014, 4, 20, 14, 23);
-		assertEquals(timetableService.getDateInfo(testDate), "Tuesday, 20 May 2014");
-	}
-	
-	@Test
 	public void testCreate() {
 		Calendar testDate = Calendar.getInstance(); Calendar testDate2 = Calendar.getInstance();
 		testDate.set(2014, 4, 20, 14, 23); testDate2.set(2014,5,20);

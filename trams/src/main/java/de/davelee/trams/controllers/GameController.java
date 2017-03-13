@@ -23,6 +23,10 @@ public class GameController {
         return gameService.getCurrentTime();
     }
 
+	public String getScenarioName ( ) {
+		return gameService.getScenarioName();
+	}
+
 	public void creditBalance ( double amount ) {
 		gameService.creditBalance(amount);
 	}

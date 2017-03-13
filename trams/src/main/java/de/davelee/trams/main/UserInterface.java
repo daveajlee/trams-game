@@ -6,8 +6,10 @@ import javax.swing.filechooser.*;
 import de.davelee.trams.controllers.DriverController;
 import de.davelee.trams.controllers.GameController;
 import de.davelee.trams.controllers.MessageController;
+import de.davelee.trams.controllers.RouteController;
 import de.davelee.trams.data.*;
 import de.davelee.trams.db.TramsFile;
+import de.davelee.trams.model.RouteModel;
 import de.davelee.trams.services.*;
 import de.davelee.trams.util.SortedJourneys;
 import org.slf4j.Logger;
@@ -66,6 +68,9 @@ public class UserInterface implements Runnable {
 
     @Autowired
     private MessageController messageController;
+
+    @Autowired
+    private RouteController routeController;
     
     /**
      * Create a new user interface - default constructor.
@@ -426,10 +431,10 @@ public class UserInterface implements Runnable {
         return routeDetailPos.getLast();
     }
 
-    public void generateRouteSchedules ( long routeId, Calendar currentTime, String scenarioName ) {
+    public void generateRouteSchedules (final RouteModel routeModel, Calendar currentTime, String scenarioName ) {
         //Initialise parameters.
-        long[] outgoingJourneyIds = generateJourneyTimetables(routeId, currentTime, scenarioName, RouteService.OUTWARD_DIRECTION);
-        long[] returnJourneyIds = generateJourneyTimetables(routeId, currentTime, scenarioName, RouteService.RETURN_DIRECTION);
+        long[] outgoingJourneyIds = generateJourneyTimetables(routeModel, currentTime, scenarioName, RouteService.OUTWARD_DIRECTION);
+        long[] returnJourneyIds = generateJourneyTimetables(routeModel, currentTime, scenarioName, RouteService.RETURN_DIRECTION);
         List<Journey> outgoingJourneys = new ArrayList<Journey>();
         for ( int i = 0; i < outgoingJourneyIds.length; i++ ) {
             outgoingJourneys.add(journeyService.getJourneyById(outgoingJourneyIds[i]));
@@ -756,16 +761,6 @@ public class UserInterface implements Runnable {
     }
     
     /**
-     * Get the route based on comparing the toString method with the supplied text.
-     * @param routeStr a <code>String</code> with the string representation of the route.
-     * @return a <code>Route</code> object matching the string representation.
-     */
-    public long getRoute ( String routeStr ) {
-        String routeNumber = routeStr.split(":")[0];
-        return routeService.getRoute(routeNumber).getId();
-    }
-    
-    /**
      * Get the route which has the supplied number.
      * @param routeNumber a <code>String</code> with the route number.
      * @return a <code>Route</code> object which has that route number.
@@ -992,16 +987,16 @@ public class UserInterface implements Runnable {
     	return vehicleService.getVehicleByRouteScheduleId(routeScheduleId).getImagePath();
     }
     
-    public void generateRouteSchedules ( long selectedRouteId ) {
-        generateRouteSchedules(selectedRouteId, gameController.getCurrentSimTime(), getScenarioName());
+    public void generateRouteSchedules ( final RouteModel routeModel ) {
+        generateRouteSchedules(routeModel, gameController.getCurrentSimTime(), getScenarioName());
     }
     
-    public long[] generateOutwardJourneyTimetables ( long selectedRouteId, Calendar cal ) {
-        return generateJourneyTimetables(selectedRouteId, cal, getScenarioName(), RouteService.OUTWARD_DIRECTION);
+    public long[] generateOutwardJourneyTimetables ( final RouteModel routeModel, Calendar cal ) {
+        return generateJourneyTimetables(routeModel, cal, getScenarioName(), RouteService.OUTWARD_DIRECTION);
     }
     
-    public long[] generateReturnJourneyTimetables ( long selectedRouteId, Calendar cal ) {
-        return generateJourneyTimetables(selectedRouteId, cal, getScenarioName(), RouteService.RETURN_DIRECTION);
+    public long[] generateReturnJourneyTimetables ( final RouteModel routeModel, Calendar cal ) {
+        return generateJourneyTimetables(routeModel, cal, getScenarioName(), RouteService.RETURN_DIRECTION);
     }
     
     public String getScenarioTargets ( ) {
@@ -1082,11 +1077,11 @@ public class UserInterface implements Runnable {
      * @param today a <code>Calendar</code> object with the current date.
      * @return a <code>String</code> array of possible schedule dates.
      */
-    public String[] getPossibleSchedulesDates ( long routeId, Calendar today ) {
+    public String[] getPossibleSchedulesDates ( final RouteModel routeModel, Calendar today ) {
         //Create the list.
         List<Calendar> myCalendar = new ArrayList<Calendar>();
         //Go through all of the timetables and add them if they are not already in.
-        List<Timetable> timetables = timetableService.getTimetablesByRouteId(routeId);
+        List<Timetable> timetables = timetableService.getTimetablesByRouteId(routeController.getRouteId(routeModel.getRouteNumber()));
         Calendar thisDate;
         for (Timetable timeT : timetables) {
             thisDate = (Calendar) today.clone();
@@ -1120,10 +1115,10 @@ public class UserInterface implements Runnable {
      * This method generates the route timetables for a particular day - it is a very important method.
      * @param today a <code>Calendar</code> object with today's date.
      */
-    public long[] generateJourneyTimetables ( long routeId, Calendar today, String scenarioName, int direction ) {
-        logger.debug("I'm generating timetable for routeId " + routeId + " for " + DateFormats.DAY_MONTH_YEAR_FORMAT.getFormat().format(today.getTime()));
+    public long[] generateJourneyTimetables ( final RouteModel routeModel, Calendar today, String scenarioName, int direction ) {
+        logger.debug("I'm generating timetable for routeId " + routeController.getRouteId(routeModel.getRouteNumber()) + " for " + DateFormats.DAY_MONTH_YEAR_FORMAT.getFormat().format(today.getTime()));
         //First of all, get the current timetable.
-        Timetable currentTimetable = timetableService.getCurrentTimetable(routeId, today);
+        Timetable currentTimetable = timetableService.getCurrentTimetable(routeController.getRouteId(routeModel.getRouteNumber()), today);
         //Create a list to store journeys.
         List<Journey> allJourneys = new ArrayList<Journey>();
         //Now we need to go through the journey patterns.
@@ -1153,10 +1148,10 @@ public class UserInterface implements Runnable {
                     Calendar journeyTime = (Calendar) myTime.clone();
                     List<Stop> journeyStops = new ArrayList<Stop>();
                     if ( direction == RouteService.OUTWARD_DIRECTION ) {
-                        journeyStops = routeService.getStopsBetween(routeService.getRouteById(routeId), myJourneyPattern.getReturnTerminus(), myJourneyPattern.getOutgoingTerminus(), direction);
+                        journeyStops = routeService.getStopsBetween(routeService.getRouteById(routeController.getRouteId(routeModel.getRouteNumber())), myJourneyPattern.getReturnTerminus(), myJourneyPattern.getOutgoingTerminus(), direction);
                     }
                     else {
-                        journeyStops = routeService.getStopsBetween(routeService.getRouteById(routeId), myJourneyPattern.getOutgoingTerminus(), myJourneyPattern.getReturnTerminus(), direction);
+                        journeyStops = routeService.getStopsBetween(routeService.getRouteById(routeController.getRouteId(routeModel.getRouteNumber())), myJourneyPattern.getOutgoingTerminus(), myJourneyPattern.getReturnTerminus(), direction);
                     }
                     long stopId = journeyService.getStopByStopName(journeyStops.get(0).getStopName()).getId();
                     StopTime newStopTime = new StopTime();

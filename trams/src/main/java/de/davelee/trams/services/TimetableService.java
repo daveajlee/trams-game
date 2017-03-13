@@ -16,14 +16,6 @@ public class TimetableService {
 	public TimetableService() {
 		
 	}
-	
-	/**
-     * Format timetable date.
-     * @return a <code>String</code> object.
-     */
-    public String getDateInfo ( Calendar myCalendar ) {
-    	return DateFormats.FULL_FORMAT.getFormat().format(myCalendar.getTime());
-    }
     
     public Timetable createTimetable ( final String name, final Calendar validFromDate, final Calendar validToDate, final long routeId) {
     	Timetable timetable = new Timetable();
@@ -64,6 +56,10 @@ public class TimetableService {
             }
         }
         return null; //If can't find timetable.
+    }
+
+    public Timetable getTimetableByName ( final String timetableName ) {
+        return timetableRepository.findByName(timetableName);
     }
 
 }

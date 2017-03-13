@@ -43,4 +43,10 @@
 		<bean id="fileService" class="de.davelee.trams.services.FileService">
 		</bean>
 
+        <bean id="routeController" class="de.davelee.trams.controllers.RouteController"/>
+
+        <bean id="routeScheduleController" class="de.davelee.trams.controllers.RouteScheduleController"/>
+
+        <bean id="timetableController" class="de.davelee.trams.controllers.TimetableController"/>
+
 </beans>

@@ -6,6 +6,9 @@ import javax.swing.event.*;
 import de.davelee.trams.controllers.*;
 import de.davelee.trams.data.JourneyPattern;
 import de.davelee.trams.data.Timetable;
+import de.davelee.trams.model.JourneyPatternModel;
+import de.davelee.trams.model.RouteModel;
+import de.davelee.trams.model.TimetableModel;
 import de.davelee.trams.model.VehicleModel;
 import de.davelee.trams.services.*;
 import org.slf4j.Logger;
@@ -63,10 +66,10 @@ public class ManagePanel {
     private JButton modifyTimetableButton;
     private JButton deleteTimetableButton;
     private JButton createRouteButton;
-    private long selectedRouteId;
+    private RouteModel selectedRouteModel;
     private String[] selectedOutwardStops;
     private String[] selectedReturnStops;
-    private String selectedTimetableName;
+    private TimetableModel selectedTimetableModel;
 
     private JTextField driverNameField;
     private JSpinner contractedHoursSpinner;
@@ -98,7 +101,7 @@ public class ManagePanel {
     
     private DefaultListModel journeyPatternModel;
     private JList journeyPatternList;
-    private long selectedJourneyPatternId;
+    private JourneyPatternModel selectedJourneyPatternModel;
     private JButton createJourneyPatternButton;
     private JButton modifyJourneyPatternButton;
     private JButton deleteJourneyPatternButton;
@@ -123,11 +126,6 @@ public class ManagePanel {
     private int currentMin;
     private JComboBox datesComboBox;
 
-    private TimetableService timetableService;
-    private RouteService routeService;
-    private ScenarioService scenarioService;
-    private JourneyPatternService journeyPatternService;
-
     @Autowired
     private DriverController driverController;
 
@@ -138,7 +136,19 @@ public class ManagePanel {
     private JourneyController journeyController;
 
     @Autowired
+    private JourneyPatternController journeyPatternController;
+
+    @Autowired
+    private RouteController routeController;
+
+    @Autowired
     private RouteScheduleController routeScheduleController;
+
+    @Autowired
+    private ScenarioController scenarioController;
+
+    @Autowired
+    private TimetableController timetableController;
 
     @Autowired
     private VehicleController vehicleController;
@@ -146,10 +156,6 @@ public class ManagePanel {
     public ManagePanel ( UserInterface ui, ControlScreen cs ) {
         userInterface = ui;
         controlScreen = cs;
-        timetableService = new TimetableService();
-        routeService = new RouteService();
-        scenarioService = new ScenarioService();
-        journeyPatternService = new JourneyPatternService();
     }
     
     public JPanel getDisplayPanel ( ) {
@@ -274,7 +280,7 @@ public class ManagePanel {
         addRouteButton.addActionListener( new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 //Show the actual screen!
-                controlScreen.redrawManagement(makeAddRoutePanel(-1));
+                controlScreen.redrawManagement(makeAddRoutePanel(null));
             }
         });
         createRouteButtonPanel.add(addRouteButton);
@@ -287,7 +293,7 @@ public class ManagePanel {
         routeTimetableButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 //Show the actual screen!
-                controlScreen.redrawManagement(makeTimetablePanel(routeService.getRouteById(userInterface.getRoute(0)).getRouteNumber(), 0, 0));
+                controlScreen.redrawManagement(makeTimetablePanel(routeController.getRouteNumberByPosition(0), 0, 0));
             }
         });
         timetableButtonPanel.add(routeTimetableButton);
@@ -444,7 +450,7 @@ public class ManagePanel {
         return overallScreenPanel;
     }
     
-    public JPanel makeAddRoutePanel( long amendRouteId ) {
+    public JPanel makeAddRoutePanel( RouteModel routeModel ) {
         
         //Create routeScreen panel to add things to.
         JPanel routeScreenPanel = new JPanel();
@@ -455,7 +461,7 @@ public class ManagePanel {
         JPanel topLabelPanel = new JPanel(new BorderLayout());
         topLabelPanel.setBackground(Color.WHITE);
         JLabel topLabel = new JLabel("Create New Route", SwingConstants.CENTER);
-        if ( amendRouteId != -1 ) { topLabel.setText("Amend Route"); }
+        if ( routeModel != null ) { topLabel.setText("Amend Route"); }
         topLabel.setFont(new Font("Arial", Font.BOLD, 36));
         topLabel.setVerticalAlignment(JLabel.CENTER);
         topLabelPanel.add(topLabel, BorderLayout.CENTER);
@@ -469,7 +475,7 @@ public class ManagePanel {
         routeNumberPanel.add(routeNumberLabel);
         routeNumberField = new JTextField(10);
         routeNumberField.setFont(new Font("Arial", Font.PLAIN, 14));
-        if ( amendRouteId != -1 ) { routeNumberField.setText(routeService.getRouteById(amendRouteId).getRouteNumber()); }
+        if ( routeModel != null ) { routeNumberField.setText(routeModel.getRouteNumber()); }
         routeNumberField.addKeyListener(new KeyListener()  {
             public void keyReleased(KeyEvent e) {
                 enableCreateButtons();
@@ -496,12 +502,12 @@ public class ManagePanel {
             JLabel stopLabel = new JLabel("Stop " + (i+1) + ":");
             stopLabel.setFont(new Font("Arial", Font.ITALIC, 16));
             stopPanels[i].add(stopLabel);
-            stopBoxes[i] = new JComboBox(scenarioService.getStopNames(userInterface.getScenarioName()));
+            stopBoxes[i] = new JComboBox(scenarioController.getStopNames());
             stopBoxes[i].setFont(new Font("Arial", Font.PLAIN, 14));
             stopBoxes[i].setSelectedIndex(stopBoxes[i].getItemCount()-1);
-            if ( amendRouteId != -1 ) { 
-                if ( routeService.getRouteById(amendRouteId).getStops().size() > i ) {
-                    int findIndexPos = findIndex(routeService.getRouteById(amendRouteId).getStops().get(i).getStopName(), i);
+            if ( routeModel != null ) {
+                if ( routeModel.getStopNames().size() > i ) {
+                    int findIndexPos = findIndex(routeModel.getStopNames().get(i), i);
                     if ( findIndexPos != -1 ) { stopBoxes[i].setSelectedIndex(findIndexPos); }
                 }
             }
@@ -539,9 +545,9 @@ public class ManagePanel {
         timetableModel = new DefaultListModel();
         //Now get all the timetables which we have at the moment.
         try {
-            List<Timetable> timetables = timetableService.getTimetablesByRouteId(selectedRouteId);
-            for ( Timetable myTimetable : timetables ) {
-                timetableModel.addElement(myTimetable.getName());
+            String[] timetableNames = timetableController.getTimetableNames(selectedRouteModel);
+            for ( String timetableName : timetableNames ) {
+                timetableModel.addElement(timetableName);
             }
         } 
         catch (NullPointerException npe) { }
@@ -563,7 +569,7 @@ public class ManagePanel {
         createTimetableButton.addActionListener(new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
                 //First of all, set the selected route.
-                if ( selectedRouteId == -1 && timetableModel.getSize() == 0 ) {
+                if ( selectedRouteModel == null && timetableModel.getSize() == 0 ) {
                     selectedOutwardStops = new String[stopBoxes.length];
                     selectedReturnStops = new String[stopBoxes.length];
                     for ( int i = 0; i < stopBoxes.length; i++ ) {
@@ -578,7 +584,7 @@ public class ManagePanel {
                     }
                 }
                 //Show the actual screen!
-                controlScreen.redrawManagement(makeCreateTimetablePanel(""));
+                controlScreen.redrawManagement(makeCreateTimetablePanel(null));
             }
         });
         timetableButtonPanel.add(createTimetableButton);
@@ -586,7 +592,7 @@ public class ManagePanel {
         if ( timetableModel.getSize() == 0 ) { modifyTimetableButton.setEnabled(false); }
         modifyTimetableButton.addActionListener ( new ActionListener() {
             public void actionPerformed (ActionEvent e ) {
-                controlScreen.redrawManagement(makeCreateTimetablePanel(timetableList.getSelectedValue().toString()));
+                controlScreen.redrawManagement(makeCreateTimetablePanel(timetableController.getTimetable(timetableList.getSelectedValue().toString())));
             }
         });
         timetableButtonPanel.add(modifyTimetableButton);
@@ -594,7 +600,7 @@ public class ManagePanel {
         if ( timetableModel.getSize() == 0 ) { deleteTimetableButton.setEnabled(false); }
         deleteTimetableButton.addActionListener( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
-                timetableService.deleteTimetable(timetableService.getTimetableByRouteIdAndName(selectedRouteId, timetableList.getSelectedValue().toString()));
+                timetableController.deleteTimetable(selectedRouteModel, timetableList.getSelectedValue().toString());
                 timetableModel.removeElement(timetableList.getSelectedValue());
                 if ( timetableModel.getSize() == 0 ) {
                     deleteTimetableButton.setEnabled(false);
@@ -621,7 +627,7 @@ public class ManagePanel {
         createRouteButton.setEnabled(false);
         createRouteButton.addActionListener ( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
-               userInterface.generateRouteSchedules(selectedRouteId);
+               userInterface.generateRouteSchedules(selectedRouteModel);
                
                userInterface.addNewRoute(routeNumberField.getText(), selectedOutwardStops);
                //Now return to previous screen.
@@ -649,18 +655,21 @@ public class ManagePanel {
         return routeScreenPanel;
     }
 
-    public JPanel makeCreateTimetablePanel(String timetableName) {
+    public JPanel makeCreateTimetablePanel(final TimetableModel timetableModel) {
 
         //Create timetableScreen panel to add things to.
         JPanel timetableScreenPanel = new JPanel();
         timetableScreenPanel.setLayout ( new BoxLayout ( timetableScreenPanel, BoxLayout.PAGE_AXIS ) );
         timetableScreenPanel.setBackground(Color.WHITE);
 
+        //Set selected timetable.
+        selectedTimetableModel = timetableModel;
+
         //Create label at top of screen in a topLabelPanel added to screenPanel.
         JPanel topLabelPanel = new JPanel(new BorderLayout());
         topLabelPanel.setBackground(Color.WHITE);
         JLabel topLabel = new JLabel("Create New Timetable", SwingConstants.CENTER);
-        if ( timetableService.getTimetableByRouteIdAndName(selectedRouteId, timetableName) != null ) {
+        if ( selectedTimetableModel != null ) {
             topLabel.setText("Modify Timetable");
         }
         topLabel.setFont(new Font("Arial", Font.BOLD, 36));
@@ -675,8 +684,8 @@ public class ManagePanel {
         timetableNameLabel.setFont(new Font("Arial", Font.ITALIC, 16));
         timetableNamePanel.add(timetableNameLabel);
         timetableNameField = new JTextField(20);
-        if ( timetableService.getTimetableByRouteIdAndName(selectedRouteId, timetableName) != null ) {
-            timetableNameField.setText(timetableService.getTimetableByRouteIdAndName(selectedRouteId, timetableName).getName());
+        if ( selectedTimetableModel != null ) {
+            timetableNameField.setText(selectedTimetableModel.getName());
         }
         timetableNameField.addKeyListener(new KeyListener()  {
             public void keyReleased(KeyEvent e) {
@@ -710,9 +719,8 @@ public class ManagePanel {
             validFromDayModel.addElement(i);
         }
         JComboBox validFromDayBox = new JComboBox(validFromDayModel);
-        if ( timetableService.getTimetableByRouteIdAndName(selectedRouteId, timetableName) != null ) {
-            validFromDayBox.setSelectedItem(timetableService.getTimetableByRouteIdAndName(selectedRouteId, timetableName).
-                    getValidFromDate().get(Calendar.DAY_OF_MONTH));
+        if ( selectedTimetableModel != null ) {
+            validFromDayBox.setSelectedItem(selectedTimetableModel.getValidFromDate().get(Calendar.DAY_OF_MONTH));
         }
         validFromDayBox.setFont(new Font("Arial", Font.PLAIN, 14));
         validityPanel.add(validFromDayBox);
@@ -722,8 +730,8 @@ public class ManagePanel {
             validFromMonthBox.addItem(DateFormats.MONTH_YEAR_FORMAT.getFormat().format(currTime));
             currTime.add(Calendar.MONTH, 1);
         }
-        if ( timetableService.getTimetableByRouteIdAndName(selectedRouteId, timetableName) != null ) {
-            validFromMonthBox.setSelectedItem(DateFormats.MONTH_YEAR_FORMAT.getFormat().format(timetableService.getTimetableByRouteIdAndName(selectedRouteId, timetableName).getValidFromDate()));
+        if ( selectedTimetableModel != null ) {
+            validFromMonthBox.setSelectedItem(DateFormats.MONTH_YEAR_FORMAT.getFormat().format(selectedTimetableModel.getValidFromDate()));
         }
         validFromMonthBox.setFont(new Font("Arial", Font.PLAIN, 14));
         validFromMonthBox.addActionListener( new ActionListener() {
@@ -762,9 +770,8 @@ public class ManagePanel {
             validToDayModel.addElement(i);
         }
         JComboBox validToDayBox = new JComboBox(validToDayModel);
-        if ( timetableService.getTimetableByRouteIdAndName(selectedRouteId, timetableName) != null ) {
-            validToDayBox.setSelectedItem(timetableService.getTimetableByRouteIdAndName(selectedRouteId, timetableName).
-                    getValidToDate().get(Calendar.DAY_OF_MONTH));
+        if ( selectedTimetableModel != null ) {
+            validToDayBox.setSelectedItem(selectedTimetableModel.getValidToDate().get(Calendar.DAY_OF_MONTH));
         }
         validToDayBox.setFont(new Font("Arial", Font.PLAIN, 14));
         validityPanel.add(validToDayBox);
@@ -774,8 +781,8 @@ public class ManagePanel {
             validToMonthBox.addItem(DateFormats.MONTH_YEAR_FORMAT.getFormat().format(myCurrTime));
             myCurrTime.add(Calendar.MONTH, 1);
         }
-        if ( timetableService.getTimetableByRouteIdAndName(selectedRouteId, timetableName) != null ) {
-            validToMonthBox.setSelectedItem(DateFormats.MONTH_YEAR_FORMAT.getFormat().format(timetableService.getTimetableByRouteIdAndName(selectedRouteId, timetableName).getValidToDate()));
+        if ( selectedTimetableModel != null ) {
+            validToMonthBox.setSelectedItem(DateFormats.MONTH_YEAR_FORMAT.getFormat().format(selectedTimetableModel.getValidToDate()));
         }
         validToMonthBox.setFont(new Font("Arial", Font.PLAIN, 14));
         validToMonthBox.addActionListener( new ActionListener() {
@@ -822,14 +829,11 @@ public class ManagePanel {
         centreJourneyPatternListPanel.setBackground(Color.WHITE);
         journeyPatternModel = new DefaultListModel();
         //Now get all the journey pattern which we have at the moment.
-        try {
-            List<JourneyPattern> journeyPatterns = journeyPatternService.getJourneyPatternsByTimetableId(
-                    timetableService.getTimetableByRouteIdAndName(selectedRouteId, timetableNameField.getText()).getId());
-            for ( JourneyPattern journeyPattern : journeyPatterns ) {
-                journeyPatternModel.addElement(journeyPattern.getName());
-            }
+        TimetableModel journeyTimetableModel = timetableController.getRouteTimetable(selectedRouteModel, timetableNameField.getText());
+        String[] journeyPatternNames = journeyPatternController.getJourneyPatternNames(journeyTimetableModel);
+        for ( int i = 0; i < journeyPatternNames.length; i++ ) {
+            journeyPatternModel.addElement(journeyPatternNames[i]);
         }
-        catch (NullPointerException npe) { }
         journeyPatternList = new JList(journeyPatternModel);
         if ( journeyPatternModel.getSize() > 0 ) { journeyPatternList.setSelectedIndex(0); }
         journeyPatternList.setVisibleRowCount(3);
@@ -845,8 +849,9 @@ public class ManagePanel {
         if (timetableNameField.getText().equalsIgnoreCase("")) { createJourneyPatternButton.setEnabled(false); }
         createJourneyPatternButton.addActionListener(new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
+                selectedTimetableModel = timetableController.getRouteTimetable(selectedRouteModel, timetableNameField.getText());
                 //Create relevant calendar object.
-                if ( timetableService.getTimetableByRouteIdAndName(selectedRouteId, timetableNameField.getText()) == null) {
+                if ( selectedTimetableModel == null) {
                     int vfYear = Integer.parseInt(validFromMonthBox.getSelectedItem().toString().split(" ")[1]);
                     int vfMonth = validFromMonthBox.getSelectedIndex();
                     int vfDay = Integer.parseInt(validFromDayModel.getSelectedItem().toString());
@@ -856,7 +861,7 @@ public class ManagePanel {
                     int vtDay = Integer.parseInt(validToDayModel.getSelectedItem().toString());
                     GregorianCalendar validTo = new GregorianCalendar(vtYear, vtMonth, vtDay);
                     //Save this timetable with valid dates first.
-                    timetableService.createTimetable(timetableNameField.getText(), validFrom, validTo, selectedRouteId);
+                    timetableController.createTimetable(timetableNameField.getText(), validFrom, validTo, selectedRouteModel);
                     //logger.debug("Adding timetable with name " + theTimetableNameField.getText() + " to route " + theSelectedRoute.getRouteNumber());
                 }
                 //Process the stops.
@@ -867,7 +872,7 @@ public class ManagePanel {
                     }
                 }
                 //Show the actual screen!
-                controlScreen.redrawManagement(makeJourneyPatternPanel(stops, timetableNameField.getText(), -1));
+                controlScreen.redrawManagement(makeJourneyPatternPanel(stops, selectedTimetableModel, null));
             }
         });
         journeyPatternButtonPanel.add(createJourneyPatternButton);
@@ -923,7 +928,7 @@ public class ManagePanel {
         createTimetableButton.addActionListener ( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
                 //Timetable is already saved so we just go back to the original screen.
-                controlScreen.redrawManagement(ManagePanel.this.makeAddRoutePanel(selectedRouteId));
+                controlScreen.redrawManagement(ManagePanel.this.makeAddRoutePanel(selectedRouteModel));
             }
         });
         bottomButtonPanel.add(createTimetableButton);
@@ -931,7 +936,7 @@ public class ManagePanel {
         previousScreenButton.addActionListener ( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
                 //Cancel addition.
-                controlScreen.redrawManagement(ManagePanel.this.makeAddRoutePanel(selectedRouteId));
+                controlScreen.redrawManagement(ManagePanel.this.makeAddRoutePanel(selectedRouteModel));
             }
         });
         bottomButtonPanel.add(previousScreenButton);
@@ -946,11 +951,11 @@ public class ManagePanel {
         return timetableScreenPanel;
     }
     
-    public JPanel makeJourneyPatternPanel ( ArrayList<String> myStopNames, String timetableName, long journeyPatternId ) {
+    public JPanel makeJourneyPatternPanel ( final ArrayList<String> myStopNames, final TimetableModel timetableModel, final JourneyPatternModel journeyPatternModel ) {
         //Initialise selected timetable.
-        selectedTimetableName = timetableName;
+        selectedTimetableModel = timetableModel;
         //Initialise journey pattern.
-        selectedJourneyPatternId = journeyPatternId;
+        selectedJourneyPatternModel = journeyPatternModel;
         
         //Create journeyPatternScreen panel to add things to.
         JPanel journeyPatternScreenPanel = new JPanel();
@@ -964,7 +969,7 @@ public class ManagePanel {
         JPanel middleLabelPanel = new JPanel(new BorderLayout());
         middleLabelPanel.setBackground(Color.WHITE);
         JLabel middleLabel = new JLabel("Create Service Pattern", SwingConstants.CENTER);
-        if ( selectedJourneyPatternId != -1 ) { middleLabel.setText("Modify Service Pattern"); }
+        if ( selectedJourneyPatternModel != null ) { middleLabel.setText("Modify Service Pattern"); }
         middleLabel.setFont(new Font("Arial", Font.BOLD, 36));
         middleLabel.setVerticalAlignment(JLabel.CENTER);
         middleLabelPanel.add(middleLabel, BorderLayout.CENTER);
@@ -977,8 +982,7 @@ public class ManagePanel {
         journeyPatternNameLabel.setFont(new Font("Arial", Font.ITALIC, 16));
         journeyPatternNamePanel.add(journeyPatternNameLabel);
         journeyPatternNameField = new JTextField(20);
-        if ( selectedJourneyPatternId != -1 ) { journeyPatternNameField.setText(journeyPatternService.
-        		getJourneyPatternById(selectedJourneyPatternId).getName()); }
+        if ( selectedJourneyPatternModel != null ) { journeyPatternNameField.setText(selectedJourneyPatternModel.getName()); }
         journeyPatternNameField.setFont(new Font("Arial", Font.PLAIN, 14));
         journeyPatternNameField.addKeyListener(new KeyListener()  {
             public void keyReleased(KeyEvent e) {
@@ -1026,8 +1030,11 @@ public class ManagePanel {
                 }
             });
             int addPos = (i+1);
-            if ( selectedJourneyPatternId != -1 ) { if ( journeyPatternService.getJourneyPatternById(selectedJourneyPatternId)
-            		.getDaysOfOperation().contains("" + addPos) ) { daysBox[i].setSelected(true); } }
+            if ( selectedJourneyPatternModel != null ) {
+                if ( selectedJourneyPatternModel.getDaysOfOperation().contains("" + addPos) ) {
+                    daysBox[i].setSelected(true);
+                }
+            }
             dayOfWeekPanel.add(daysBox[i]);
         }
         journeyPatternScreenPanel.add(dayOfWeekPanel);
@@ -1045,8 +1052,7 @@ public class ManagePanel {
             terminus1Box.addItem(stopNames.get(i));
         }
         terminus1Box.setSelectedIndex(0);
-        if ( selectedJourneyPatternId != -1 ) { terminus1Box.setSelectedItem(journeyPatternService
-        		.getJourneyPatternById(selectedJourneyPatternId).getReturnTerminus()); }
+        if ( selectedJourneyPatternModel != null ) { terminus1Box.setSelectedItem(selectedJourneyPatternModel.getReturnTerminus()); }
         terminus1Box.setFont(new Font("Arial", Font.PLAIN, 14));
         terminus1Box.addItemListener(new ItemListener() {
             public void itemStateChanged ( ItemEvent e ) {
@@ -1070,8 +1076,7 @@ public class ManagePanel {
             terminus2Box.addItem(stopNames.get(i));
         }
         terminus2Box.setSelectedIndex(terminus2Box.getItemCount() - 1);
-        if ( selectedJourneyPatternId != -1) { terminus2Box.setSelectedItem(journeyPatternService
-        		.getJourneyPatternById(selectedJourneyPatternId).getOutgoingTerminus()); }
+        if ( selectedJourneyPatternModel != null) { terminus2Box.setSelectedItem(selectedJourneyPatternModel.getOutgoingTerminus()); }
         terminus2Box.setFont(new Font("Arial", Font.PLAIN, 14));
         terminus2Box.addItemListener( new ItemListener () {
             public void itemStateChanged ( ItemEvent e ) {
@@ -1093,13 +1098,11 @@ public class ManagePanel {
         fromLabel.setFont(new Font("Arial", Font.ITALIC, 16));
         timesPanel.add(fromLabel);
         fromHourSpinner = new JSpinner(new SpinnerNumberModel(6,0,23,1));
-        if ( selectedJourneyPatternId != -1 ) { fromHourSpinner.setValue(journeyPatternService
-        		.getJourneyPatternById(selectedJourneyPatternId).getStartTime().get(Calendar.HOUR_OF_DAY)); }
+        if ( selectedJourneyPatternModel != null ) { fromHourSpinner.setValue(selectedJourneyPatternModel.getStartTime().get(Calendar.HOUR_OF_DAY)); }
         fromHourSpinner.setFont(new Font("Arial", Font.PLAIN, 14));
         timesPanel.add(fromHourSpinner);
         fromMinuteSpinner = new JSpinner(new SpinnerNumberModel(0,0,59,1));
-        if ( selectedJourneyPatternId != -1 ) { fromMinuteSpinner.setValue(journeyPatternService
-        		.getJourneyPatternById(selectedJourneyPatternId).getStartTime().get(Calendar.MINUTE)); }
+        if ( selectedJourneyPatternModel != null ) { fromMinuteSpinner.setValue(selectedJourneyPatternModel.getStartTime().get(Calendar.MINUTE)); }
         fromMinuteSpinner.setFont(new Font("Arial", Font.PLAIN, 14));
         timesPanel.add(fromMinuteSpinner);
         //To + times.
@@ -1107,13 +1110,11 @@ public class ManagePanel {
         toLabel.setFont(new Font("Arial", Font.ITALIC, 16));
         timesPanel.add(toLabel);
         toHourSpinner = new JSpinner(new SpinnerNumberModel(18,0,23,1));
-        if ( selectedJourneyPatternId != -1 ) { toHourSpinner.setValue(journeyPatternService
-        		.getJourneyPatternById(selectedJourneyPatternId).getEndTime().get(Calendar.HOUR_OF_DAY)); }
+        if ( selectedJourneyPatternModel != null ) { toHourSpinner.setValue(selectedJourneyPatternModel.getEndTime().get(Calendar.HOUR_OF_DAY)); }
         toHourSpinner.setFont(new Font("Arial", Font.PLAIN, 14));
         timesPanel.add(toHourSpinner);
         toMinuteSpinner = new JSpinner(new SpinnerNumberModel(30,0,59,1));
-        if ( selectedJourneyPatternId != -1 ) { toMinuteSpinner.setValue(journeyPatternService
-        		.getJourneyPatternById(selectedJourneyPatternId).getEndTime().get(Calendar.MINUTE)); }
+        if ( selectedJourneyPatternModel != null ) { toMinuteSpinner.setValue(selectedJourneyPatternModel.getEndTime().get(Calendar.MINUTE)); }
         toMinuteSpinner.setFont(new Font("Arial", Font.PLAIN, 14));
         timesPanel.add(toMinuteSpinner);
         //Every.
@@ -1153,7 +1154,7 @@ public class ManagePanel {
         
         //Create new journey pattern button and add it to screen panel.
         createJPButton = new JButton("Create Journey Pattern");
-        if ( journeyPatternId != -1 ) { createJPButton.setText("Modify Journey Pattern"); }
+        if ( selectedJourneyPatternModel != null ) { createJPButton.setText("Modify Journey Pattern"); }
         else { createJPButton.setEnabled(false); }
         createJPButton.addActionListener ( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
@@ -1170,20 +1171,20 @@ public class ManagePanel {
                 //Create time to.
                 GregorianCalendar timeTo = new GregorianCalendar(2009,7,3,Integer.parseInt(toHourSpinner.getValue().toString()), Integer.parseInt(toMinuteSpinner.getValue().toString()));
                 //Create + add journey pattern.
-                if ( selectedJourneyPatternId != -1 ) {
+                if ( selectedJourneyPatternModel != null ) {
                     //TODO: reimplement edit method.
                 	//theSelectedRoute.getTimetable(theSelectedTimetableName).getJourneyPattern(theSelectedJourneyPattern.getName()).editJourneyPattern(theJourneyPatternNameField.getText(), operatingDays, theTerminus1Box.getSelectedItem().toString(), theTerminus2Box.getSelectedItem().toString(), timeFrom, timeTo, Integer.parseInt(theEveryMinuteSpinner.getValue().toString()), getCurrentRouteDuration(Integer.parseInt(theEveryMinuteSpinner.getValue().toString())));
                 }
                 else {
-                    logger.debug("I am calling add method with timetable name " + selectedTimetableName + "!");
-                    journeyPatternService.createJourneyPattern(journeyPatternNameField.getText(), operatingDays,
+                    logger.debug("I am calling add method with timetable name " + selectedTimetableModel.getName() + "!");
+                    journeyPatternController.createJourneyPattern(journeyPatternNameField.getText(), operatingDays,
                             terminus1Box.getSelectedItem().toString(), terminus2Box.getSelectedItem().toString(), timeFrom,
                             timeTo, Integer.parseInt(everyMinuteSpinner.getValue().toString()),
                             getCurrentRouteDuration(Integer.parseInt(everyMinuteSpinner.getValue().toString())),
-                            timetableService.getTimetableByRouteIdAndName(selectedRouteId, selectedTimetableName).getId());
+                            selectedTimetableModel);
                 }
                 //Now return to the timetable screen.
-                controlScreen.redrawManagement(ManagePanel.this.makeCreateTimetablePanel(selectedTimetableName));
+                controlScreen.redrawManagement(ManagePanel.this.makeCreateTimetablePanel(selectedTimetableModel));
             }
         });
         bottomButtonPanel.add(createJPButton);
@@ -1191,7 +1192,7 @@ public class ManagePanel {
         previousScreenButton.addActionListener ( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
                 //Return to the timetable screen.
-                controlScreen.redrawManagement(ManagePanel.this.makeCreateTimetablePanel(selectedTimetableName));
+                controlScreen.redrawManagement(ManagePanel.this.makeCreateTimetablePanel(selectedTimetableModel));
             }
         });
         bottomButtonPanel.add(previousScreenButton);
@@ -1229,7 +1230,7 @@ public class ManagePanel {
         //Note cumulative total.
         int cumDistance = 0;
         //Add distance of terminus1 and first item of terminus2 first of all - this is guaranteed.
-        cumDistance += routeService.getDistance(userInterface.getScenarioName(), terminus1Box.getSelectedItem().toString(), terminus2Box.getItemAt(0).toString());
+        cumDistance += routeController.getDistance(userInterface.getScenarioName(), terminus1Box.getSelectedItem().toString(), terminus2Box.getItemAt(0).toString());
         //Now from 0 up until the selected index - add distances for terminus 2.
         int selectIndex = terminus2Box.getSelectedIndex();
         if ( selectIndex == 0 ) {
@@ -1243,7 +1244,7 @@ public class ManagePanel {
             return myCumFreq;
         }
         for ( int i = 1; i <= selectIndex; i++ ) {
-            cumDistance += routeService.getDistance(userInterface.getScenarioName(), terminus2Box.getItemAt(i-1).toString(), terminus2Box.getItemAt(i).toString());
+            cumDistance += routeController.getDistance(userInterface.getScenarioName(), terminus2Box.getItemAt(i-1).toString(), terminus2Box.getItemAt(i).toString());
         }
         //Return distance * 2.
         int myDistance = (cumDistance*2);
@@ -1261,14 +1262,14 @@ public class ManagePanel {
         //Note cumulative total.
         int cumDistance = 0;
         //Add distance of terminus1 and first item of terminus2 first of all - this is guaranteed.
-        cumDistance += routeService.getDistance(userInterface.getScenarioName(), terminus1Box.getSelectedItem().toString(), terminus2Box.getItemAt(0).toString());
+        cumDistance += routeController.getDistance(userInterface.getScenarioName(), terminus1Box.getSelectedItem().toString(), terminus2Box.getItemAt(0).toString());
         //Now from 0 up until the selected index - add distances for terminus 2.
         int selectIndex = terminus2Box.getSelectedIndex();
         if ( selectIndex == 0 ) {
             return cumDistance*2;
         }
         for ( int i = 1; i <= selectIndex; i++ ) {
-            cumDistance += routeService.getDistance(userInterface.getScenarioName(), terminus2Box.getItemAt(i-1).toString(), terminus2Box.getItemAt(i).toString());
+            cumDistance += routeController.getDistance(userInterface.getScenarioName(), terminus2Box.getItemAt(i-1).toString(), terminus2Box.getItemAt(i).toString());
         }
         //Return distance * 2.
         return cumDistance*2;
@@ -1288,8 +1289,8 @@ public class ManagePanel {
         JPanel routeScreenPanel = new JPanel();
         routeScreenPanel.setLayout( new BoxLayout(routeScreenPanel, BoxLayout.PAGE_AXIS));
         routeScreenPanel.setBackground(Color.WHITE);
-     
-        selectedRouteId = userInterface.getRoute(route);
+
+        selectedRouteModel = routeController.getRoute(route);
             
         //Create an overall screen panel.
         JPanel overallScreenPanel = new JPanel(new BorderLayout());
@@ -1301,16 +1302,16 @@ public class ManagePanel {
         //Here, we have the "Route Selection Screen" label.
         JPanel topPanel = new JPanel(new BorderLayout());
         topPanel.setBackground(Color.WHITE);
-        JLabel topLabel = new JLabel("Timetable for Route " + routeService.getRouteById(selectedRouteId).getRouteNumber(), SwingConstants.CENTER);
+        JLabel topLabel = new JLabel("Timetable for Route " + selectedRouteModel.getRouteNumber(), SwingConstants.CENTER);
         topLabel.setFont(new Font("Arial", Font.BOLD, 25));
         topPanel.add(topLabel, BorderLayout.NORTH);
         //Show valid information.
         JPanel validityPanel = new JPanel(new BorderLayout());
         validityPanel.setBackground(Color.WHITE);
-        JLabel validFromDateLabel = new JLabel("Valid From: " + timetableService.getDateInfo(timetableService.getCurrentTimetable(selectedRouteId, gameController.getCurrentSimTime()).getValidFromDate()));
+        JLabel validFromDateLabel = new JLabel("Valid From: " + timetableController.getDateInfo(timetableController.getCurrentTimetable(selectedRouteModel, gameController.getCurrentSimTime()).getValidFromDate()));
         validFromDateLabel.setFont(new Font("Arial", Font.ITALIC, 14));
         validityPanel.add(validFromDateLabel, BorderLayout.NORTH);
-        JLabel validToDateLabel = new JLabel("Valid To: " + timetableService.getDateInfo(timetableService.getCurrentTimetable(selectedRouteId, gameController.getCurrentSimTime()).getValidToDate()));        validToDateLabel.setFont(new Font("Arial", Font.ITALIC, 14));
+        JLabel validToDateLabel = new JLabel("Valid To: " + timetableController.getDateInfo(timetableController.getCurrentTimetable(selectedRouteModel, gameController.getCurrentSimTime()).getValidToDate()));
         validityPanel.add(validToDateLabel, BorderLayout.SOUTH);
         topPanel.add(validityPanel, BorderLayout.SOUTH);
         //Add top panel to topLabel panel and topLabel panel to screenPanel.
@@ -1322,37 +1323,37 @@ public class ManagePanel {
         datesPanel.setBackground(Color.WHITE);
         JLabel datesLabel = new JLabel("Dates:");
         datesLabel.setFont(new Font("Arial", Font.BOLD, 16));
-        datesComboBox = new JComboBox ( userInterface.getPossibleSchedulesDates(selectedRouteId, gameController.getCurrentSimTime()) );
+        datesComboBox = new JComboBox ( userInterface.getPossibleSchedulesDates(selectedRouteModel, gameController.getCurrentSimTime()) );
         datesComboBox.setSelectedIndex(dateIndex);
         datesComboBox.addItemListener(new ItemListener() {
             public void itemStateChanged ( ItemEvent e ) {
-                controlScreen.redrawManagement(makeTimetablePanel(routeService.getRouteById(selectedRouteId).getRouteNumber(), 0, datesComboBox.getSelectedIndex()));
+                controlScreen.redrawManagement(makeTimetablePanel(selectedRouteModel.getRouteNumber(), 0, datesComboBox.getSelectedIndex()));
             }
         });
         datesPanel.add(datesLabel); datesPanel.add(datesComboBox);
         routeScreenPanel.add(datesPanel);
-            
+
+        List<String> routeStops = selectedRouteModel.getStopNames();
         //Now make the first portion of the screen - this will list the stops in ascending order.
         JPanel outgoingPanel = new JPanel(new BorderLayout());
         outgoingPanel.setBackground(Color.WHITE);
-        JLabel outgoingLabel = new JLabel(routeService.getRouteById(selectedRouteId).getStops().get(0) + " - " + 
-        		routeService.getRouteById(selectedRouteId).getStops().get(routeService.getRouteById(selectedRouteId).getStops().size()-1));
+        JLabel outgoingLabel = new JLabel(routeStops.get(0) + " - " + routeStops.get(routeStops.size()-1));
         outgoingLabel.setFont(new Font("Arial", Font.BOLD, 18));
         outgoingPanel.add(outgoingLabel, BorderLayout.NORTH);
             
         //Process data...
         String[] outgoingColumnNames = new String[] { "Stop Name", "", "", "", "", "", "", "", "", "", "" };
-        Object[][] outgoingData = new Object[routeService.getRouteById(selectedRouteId).getStops().size()][11];
+        Object[][] outgoingData = new Object[selectedRouteModel.getStopNames().size()][11];
         Calendar cal = Calendar.getInstance();
         try {
         	cal.setTime(DateFormats.FULL_FORMAT.getFormat().parse(datesComboBox.getSelectedItem().toString()));
         } catch ( ParseException parseEx ) {
         	//TODO: exception handling.
         }
-        long[] journeyIds = userInterface.generateOutwardJourneyTimetables(selectedRouteId, cal);
+        long[] journeyIds = userInterface.generateOutwardJourneyTimetables(selectedRouteModel, cal);
         //LinkedList<Service> services = theSelectedRoute.getAllOutgoingServices(theDatesComboBox.getSelectedItem().toString());
-        for ( int i = 0; i < routeService.getRouteById(selectedRouteId).getStops().size(); i++) {
-            outgoingData[i][0] = routeService.getRouteById(selectedRouteId).getStops().get(i).getStopName();
+        for ( int i = 0; i < routeStops.size(); i++) {
+            outgoingData[i][0] = routeStops.get(i);
             for ( int j = 0; j < 10; j++ ) {
                 int pos = (min+j);
                 logger.debug("This is #" + pos + " of the loop...");
@@ -1360,12 +1361,12 @@ public class ManagePanel {
                     logger.debug("No more services!");
                     outgoingData[i][j+1] = "";
                 }
-                else if ( journeyController.getStopTime(journeyIds[min+j], routeService.getRouteById(selectedRouteId).getStops().get(i).getStopName()) == null ) {
+                else if ( journeyController.getStopTime(journeyIds[min+j], routeStops.get(i)) == null ) {
                     logger.debug("Blank data!");
                     outgoingData[i][j+1] = "";
                 }
                 else {
-                    outgoingData[i][j+1] = journeyController.getDisplayStopTime(journeyIds[min+j], routeService.getRouteById(selectedRouteId).getStops().get(i).getStopName());
+                    outgoingData[i][j+1] = journeyController.getDisplayStopTime(journeyIds[min+j], routeStops.get(i));
                 }
             }
         }
@@ -1404,7 +1405,7 @@ public class ManagePanel {
         amendRouteButton.addActionListener(new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
                 //Show the actual screen!
-                controlScreen.redrawManagement(makeAddRoutePanel(selectedRouteId));
+                controlScreen.redrawManagement(makeAddRoutePanel(selectedRouteModel));
                 //int confirm = JOptionPane.showConfirmDialog(null, "Are you sure you wish to delete route " + ((Route) theRoutesModel.get(theRoutesList.getSelectedIndex())).getRouteNumber() + "?", "Confirm Delete", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
                 //if ( confirm == JOptionPane.YES_OPTION ) {
                 //    theInterface.deleteRoute(((Route) theRoutesModel.get(theRoutesList.getSelectedIndex())));
@@ -1434,7 +1435,7 @@ public class ManagePanel {
         routesModel = new DefaultListModel();
         userInterface.sortRoutes();
         for ( int i = 0; i < userInterface.getNumberRoutes(); i++ ) {
-            routesModel.addElement(routeService.getRouteById(userInterface.getRoute(i)).getRouteNumber());
+            routesModel.addElement(routeController.getRouteNumberByPosition(i));
         }
         routesList = new JList(routesModel);
         routesList.setFixedCellWidth(40);
@@ -2113,7 +2114,7 @@ public class ManagePanel {
         routesList.setFixedCellWidth(270);
         routesList.setFont(new Font("Arial", Font.PLAIN, 15));
         for ( int i = 0; i < userInterface.getNumberRoutes(); i++ ) {
-            String[] routeScheduleNames = routeScheduleController.getRouteScheduleNames(userInterface.getRoute(i));
+            String[] routeScheduleNames = routeScheduleController.getRouteScheduleNames(routeController.getRouteNumberByPosition(i));
             for ( int j = 0; j < routeScheduleNames.length; j++ ) {
                 routesModel.addElement(routeScheduleNames[j]);
             }
@@ -2263,7 +2264,7 @@ public class ManagePanel {
                         String[] allocationSplit = allocationsModel.get(i).toString().split("&");
                         //Store route detail object.
                         String routeNumber = allocationSplit[0].split("/")[0]; int routeDetailPos = -1;
-                        String[] scheduleNames = routeScheduleController.getRouteScheduleNames(userInterface.getRoute(routeNumber));
+                        String[] scheduleNames = routeScheduleController.getRouteScheduleNames(routeController.getRoute(routeNumber).getRouteNumber());
                         for ( int k = 0; k < scheduleNames.length; k++ ) {
                             if ( scheduleNames[k].equalsIgnoreCase(allocationSplit[0].trim()) ) {
                                 routeDetailPos = k;

@@ -35,7 +35,7 @@ public class VehicleController {
 		return convertToVehicleModel(vehicle);
 	}
 
-	public VehicleModel convertToVehicleModel ( final Vehicle vehicle ) {
+	private VehicleModel convertToVehicleModel ( final Vehicle vehicle ) {
 		VehicleModel vehicleModel = new VehicleModel();
 		vehicleModel.setDeliveryDate(vehicle.getDeliveryDate());
 		vehicleModel.setImagePath(vehicle.getImagePath());
