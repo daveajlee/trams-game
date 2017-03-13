@@ -126,4 +126,8 @@ public class RouteScheduleService {
         return routeScheduleRepository.findAll();
     }
 
+    public long getIdFromScheduleNumber ( final int scheduleNumber ) {
+        return routeScheduleRepository.findByScheduleNumber(scheduleNumber).getId();
+    }
+
 }

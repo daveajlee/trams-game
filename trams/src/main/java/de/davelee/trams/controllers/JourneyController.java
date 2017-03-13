@@ -3,6 +3,8 @@ package de.davelee.trams.controllers;
 import java.util.Calendar;
 import java.util.List;
 
+import de.davelee.trams.data.StopTime;
+import de.davelee.trams.util.DateFormats;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import de.davelee.trams.data.Journey;
@@ -31,6 +33,23 @@ public class JourneyController {
 	
 	public String getStopName ( final long routeScheduleId, final Calendar currentTime, final int pos ) {
 		return journeyService.getStopNameByStopId(journeyService.getStopTimesByJourneyId(getCurrentJourney(routeScheduleId, currentTime).getId()).get(pos).getStopId());
+	}
+
+	/**
+	 * Get the stop time as hh:mm.
+	 * @return a <code>String</code> with the time as hh:mm.
+	 */
+    public String getDisplayStopTime( long journeyId, String name ) {
+		return DateFormats.HOUR_MINUTE_FORMAT.getFormat().format(getStopTime(journeyId, name));
+	}
+
+	//TODO: Null or exception?
+	public Calendar getStopTime ( long journeyId, String name ) {
+		StopTime stopTime = journeyService.getStopTime(journeyId, name);
+		if ( stopTime != null ) {
+			return stopTime.getTime();
+		}
+		return null;
 	}
 	
 }

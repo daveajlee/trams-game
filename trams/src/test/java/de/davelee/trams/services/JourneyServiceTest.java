@@ -21,14 +21,6 @@ public class JourneyServiceTest {
 	private JourneyService journeyService;
 	
 	@Test
-	public void testDisplayStopTime() {
-		Calendar calendar = Calendar.getInstance();
-		calendar.set(Calendar.HOUR, 10); calendar.set(Calendar.MINUTE, 57);
-		calendar.set(Calendar.AM_PM, Calendar.PM);
-		assertEquals(journeyService.getDisplayStopTime(calendar), "22:57");
-	}
-	
-	@Test
 	public void testCreate() {
 		Calendar calendar = Calendar.getInstance();
 		calendar.set(Calendar.HOUR, 10); calendar.set(Calendar.MINUTE, 57);

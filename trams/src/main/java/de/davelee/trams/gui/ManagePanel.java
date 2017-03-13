@@ -3,8 +3,7 @@ package de.davelee.trams.gui;
 import javax.swing.*;
 import javax.swing.event.*;
 
-import de.davelee.trams.controllers.DriverController;
-import de.davelee.trams.controllers.GameController;
+import de.davelee.trams.controllers.*;
 import de.davelee.trams.data.JourneyPattern;
 import de.davelee.trams.data.Timetable;
 import de.davelee.trams.services.*;
@@ -122,12 +121,10 @@ public class ManagePanel {
     private String selectedRouteStr;
     private int currentMin;
     private JComboBox datesComboBox;
-    
+
     private VehicleService vehicleService;
-    private JourneyService journeyService;
     private TimetableService timetableService;
     private RouteService routeService;
-    private RouteScheduleService routeScheduleService;
     private ScenarioService scenarioService;
     private JourneyPatternService journeyPatternService;
 
@@ -136,13 +133,20 @@ public class ManagePanel {
 
     @Autowired
     private GameController gameController;
+
+    @Autowired
+    private JourneyController journeyController;
+
+    @Autowired
+    private RouteScheduleController routeScheduleController;
+
+    @Autowired
+    private VehicleController vehicleController;
     
     public ManagePanel ( UserInterface ui, ControlScreen cs ) {
         userInterface = ui;
         controlScreen = cs;
-        routeScheduleService = new RouteScheduleService();
         vehicleService = new VehicleService();
-        journeyService = new JourneyService();
         timetableService = new TimetableService();
         routeService = new RouteService();
         scenarioService = new ScenarioService();
@@ -1357,12 +1361,12 @@ public class ManagePanel {
                     logger.debug("No more services!");
                     outgoingData[i][j+1] = "";
                 }
-                else if ( journeyService.getStopTime(journeyIds[min+j], routeService.getRouteById(selectedRouteId).getStops().get(i).getStopName()) == null ) {
+                else if ( journeyController.getStopTime(journeyIds[min+j], routeService.getRouteById(selectedRouteId).getStops().get(i).getStopName()) == null ) {
                     logger.debug("Blank data!");
                     outgoingData[i][j+1] = "";
                 }
                 else {
-                    outgoingData[i][j+1] = journeyService.getDisplayStopTime(journeyService.getStopTime(journeyIds[min+j], routeService.getRouteById(selectedRouteId).getStops().get(i).getStopName()).getTime());
+                    outgoingData[i][j+1] = journeyController.getDisplayStopTime(journeyIds[min+j], routeService.getRouteById(selectedRouteId).getStops().get(i).getStopName());
                 }
             }
         }
@@ -2110,8 +2114,9 @@ public class ManagePanel {
         routesList.setFixedCellWidth(270);
         routesList.setFont(new Font("Arial", Font.PLAIN, 15));
         for ( int i = 0; i < userInterface.getNumberRoutes(); i++ ) {
-            for ( int j = 0; j < routeScheduleService.getRouteSchedulesByRouteId(userInterface.getRoute(i)).size(); j++ ) {
-                routesModel.addElement(routeScheduleService.getRouteSchedulesByRouteId(userInterface.getRoute(i)).get(j).toString());
+            String[] routeScheduleNames = routeScheduleController.getRouteScheduleNames(userInterface.getRoute(i));
+            for ( int j = 0; j < routeScheduleNames.length; j++ ) {
+                routesModel.addElement(routeScheduleNames[j]);
             }
         }
         routesList.setVisibleRowCount(4);
@@ -2258,8 +2263,9 @@ public class ManagePanel {
                         String[] allocationSplit = allocationsModel.get(i).toString().split("&");
                         //Store route detail object.
                         String routeNumber = allocationSplit[0].split("/")[0]; int routeDetailPos = -1;
-                        for ( int k = 0; k < routeScheduleService.getRouteSchedulesByRouteId(userInterface.getRoute(routeNumber)).size(); k++ ) {
-                            if ( routeScheduleService.getRouteSchedulesByRouteId(userInterface.getRoute(routeNumber)).get(k).toString().equalsIgnoreCase(allocationSplit[0].trim()) ) {
+                        String[] scheduleNames = routeScheduleController.getRouteScheduleNames(userInterface.getRoute(routeNumber));
+                        for ( int k = 0; k < scheduleNames.length; k++ ) {
+                            if ( scheduleNames[k].equalsIgnoreCase(allocationSplit[0].trim()) ) {
                                 routeDetailPos = k;
                             }
                         }
@@ -2272,7 +2278,7 @@ public class ManagePanel {
                             }
                         }
                         //Now assign route detail to vehicle.
-                        vehicleService.getVehicleById(userInterface.getVehicle(vehiclePos)).setRouteScheduleId(routeScheduleService.getRouteSchedulesByRouteId(userInterface.getRoute(routeNumber)).get(routeDetailPos).getId());
+                        vehicleController.assignVehicleToRouteSchedule(userInterface.getVehicle(vehiclePos), scheduleNames[routeDetailPos]);
                     }
                     for ( int i = 0; i < userInterface.getNumberVehicles(); i++ ) {
                         if ( !vehiclePoses.contains(i) ) {
