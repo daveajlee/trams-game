@@ -23,4 +23,8 @@ public class GameController {
         return gameService.getCurrentTime();
     }
 
+	public void creditBalance ( double amount ) {
+		gameService.creditBalance(amount);
+	}
+
 }

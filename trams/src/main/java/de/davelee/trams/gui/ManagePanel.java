@@ -6,6 +6,7 @@ import javax.swing.event.*;
 import de.davelee.trams.controllers.*;
 import de.davelee.trams.data.JourneyPattern;
 import de.davelee.trams.data.Timetable;
+import de.davelee.trams.model.VehicleModel;
 import de.davelee.trams.services.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -111,7 +112,7 @@ public class ManagePanel {
     
     private DefaultListModel vehiclesModel;
     private JList vehiclesList;
-    private long vehicleId;
+    private VehicleModel vehicleModel;
     private Calendar deliveryDate;
     private JSpinner quantitySpinner;
     private JLabel totalPriceField;
@@ -122,7 +123,6 @@ public class ManagePanel {
     private int currentMin;
     private JComboBox datesComboBox;
 
-    private VehicleService vehicleService;
     private TimetableService timetableService;
     private RouteService routeService;
     private ScenarioService scenarioService;
@@ -146,7 +146,6 @@ public class ManagePanel {
     public ManagePanel ( UserInterface ui, ControlScreen cs ) {
         userInterface = ui;
         controlScreen = cs;
-        vehicleService = new VehicleService();
         timetableService = new TimetableService();
         routeService = new RouteService();
         scenarioService = new ScenarioService();
@@ -161,7 +160,7 @@ public class ManagePanel {
         JPanel informationPanel = new JPanel();
         informationPanel.setBackground(Color.WHITE);
         ImageDisplay infoDisplay = null;
-        if ( userInterface.getNumberRoutes() == 0 || userInterface.getNumberVehicles() == 0 || userInterface.getAllocations().size() == 0 ) {
+        if ( userInterface.getNumberRoutes() == 0 || vehicleController.getAllCreatedVehicles().length == 0 || userInterface.getAllocations().size() == 0 ) {
             infoDisplay = new ImageDisplay("xpic.png",0,0);
         }
         else {
@@ -175,7 +174,7 @@ public class ManagePanel {
         if ( userInterface.getNumberRoutes() == 0 ) {
             informationArea.setText("WARNING: No routes have been devised yet. Click 'Create Route' to define a route.");
         }
-        else if ( userInterface.getNumberVehicles() == 0 ) {
+        else if ( vehicleController.getAllCreatedVehicles().length == 0 ) {
             informationArea.setText("WARNING: You can't run routes without vehicles. Click 'Purchase Vehicle' to buy a vehicle");
         }
         else if ( userInterface.getAllocations().size() == 0 ) {
@@ -336,7 +335,7 @@ public class ManagePanel {
         JPanel viewDepotButtonPanel = new JPanel(new GridBagLayout());
         viewDepotButtonPanel.setBackground(Color.WHITE);
         viewDepotButton = new JButton("View Depot");
-        if ( !userInterface.hasSomeVehiclesBeenDelivered() ) { viewDepotButton.setEnabled(false); }
+        if ( !vehicleController.hasSomeVehiclesBeenDelivered() ) { viewDepotButton.setEnabled(false); }
         viewDepotButton.addActionListener( new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 //Show the actual screen!
@@ -1578,7 +1577,7 @@ public class ManagePanel {
         vehicleScreenPanel.add(textLabelPanel);
         
         //Create vehicle object so that we can pull information from it.
-        vehicleId = userInterface.createVehicleObject(typePosition);
+        vehicleModel = vehicleController.createVehicleObject(typePosition);
         
         //Create picture panel.
         JPanel picturePanel = new JPanel(new BorderLayout());
@@ -1598,7 +1597,7 @@ public class ManagePanel {
         //Bus Display Picture.
         JPanel busPicture = new JPanel(new GridBagLayout());
         busPicture.setBackground(Color.WHITE);
-        ImageDisplay busDisplay = new ImageDisplay(vehicleService.getVehicleById(vehicleId).getImagePath(),0,0);
+        ImageDisplay busDisplay = new ImageDisplay(vehicleModel.getImagePath(),0,0);
         busDisplay.setSize(220,180);
         busDisplay.setBackground(Color.WHITE);
         busPicture.add(busDisplay);
@@ -1627,7 +1626,7 @@ public class ManagePanel {
         typeLabel.setFont(new Font("Arial", Font.ITALIC, 14));
         typeLabelPanel.add(typeLabel);
         gridPanel.add(typeLabel);
-        JLabel typeField = new JLabel(vehicleService.getVehicleById(vehicleId).getModel());
+        JLabel typeField = new JLabel(vehicleModel.getModel());
         typeField.setFont(new Font("Arial", Font.PLAIN, 12));
         gridPanel.add(typeField);
         //Create label and field for seating capacity and add it to the seating panel.
@@ -1637,7 +1636,7 @@ public class ManagePanel {
         seatingLabel.setFont(new Font("Arial", Font.ITALIC, 14));
         seatingLabelPanel.add(seatingLabel);
         gridPanel.add(seatingLabel);
-        JLabel seatingField = new JLabel("" + vehicleService.getVehicleById(vehicleId).getSeatingCapacity());
+        JLabel seatingField = new JLabel(vehicleModel.getSeatingCapacity());
         seatingField.setFont(new Font("Arial", Font.PLAIN, 12));
         gridPanel.add(seatingField);
         //Create label and field for standing capacity and add it to the standing panel.
@@ -1647,7 +1646,7 @@ public class ManagePanel {
         standingLabel.setFont(new Font("Arial", Font.ITALIC, 14));
         standingLabelPanel.add(standingLabel);
         gridPanel.add(standingLabel);
-        JLabel standingField = new JLabel("" + vehicleService.getVehicleById(vehicleId).getStandingCapacity());
+        JLabel standingField = new JLabel(vehicleModel.getStandingCapacity());
         standingField.setFont(new Font("Arial", Font.PLAIN, 12));
         gridPanel.add(standingField);
         //Create label and field for delivery date and add it to the delivery panel.
@@ -1670,7 +1669,7 @@ public class ManagePanel {
         priceLabelPanel.add(priceLabel);
         gridPanel.add(priceLabel);
         format = new DecimalFormat("0.00");
-        JLabel priceField = new JLabel("£" + format.format(vehicleService.getVehicleById(vehicleId).getPurchasePrice()));
+        JLabel priceField = new JLabel("£" + format.format(vehicleModel.getPurchasePrice()));
         priceField.setFont(new Font("Arial", Font.PLAIN, 12));
         gridPanel.add(priceField);
         //Create label and field for quantity and add it to the quantity panel.
@@ -1684,7 +1683,7 @@ public class ManagePanel {
         quantitySpinner.setFont(new Font("Arial", Font.PLAIN, 12));
         quantitySpinner.addChangeListener(new ChangeListener() {
             public void stateChanged ( ChangeEvent e ) {
-                double totalPrice = Double.parseDouble(quantitySpinner.getValue().toString()) * vehicleService.getVehicleById(vehicleId).getPurchasePrice();
+                double totalPrice = Double.parseDouble(quantitySpinner.getValue().toString()) * vehicleModel.getPurchasePrice();
                 if ( totalPrice > userInterface.getBalance() ) {
                     totalPriceField.setText("£" + format.format(totalPrice) + " (Insufficient funds available)");
                     totalPriceField.setForeground(Color.RED);
@@ -1706,7 +1705,7 @@ public class ManagePanel {
         totalPriceLabel.setFont(new Font("Arial", Font.ITALIC, 14));
         totalPriceLabelPanel.add(totalPriceLabel);
         gridPanel.add(totalPriceLabel);
-        double totalPrice = Double.parseDouble(quantitySpinner.getValue().toString()) * vehicleService.getVehicleById(vehicleId).getPurchasePrice();
+        double totalPrice = Double.parseDouble(quantitySpinner.getValue().toString()) * vehicleModel.getPurchasePrice();
         totalPriceField = new JLabel("£" + format.format(totalPrice));
         totalPriceField.setFont(new Font("Arial", Font.PLAIN, 12));
         gridPanel.add(totalPriceField);
@@ -1724,7 +1723,7 @@ public class ManagePanel {
             public void actionPerformed ( ActionEvent e ) {
                 int quantity = Integer.parseInt(quantitySpinner.getValue().toString());
                 for ( int i = 0; i < quantity; i++ ) {
-                    userInterface.purchaseVehicle(vehicleService.getVehicleById(vehicleId).getModel(), deliveryDate);
+                    userInterface.purchaseVehicle(vehicleModel.getModel(), deliveryDate);
                 }
                 controlScreen.redrawManagement(ManagePanel.this.getDisplayPanel()); 
             }
@@ -1777,22 +1776,24 @@ public class ManagePanel {
         //Get vehicle data now so that we can used to compile first!
         vehiclesModel = new DefaultListModel();
         userInterface.sortVehicles();
-        for ( int i = 0; i < userInterface.getNumberVehicles(); i++ ) {
-            if ( vehicleService.hasBeenDelivered(vehicleService.getVehicleById(userInterface.getVehicle(i)).getDeliveryDate(), gameController.getCurrentSimTime()) ) {
-                vehiclesModel.addElement(vehicleService.getVehicleById(userInterface.getVehicle(i)).getRegistrationNumber());
+        VehicleModel[] vehicleModels = vehicleController.getAllCreatedVehicles();
+        for ( int i = 0; i < vehicleModels.length; i++ ) {
+            if ( vehicleController.hasVehicleBeenDelivered(vehicleModels[i].getDeliveryDate(), gameController.getCurrentSimTime()) ) {
+                vehiclesModel.addElement(vehicleModels[i].getRegistrationNumber());
             }
         }
         
         //Create vehicle object so that we can pull information from it.
-        vehicleId = userInterface.getVehicle(vehiclesModel.get(0).toString());
         if ( !vehicleType.equalsIgnoreCase("") ) {
-            vehicleId = userInterface.getVehicle(vehicleType);
+            vehicleModel = vehicleController.getVehicle(vehicleType);
+        } else {
+            vehicleModel = vehicleController.getVehicle(vehiclesModel.get(0).toString());
         }
         
         //Create picture panel.
         JPanel picturePanel = new JPanel(new GridBagLayout());
         picturePanel.setBackground(Color.WHITE);
-        ImageDisplay busDisplay = new ImageDisplay(vehicleService.getVehicleById(vehicleId).getImagePath(),0,0);
+        ImageDisplay busDisplay = new ImageDisplay(vehicleModel.getImagePath(),0,0);
         busDisplay.setSize(220,200);
         busDisplay.setBackground(Color.WHITE);
         picturePanel.add(busDisplay);
@@ -1808,7 +1809,7 @@ public class ManagePanel {
         idLabel.setFont(new Font("Arial", Font.ITALIC, 14));
         idLabelPanel.add(idLabel);
         gridPanel.add(idLabel);
-        JLabel idField = new JLabel(vehicleService.getVehicleById(vehicleId).getRegistrationNumber());
+        JLabel idField = new JLabel(vehicleModel.getRegistrationNumber());
         idField.setFont(new Font("Arial", Font.PLAIN, 12));
         gridPanel.add(idField);
         //Create label and field for vehicle type and add it to the type panel.
@@ -1818,7 +1819,7 @@ public class ManagePanel {
         typeLabel.setFont(new Font("Arial", Font.ITALIC, 14));
         typeLabelPanel.add(typeLabel);
         gridPanel.add(typeLabel);
-        JLabel typeField = new JLabel(vehicleService.getVehicleById(vehicleId).getModel());
+        JLabel typeField = new JLabel(vehicleModel.getModel());
         typeField.setFont(new Font("Arial", Font.PLAIN, 12));
         gridPanel.add(typeField);
         //Create label and field for age and add it to the age panel.
@@ -1828,7 +1829,7 @@ public class ManagePanel {
         ageLabel.setFont(new Font("Arial", Font.ITALIC, 14));
         ageLabelPanel.add(ageLabel);
         gridPanel.add(ageLabel);
-        JLabel ageField = new JLabel(vehicleService.getAge(vehicleService.getVehicleById(vehicleId).getDeliveryDate(),
+        JLabel ageField = new JLabel(vehicleController.getAge(vehicleModel.getDeliveryDate(),
                 gameController.getCurrentSimTime()) + " months");
         ageField.setFont(new Font("Arial", Font.PLAIN, 12));
         gridPanel.add(ageField);
@@ -1839,7 +1840,7 @@ public class ManagePanel {
         seatingLabel.setFont(new Font("Arial", Font.ITALIC, 14));
         seatingLabelPanel.add(seatingLabel);
         gridPanel.add(seatingLabel);
-        JLabel seatingField = new JLabel("" + vehicleService.getVehicleById(vehicleId).getSeatingCapacity());
+        JLabel seatingField = new JLabel("" + vehicleModel.getSeatingCapacity());
         seatingField.setFont(new Font("Arial", Font.PLAIN, 12));
         gridPanel.add(seatingField);
         //Create label and field for standing capacity and add it to the standing panel.
@@ -1849,7 +1850,7 @@ public class ManagePanel {
         standingLabel.setFont(new Font("Arial", Font.ITALIC, 14));
         standingLabelPanel.add(standingLabel);
         gridPanel.add(standingLabel);
-        JLabel standingField = new JLabel("" + vehicleService.getVehicleById(vehicleId).getStandingCapacity());
+        JLabel standingField = new JLabel("" + vehicleModel.getStandingCapacity());
         standingField.setFont(new Font("Arial", Font.PLAIN, 12));
         gridPanel.add(standingField);
         //Create label and field for assigned schedule and add it to the schedule panel.
@@ -1859,7 +1860,7 @@ public class ManagePanel {
         assignedLabel.setFont(new Font("Arial", Font.ITALIC, 14));
         assignedLabelPanel.add(assignedLabel);
         gridPanel.add(assignedLabel);
-        JLabel assignedField = new JLabel("" + vehicleService.getVehicleById(vehicleId).getRouteScheduleId());
+        JLabel assignedField = new JLabel("" + vehicleModel.getRouteScheduleId());
         assignedField.setFont(new Font("Arial", Font.PLAIN, 12));
         gridPanel.add(assignedField);
         //Create label and field for value and add it to the value panel.
@@ -1870,9 +1871,7 @@ public class ManagePanel {
         valueLabelPanel.add(valueLabel);
         gridPanel.add(valueLabel);
         format = new DecimalFormat("0.00");
-        JLabel valueField = new JLabel("£" + format.format(vehicleService.getValue(
-        		vehicleService.getVehicleById(vehicleId).getPurchasePrice(), vehicleService.getVehicleById(vehicleId).getDepreciationFactor(), 
-        		vehicleService.getVehicleById(vehicleId).getDeliveryDate(), gameController.getCurrentSimTime())));
+        JLabel valueField = new JLabel("£" + format.format(vehicleController.getValue(vehicleModel, gameController.getCurrentSimTime())));
         valueField.setFont(new Font("Arial", Font.PLAIN, 12));
         gridPanel.add(valueField);
         
@@ -1887,7 +1886,7 @@ public class ManagePanel {
         JButton sellVehicleButton = new JButton("Sell Vehicle");
         sellVehicleButton.addActionListener ( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
-                userInterface.sellVehicle(vehicleId);
+                vehicleController.sellVehicle(vehicleModel);
                 controlScreen.redrawManagement(makeVehicleDepotPanel(""));
             }
         });
@@ -1917,7 +1916,7 @@ public class ManagePanel {
         vehiclesList = new JList(vehiclesModel);
         vehiclesList.setFixedCellWidth(100);
         vehiclesList.setVisibleRowCount(25);
-        vehiclesList.setSelectedValue(vehicleService.getVehicleById(vehicleId).getRegistrationNumber(), true);
+        vehiclesList.setSelectedValue(vehicleModel.getRegistrationNumber(), true);
         vehiclesList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         vehiclesList.setFont(new Font("Arial", Font.PLAIN, 15));
         vehiclesList.addListSelectionListener(new ListSelectionListener() {
@@ -2128,10 +2127,10 @@ public class ManagePanel {
         JPanel modelPanel = new JPanel();
         modelPanel.setBackground(Color.WHITE);
         vehiclesModel = new DefaultListModel();
-        for ( int i = 0; i < userInterface.getNumberVehicles(); i++ ) {
-            if ( vehicleService.getVehicleById(userInterface.getVehicle(i)).getRouteScheduleId() != 0 ) {
-                vehiclesModel.addElement(vehicleService.getVehicleById(userInterface.getVehicle(i))
-                		.getRegistrationNumber() + "(" + vehicleService.getVehicleById(userInterface.getVehicle(i)).getModel() + ")");
+        VehicleModel[] vehicleModels = vehicleController.getAllCreatedVehicles();
+        for ( int i = 0; i < vehicleModels.length; i++ ) {
+            if ( vehicleModels[i].getRouteScheduleId() != 0 ) {
+                vehiclesModel.addElement(vehicleModels[i].getRegistrationNumber() + "(" + vehicleModels[i].getModel() + ")");
             }
         }
         vehiclesList = new JList(vehiclesModel);
@@ -2177,8 +2176,8 @@ public class ManagePanel {
                     allocationsModel.removeElement(allocationsList.getSelectedValue());
                     String[] textParts = text.split("&");
                     routesModel.addElement(textParts[0].trim());
-                    vehiclesModel.addElement(vehicleService.getVehicleById(userInterface.getVehicle(textParts[1].trim()))
-                    		.getRegistrationNumber() + " (" + vehicleService.getVehicleById(userInterface.getVehicle(textParts[1].trim())).getModel() + ")");
+                    vehiclesModel.addElement(vehicleController.getVehicle(textParts[1].trim()).getRegistrationNumber() +
+                            " (" + vehicleController.getVehicle(textParts[1].trim()).getModel() + ")");
                     //Remove this from the interface as well.
                     /*String routeNumber = textParts[0].split("/")[0]; int routeDetailPos = -1;
                     for ( int k = 0; k < theInterface.getRoute(routeNumber).getNumRouteSchedules(); k++ ) {
@@ -2188,12 +2187,13 @@ public class ManagePanel {
                     }*/
                     //Find vehicle object position.
                     int vehiclePos = -1;
-                    for ( int j = 0; j < userInterface.getNumberVehicles(); j++ ) {
-                        if ( vehicleService.getVehicleById(userInterface.getVehicle(j)).toString().equalsIgnoreCase(textParts[1].trim())) {
+                    VehicleModel[] vehicleModels = vehicleController.getAllCreatedVehicles();
+                    for ( int j = 0; j < vehicleModels.length; j++ ) {
+                        if ( vehicleModels[j].getRegistrationNumber().equalsIgnoreCase(textParts[1].trim())) {
                             vehiclePos = j;
                         }
                     }
-                    vehicleService.getVehicleById(userInterface.getVehicle(vehiclePos)).setRouteScheduleId(0);
+                    vehicleController.assignVehicleToRouteSchedule(vehicleModels[vehiclePos].getRegistrationNumber(), "0");
                 }
             }
         });
@@ -2271,18 +2271,20 @@ public class ManagePanel {
                         }
                         //Find vehicle object position.
                         int vehiclePos = -1;
-                        for ( int j = 0; j < userInterface.getNumberVehicles(); j++ ) {
-                            if ( vehicleService.getVehicleById(userInterface.getVehicle(j)).getRegistrationNumber().equalsIgnoreCase(allocationSplit[1].trim())) {
+                        VehicleModel[] vehicleModels = vehicleController.getAllCreatedVehicles();
+                        for ( int j = 0; j < vehicleModels.length; j++ ) {
+                            if ( vehicleModels[j].getRegistrationNumber().equalsIgnoreCase(allocationSplit[1].trim())) {
                                 vehiclePos = j;
                                 vehiclePoses.add(vehiclePos);
                             }
                         }
                         //Now assign route detail to vehicle.
-                        vehicleController.assignVehicleToRouteSchedule(userInterface.getVehicle(vehiclePos), scheduleNames[routeDetailPos]);
+                        vehicleController.assignVehicleToRouteSchedule(vehicleModels[vehiclePos].getRegistrationNumber(), scheduleNames[routeDetailPos]);
                     }
-                    for ( int i = 0; i < userInterface.getNumberVehicles(); i++ ) {
+                    VehicleModel[] vehicleModels = vehicleController.getAllCreatedVehicles();
+                    for ( int i = 0; i < vehicleModels.length; i++ ) {
                         if ( !vehiclePoses.contains(i) ) {
-                            vehicleService.getVehicleById(userInterface.getVehicle(i)).setRouteScheduleId(0);
+                            vehicleController.assignVehicleToRouteSchedule(vehicleModels[i].getRegistrationNumber(), "0");
                         }
                     }
                     //Now return to previous screen.

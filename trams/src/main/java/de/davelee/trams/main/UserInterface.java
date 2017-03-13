@@ -854,16 +854,6 @@ public class UserInterface implements Runnable {
     }
     
     /**
-     * Create vehicle object based on type.
-     * This method needs to be updated in order to new vehicle types to TraMS.
-     * @param pos a <code>int</code> with the supplied vehicle type position in the array.
-     * @return a <code>Vehicle</code> object.
-     */
-    public long createVehicleObject ( int pos ) {
-        return vehicleService.createVehicleObject ( vehicleService.getVehicleModel(pos), "AA", gameController.getCurrentSimTime() ).getId();
-    }
-    
-    /**
      * Get the number of available vehicle types.
      * @return a <code>int</code> with the number of available vehicle types.
      */
@@ -909,26 +899,6 @@ public class UserInterface implements Runnable {
         //Return null if no vehicle found.
         return -1;
     }
-    
-    /**
-     * Get number of vehicles owned by this scenario.
-     * @return a <code>int</code> with the number of vehicles.
-     */
-    public int getNumberVehicles ( ) {
-        return vehicleService.getAllVehicles().size();
-    }
-    
-    /**
-     * This method checks if any vehicles have been delivered to the company yet!
-     * @return a <code>boolean</code> which is true iff some vehicles have been delivered!
-     */
-    public boolean hasSomeVehiclesBeenDelivered ( ) {
-        if ( getNumberVehicles() == 0 ) { return false; }
-        for ( int i = 0; i < getNumberVehicles(); i++ ) {
-            if ( vehicleService.hasBeenDelivered(vehicleService.getVehicleById(getVehicle(i)).getDeliveryDate(), gameController.getCurrentSimTime()) ) { return true; }
-        }
-        return false;
-    }
 
     /**
      * Get a vehicle based on its position.
@@ -937,15 +907,6 @@ public class UserInterface implements Runnable {
      */
     public long getVehicle ( int pos ) {
         return vehicleService.getAllVehicles().get(pos).getId();
-    }
-    
-    /**
-     * Get a vehicle based on its id.
-     * @param id a <code>String</code> with the id.
-     * @return a <code>Vehicle</code> object.
-     */
-    public long getVehicle ( String id ) {
-        return vehicleService.getVehicle(id).getId();
     }
     
     /**

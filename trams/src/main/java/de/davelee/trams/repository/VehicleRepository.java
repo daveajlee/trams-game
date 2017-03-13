@@ -9,4 +9,6 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
 	
 	public Vehicle findByRouteScheduleId(@Param("routeScheduleId") long routeScheduleId);
 
+	public Vehicle findByRegistrationNumber(@Param("registrationNumber") String registrationNumber);
+
 }

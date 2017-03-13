@@ -188,5 +188,9 @@ public class VehicleService {
     public int getNumberAvailableVehicles ( ) {
         return vehicleFactory.getAvailableVehicles().size();
     }
+
+    public Vehicle getVehicleByRegistrationNumber ( final String registrationNumber ) {
+        return vehicleRepository.findByRegistrationNumber(registrationNumber);
+    }
     
 }
