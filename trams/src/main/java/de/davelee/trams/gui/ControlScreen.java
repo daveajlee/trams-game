@@ -113,7 +113,6 @@ public class ControlScreen extends ButtonBar {
         this.setResizable (true);
         this.setDefaultCloseOperation (DO_NOTHING_ON_CLOSE);
         this.setJMenuBar(menuBar);
-        userInterface.setFrame ( this );
         
         //Set image icon.
         Image img = Toolkit.getDefaultToolkit().getImage(ControlScreen.class.getResource("/TraMSlogo.png"));
@@ -122,7 +121,7 @@ public class ControlScreen extends ButtonBar {
         //Call the Exit method in the UserInterface class if the user hits exit.
         this.addWindowListener ( new WindowAdapter() {
             public void windowClosing ( WindowEvent e ) {
-                userInterface.exit();
+                userInterface.exit(ControlScreen.this);
             }
         });
         
@@ -263,7 +262,7 @@ public class ControlScreen extends ButtonBar {
         JButton exitButton = new JButton("Exit Game");
         exitButton.addActionListener( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
-                userInterface.exit();
+                userInterface.exit(ControlScreen.this);
             }
         });
         bottomInfoPanel.add(exitButton);

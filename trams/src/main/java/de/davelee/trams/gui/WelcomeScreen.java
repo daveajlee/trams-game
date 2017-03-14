@@ -34,7 +34,6 @@ public class WelcomeScreen extends JFrame {
         this.setResizable (false);
         this.setDefaultCloseOperation (DO_NOTHING_ON_CLOSE);
         this.setBackground(Color.WHITE);
-        userInterface.setFrame ( this );
         
         //Set image icon.
         Image img = Toolkit.getDefaultToolkit().getImage(WelcomeScreen.class.getResource("/TraMSlogo.png"));
@@ -43,7 +42,7 @@ public class WelcomeScreen extends JFrame {
         //Call the Exit method in the UserInterface class if the user hits exit.
         this.addWindowListener ( new WindowAdapter() {
             public void windowClosing ( WindowEvent e ) {
-                userInterface.exit();
+                userInterface.exit(WelcomeScreen.this);
             }
         });
         
@@ -107,7 +106,7 @@ public class WelcomeScreen extends JFrame {
         loadBusDisplay.setBackground(Color.WHITE);
         loadBusDisplay.addMouseListener ( new MouseListener () {
             public void mouseClicked(MouseEvent e) {
-                if ( userInterface.loadFile() ) {
+                if ( userInterface.loadFile(WelcomeScreen.this) ) {
                     dispose();
                 }
             }
@@ -131,7 +130,7 @@ public class WelcomeScreen extends JFrame {
         exitBusDisplay.setBackground(Color.WHITE);
         exitBusDisplay.addMouseListener ( new MouseListener () {
             public void mouseClicked(MouseEvent e) {
-                userInterface.exit();
+                userInterface.exit(WelcomeScreen.this);
             }
             public void mousePressed(MouseEvent e) {}
             public void mouseReleased(MouseEvent e) {}
@@ -144,7 +143,7 @@ public class WelcomeScreen extends JFrame {
         bottomPanel.add(exitPanel);
         bottomPanel.addMouseListener ( new MouseListener () {
             public void mouseClicked(MouseEvent e) {
-                userInterface.exit();
+                userInterface.exit(WelcomeScreen.this);
             }
             public void mousePressed(MouseEvent e) {}
             public void mouseReleased(MouseEvent e) {}
@@ -196,7 +195,7 @@ public class WelcomeScreen extends JFrame {
         panel.setBackground(Color.WHITE);
         panel.addMouseListener ( new MouseListener () {
             public void mouseClicked(MouseEvent e) {
-                if ( userInterface.loadFile() ) {
+                if ( userInterface.loadFile(WelcomeScreen.this) ) {
                     dispose();
                 }
                 else {
@@ -218,7 +217,7 @@ public class WelcomeScreen extends JFrame {
         panel.setBackground(Color.WHITE);
         panel.addMouseListener ( new MouseListener () {
             public void mouseClicked(MouseEvent e) {
-                userInterface.exit();
+                userInterface.exit(WelcomeScreen.this);
             }
             public void mousePressed(MouseEvent e) {}
             public void mouseReleased(MouseEvent e) {}

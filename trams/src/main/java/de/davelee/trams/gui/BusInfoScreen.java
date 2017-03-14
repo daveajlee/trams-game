@@ -56,7 +56,6 @@ public class BusInfoScreen extends JFrame {
         this.setResizable (false);
         this.setDefaultCloseOperation (DO_NOTHING_ON_CLOSE);
         this.setBackground(Color.WHITE);
-        userInterface.setFrame ( this );
         
         //Call dispose method if the user hits exit.
         this.addWindowListener ( new WindowAdapter() {

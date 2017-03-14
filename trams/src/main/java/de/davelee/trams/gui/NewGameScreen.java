@@ -40,7 +40,6 @@ public class NewGameScreen extends JFrame {
         this.setResizable (false);
         this.setDefaultCloseOperation (DO_NOTHING_ON_CLOSE);
         this.setBackground(Color.WHITE);
-        userInterface.setFrame ( this );
         
         //Set image icon.
         Image img = Toolkit.getDefaultToolkit().getImage(NewGameScreen.class.getResource("/TraMSlogo.png"));
@@ -49,7 +48,7 @@ public class NewGameScreen extends JFrame {
         //Call the Exit method in the UserInterface class if the user hits exit.
         this.addWindowListener ( new WindowAdapter() {
             public void windowClosing ( WindowEvent e ) {
-                userInterface.exit();
+                userInterface.exit(NewGameScreen.this);
             }
         });
         

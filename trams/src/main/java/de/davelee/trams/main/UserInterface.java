@@ -31,8 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class UserInterface implements Runnable {
 	
 	private static final Logger logger = LoggerFactory.getLogger(UserInterface.class);
-    
-    private JFrame currentFrame;
+
     private ControlScreen controlScreen;
     private boolean end;
     private Thread runningThread;
@@ -98,22 +97,6 @@ public class UserInterface implements Runnable {
     }
     
     /**
-     * Set the current frame displayed to the user.
-     * @param currentFrame a <code>JFrame</code> with the current frame.
-     */
-    public void setFrame ( JFrame currentFrame ) {
-        this.currentFrame = currentFrame;
-    }
-    
-    /**
-     * Get the current frame displayed to the user.
-     * @return a <code>JFrame</code> with the current frame.
-     */
-    public JFrame getFrame ( ) {
-        return currentFrame;
-    }
-    
-    /**
      * Get the current version number.
      * @return a <code>String</code> with the current version number.
      */
@@ -124,7 +107,7 @@ public class UserInterface implements Runnable {
     /**
      * Confirm and exit the TraMS program.
      */
-    public void exit ( ) {
+    public void exit ( final JFrame currentFrame ) {
         //Confirm user did wish to exit.
         boolean wasSimulationRunning = false;
         if (simulationRunning) { pauseSimulation(); wasSimulationRunning = true; }
@@ -589,7 +572,7 @@ public class UserInterface implements Runnable {
     /**
      * Run simulation!
      */
-    public void runSimulation ( ) {
+    public void runSimulation (final JFrame currentFrame) {
         currentFrame.dispose();
         ControlScreen cs = new ControlScreen(this, "", 0, 4, false);
         cs.drawVehicles(true);
@@ -607,7 +590,7 @@ public class UserInterface implements Runnable {
      * Change the selected route.
      * @param routeNumber a <code>String</code> with the new route number.
      */
-    public void changeRoute ( String routeNumber ) {
+    public void changeRoute ( String routeNumber, final JFrame currentFrame ) {
         //Now create new control screen.
         ControlScreen cs = new ControlScreen(this, routeNumber, 0, 4, false);
         cs.drawVehicles(true);
@@ -625,7 +608,7 @@ public class UserInterface implements Runnable {
      * @param max a <code>int</code> with the new max vehicle id.
      * @param allocations a <code>boolean</code> which is true iff allocations have been performed.
      */
-    public void changeDisplay ( String routeNumber, int min, int max, boolean allocations ) {
+    public void changeDisplay ( String routeNumber, int min, int max, boolean allocations, final JFrame currentFrame ) {
         //Now create new control screen.
         ControlScreen cs = new ControlScreen(this, routeNumber, min, max, allocations);
         //cs.drawVehicles(true);
@@ -640,7 +623,7 @@ public class UserInterface implements Runnable {
      * Save file.
      * @return a <code>boolean</code> which is true iff the file was saved successfully.
      */
-    public boolean saveFile ( ) {
+    public boolean saveFile ( final JFrame currentFrame ) {
         //Create file dialog box.
         JFileChooser fileDialog = new JFileChooser();
         fileDialog.setDialogTitle("Save Game");
@@ -677,7 +660,7 @@ public class UserInterface implements Runnable {
      * Load file. 
      * @return a <code>boolean</code> which is true iff the file was loaded successfully.
      */
-    public boolean loadFile ( ) {
+    public boolean loadFile ( final JFrame currentFrame ) {
         //Create file dialog box.
         JFileChooser fileDialog = new JFileChooser();
         fileDialog.setDialogTitle("Load Game");
