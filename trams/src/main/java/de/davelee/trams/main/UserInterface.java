@@ -3,10 +3,7 @@ package de.davelee.trams.main;
 import javax.swing.*;
 import javax.swing.filechooser.*;
 
-import de.davelee.trams.controllers.DriverController;
-import de.davelee.trams.controllers.GameController;
-import de.davelee.trams.controllers.MessageController;
-import de.davelee.trams.controllers.RouteController;
+import de.davelee.trams.controllers.*;
 import de.davelee.trams.data.*;
 import de.davelee.trams.db.TramsFile;
 import de.davelee.trams.model.RouteModel;
@@ -28,14 +25,10 @@ import org.springframework.beans.factory.annotation.Autowired;
  * This class controls the user interface of the TraMS program. 
  * @author Dave Lee.
  */
-public class UserInterface implements Runnable {
+public class UserInterface {
 	
 	private static final Logger logger = LoggerFactory.getLogger(UserInterface.class);
 
-    private ControlScreen controlScreen;
-    private boolean end;
-    private Thread runningThread;
-    private boolean simulationRunning;
     private LinkedList<Integer> routeDetailPos;
     
     private int simulationSpeed = 2000;
@@ -70,14 +63,15 @@ public class UserInterface implements Runnable {
 
     @Autowired
     private RouteController routeController;
+
+    @Autowired
+    private RouteScheduleController routeScheduleController;
     
     /**
      * Create a new user interface - default constructor.
      */
     public UserInterface ( ) {
         //logger.debug("We are in ui constructor");
-        end = false;
-        simulationRunning = false;
         //Temporalily create list here.
         routeDetailPos = new LinkedList<Integer>();
         //Add tip messages here.
@@ -109,14 +103,12 @@ public class UserInterface implements Runnable {
      */
     public void exit ( final JFrame currentFrame ) {
         //Confirm user did wish to exit.
-        boolean wasSimulationRunning = false;
-        if (simulationRunning) { pauseSimulation(); wasSimulationRunning = true; }
+        boolean wasSimulationRunning = gameController.pauseSimulation();
         int result = JOptionPane.showOptionDialog(currentFrame, "Are you sure you wish to exit TraMS?", "Please Confirm Exit", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, new String[] { "Yes", "No" }, "No");
         if ( result == JOptionPane.YES_OPTION ) {
-            end = true;
             System.exit(0);
         }
-        if (wasSimulationRunning) { resumeSimulation(); }
+        if (wasSimulationRunning) { gameController.resumeSimulation(); }
     }
     
     /**
@@ -157,24 +149,6 @@ public class UserInterface implements Runnable {
     }
     
     /**
-     * Run simulation until pause is called.
-     */
-    @SuppressWarnings("static-access")
-    public void run() {
-        simulationRunning = true;
-        //First of all, sleep for theSimulationSpeed seconds.
-        try { runningThread.sleep(simulationSpeed); } catch (InterruptedException ie) {}
-        //Keep running this until pause.
-        while ( !end ) {
-            //Increment time.
-        	gameService.incrementTime();
-            controlScreen.drawVehicles(true);
-            //Now sleep!
-            try { runningThread.sleep(simulationSpeed); } catch (InterruptedException ie) {}
-        }
-    }
-    
-    /**
      * Speed up the simulation!
      */
     public void speedUpSimulation() {
@@ -198,16 +172,6 @@ public class UserInterface implements Runnable {
      */
     public int getSimulationSpeed() {
         return simulationSpeed;
-    }
-    
-    /**
-     * Set the control screen.
-     * @param cs a <code>ControlScreen</code> object.
-     */
-    public void setControlScreen( ControlScreen cs ) {
-        controlScreen = cs;
-        logger.debug("Making control screen visible...");
-        controlScreen.setVisible(true);
     }
     
     /**
@@ -277,10 +241,10 @@ public class UserInterface implements Runnable {
             if ( vehicleService.getVehicleByRouteScheduleId(routeScheduleService.getRouteSchedulesByRouteId(routeService.getRoute(routeNumber).getId()).get(min).getId()) == null ) {
                 logger.debug("A schedule was null");
             }
-            if ( getCurrentStopName(routeScheduleService.getRouteSchedulesByRouteId(routeService.getRoute(routeNumber).getId()).get(min).getId(), currentTime, getDifficultyLevel()).equalsIgnoreCase("Depot") ) {
+            if ( routeScheduleController.getCurrentStopName(routeScheduleService.getRouteSchedulesByRouteId(routeService.getRoute(routeNumber).getId()).get(min).getId(), currentTime, getDifficultyLevel()).equalsIgnoreCase("Depot") ) {
                 logger.debug("Vehicle in depot!");
             }
-            if ( vehicleService.getVehicleByRouteScheduleId(routeScheduleService.getRouteSchedulesByRouteId(routeService.getRoute(routeNumber).getId()).get(min).getId()) != null && !getCurrentStopName( routeScheduleService.getRouteSchedulesByRouteId(routeService.getRoute(routeNumber).getId()).get(min).getId(), currentTime, getDifficultyLevel()).equalsIgnoreCase("Depot") ) {
+            if ( vehicleService.getVehicleByRouteScheduleId(routeScheduleService.getRouteSchedulesByRouteId(routeService.getRoute(routeNumber).getId()).get(min).getId()) != null && !routeScheduleController.getCurrentStopName( routeScheduleService.getRouteSchedulesByRouteId(routeService.getRoute(routeNumber).getId()).get(min).getId(), currentTime, getDifficultyLevel()).equalsIgnoreCase("Depot") ) {
                 //logger.debug("Adding Route Detail " + routeDetails.get(i).getId());
                 routeDetailPos.add(0);
             }
@@ -295,11 +259,10 @@ public class UserInterface implements Runnable {
             if ( vehicleService.getVehicleByRouteScheduleId(routeScheduleService.getRouteSchedulesByRouteId(routeService.getRoute(routeNumber).getId()).get(i).getId()) == null ) {
                 logger.debug("A schedule was null");
             }
-            if ( getCurrentStopName(routeScheduleService.getRouteSchedulesByRouteId(routeService.getRoute(routeNumber).getId()).get(i).getId(), currentTime, getDifficultyLevel()).equalsIgnoreCase("Depot") ) {
+            if ( routeScheduleController.getCurrentStopName(routeScheduleService.getRouteSchedulesByRouteId(routeService.getRoute(routeNumber).getId()).get(i).getId(), currentTime, getDifficultyLevel()).equalsIgnoreCase("Depot") ) {
                 logger.debug("Vehicle in depot!");
             }
-            if ( vehicleService.getVehicleByRouteScheduleId(routeScheduleService.getRouteSchedulesByRouteId(routeService.getRoute(routeNumber).getId()).get(i).getId()) != null && !getCurrentStopName(routeScheduleService.getRouteSchedulesByRouteId(routeService.getRoute(routeNumber).getId()).get(i).getId(), currentTime, getDifficultyLevel()).equalsIgnoreCase("Depot") ) {
-                //logger.debug("Adding Route Detail " + routeDetails.get(i).getId());
+            if ( vehicleService.getVehicleByRouteScheduleId(routeScheduleService.getRouteSchedulesByRouteId(routeService.getRoute(routeNumber).getId()).get(i).getId()) != null && !routeScheduleController.getCurrentStopName(routeScheduleService.getRouteSchedulesByRouteId(routeService.getRoute(routeNumber).getId()).get(i).getId(), currentTime, getDifficultyLevel()).equalsIgnoreCase("Depot") ) {                //logger.debug("Adding Route Detail " + routeDetails.get(i).getId());
                 routeDetailPos.add(i);
             }
             else {
@@ -309,41 +272,6 @@ public class UserInterface implements Runnable {
                 //logger.debug("Route Detail " + routeDetails.get(i).getId() + " was null - maxVehicles is now " + max);
             }
         }
-    }
-
-    /**
-     * Get the current stop name which this route schedule is on based on the current date.
-     * @param currentDate a <code>Calendar</code> object.
-     * @return a <code>String</code> array with the stop details.
-     */
-    public String getCurrentStopName ( long routeScheduleId, Calendar currentDate, DifficultyLevel difficultyLevel ) {
-        //Copy current Date to current Time and then use delay to determine position.
-        Calendar currentTime = (Calendar) currentDate.clone();
-        currentTime.add(Calendar.MINUTE, -routeScheduleService.getRouteScheduleById(routeScheduleId).getDelayInMins());
-        String stopName = journeyService.getCurrentStopName(journeyService.getJourneysByRouteScheduleId(routeScheduleId), currentTime);
-        if ( stopName.contentEquals("Depot") ) {
-            routeScheduleService.getRouteScheduleById(routeScheduleId).setDelayInMins(0); //Finished for the day or not started.
-        }
-        else {
-            //Now fiddle delay!
-            routeScheduleService.calculateNewDelay(routeScheduleService.getRouteScheduleById(routeScheduleId), difficultyLevel);
-        }
-        return stopName;
-    }
-
-    public String getLastStopName ( long routeScheduleId, Calendar currentDate, DifficultyLevel difficultyLevel) {
-        //Copy current Date to current Time and then use delay to determine position.
-        Calendar currentTime = (Calendar) currentDate.clone();
-        currentTime.add(Calendar.MINUTE, -routeScheduleService.getRouteScheduleById(routeScheduleId).getDelayInMins());
-        String stopName = journeyService.getLastStopName(journeyService.getJourneysByRouteScheduleId(routeScheduleId), currentTime);
-        if ( stopName.contentEquals("Depot")) {
-            routeScheduleService.getRouteScheduleById(routeScheduleId).setDelayInMins(0); //Finished for the day.
-        }
-        else {
-            //Now fiddle delay!
-            routeScheduleService.calculateNewDelay(routeScheduleService.getRouteScheduleById(routeScheduleId), difficultyLevel);
-        }
-        return stopName;
     }
 
     /**
@@ -390,7 +318,7 @@ public class UserInterface implements Runnable {
         //Check if any vehicles are running....
         for ( Vehicle myVehicle : vehicles ) {
             //First one that is not in depot indicates that vehicles are running.
-            if ( !getCurrentStopName(myVehicle.getRouteScheduleId(), currentTime, difficultyLevel).equalsIgnoreCase("Depot") ) {
+            if ( !routeScheduleController.getCurrentStopName(myVehicle.getRouteScheduleId(), currentTime, difficultyLevel).equalsIgnoreCase("Depot") ) {
                 return true;
             }
         }
@@ -534,27 +462,6 @@ public class UserInterface implements Runnable {
     }
     
     /**
-     * Pause the simulation!
-     */
-    public void pauseSimulation ( ) {
-        simulationRunning = false;
-        //logger.debug("Pausing - Setting isEnd to true in " + this.toString());
-        end = true;
-    }
-    
-    /**
-     * Resume the simulation!
-     */
-    public void resumeSimulation ( ) {
-        simulationRunning = true;
-        //logger.debug("Resuming - Setting isEnd to false");
-        end = false;
-        runningThread = new Thread(this, "SimThread");
-        runningThread.start();
-        //runSimulation(theControlScreen, theOperations.getSimulator());
-    }
-    
-    /**
      * Load a scenario.
      * @param scenarioName a <code>String</code> with the scenario's name.
      * @param playerName a <code>String</code> with the player's name.
@@ -578,12 +485,7 @@ public class UserInterface implements Runnable {
         cs.drawVehicles(true);
         currentFrame.setVisible(true);
         //Set control screen.
-        setControlScreen(cs);
-        //Finally, run simulation
-        end = false;
-        runningThread = new Thread(this, "simThread");
-        runningThread.start();
-        //runSimulation(cs, theOperations.getSimulator());
+        cs.setVisible(true);
     }
     
     /**
@@ -596,9 +498,9 @@ public class UserInterface implements Runnable {
         cs.drawVehicles(true);
         currentFrame.setVisible(true);
         //Set control screen.
-        setControlScreen(cs);
+        cs.setVisible(true);
         //Resume simulation.
-        resumeSimulation();
+        gameController.resumeSimulation();
     }
     
     /**
@@ -614,9 +516,9 @@ public class UserInterface implements Runnable {
         //cs.drawVehicles(true);
         currentFrame.setVisible(true);
         //Set control screen.
-        setControlScreen(cs);
+        cs.setVisible(true);
         //Resume simulation.
-        resumeSimulation();
+        gameController.resumeSimulation();
     }
     
     /**
@@ -684,12 +586,12 @@ public class UserInterface implements Runnable {
                 currentFrame.setVisible(true);
                 oldFrame.dispose();
                 //Set control screen.
-                setControlScreen(cs);
+                cs.setVisible(true);
                 //Finally, run simulation
                 /*isEnd = false;
                 theRunningThread = new Thread(this, "simThread");
                 theRunningThread.start();*/
-                pauseSimulation();
+                gameController.pauseSimulation();
                 //runSimulation(cs, theOperations.getSimulator());
                 return true;
             }

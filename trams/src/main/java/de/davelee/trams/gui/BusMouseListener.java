@@ -1,7 +1,10 @@
 package de.davelee.trams.gui;
 
 import java.awt.event.*;
+
+import de.davelee.trams.controllers.GameController;
 import de.davelee.trams.main.UserInterface;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * This class represents a listener for when vehicles are clicked on the control screen.
@@ -11,6 +14,9 @@ public class BusMouseListener implements MouseListener {
 
     private long routeScheduleId;
     private UserInterface userInterface;
+
+    @Autowired
+    private GameController gameController;
     
     /**
      * Create a new BusMouseListener.
@@ -52,7 +58,7 @@ public class BusMouseListener implements MouseListener {
      * @param e a <code>MouseEvent</code> object.
      */
     public void mouseClicked(MouseEvent e) {
-        userInterface.pauseSimulation();
+        gameController.pauseSimulation();
         new BusInfoScreen(userInterface, routeScheduleId );
     }
     

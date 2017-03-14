@@ -5,8 +5,10 @@ import java.awt.event.*;
 
 import javax.swing.*;
 
+import de.davelee.trams.controllers.GameController;
 import de.davelee.trams.main.UserInterface;
 import de.davelee.trams.util.DifficultyLevel;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Class to display options within the TraMS program.
@@ -24,6 +26,9 @@ public class OptionsScreen extends JFrame {
     
     private JButton okButton;
     private JButton closeButton;
+
+    @Autowired
+    private GameController gameController;
     
     /**
      * Create a new options screen.
@@ -47,7 +52,7 @@ public class OptionsScreen extends JFrame {
         //Call dispose method if the user hits exit.
         this.addWindowListener ( new WindowAdapter() {
             public void windowClosing ( WindowEvent e ) {
-                userInterface.resumeSimulation();
+                gameController.resumeSimulation();
                 dispose();
             }
         });
@@ -138,7 +143,7 @@ public class OptionsScreen extends JFrame {
                     userInterface.setDifficultyLevel(DifficultyLevel.HARD);
                 }
                 if ( !userInterface.getManagementScreen() && !userInterface.getMessageScreen() ) {
-                    userInterface.resumeSimulation();
+                    gameController.resumeSimulation();
                 }
                 dispose();
             }
@@ -149,7 +154,7 @@ public class OptionsScreen extends JFrame {
         closeButton.addActionListener( new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if ( !userInterface.getManagementScreen() && !userInterface.getMessageScreen() ) {
-                    userInterface.resumeSimulation();
+                    gameController.resumeSimulation();
                 }
                 dispose();
             }

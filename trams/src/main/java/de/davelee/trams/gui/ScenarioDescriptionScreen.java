@@ -100,7 +100,7 @@ public class ScenarioDescriptionScreen extends JFrame {
             public void actionPerformed ( ActionEvent e ) {
                 userInterface.setManagementScreen(true);
                 ControlScreen ocs = new ControlScreen(userInterface, "", 0, 4, false);
-                userInterface.setControlScreen(ocs);
+                ocs.setVisible(true);
                 dispose();
             }
         });

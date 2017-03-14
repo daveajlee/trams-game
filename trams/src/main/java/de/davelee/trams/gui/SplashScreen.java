@@ -4,7 +4,10 @@ package de.davelee.trams.gui;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+
+import de.davelee.trams.controllers.GameController;
 import de.davelee.trams.main.UserInterface;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Splash screen for the TraMS program.
@@ -22,6 +25,9 @@ public class SplashScreen extends JFrame {
     private JLabel titleLabel;
     private JLabel loadingLabel;
     private JLabel copyrightLabel;
+
+    @Autowired
+    private GameController gameController;
     
     /**
      * Create a new splash screen.
@@ -120,7 +126,7 @@ public class SplashScreen extends JFrame {
             this.getContentPane().addMouseListener ( new MouseListener () {
                 public void mouseClicked(MouseEvent e) {
                     dispose();
-                    if (userInterface != null) { userInterface.resumeSimulation(); }
+                    if (userInterface != null) { gameController.resumeSimulation(); }
                 }
                 public void mousePressed(MouseEvent e) {}
                 public void mouseReleased(MouseEvent e) {}
@@ -130,7 +136,7 @@ public class SplashScreen extends JFrame {
             imageDisplay.addMouseListener ( new MouseListener () {
                 public void mouseClicked(MouseEvent e) {
                     dispose();
-                    if (userInterface != null) { userInterface.resumeSimulation(); }
+                    gameController.resumeSimulation();
                 }
                 public void mousePressed(MouseEvent e) {}
                 public void mouseReleased(MouseEvent e) {}
@@ -140,7 +146,7 @@ public class SplashScreen extends JFrame {
             busDisplay.addMouseListener ( new MouseListener () {
                 public void mouseClicked(MouseEvent e) {
                     dispose();
-                    if (userInterface != null) { userInterface.resumeSimulation(); }
+                    gameController.resumeSimulation();
                 }
                 public void mousePressed(MouseEvent e) {}
                 public void mouseReleased(MouseEvent e) {}

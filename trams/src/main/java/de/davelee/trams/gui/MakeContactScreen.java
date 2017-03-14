@@ -10,6 +10,7 @@ import de.davelee.trams.controllers.JourneyController;
 import de.davelee.trams.controllers.RouteController;
 import de.davelee.trams.controllers.RouteScheduleController;
 import de.davelee.trams.main.UserInterface;
+import de.davelee.trams.model.RouteScheduleModel;
 import de.davelee.trams.services.JourneyService;
 import de.davelee.trams.services.RouteScheduleService;
 import de.davelee.trams.services.RouteService;
@@ -75,7 +76,7 @@ public class MakeContactScreen extends JFrame {
         //Call dispose method if the user hits exit.
         this.addWindowListener ( new WindowAdapter() {
             public void windowClosing ( WindowEvent e ) {
-                userInterface.resumeSimulation();
+                gameController.resumeSimulation();
                 dispose();
             }
         });
@@ -128,12 +129,14 @@ public class MakeContactScreen extends JFrame {
                         "\n\n Control: Vehicle " + userInterface.getAllocatedRegistrationNumber(routeScheduleId) + ", please go out of service until " + stopBox.getSelectedItem().toString() + ". Over!" +
                         "\n\n Vehicle " + userInterface.getAllocatedRegistrationNumber(routeScheduleId) + ": Message acknowledeged. Thanks. Over!");
                 //Request vehicle to go out of service.
-                userInterface.outOfService(routeScheduleId, userInterface.getCurrentStopName(routeScheduleId, gameController.getCurrentSimTime(), userInterface.getDifficultyLevel()), stopBox.getSelectedItem().toString(), gameController.getCurrentSimTime());
+                userInterface.outOfService(routeScheduleId, routeScheduleController.getCurrentStopName(routeScheduleId, gameController.getCurrentSimTime(), userInterface.getDifficultyLevel()), stopBox.getSelectedItem().toString(), gameController.getCurrentSimTime());
             }
         });
         alterButtonPanel.add(goOutOfServiceButton);
         westPanel.add(alterButtonPanel, BorderLayout.SOUTH);
         screenPanel.add(westPanel, BorderLayout.WEST);
+
+        RouteScheduleModel routeScheduleModel = routeScheduleController.retrieveModel(routeScheduleId);
         
         //Create panel for east - description of current status.
         JPanel eastPanel = new JPanel(new GridLayout(1,1,5,5));
@@ -142,7 +145,7 @@ public class MakeContactScreen extends JFrame {
         communicationArea = new JTextArea(3,5);
         communicationArea.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         communicationArea.setText("Control: Vehicle " + userInterface.getAllocatedRegistrationNumber(routeScheduleId) + ", please state your current position. Over!");
-        communicationArea.setText(communicationArea.getText() + "\n\n Vehicle " + userInterface.getAllocatedRegistrationNumber(routeScheduleId) + ": At " + userInterface.getCurrentStopName(routeScheduleId, gameController.getCurrentSimTime(), userInterface.getDifficultyLevel()) + " heading towards " + getCurrentDestination() + " with delay of " + routeScheduleController.getDelay(routeScheduleId) + " mins. Over!");
+        communicationArea.setText(communicationArea.getText() + "\n\n Vehicle " + userInterface.getAllocatedRegistrationNumber(routeScheduleId) + ": At " + routeScheduleController.getCurrentStopName(routeScheduleId, gameController.getCurrentSimTime(), userInterface.getDifficultyLevel()) + " heading towards " + getCurrentDestination() + " with delay of " + routeScheduleModel.getDelay() + " mins. Over!");
         communicationArea.setFont(new Font("Arial", Font.ITALIC, 12));
         communicationArea.setEditable(false);
         communicationArea.setLineWrap(true);
@@ -162,7 +165,7 @@ public class MakeContactScreen extends JFrame {
         closeButton = new JButton("End Contact");
         closeButton.addActionListener( new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                userInterface.resumeSimulation();
+                gameController.resumeSimulation();
                 dispose();
             }
         });
@@ -192,7 +195,7 @@ public class MakeContactScreen extends JFrame {
      * @return a <code>String</code> with the current destination.
      */
     public String getCurrentDestination ( ) {
-        return userInterface.getLastStopName(routeScheduleId, gameController.getCurrentSimTime(), userInterface.getDifficultyLevel());
+        return routeScheduleController.getLastStopName(routeScheduleId, gameController.getCurrentSimTime(), userInterface.getDifficultyLevel());
     }
     
     /**

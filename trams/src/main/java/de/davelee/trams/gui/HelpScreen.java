@@ -9,7 +9,9 @@ import java.io.*;
 import javax.swing.*;
 import javax.swing.event.*;
 //Import trams main package.
+import de.davelee.trams.controllers.GameController;
 import de.davelee.trams.main.UserInterface;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * HelpScreen.java is the screen to display the help screen for TraMS.
@@ -26,16 +28,15 @@ public class HelpScreen extends JFrame {
     private JList topicsList;
     private DefaultListModel topicsModel;
     private JEditorPane displayPane;
-    private UserInterface userInterface;
+
+    @Autowired
+    private GameController gameController;
     
     /**
      * Default constructor for HelpScreen which creates the help screen interface and displays it to the user.
      * @param ui a <code>UserInterface</code> object.
      */
-    public HelpScreen ( UserInterface ui ) {
-        
-        //Initialise user interface.
-        userInterface = ui;
+    public HelpScreen ( ) {
         
         //Set image icon.
         Image img = Toolkit.getDefaultToolkit().getImage(HelpScreen.class.getResource("/TraMSlogo.png"));
@@ -45,9 +46,7 @@ public class HelpScreen extends JFrame {
         this.addWindowListener ( new WindowAdapter() {
             public void windowClosing ( WindowEvent e ) {
                 dispose();
-                if ( userInterface != null ) {
-                    userInterface.resumeSimulation();
-                }
+                gameController.resumeSimulation();
             }
         });
         

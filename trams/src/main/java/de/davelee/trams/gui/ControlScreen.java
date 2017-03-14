@@ -11,10 +11,7 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
 
-import de.davelee.trams.controllers.GameController;
-import de.davelee.trams.controllers.JourneyController;
-import de.davelee.trams.controllers.MessageController;
-import de.davelee.trams.controllers.RouteController;
+import de.davelee.trams.controllers.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,6 +81,9 @@ public class ControlScreen extends ButtonBar {
 
     @Autowired
     private RouteController routeController;
+
+    @Autowired
+    private RouteScheduleController routeScheduleController;
 
     /**
      * Create a new control screen.
@@ -173,14 +173,14 @@ public class ControlScreen extends ButtonBar {
                     topPanel.getComponent(1).setVisible(false);
                     userInterface.setMessageScreen(true);
                     userInterface.setManagementScreen(false);
-                    userInterface.pauseSimulation(); //Pause simulation for message screen.
+                    gameController.pauseSimulation(); //Pause simulation for message screen.
                 }
                 else if ( tabbedPane.getSelectedIndex() == 2 ) {
                     logger.debug("You just selected management screen");
                     topPanel.getComponent(1).setVisible(false);
                     userInterface.setManagementScreen(true);
                     userInterface.setMessageScreen(false);
-                    userInterface.pauseSimulation(); //Pause simulation for management screen.
+                    gameController.pauseSimulation(); //Pause simulation for management screen.
                 }
                 else {
                     logger.debug("You just selected live screen");
@@ -191,7 +191,7 @@ public class ControlScreen extends ButtonBar {
                     topPanel.getComponent(1).setVisible(true);
                     userInterface.setMessageScreen(false);
                     userInterface.setManagementScreen(false);
-                    userInterface.resumeSimulation(); //Resume simulation for live screen.
+                    gameController.resumeSimulation(); //Resume simulation for live screen.
                 }
             }
         });
@@ -253,7 +253,7 @@ public class ControlScreen extends ButtonBar {
         JButton resignButton = new JButton("Resign");
         resignButton.addActionListener( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
-                userInterface.pauseSimulation();
+                gameController.pauseSimulation();
                 new WelcomeScreen(userInterface);
                 dispose();
             }
@@ -290,10 +290,10 @@ public class ControlScreen extends ButtonBar {
         helpItem.addActionListener( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
                 //thePauseButton.setText("Resume Simulation");
-                userInterface.pauseSimulation();
+                gameController.pauseSimulation();
                 Thread contentsThread = new Thread() {
                     public void run () {
-                        new HelpScreen(userInterface);
+                        new HelpScreen();
                     }
                 };
                 contentsThread.start();
@@ -303,7 +303,7 @@ public class ControlScreen extends ButtonBar {
         aboutItem.addActionListener ( new ActionListener () {
             public void actionPerformed ( ActionEvent e ) {
                 //thePauseButton.setText("Resume Simulation");
-                userInterface.pauseSimulation();
+                gameController.pauseSimulation();
                 Thread aboutThread = new Thread() {
                     public void run () {
                         new SplashScreen(true, userInterface);
@@ -343,14 +343,14 @@ public class ControlScreen extends ButtonBar {
             dateModel.addElement(userInterface.formatDateString(gameController.getCurrentSimTime(), DateFormats.FULL_TIME_FORMAT).split("-")[0]);
             //Then display it to the user.
             doneAllocations = true;
-            userInterface.pauseSimulation();
+            gameController.pauseSimulation();
             topPanel.getComponent(1).setVisible(false);
             tabbedPane.setSelectedIndex(1);
             //Now here we need to update satisfaction bar.
             timeLabel.setText(userInterface.formatDateString(gameController.getCurrentSimTime(), DateFormats.FULL_TIME_FORMAT));
             int satValue = userInterface.computeAndReturnPassengerSatisfaction();
             if ( satValue < userInterface.getMinimumSatisfaction() ) {
-                userInterface.pauseSimulation();
+                gameController.pauseSimulation();
                 JOptionPane.showMessageDialog(ControlScreen.this, userInterface.getScenarioName() + " have relunctanly decided to relieve you of your duties as managing director as passenger satisfaction is now " + satValue + "%.", "Sorry You Have Been Sacked!", JOptionPane.ERROR_MESSAGE);
                 new WelcomeScreen(new UserInterface());
                 dispose();
@@ -402,19 +402,19 @@ public class ControlScreen extends ButtonBar {
                         topPanel.getComponent(1).setVisible(false);
                         userInterface.setMessageScreen(true);
                         userInterface.setManagementScreen(false);
-                        userInterface.pauseSimulation(); //Pause simulation for message screen.
+                        gameController.pauseSimulation(); //Pause simulation for message screen.
                     }
                     else if ( tabbedPane.getSelectedIndex() == 2 ) {
                         topPanel.getComponent(1).setVisible(false);
                         userInterface.setManagementScreen(true);
                         userInterface.setMessageScreen(false);
-                        userInterface.pauseSimulation(); //Pause simulation for management screen.
+                        gameController.pauseSimulation(); //Pause simulation for management screen.
                     }
                     else {
                         topPanel.getComponent(1).setVisible(true);
                         userInterface.setMessageScreen(false);
                         userInterface.setManagementScreen(false);
-                        userInterface.resumeSimulation(); //Resume simulation for live screen.
+                        gameController.resumeSimulation(); //Resume simulation for live screen.
                     }
                 }
             });
@@ -437,7 +437,7 @@ public class ControlScreen extends ButtonBar {
             //Now here we need to update satisfaction bar.
             int satValue = userInterface.computeAndReturnPassengerSatisfaction();
             if ( satValue < userInterface.getMinimumSatisfaction() ) {
-                userInterface.pauseSimulation();
+                gameController.pauseSimulation();
                 JOptionPane.showMessageDialog(ControlScreen.this, userInterface.getScenarioName() + " have relunctanly decided to relieve you of your duties as managing director as passenger satisfaction is now " + satValue + "%.", "Sorry You Have Been Sacked!", JOptionPane.ERROR_MESSAGE);
                 new WelcomeScreen(new UserInterface());
                 dispose();
@@ -682,7 +682,7 @@ public class ControlScreen extends ButtonBar {
         for ( int i = 0; i < userInterface.getNumCurrentDisplaySchedules(); i++ ) {
             //Get the schedule id and vehicle position.
             long routeScheduleId = userInterface.getDisplaySchedule(routeList.getSelectedValue().toString().split(":")[0], i);
-            String vehiclePos =  userInterface.getCurrentStopName(routeScheduleId, gameController.getCurrentSimTime(), userInterface.getDifficultyLevel());
+            String vehiclePos =  routeScheduleController.getCurrentStopName(routeScheduleId, gameController.getCurrentSimTime(), userInterface.getDifficultyLevel());
             logger.debug(routeScheduleId + " is at " + vehiclePos + " seconds with delay " + userInterface.getDelay(routeScheduleId) + " minutes.");
             /*if ( rs.hasDelay() ) {
                 theInterface.addMessage(theSimulator.getMessageDisplaySimTime() + ": Vehicle " + schedId + " is running " + rs.getDelay() + " minutes late.");
@@ -786,7 +786,7 @@ public class ControlScreen extends ButtonBar {
      * Pause the simulation.
      */
     public void pauseSimulation ( ) {
-        userInterface.pauseSimulation();
+        gameController.pauseSimulation();
     }
 
     public void populateRouteList ( ) {
@@ -825,9 +825,9 @@ public class ControlScreen extends ButtonBar {
         routeList.addListSelectionListener(new ListSelectionListener() {
             public void valueChanged (ListSelectionEvent ie ) {
                 if ( redrawOnRouteChange ) {
-                    userInterface.pauseSimulation();
+                    gameController.pauseSimulation();
                     ControlScreen.this.redrawVehicles(generateNewVehiclePanel());
-                    userInterface.resumeSimulation();
+                    gameController.resumeSimulation();
                 }
                 //logger.debug("Moving to route " + theRouteList.getSelectedValue().toString().split(":")[0]);
                 //theInterface.setSimulator(theSimulator);
@@ -862,11 +862,11 @@ public class ControlScreen extends ButtonBar {
             public void actionPerformed ( ActionEvent e ) {
                 if ( pauseSimulationButton.getText().equalsIgnoreCase("||") ) {
                     pauseSimulationButton.setText("|>");
-                    userInterface.pauseSimulation();
+                    gameController.pauseSimulation();
                 }
                 else if ( pauseSimulationButton.getText().equalsIgnoreCase("|>") ) {
                     pauseSimulationButton.setText("||");
-                    userInterface.resumeSimulation();
+                    gameController.resumeSimulation();
                 }
             }
         });
@@ -930,9 +930,9 @@ public class ControlScreen extends ButtonBar {
                 if ( minVehicle < 0 ) {
                     minVehicle = 0;
                 }
-                userInterface.pauseSimulation();
+                gameController.pauseSimulation();
                 ControlScreen.this.redrawVehicles(generateNewVehiclePanel());
-                userInterface.resumeSimulation();
+                gameController.resumeSimulation();
                 //theInterface.changeDisplay(theRouteList.getSelectedValue().toString(), theMinVehicle, theMaxVehicle, false);
                 //dispose();
             }
@@ -951,9 +951,9 @@ public class ControlScreen extends ButtonBar {
                 if ( maxVehicle > userInterface.getNumRouteDisplayVehicles(routeList.getSelectedValue().toString().split(":")[0]) ) {
                     maxVehicle = userInterface.getNumRouteDisplayVehicles(routeList.getSelectedValue().toString().split(":")[0]);
                 }
-                userInterface.pauseSimulation();
+                gameController.pauseSimulation();
                 ControlScreen.this.redrawVehicles(generateNewVehiclePanel());
-                userInterface.resumeSimulation();
+                gameController.resumeSimulation();
                 //theInterface.changeDisplay(theRouteNumber, theMinVehicle, theMaxVehicle, false);
                 //dispose();
             }

@@ -6,7 +6,9 @@ import java.awt.event.*;
 import javax.swing.*;
 
 import de.davelee.trams.controllers.GameController;
+import de.davelee.trams.controllers.RouteScheduleController;
 import de.davelee.trams.main.UserInterface;
+import de.davelee.trams.model.RouteScheduleModel;
 import org.springframework.beans.factory.annotation.Autowired;
 
 
@@ -30,11 +32,12 @@ public class BusInfoScreen extends JFrame {
     private JLabel delayLabel;
     private JButton makeContactButton;
     private JButton closeButton;
-    
-    private UserInterface userInterface;
 
     @Autowired
     private GameController gameController;
+
+    @Autowired
+    private RouteScheduleController routeScheduleController;
     
     
     /**
@@ -42,10 +45,7 @@ public class BusInfoScreen extends JFrame {
      * @param ui a <code>UserInterface</code> representing the current user interface.
      * @param rd a <code>RouteSchedule</code> object with the current route schedule being run by the vehicle.
      */
-    public BusInfoScreen ( UserInterface ui, final long routeScheduleId ) {
-        
-        //Initialise user interface variable.
-        userInterface = ui;
+    public BusInfoScreen ( final UserInterface ui, final long routeScheduleId ) {
         
         //Set image icon.
         Image img = Toolkit.getDefaultToolkit().getImage(BusInfoScreen.class.getResource("/TraMSlogo.png"));
@@ -60,7 +60,7 @@ public class BusInfoScreen extends JFrame {
         //Call dispose method if the user hits exit.
         this.addWindowListener ( new WindowAdapter() {
             public void windowClosing ( WindowEvent e ) {
-                userInterface.resumeSimulation();
+                gameController.resumeSimulation();
                 dispose();
             }
         });
@@ -74,11 +74,14 @@ public class BusInfoScreen extends JFrame {
         JPanel screenPanel = new JPanel();
         screenPanel.setLayout ( new BorderLayout () );
         screenPanel.setBackground(Color.WHITE);
+
+        //Retrieve the route schedule model.
+        RouteScheduleModel routeScheduleModel = routeScheduleController.retrieveModel(routeScheduleId);
         
         //Create panel for west - picture of bus.
         JPanel westPanel = new JPanel(new BorderLayout());
         westPanel.setBackground(Color.WHITE);
-        busDisplay = new ImageDisplay(userInterface.getAllocatedVehicleImage(routeScheduleId),0,0);
+        busDisplay = new ImageDisplay(routeScheduleModel.getImage(),0,0);
         busDisplay.setSize(220,200);
         busDisplay.setBackground(Color.WHITE);
         westPanel.add(busDisplay);
@@ -92,19 +95,19 @@ public class BusInfoScreen extends JFrame {
         timetableIDLabel.setFont(new Font("Arial", Font.BOLD, 15));
         eastPanel.add(timetableIDLabel);
         //Vehicle id.
-        vehicleIDLabel = new JLabel("Vehicle ID: " + userInterface.getAllocatedRegistrationNumber(routeScheduleId));
+        vehicleIDLabel = new JLabel("Vehicle ID: " + routeScheduleModel.getRegistrationNumber());
         vehicleIDLabel.setFont(new Font("Arial", Font.BOLD, 15));
         eastPanel.add(vehicleIDLabel);
         //Location.
-        locationLabel = new JLabel("Location: " + userInterface.getCurrentStopName(routeScheduleId, gameController.getCurrentSimTime(), userInterface.getDifficultyLevel()));
+        locationLabel = new JLabel("Location: " + routeScheduleController.getCurrentStopName(routeScheduleId, gameController.getCurrentSimTime(), gameController.getDifficultyLevel()));
         locationLabel.setFont(new Font("Arial", Font.BOLD, 15));
         eastPanel.add(locationLabel);
         //Destination.
-        destinationLabel = new JLabel("Destination: " + userInterface.getLastStopName(routeScheduleId, gameController.getCurrentSimTime(), userInterface.getDifficultyLevel()));
+        destinationLabel = new JLabel("Destination: " + routeScheduleController.getLastStopName(routeScheduleId, gameController.getCurrentSimTime(), gameController.getDifficultyLevel()));
         destinationLabel.setFont(new Font("Arial", Font.BOLD, 15));
         eastPanel.add(destinationLabel);
         //Delay.
-        delayLabel = new JLabel("Delay: " + userInterface.getDelay(routeScheduleId) + " mins");
+        delayLabel = new JLabel("Delay: " + routeScheduleModel.getDelay() + " mins");
         delayLabel.setFont(new Font("Arial", Font.BOLD, 15));
         eastPanel.add(delayLabel);
         //Add east panel to screen panel.
@@ -117,7 +120,7 @@ public class BusInfoScreen extends JFrame {
         makeContactButton = new JButton("Make Contact");
         makeContactButton.addActionListener( new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                new MakeContactScreen(userInterface, routeScheduleId);
+                new MakeContactScreen(ui, routeScheduleId);
                 dispose();
             }
         });
@@ -126,7 +129,7 @@ public class BusInfoScreen extends JFrame {
         closeButton = new JButton("Close Window");
         closeButton.addActionListener( new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                userInterface.resumeSimulation();
+                gameController.resumeSimulation();
                 dispose();
             }
         });

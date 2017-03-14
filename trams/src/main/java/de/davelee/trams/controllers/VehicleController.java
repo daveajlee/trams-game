@@ -118,4 +118,8 @@ public class VehicleController {
 		vehicleService.saveVehicle(vehicle);
 	}
 
+	public VehicleModel retrieveModel ( long routeScheduleId ) {
+		return convertToVehicleModel(vehicleService.getVehicleByRouteScheduleId(routeScheduleId));
+	}
+
 }

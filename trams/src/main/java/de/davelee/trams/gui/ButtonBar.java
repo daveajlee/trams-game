@@ -2,7 +2,10 @@ package de.davelee.trams.gui;
 
 import javax.swing.*;
 import java.awt.event.*;
+
+import de.davelee.trams.controllers.GameController;
 import de.davelee.trams.main.UserInterface;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * ButtonBar class represents the menu system in the TraMS program.
@@ -26,6 +29,9 @@ public class ButtonBar extends JFrame {
     protected JMenuItem helpItem;
     protected JMenuItem updateItem;
     protected JMenuItem aboutItem;
+
+    @Autowired
+    private GameController gameController;
     
     /**
      * Create a new button bar.
@@ -50,7 +56,7 @@ public class ButtonBar extends JFrame {
         loadGameItem = new JMenuItem("Load Game");
         loadGameItem.addActionListener ( new ActionListener () {
             public void actionPerformed ( ActionEvent e ) {
-                userInterface.pauseSimulation();
+                gameController.pauseSimulation();
                 userInterface.loadFile(ButtonBar.this);
             }
         });
@@ -61,10 +67,10 @@ public class ButtonBar extends JFrame {
         saveGameItem = new JMenuItem("Save Game");
         saveGameItem.addActionListener ( new ActionListener () {
             public void actionPerformed ( ActionEvent e ) {
-                userInterface.pauseSimulation();
+                gameController.pauseSimulation();
                 userInterface.saveFile(ButtonBar.this);
                 if ( !userInterface.getMessageScreen() && !userInterface.getManagementScreen() ) {
-                    userInterface.resumeSimulation();
+                    gameController.resumeSimulation();
                 }
             }
         });
@@ -86,7 +92,7 @@ public class ButtonBar extends JFrame {
         optionsItem = new JMenuItem("Options");
         optionsItem.addActionListener ( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
-                userInterface.pauseSimulation();
+                gameController.pauseSimulation();
                 new OptionsScreen(userInterface);
             }
         });

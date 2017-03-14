@@ -49,4 +49,10 @@
 
         <bean id="timetableController" class="de.davelee.trams.controllers.TimetableController"/>
 
+        <bean id="journeyController" class="de.davelee.trams.controllers.JourneyController"/>
+
+        <bean id="vehicleController" class="de.davelee.trams.controllers.VehicleController"/>
+
+        <bean id="gameController" class="de.davelee.trams.controllers.GameController"/>
+
 </beans>

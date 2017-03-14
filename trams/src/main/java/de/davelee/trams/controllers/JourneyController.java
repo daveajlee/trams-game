@@ -35,6 +35,14 @@ public class JourneyController {
 		return journeyService.getStopNameByStopId(journeyService.getStopTimesByJourneyId(getCurrentJourney(routeScheduleId, currentTime).getId()).get(pos).getStopId());
 	}
 
+	public String getStopName ( final long routeScheduleId, final Calendar currentTime ) {
+		return journeyService.getCurrentStopName(journeyService.getJourneysByRouteScheduleId(routeScheduleId), currentTime);
+	}
+
+	public String getLastStopName ( final long routeScheduleId, final Calendar currentTime ) {
+		return journeyService.getLastStopName(journeyService.getJourneysByRouteScheduleId(routeScheduleId), currentTime);
+	}
+
 	/**
 	 * Get the stop time as hh:mm.
 	 * @return a <code>String</code> with the time as hh:mm.
