@@ -745,7 +745,7 @@ public class ControlScreen extends ButtonBar {
             }
             logger.debug("I'm drawing route schedule " + routeScheduleId);
             JPanel drawPanel = new DrawingPanel(xPos, direction, userInterface.getDelay(routeScheduleId) > 0 );
-            drawPanel.addMouseListener(new BusMouseListener(userInterface.getDisplaySchedule(routeList.getSelectedValue().toString().split(":")[0], i), userInterface));
+            drawPanel.addMouseListener(new BusMouseListener(userInterface.getDisplaySchedule(routeList.getSelectedValue().toString().split(":")[0], i)));
             vehiclePanel.add(drawPanel);
             allVehicleDisplayPanel.add(vehiclePanel, BorderLayout.CENTER);
             allVehicleDisplayPanel.add(makeVehicleInfoPanel(), BorderLayout.SOUTH);

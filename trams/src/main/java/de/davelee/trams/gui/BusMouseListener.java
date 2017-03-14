@@ -23,9 +23,8 @@ public class BusMouseListener implements MouseListener {
      * @param routeScheduleId a <code>long</code> with route schedule id being run.
      * @param ui a <code>UserInterface</code> object with current user interface.
      */
-    public BusMouseListener(long routeScheduleId, UserInterface ui) {
+    public BusMouseListener(long routeScheduleId) {
         this.routeScheduleId = routeScheduleId;
-        this.userInterface = ui;
     }
     
     /**
@@ -59,7 +58,7 @@ public class BusMouseListener implements MouseListener {
      */
     public void mouseClicked(MouseEvent e) {
         gameController.pauseSimulation();
-        new BusInfoScreen(userInterface, routeScheduleId );
+        new BusInfoScreen(routeScheduleId );
     }
     
 }

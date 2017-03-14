@@ -42,10 +42,9 @@ public class BusInfoScreen extends JFrame {
     
     /**
      * Create a new bus information screen.
-     * @param ui a <code>UserInterface</code> representing the current user interface.
      * @param rd a <code>RouteSchedule</code> object with the current route schedule being run by the vehicle.
      */
-    public BusInfoScreen ( final UserInterface ui, final long routeScheduleId ) {
+    public BusInfoScreen ( final long routeScheduleId ) {
         
         //Set image icon.
         Image img = Toolkit.getDefaultToolkit().getImage(BusInfoScreen.class.getResource("/TraMSlogo.png"));
@@ -76,7 +75,7 @@ public class BusInfoScreen extends JFrame {
         screenPanel.setBackground(Color.WHITE);
 
         //Retrieve the route schedule model.
-        RouteScheduleModel routeScheduleModel = routeScheduleController.retrieveModel(routeScheduleId);
+        final RouteScheduleModel routeScheduleModel = routeScheduleController.retrieveModel(routeScheduleId);
         
         //Create panel for west - picture of bus.
         JPanel westPanel = new JPanel(new BorderLayout());
@@ -120,7 +119,7 @@ public class BusInfoScreen extends JFrame {
         makeContactButton = new JButton("Make Contact");
         makeContactButton.addActionListener( new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                new MakeContactScreen(ui, routeScheduleId);
+                new MakeContactScreen(routeScheduleModel, routeScheduleId);
                 dispose();
             }
         });

@@ -19,6 +19,10 @@ public class JourneyController {
 		return journeyService.getCurrentJourney(journeyService.getJourneysByRouteScheduleId(routeScheduleId), currentTime);
 	}
 
+	public Journey getNextJourney ( final long routeScheduleId, final Calendar currentTime ) {
+		return journeyService.getNextJourney(journeyService.getJourneysByRouteScheduleId(routeScheduleId), currentTime);
+	}
+
 	public boolean isOutwardJourney ( final long routeScheduleId, final Calendar currentTime, final List<String> stops ) {
 		return journeyService.isOutwardJourney(getCurrentJourney(routeScheduleId, currentTime), stops);
 	}
@@ -41,6 +45,14 @@ public class JourneyController {
 
 	public String getLastStopName ( final long routeScheduleId, final Calendar currentTime ) {
 		return journeyService.getLastStopName(journeyService.getJourneysByRouteScheduleId(routeScheduleId), currentTime);
+	}
+
+	public long removeStopsFromCurrentJourney ( final long routeScheduleId, final Calendar currentTime, final String stop, final String oldEnd ) {
+		return journeyService.removeStopsBetween(getCurrentJourney(routeScheduleId, currentTime), stop, oldEnd, false, true);
+	}
+
+	public long removeStopsFromNextJourney ( final long routeScheduleId, final Calendar currentTime, final String stop, final String oldEnd ) {
+		return journeyService.removeStopsBetween(getNextJourney(routeScheduleId, currentTime), oldEnd, stop, false, true);
 	}
 
 	/**

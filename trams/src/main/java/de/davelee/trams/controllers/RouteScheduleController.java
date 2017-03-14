@@ -85,5 +85,39 @@ public class RouteScheduleController {
 		routeScheduleModel.setRegistrationNumber(vehicleModel.getRegistrationNumber());
 		return routeScheduleModel;
 	}
+
+	/**
+	 * Shorten schedule to the specific stop stated and reduce the delay accordingly.
+	 * @param stop a <code>String</code> with the stop to terminate at.
+	 * @param currentTime a <code>Calendar</code> with the current time.
+	 */
+	public void shortenSchedule ( long routeScheduleId, String stop, Calendar currentTime ) {
+		RouteSchedule schedule = routeScheduleService.getRouteScheduleById(routeScheduleId);
+		//Shorten schedule to the specific stop stated and reduce the delay accordingly - for current service remove stops after the specified stop.
+		//logger.debug("Service was ending at: " + theAssignedSchedule.getCurrentService().getEndDestination());
+		String oldEnd = journeyController.getLastStopName(routeScheduleId, currentTime);
+		//Now we need to remove the stops in beteen!
+		long timeDiff = journeyController.removeStopsFromCurrentJourney(routeScheduleId, currentTime, stop, oldEnd);
+		//Now for the next service we need to remove stops between first stop and stop.
+		long timeDiff2 = journeyController.removeStopsFromNextJourney(routeScheduleId, currentTime, stop, oldEnd);
+		//Divide both timeDiff's by 60 to convert to minutes and then use that to reduce vehicle delay.
+		long delayReduction = (timeDiff/60) + (timeDiff2/60);
+		//Reduce delay!
+		routeScheduleService.reduceDelay(schedule, (int) delayReduction);
+	}
+
+	/**
+	 * Put this vehicle out of service from the current stop until the new stop.
+	 * @param currentStop a <code>String</code> with the stop to go out of service from.
+	 * @param newStop a <code>String</code> with the stop to resume service from.
+	 * @param currentTime a <code>Calendar</code> object with the current time.
+	 */
+	public void outOfService ( long routeScheduleId, String currentStop, String newStop, Calendar currentTime ) {
+		//Get the time difference between current stop and new stop.
+		RouteSchedule schedule = routeScheduleService.getRouteScheduleById(routeScheduleId);
+		long timeDiff = journeyController.getStopMaxTimeDiff(routeScheduleId, currentTime, currentStop, newStop);
+		routeScheduleService.reduceDelay(schedule, (int) (timeDiff/2));
+		//logger.debug("Vehicle delay reduced from " + oldDelay + " mins to " + getVehicleDelay() + " mins.");
+	}
 	 
 }
