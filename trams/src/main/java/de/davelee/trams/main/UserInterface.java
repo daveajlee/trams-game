@@ -719,60 +719,7 @@ public class UserInterface implements Runnable {
         //If we reach here then return false.
         return false;
     }
-    
-    /**
-     * Add a new route.
-     * @param r a <code>Route</code> object.
-     */
-    public void addNewRoute ( String routeNumber, String[] stopNames ) {
-    	routeService.saveRoute(routeService.createRoute(routeNumber, stopNames));
-    }
-    
-    /**
-     * Delete route.
-     * @param r a <code>Route</code> object to delete.
-     */
-    public void deleteRoute ( long routeId ) {
-        routeService.removeRoute(routeService.getRouteById(routeId));
-    }
-    
-    /**
-     * Find a route with the matching string representation as the one supplied.
-     * @param routeData a <code>String</code> with the route data.
-     * @return a <code>Route</code> object.
-     */
-    public long findRoute ( String routeData ) {
-        //Find route with matching toString to the one supplied.
-        for ( int i = 0; i < routeService.getAllRoutes().size(); i++ ) {
-            if ( routeService.getAllRoutes().get(i).toString().equalsIgnoreCase(routeData) ) {
-                return routeService.getAllRoutes().get(i).getId();
-            }
-        }
-        //Return null if no route found.
-        return -1;
-    }
-    
-    /**
-     * Get the number of routes which this scenario currently has.
-     * @return a <code>int</code> with the number of routes.
-     */
-    public int getNumberRoutes ( ) {
-        return routeService.getAllRoutes().size();
-    }
-    
-    /**
-     * Get the route which has the supplied number.
-     * @param routeNumber a <code>String</code> with the route number.
-     * @return a <code>Route</code> object which has that route number.
-     */
-    public long getRouteByNumber ( String routeNumber ) {
-        return routeService.getRoute(routeNumber).getId();
-    }
 
-    public long getRoute ( int pos ) {
-    	return routeService.getAllRoutes().get(pos).getId();
-    }
-    
     /**
      * Sort routes by route number alphabetically.
      */
@@ -828,19 +775,6 @@ public class UserInterface implements Runnable {
     }
     
     /**
-     * Purchase a new vehicle.
-     * @param type a <code>String</code> with the vehicle type.
-     * @param deliveryDate a <code>Calendar</code> with the delivery date.
-     * @return a <code>boolean</code> which is true iff the vehicle has been purchased successfully.
-     */
-    public void purchaseVehicle ( String type, Calendar deliveryDate ) {
-        Vehicle vehicle = vehicleService.createVehicleObject(type, vehicleService.generateRandomReg(
-        		gameService.getCurrentTime().get(Calendar.YEAR)), deliveryDate);
-        gameService.withdrawBalance(vehicle.getPurchasePrice());
-        vehicleService.saveVehicle(vehicle);
-    }
-    
-    /**
      * Get the balance.
      * @return a <code>double</code> with the balance amount.
      */
@@ -863,45 +797,9 @@ public class UserInterface implements Runnable {
      */
     public void editRoute ( long routeId, String routeNumber, String[] stopNames ) {
         //Delete old route.
-        deleteRoute(routeId);
+        routeController.deleteRoute(routeId);
         //Add new route.
-        addNewRoute(routeNumber, stopNames);
-    }
-    
-    /**
-     * Sell a vehicle.
-     * @param v a <code>Vehicle</code> to sell.
-     * @return a <code>boolean</code> which is true iff the vehicle was sold.
-     */
-    public void sellVehicle ( long vehicleId ) {
-        Vehicle vehicle = vehicleService.getVehicleById(vehicleId);
-        gameService.creditBalance(vehicleService.getValue(vehicle.getPurchasePrice(), vehicle.getDepreciationFactor(), vehicle.getDeliveryDate(), gameService.getCurrentTime()));
-        vehicleService.removeVehicle(vehicle);
-    }
-    
-    /**
-     * Find the vehicle with the matching String representation.
-     * @param vehicleData a <code>String</code> with the string representation.
-     * @return a <code>Vehicle</code> object.
-     */
-    public long findVehicle ( String vehicleData ) {
-        //Find vehicle with matching toString to the one supplied.
-        for ( int i = 0; i < vehicleService.getAllVehicles().size(); i++ ) {
-            if ( vehicleService.getAllVehicles().get(i).toString().equalsIgnoreCase(vehicleData) ) {
-                return vehicleService.getAllVehicles().get(i).getId();
-            }
-        }
-        //Return null if no vehicle found.
-        return -1;
-    }
-
-    /**
-     * Get a vehicle based on its position.
-     * @param pos a <code>int</code> with the position.
-     * @return a <code>Vehicle</code> object.
-     */
-    public long getVehicle ( int pos ) {
-        return vehicleService.getAllVehicles().get(pos).getId();
+        routeController.addNewRoute(routeNumber, stopNames);
     }
     
     /**
@@ -1006,10 +904,6 @@ public class UserInterface implements Runnable {
     public String getScenarioLocationMap ( ) {
         return scenarioService.retrieveScenarioObject(getScenarioName()).getLocationMapFileName();
     }
-    
-    public boolean areRoutesDefined ( ) {
-    	return routeService.getAllRoutes().size() > 0;
-    }
 
     public int computeAndReturnPassengerSatisfaction ( ) {
         //Essentially satisfaction is determined by the route schedules that are running on time.
@@ -1037,10 +931,6 @@ public class UserInterface implements Runnable {
     
     public int getMinimumSatisfaction ( ) {
         return scenarioService.retrieveScenarioObject(getScenarioName()).getMinimumSatisfaction();
-    }
-    
-    public String getRouteNumber ( long id ) {
-    	return routeService.getRouteById(id).getRouteNumber();
     }
 
     public List<Vehicle> createSuppliedVehicles( final String scenarioName, Calendar currentTime) {

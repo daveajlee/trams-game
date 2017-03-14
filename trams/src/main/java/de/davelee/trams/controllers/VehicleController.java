@@ -105,4 +105,17 @@ public class VehicleController {
 		vehicleService.removeVehicle(vehicle);
 	}
 
+	/**
+	 * Purchase a new vehicle.
+	 * @param type a <code>String</code> with the vehicle type.
+	 * @param deliveryDate a <code>Calendar</code> with the delivery date.
+	 * @return a <code>boolean</code> which is true iff the vehicle has been purchased successfully.
+	 */
+    public void purchaseVehicle ( String type, Calendar deliveryDate ) {
+		Vehicle vehicle = vehicleService.createVehicleObject(type, vehicleService.generateRandomReg(
+			gameController.getCurrentSimTime().get(Calendar.YEAR)), deliveryDate);
+		gameController.withdrawBalance(vehicle.getPurchasePrice());
+		vehicleService.saveVehicle(vehicle);
+	}
+
 }

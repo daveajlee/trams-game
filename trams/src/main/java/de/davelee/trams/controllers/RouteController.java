@@ -25,6 +25,10 @@ public class RouteController {
 		return routeService.getAllRoutes().get(position).getRouteNumber();
 	}
 
+	public int getNumberRoutes ( ) {
+		return routeService.getAllRoutes().size();
+	}
+
 	/**
 	 * Get the route based on comparing the toString method with the supplied text.
 	 * @param routeNumber a <code>String</code> with the string representation of the route.
@@ -51,6 +55,22 @@ public class RouteController {
 
 	public int getDistance ( final String scenarioName, final String stop1, final String stop2 ) {
 		return routeService.getDistance(scenarioName, stop1, stop2);
+	}
+
+	/**
+	 * Add a new route.
+	 * @param r a <code>Route</code> object.
+	 */
+    public void addNewRoute ( String routeNumber, String[] stopNames ) {
+		routeService.saveRoute(routeService.createRoute(routeNumber, stopNames));
+	}
+
+	/**
+	 * Delete route.
+	 * @param r a <code>Route</code> object to delete.
+	 */
+	public void deleteRoute ( long routeId ) {
+		routeService.removeRoute(routeService.getRouteById(routeId));
 	}
 
 }

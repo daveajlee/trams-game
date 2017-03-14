@@ -166,7 +166,7 @@ public class ManagePanel {
         JPanel informationPanel = new JPanel();
         informationPanel.setBackground(Color.WHITE);
         ImageDisplay infoDisplay = null;
-        if ( userInterface.getNumberRoutes() == 0 || vehicleController.getAllCreatedVehicles().length == 0 || userInterface.getAllocations().size() == 0 ) {
+        if ( routeController.getNumberRoutes() == 0 || vehicleController.getAllCreatedVehicles().length == 0 || userInterface.getAllocations().size() == 0 ) {
             infoDisplay = new ImageDisplay("xpic.png",0,0);
         }
         else {
@@ -177,7 +177,7 @@ public class ManagePanel {
         informationPanel.add(infoDisplay, BorderLayout.WEST);
         JTextArea informationArea = new JTextArea();
         informationArea.setFont(new Font("Arial", Font.PLAIN, 14));
-        if ( userInterface.getNumberRoutes() == 0 ) {
+        if ( routeController.getNumberRoutes() == 0 ) {
             informationArea.setText("WARNING: No routes have been devised yet. Click 'Create Route' to define a route.");
         }
         else if ( vehicleController.getAllCreatedVehicles().length == 0 ) {
@@ -289,7 +289,7 @@ public class ManagePanel {
         JPanel timetableButtonPanel = new JPanel(new GridBagLayout());
         timetableButtonPanel.setBackground(Color.WHITE);
         routeTimetableButton = new JButton("View Route Info");
-        if ( userInterface.getNumberRoutes() == 0 ) { routeTimetableButton.setEnabled(false); }
+        if ( routeController.getNumberRoutes() == 0 ) { routeTimetableButton.setEnabled(false); }
         routeTimetableButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 //Show the actual screen!
@@ -628,8 +628,8 @@ public class ManagePanel {
         createRouteButton.addActionListener ( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
                userInterface.generateRouteSchedules(selectedRouteModel);
-               
-               userInterface.addNewRoute(routeNumberField.getText(), selectedOutwardStops);
+
+               routeController.addNewRoute(routeNumberField.getText(), selectedOutwardStops);
                //Now return to previous screen.
                controlScreen.redrawManagement(ManagePanel.this.getDisplayPanel());
             }
@@ -1434,7 +1434,7 @@ public class ManagePanel {
             
         routesModel = new DefaultListModel();
         userInterface.sortRoutes();
-        for ( int i = 0; i < userInterface.getNumberRoutes(); i++ ) {
+        for ( int i = 0; i < routeController.getNumberRoutes(); i++ ) {
             routesModel.addElement(routeController.getRouteNumberByPosition(i));
         }
         routesList = new JList(routesModel);
@@ -1724,7 +1724,7 @@ public class ManagePanel {
             public void actionPerformed ( ActionEvent e ) {
                 int quantity = Integer.parseInt(quantitySpinner.getValue().toString());
                 for ( int i = 0; i < quantity; i++ ) {
-                    userInterface.purchaseVehicle(vehicleModel.getModel(), deliveryDate);
+                    vehicleController.purchaseVehicle(vehicleModel.getModel(), deliveryDate);
                 }
                 controlScreen.redrawManagement(ManagePanel.this.getDisplayPanel()); 
             }
@@ -2113,7 +2113,7 @@ public class ManagePanel {
         routesList = new JList(routesModel);
         routesList.setFixedCellWidth(270);
         routesList.setFont(new Font("Arial", Font.PLAIN, 15));
-        for ( int i = 0; i < userInterface.getNumberRoutes(); i++ ) {
+        for ( int i = 0; i < routeController.getNumberRoutes(); i++ ) {
             String[] routeScheduleNames = routeScheduleController.getRouteScheduleNames(routeController.getRouteNumberByPosition(i));
             for ( int j = 0; j < routeScheduleNames.length; j++ ) {
                 routesModel.addElement(routeScheduleNames[j]);

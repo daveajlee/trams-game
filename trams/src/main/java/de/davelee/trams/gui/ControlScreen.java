@@ -14,6 +14,7 @@ import javax.swing.event.*;
 import de.davelee.trams.controllers.GameController;
 import de.davelee.trams.controllers.JourneyController;
 import de.davelee.trams.controllers.MessageController;
+import de.davelee.trams.controllers.RouteController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,6 +82,9 @@ public class ControlScreen extends ButtonBar {
     @Autowired
     private JourneyController journeyController;
 
+    @Autowired
+    private RouteController routeController;
+
     /**
      * Create a new control screen.
      * @param ui a <code>UserInterface</code> with the current user interface.
@@ -144,7 +148,7 @@ public class ControlScreen extends ButtonBar {
         tabbedPane = new JTabbedPane();
         tabbedPane.setBackground(Color.WHITE);
         //Create Live Situation tab.
-        if ( userInterface.areRoutesDefined() ) {
+        if ( routeController.getNumberRoutes() > 0 ) {
             drawVehicles(false);
             tabbedPane.addTab("Live Situation", graphicsPanel);
         }
@@ -200,7 +204,7 @@ public class ControlScreen extends ButtonBar {
             tabbedPane.setSelectedIndex(2);
         }
         //Disable the live situation tab if appropriate.
-        if ( userInterface.areRoutesDefined() ) {
+        if ( routeController.getNumberRoutes() > 0 ) {
             tabbedPane.setEnabledAt(0, false);
         }
         /*theTabbedPane.addChangeListener(new ChangeListener() {
@@ -416,7 +420,7 @@ public class ControlScreen extends ButtonBar {
                 }
             });
             //Now disable live situation if no routes.
-            if ( userInterface.areRoutesDefined() ) {
+            if ( routeController.getNumberRoutes() > 0 ) {
                 tabbedPane.setEnabledAt(0, false);
             }
             dialogPanel.add(tabbedPane, 1);
@@ -598,7 +602,7 @@ public class ControlScreen extends ButtonBar {
      */
     public void redrawManagement ( JPanel newManagePanel ) {
         //Disable the live situation tab if appropriate.
-        if ( !userInterface.areRoutesDefined() ) {
+        if ( routeController.getNumberRoutes() == 0 ) {
             tabbedPane.setEnabledAt(0, false);
         }
         //Otherwise, re-enable live panel.
@@ -789,8 +793,8 @@ public class ControlScreen extends ButtonBar {
     public void populateRouteList ( ) {
         routeModel.clear();
         //String[] allRouteStr = new String[theSimulator.getScenario().getNumberRoutes()];
-        for ( int i = 0; i < userInterface.getNumberRoutes(); i++ ) {
-            routeModel.addElement(userInterface.getRouteNumber(userInterface.getRoute(i)));
+        for ( int i = 0; i < routeController.getNumberRoutes(); i++ ) {
+            routeModel.addElement(routeController.getRouteNumberByPosition(i));
             //allRouteStr[i] = theSimulator.getScenario().getRoutes().get(i).toString();
         }
         //theRouteList = new JList(allRouteStr);
@@ -811,7 +815,7 @@ public class ControlScreen extends ButtonBar {
         optionsPanel.setBackground(Color.WHITE);
         optionsPanel.setLayout(new BorderLayout());
         //Construct route listing box!
-        if ( !userInterface.areRoutesDefined() ) {
+        if ( routeController.getNumberRoutes() == 0 ) {
             //theRouteList = new JList(new String[] { "No Routes Available" });
             //theRouteList.setVisibleRowCount(3);
             logger.debug("Created route list!");
