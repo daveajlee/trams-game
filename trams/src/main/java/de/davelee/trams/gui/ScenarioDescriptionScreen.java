@@ -1,11 +1,14 @@
 package de.davelee.trams.gui;
 
+import de.davelee.trams.controllers.GameController;
+import de.davelee.trams.main.UserInterface;
+import de.davelee.trams.model.ScenarioModel;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import java.awt.*;
 import java.awt.event.*;
 
 import javax.swing.*;
-
-import de.davelee.trams.main.UserInterface;
 
 /**
  * Class to display the scenario description screen to the TraMS program.
@@ -14,22 +17,21 @@ import de.davelee.trams.main.UserInterface;
 public class ScenarioDescriptionScreen extends JFrame {
 
 	private static final long serialVersionUID = 1L;
-	
-	private UserInterface userInterface;
+
     private JLabel welcomeLabel;
     private ImageDisplay logoDisplay;
     private JLabel mDLabel;
     private JTextArea scenarioDescriptionArea;
     private JButton continueButton;
+
+    @Autowired
+    private GameController gameController;
     
     /**
      * Create a new scenario description screen.
      * @param ui a <code>UserInterface</code> object with the current user interface.
      */
-    public ScenarioDescriptionScreen ( UserInterface ui ) {
-        
-        //Initialise user interface variable.
-        userInterface = ui;
+    public ScenarioDescriptionScreen ( final ScenarioModel scenarioModel ) {
         
         //Initialise GUI with title and close attributes.
         this.setTitle ("TraMS - Transport Management Simulator");
@@ -44,7 +46,7 @@ public class ScenarioDescriptionScreen extends JFrame {
         //Call the Exit method in the UserInterface class if the user hits exit.
         this.addWindowListener ( new WindowAdapter() {
             public void windowClosing ( WindowEvent e ) {
-                userInterface.exit(ScenarioDescriptionScreen.this);
+                gameController.exit(ScenarioDescriptionScreen.this);
             }
         });
         
@@ -76,7 +78,7 @@ public class ScenarioDescriptionScreen extends JFrame {
         //Create the MDLabelPanel first of all.
         JPanel MDLabelPanel = new JPanel();
         MDLabelPanel.setBackground(Color.WHITE);
-        mDLabel = new JLabel(userInterface.getPlayerName() + " appointed Managing Director of " + userInterface.getScenarioName());
+        mDLabel = new JLabel(gameController.getPlayerName() + " appointed Managing Director of " + scenarioModel.getName());
         mDLabel.setFont(new Font("Arial", Font.BOLD, 18));
         MDLabelPanel.add(mDLabel);
         screenPanel.add(MDLabelPanel);
@@ -84,7 +86,7 @@ public class ScenarioDescriptionScreen extends JFrame {
         //Create the descriptionPanel.
         JPanel descriptionPanel = new JPanel();
         descriptionPanel.setBackground(Color.WHITE);
-        scenarioDescriptionArea = new JTextArea(userInterface.getScenarioDescriptionByName(userInterface.getScenarioName()));
+        scenarioDescriptionArea = new JTextArea(scenarioModel.getDescription());
         scenarioDescriptionArea.setFont(new Font("Arial", Font.PLAIN, 16));
         scenarioDescriptionArea.setLineWrap(true);
         scenarioDescriptionArea.setWrapStyleWord(true);
@@ -98,8 +100,7 @@ public class ScenarioDescriptionScreen extends JFrame {
         continueButton = new JButton("Continue");
         continueButton.addActionListener(new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
-                userInterface.setManagementScreen(true);
-                ControlScreen ocs = new ControlScreen(userInterface, "", 0, 4, false);
+                ControlScreen ocs = new ControlScreen(new UserInterface(), "", 0, 4, false);
                 ocs.setVisible(true);
                 dispose();
             }

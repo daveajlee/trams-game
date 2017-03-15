@@ -1,12 +1,14 @@
 package de.davelee.trams.controllers;
 
 import de.davelee.trams.data.Vehicle;
+import de.davelee.trams.model.ScenarioModel;
 import de.davelee.trams.model.VehicleModel;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import de.davelee.trams.services.VehicleService;
 
 import java.util.Calendar;
+import java.util.Iterator;
 import java.util.List;
 
 public class VehicleController {
@@ -120,6 +122,21 @@ public class VehicleController {
 
 	public VehicleModel retrieveModel ( long routeScheduleId ) {
 		return convertToVehicleModel(vehicleService.getVehicleByRouteScheduleId(routeScheduleId));
+	}
+
+	public void createSuppliedVehicles(final ScenarioModel scenarioModel, Calendar currentTime) {
+		Iterator<String> vehicleModels = scenarioModel.getSuppliedVehicles().keySet().iterator();
+		while (vehicleModels.hasNext()) {
+			String vehicleModel = vehicleModels.next();
+			for ( int i = 0; i < scenarioModel.getSuppliedVehicles().get(vehicleModel); i++ )  {
+				vehicleService.saveVehicle(vehicleService.createVehicleObject(vehicleModel, vehicleService.generateRandomReg(
+						currentTime.get(Calendar.YEAR)), currentTime));
+			}
+		}
+	}
+
+	public List<Vehicle> getAllVehicles ( ) {
+		return vehicleService.getAllVehicles();
 	}
 
 }

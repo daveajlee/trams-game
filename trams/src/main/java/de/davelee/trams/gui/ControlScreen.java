@@ -96,7 +96,7 @@ public class ControlScreen extends ButtonBar {
     public ControlScreen ( UserInterface ui, String routeNumber, int min, int max, boolean allocationsDone ) {
         
         //Call super constructor.
-        super ( ui );
+        super ( );
         
         //Initialise user interface variable.
         userInterface = ui;
@@ -121,7 +121,7 @@ public class ControlScreen extends ButtonBar {
         //Call the Exit method in the UserInterface class if the user hits exit.
         this.addWindowListener ( new WindowAdapter() {
             public void windowClosing ( WindowEvent e ) {
-                userInterface.exit(ControlScreen.this);
+                gameController.exit(ControlScreen.this);
             }
         });
         
@@ -254,7 +254,7 @@ public class ControlScreen extends ButtonBar {
         resignButton.addActionListener( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
                 gameController.pauseSimulation();
-                new WelcomeScreen(userInterface);
+                new WelcomeScreen();
                 dispose();
             }
         });
@@ -262,7 +262,7 @@ public class ControlScreen extends ButtonBar {
         JButton exitButton = new JButton("Exit Game");
         exitButton.addActionListener( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
-                userInterface.exit(ControlScreen.this);
+                gameController.exit(ControlScreen.this);
             }
         });
         bottomInfoPanel.add(exitButton);
@@ -352,7 +352,7 @@ public class ControlScreen extends ButtonBar {
             if ( satValue < userInterface.getMinimumSatisfaction() ) {
                 gameController.pauseSimulation();
                 JOptionPane.showMessageDialog(ControlScreen.this, userInterface.getScenarioName() + " have relunctanly decided to relieve you of your duties as managing director as passenger satisfaction is now " + satValue + "%.", "Sorry You Have Been Sacked!", JOptionPane.ERROR_MESSAGE);
-                new WelcomeScreen(new UserInterface());
+                new WelcomeScreen();
                 dispose();
             }
             passengerSatisfactionBar.setValue(satValue);
@@ -439,7 +439,7 @@ public class ControlScreen extends ButtonBar {
             if ( satValue < userInterface.getMinimumSatisfaction() ) {
                 gameController.pauseSimulation();
                 JOptionPane.showMessageDialog(ControlScreen.this, userInterface.getScenarioName() + " have relunctanly decided to relieve you of your duties as managing director as passenger satisfaction is now " + satValue + "%.", "Sorry You Have Been Sacked!", JOptionPane.ERROR_MESSAGE);
-                new WelcomeScreen(new UserInterface());
+                new WelcomeScreen();
                 dispose();
             }
             passengerSatisfactionBar.setValue(satValue);

@@ -33,4 +33,8 @@ public class JourneyPatternController {
 				frequency, routeDuration, timetableController.getIdFromName(timetableModel.getName()));
 	}
 
+	public List<JourneyPattern> getAllJourneyPatterns ( ) {
+		return journeyPatternService.getAllJourneyPatterns();
+	}
+
 }

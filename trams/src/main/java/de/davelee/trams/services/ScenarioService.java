@@ -4,6 +4,7 @@ import java.util.List;
 
 import de.davelee.trams.beans.Scenario;
 import de.davelee.trams.factory.ScenarioFactory;
+import de.davelee.trams.model.ScenarioModel;
 
 public class ScenarioService {
 
@@ -42,26 +43,18 @@ public class ScenarioService {
 		return scenarioFactory.createScenarioByName(name);
 	}
 
-	public int getNumberAvailableScenarios ( ) {
-		return scenarioFactory.getAvailableScenarios().size();
-	}
-
-	public String[] getAvailableScenarioNames ( ) {
+	public ScenarioModel[] getAvailableScenarios ( ) {
 		List<Scenario> scenarios = scenarioFactory.getAvailableScenarios();
-		String[] scenarioNames = new String[scenarios.size()];
-		for ( int i = 0; i < scenarios.size(); i++ ) {
-			scenarioNames[i] = scenarios.get(i).getScenarioName();
+		ScenarioModel[] scenarioModels = new ScenarioModel[scenarios.size()];
+		for ( int i = 0; i < scenarioModels.length; i++ ) {
+			scenarioModels[i] = new ScenarioModel();
+			scenarioModels[i].setCityDescription(scenarios.get(i).getCityDescription());
+			scenarioModels[i].setName(scenarios.get(i).getScenarioName());
+			scenarioModels[i].setSuppliedVehicles(scenarios.get(i).getSuppliedVehicles());
+			scenarioModels[i].setTargets(scenarios.get(i).getTargets());
+			scenarioModels[i].setDescription(scenarios.get(i).getDescription());
 		}
-		return scenarioNames;
-	}
-
-	public String[] getAvailableScenarioCityDescriptions ( ) {
-		List<Scenario> scenarios = scenarioFactory.getAvailableScenarios();
-		String[] scenarioDescriptions = new String[scenarios.size()];
-		for ( int i = 0; i < scenarios.size(); i++ ) {
-			scenarioDescriptions[i] = scenarios.get(i).getCityDescription();
-		}
-		return scenarioDescriptions;
+		return scenarioModels;
 	}
 
 }

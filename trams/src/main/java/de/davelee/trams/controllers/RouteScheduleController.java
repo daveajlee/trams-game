@@ -119,5 +119,9 @@ public class RouteScheduleController {
 		routeScheduleService.reduceDelay(schedule, (int) (timeDiff/2));
 		//logger.debug("Vehicle delay reduced from " + oldDelay + " mins to " + getVehicleDelay() + " mins.");
 	}
+
+	public List<RouteSchedule> getAllRouteSchedules ( ) {
+		return routeScheduleService.getAllRouteSchedules();
+	}
 	 
 }

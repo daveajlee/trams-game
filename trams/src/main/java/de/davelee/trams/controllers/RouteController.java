@@ -73,4 +73,8 @@ public class RouteController {
 		routeService.removeRoute(routeService.getRouteById(routeId));
 	}
 
+	public List<Route> getAllRoutes ( ) {
+		return routeService.getAllRoutes();
+	}
+
 }

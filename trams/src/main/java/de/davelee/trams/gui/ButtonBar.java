@@ -3,8 +3,8 @@ package de.davelee.trams.gui;
 import javax.swing.*;
 import java.awt.event.*;
 
+import de.davelee.trams.controllers.FileController;
 import de.davelee.trams.controllers.GameController;
-import de.davelee.trams.main.UserInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -32,12 +32,14 @@ public class ButtonBar extends JFrame {
 
     @Autowired
     private GameController gameController;
+
+    @Autowired
+    private FileController fileController;
     
     /**
      * Create a new button bar.
-     * @param userInterface a <code>UserInterface</code> object.
      */
-    public ButtonBar ( final UserInterface userInterface ) {
+    public ButtonBar ( ) {
         
         menuBar = new JMenuBar();
         
@@ -47,7 +49,7 @@ public class ButtonBar extends JFrame {
         newGameItem = new JMenuItem("New Game");
         newGameItem.addActionListener( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
-                new NewGameScreen(new UserInterface());
+                new NewGameScreen();
                 dispose();
             }
         });
@@ -57,7 +59,7 @@ public class ButtonBar extends JFrame {
         loadGameItem.addActionListener ( new ActionListener () {
             public void actionPerformed ( ActionEvent e ) {
                 gameController.pauseSimulation();
-                userInterface.loadFile(ButtonBar.this);
+                fileController.loadFile(ButtonBar.this);
             }
         });
         fileMenu.add(loadGameItem);
@@ -68,10 +70,8 @@ public class ButtonBar extends JFrame {
         saveGameItem.addActionListener ( new ActionListener () {
             public void actionPerformed ( ActionEvent e ) {
                 gameController.pauseSimulation();
-                userInterface.saveFile(ButtonBar.this);
-                if ( !userInterface.getMessageScreen() && !userInterface.getManagementScreen() ) {
-                    gameController.resumeSimulation();
-                }
+                fileController.saveFile(ButtonBar.this);
+                gameController.resumeSimulation();
             }
         });
         fileMenu.add(saveGameItem);
@@ -81,7 +81,7 @@ public class ButtonBar extends JFrame {
         exitGameItem = new JMenuItem("Exit Game");
         exitGameItem.addActionListener ( new ActionListener () {
             public void actionPerformed ( ActionEvent e ) {
-                userInterface.exit(ButtonBar.this);
+                gameController.exit(ButtonBar.this);
             }
         });
         fileMenu.add(exitGameItem);
@@ -93,7 +93,7 @@ public class ButtonBar extends JFrame {
         optionsItem.addActionListener ( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
                 gameController.pauseSimulation();
-                new OptionsScreen(userInterface);
+                new OptionsScreen();
             }
         });
         toolsMenu.add(optionsItem);

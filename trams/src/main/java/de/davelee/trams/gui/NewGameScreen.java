@@ -3,7 +3,13 @@ package de.davelee.trams.gui;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
-import de.davelee.trams.main.UserInterface;
+
+import de.davelee.trams.controllers.GameController;
+import de.davelee.trams.controllers.MessageController;
+import de.davelee.trams.controllers.ScenarioController;
+import de.davelee.trams.controllers.VehicleController;
+import de.davelee.trams.model.ScenarioModel;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Class to display the new game screen to the TraMS program.
@@ -12,8 +18,7 @@ import de.davelee.trams.main.UserInterface;
 public class NewGameScreen extends JFrame {
     
 	private static final long serialVersionUID = 1L;
-	
-	private UserInterface userInterface;
+
     private JLabel welcomeLabel;
     private ImageDisplay logoDisplay;
     private JLabel playerNameLabel;
@@ -25,15 +30,24 @@ public class NewGameScreen extends JFrame {
     
     private JButton createGameButton;
     private JButton welcomeScreenButton;
-    
+
+    @Autowired
+    private GameController gameController;
+
+    @Autowired
+    private ScenarioController scenarioController;
+
+    @Autowired
+    private VehicleController vehicleController;
+
+    @Autowired
+    private MessageController messageController;
+
     /**
      * Create a new new game screen.
      * @param ui a <code>UserInterface</code> object with the current user interface.
      */
-    public NewGameScreen ( UserInterface ui ) {
-        
-        //Initialise user interface variable.
-        userInterface = ui;
+    public NewGameScreen ( ) {
         
         //Initialise GUI with title and close attributes.
         this.setTitle ("TraMS - Transport Management Simulator");
@@ -48,7 +62,7 @@ public class NewGameScreen extends JFrame {
         //Call the Exit method in the UserInterface class if the user hits exit.
         this.addWindowListener ( new WindowAdapter() {
             public void windowClosing ( WindowEvent e ) {
-                userInterface.exit(NewGameScreen.this);
+                gameController.exit(NewGameScreen.this);
             }
         });
         
@@ -108,24 +122,26 @@ public class NewGameScreen extends JFrame {
         scenarioLabel.setFont(new Font("Arial", Font.BOLD, 20));
         scenarioLabel.setHorizontalAlignment(SwingConstants.CENTER);
         scenarioPanel.add(scenarioLabel, BorderLayout.NORTH);
+
+        final ScenarioModel[] scenarioModels = scenarioController.getAvailableScenarios();
         
         //Create the actual scenario radio buttons.
         JPanel scenarioRadioPanel = new JPanel(new GridLayout(3,1,5,5));
         scenarioRadioPanel.setBackground(Color.WHITE);
         scenarioButtonGroup = new ButtonGroup();
-        scenarioButtons = new JRadioButton[userInterface.getNumberScenarios()];
-        scenarioDescriptions = new JTextArea[userInterface.getNumberScenarios()];
+        scenarioButtons = new JRadioButton[scenarioModels.length];
+        scenarioDescriptions = new JTextArea[scenarioModels.length];
         //Scenarios.
-        for ( int i = 0; i < userInterface.getNumberScenarios(); i++ ) {
+        for ( int i = 0; i < scenarioModels.length; i++ ) {
         	JPanel scenarioTownPanel = new JPanel(new BorderLayout());
         	scenarioTownPanel.setBackground(Color.WHITE);
-        	scenarioButtons[i] = new JRadioButton(userInterface.getScenarioNameByPosition(i));
+        	scenarioButtons[i] = new JRadioButton(scenarioModels[i].getName());
         	if ( i == 0 ) { scenarioButtons[i].setSelected(true); }
         	scenarioButtons[i].setBackground(Color.WHITE);
         	scenarioButtons[i].setFont(new Font("Arial", Font.BOLD, 16));
         	scenarioButtonGroup.add(scenarioButtons[i]);
         	scenarioTownPanel.add(scenarioButtons[i], BorderLayout.NORTH);
-        	scenarioDescriptions[i] = new JTextArea(userInterface.getScenarioCityDescriptionByPosition(i));
+        	scenarioDescriptions[i] = new JTextArea(scenarioModels[i].getCityDescription());
         	scenarioDescriptions[i].setRows(2);
         	scenarioDescriptions[i].setLineWrap(true);
         	scenarioDescriptions[i].setWrapStyleWord(true);
@@ -145,15 +161,20 @@ public class NewGameScreen extends JFrame {
         createGameButton.setEnabled(false);
         createGameButton.addActionListener ( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
-            	String scenarioName = "";
+                int selectedPosition = 0;
             	for ( int i = 0; i < scenarioButtons.length; i++ ) {
             		if ( scenarioButtons[i].isSelected() ) {
-            			scenarioName = userInterface.getScenarioNameByPosition(i);
+                        selectedPosition = i;
             			break;
             		}
             	}
-            	userInterface.loadScenario(scenarioName, playerNameField.getText());
-                new ScenarioDescriptionScreen(userInterface);
+                //Create supplied vehicles.
+                vehicleController.createSuppliedVehicles(scenarioModels[selectedPosition], gameController.getCurrentSimTime());
+                //Create welcome message.
+                messageController.addMessage("Welcome Message", "Congratulations on your appointment as Managing Director of the " +
+                        scenarioModels[selectedPosition].getName() + "! \n\n Your targets for the coming days and months are: " +
+                        scenarioModels[selectedPosition].getTargets(),"Council","INBOX",gameController.getCurrentSimTime());
+                new ScenarioDescriptionScreen(scenarioModels[selectedPosition]);
                 dispose();
             }
         });
@@ -161,7 +182,7 @@ public class NewGameScreen extends JFrame {
         welcomeScreenButton = new JButton("Back to Welcome Screen");
         welcomeScreenButton.addActionListener ( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
-                new WelcomeScreen(userInterface);
+                new WelcomeScreen();
                 dispose();
             }
         });

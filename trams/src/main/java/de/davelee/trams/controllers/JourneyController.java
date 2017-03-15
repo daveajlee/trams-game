@@ -3,6 +3,7 @@ package de.davelee.trams.controllers;
 import java.util.Calendar;
 import java.util.List;
 
+import de.davelee.trams.data.Stop;
 import de.davelee.trams.data.StopTime;
 import de.davelee.trams.util.DateFormats;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,5 +72,17 @@ public class JourneyController {
 		}
 		return null;
 	}
+
+    public List<Journey> getAllJourneys ( ) {
+        return journeyService.getAllJourneys();
+    }
+
+    public List<Stop> getAllStops ( ) {
+        return journeyService.getAllStops();
+    }
+
+    public List<StopTime> getAllStopTimes ( ) {
+        return journeyService.getAllStopTimes();
+    }
 	
 }

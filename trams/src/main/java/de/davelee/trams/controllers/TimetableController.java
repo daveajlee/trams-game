@@ -71,5 +71,9 @@ public class TimetableController {
     public String getDateInfo ( final Calendar myCalendar ) {
     	return DateFormats.FULL_FORMAT.getFormat().format(myCalendar.getTime());
     }
+
+	public List<Timetable> getAllTimetables ( ) {
+		return timetableService.getAllTimetables();
+	}
  
 }

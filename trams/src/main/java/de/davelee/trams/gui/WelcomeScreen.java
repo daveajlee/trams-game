@@ -3,7 +3,11 @@ package de.davelee.trams.gui;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+
+import de.davelee.trams.controllers.FileController;
+import de.davelee.trams.controllers.GameController;
 import de.davelee.trams.main.UserInterface;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Class to display the welcome screen to the TraMS program.
@@ -12,22 +16,24 @@ import de.davelee.trams.main.UserInterface;
 public class WelcomeScreen extends JFrame {
     
 	private static final long serialVersionUID = 1L;
-	
-	private UserInterface userInterface;
+
     private JLabel welcomeLabel;
     private ImageDisplay logoDisplay;
     private ImageDisplay newBusDisplay;
     private ImageDisplay loadBusDisplay;
     private ImageDisplay exitBusDisplay;
+
+    @Autowired
+    private GameController gameController;
+
+    @Autowired
+    private FileController fileController;
     
     /**
      * Create a new welcome screen.
      * @param ui a <code>UserInterface</code> object with the current user interface.
      */
-    public WelcomeScreen ( UserInterface ui ) {
-        
-        //Initialise user interface variable.
-        userInterface = ui;
+    public WelcomeScreen ( ) {
         
         //Initialise GUI with title and close attributes.
         this.setTitle ("TraMS - Transport Management Simulator");
@@ -42,7 +48,7 @@ public class WelcomeScreen extends JFrame {
         //Call the Exit method in the UserInterface class if the user hits exit.
         this.addWindowListener ( new WindowAdapter() {
             public void windowClosing ( WindowEvent e ) {
-                userInterface.exit(WelcomeScreen.this);
+                gameController.exit(WelcomeScreen.this);
             }
         });
         
@@ -82,7 +88,7 @@ public class WelcomeScreen extends JFrame {
         newBusDisplay.setBackground(Color.WHITE);
         newBusDisplay.addMouseListener ( new MouseListener () {
             public void mouseClicked(MouseEvent e) {
-                new NewGameScreen(userInterface);
+                new NewGameScreen();
                 dispose();
             }
             public void mousePressed(MouseEvent e) {}
@@ -106,7 +112,7 @@ public class WelcomeScreen extends JFrame {
         loadBusDisplay.setBackground(Color.WHITE);
         loadBusDisplay.addMouseListener ( new MouseListener () {
             public void mouseClicked(MouseEvent e) {
-                if ( userInterface.loadFile(WelcomeScreen.this) ) {
+                if ( fileController.loadFile(WelcomeScreen.this) ) {
                     dispose();
                 }
             }
@@ -130,7 +136,7 @@ public class WelcomeScreen extends JFrame {
         exitBusDisplay.setBackground(Color.WHITE);
         exitBusDisplay.addMouseListener ( new MouseListener () {
             public void mouseClicked(MouseEvent e) {
-                userInterface.exit(WelcomeScreen.this);
+                gameController.exit(WelcomeScreen.this);
             }
             public void mousePressed(MouseEvent e) {}
             public void mouseReleased(MouseEvent e) {}
@@ -143,7 +149,7 @@ public class WelcomeScreen extends JFrame {
         bottomPanel.add(exitPanel);
         bottomPanel.addMouseListener ( new MouseListener () {
             public void mouseClicked(MouseEvent e) {
-                userInterface.exit(WelcomeScreen.this);
+                gameController.exit(WelcomeScreen.this);
             }
             public void mousePressed(MouseEvent e) {}
             public void mouseReleased(MouseEvent e) {}
@@ -177,7 +183,7 @@ public class WelcomeScreen extends JFrame {
         panel.setBackground(Color.WHITE);
         panel.addMouseListener ( new MouseListener () {
             public void mouseClicked(MouseEvent e) {
-                new NewGameScreen(userInterface);
+                new NewGameScreen();
                 dispose();
             }
             public void mousePressed(MouseEvent e) {}
@@ -195,7 +201,7 @@ public class WelcomeScreen extends JFrame {
         panel.setBackground(Color.WHITE);
         panel.addMouseListener ( new MouseListener () {
             public void mouseClicked(MouseEvent e) {
-                if ( userInterface.loadFile(WelcomeScreen.this) ) {
+                if ( fileController.loadFile(WelcomeScreen.this) ) {
                     dispose();
                 }
                 else {
@@ -217,7 +223,7 @@ public class WelcomeScreen extends JFrame {
         panel.setBackground(Color.WHITE);
         panel.addMouseListener ( new MouseListener () {
             public void mouseClicked(MouseEvent e) {
-                userInterface.exit(WelcomeScreen.this);
+                gameController.exit(WelcomeScreen.this);
             }
             public void mousePressed(MouseEvent e) {}
             public void mouseReleased(MouseEvent e) {}

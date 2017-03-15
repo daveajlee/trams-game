@@ -2,11 +2,14 @@ package de.davelee.trams.controllers;
 
 import java.util.Calendar;
 
+import de.davelee.trams.data.Game;
 import de.davelee.trams.util.DifficultyLevel;
 import de.davelee.trams.util.GameThread;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import de.davelee.trams.services.GameService;
+
+import javax.swing.*;
 
 public class GameController {
 	
@@ -80,5 +83,30 @@ public class GameController {
 	public DifficultyLevel getDifficultyLevel ( ) {
 		return gameService.getDifficultyLevel();
 	}
+
+    public void setDifficultyLevel ( final DifficultyLevel difficultyLevel ) {
+        gameService.setDifficultyLevel(difficultyLevel);
+    }
+
+    /**
+     * Confirm and exit the TraMS program.
+     */
+    public void exit ( final JFrame currentFrame ) {
+        //Confirm user did wish to exit.
+        boolean wasSimulationRunning = pauseSimulation();
+        int result = JOptionPane.showOptionDialog(currentFrame, "Are you sure you wish to exit TraMS?", "Please Confirm Exit", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, new String[] { "Yes", "No" }, "No");
+        if ( result == JOptionPane.YES_OPTION ) {
+            System.exit(0);
+        }
+        if (wasSimulationRunning) { resumeSimulation(); }
+    }
+
+    public String getPlayerName ( ) {
+        return gameService.getPlayerName();
+    }
+
+    public Game getGame ( ) {
+        return gameService.getGame();
+    }
 
 }

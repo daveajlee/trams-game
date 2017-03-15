@@ -1,11 +1,9 @@
 package de.davelee.trams.main;
 
 import javax.swing.*;
-import javax.swing.filechooser.*;
 
 import de.davelee.trams.controllers.*;
 import de.davelee.trams.data.*;
-import de.davelee.trams.db.TramsFile;
 import de.davelee.trams.model.RouteModel;
 import de.davelee.trams.services.*;
 import de.davelee.trams.util.SortedJourneys;
@@ -33,8 +31,6 @@ public class UserInterface {
     
     private int simulationSpeed = 2000;
     
-    private final String version = "Final Preview Edition (Release Candidate)";
-    
     //This is to decide which screen to show when we refresh.
     private boolean showingMessages = false;
     private boolean showingManagement = false;
@@ -47,7 +43,6 @@ public class UserInterface {
     private VehicleService vehicleService;
     private GameService gameService;
     private ScenarioService scenarioService;
-    private FileService fileService;
     private RouteService routeService;
     private JourneyPatternService journeyPatternService;
     private TimetableService timetableService;
@@ -83,32 +78,10 @@ public class UserInterface {
         vehicleService = new VehicleService();
         gameService = new GameService();
         scenarioService = new ScenarioService();
-        fileService = new FileService();
         routeService = new RouteService();
         journeyService = new JourneyService();
         journeyPatternService = new JourneyPatternService();
         timetableService = new TimetableService();
-    }
-    
-    /**
-     * Get the current version number.
-     * @return a <code>String</code> with the current version number.
-     */
-    public String getVersion ( ) {
-        return version;
-    }
-
-    /**
-     * Confirm and exit the TraMS program.
-     */
-    public void exit ( final JFrame currentFrame ) {
-        //Confirm user did wish to exit.
-        boolean wasSimulationRunning = gameController.pauseSimulation();
-        int result = JOptionPane.showOptionDialog(currentFrame, "Are you sure you wish to exit TraMS?", "Please Confirm Exit", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, new String[] { "Yes", "No" }, "No");
-        if ( result == JOptionPane.YES_OPTION ) {
-            System.exit(0);
-        }
-        if (wasSimulationRunning) { gameController.resumeSimulation(); }
     }
     
     /**
@@ -427,21 +400,6 @@ public class UserInterface {
     }
     
     /**
-     * Load a scenario.
-     * @param scenarioName a <code>String</code> with the scenario's name.
-     * @param playerName a <code>String</code> with the player's name.
-     * @return a <code>boolean</code> which is true iff the scenario has been created successfully.
-     */
-    public void loadScenario ( String scenarioName, String playerName ) {
-        List<Vehicle> vehicles = createSuppliedVehicles(scenarioName, gameService.getCurrentTime());
-        for ( int i = 0; i < vehicles.size(); i++ ) {
-    		vehicleService.saveVehicle(vehicles.get(i));
-    	}
-        //Create welcome message.
-        messageController.addMessage("Welcome Message", "Congratulations on your appointment as Managing Director of the " + getScenarioName() + "! \n\n Your targets for the coming days and months are: " + scenarioService.retrieveScenarioObject(getScenarioName()).getTargets(),"Council","INBOX",gameService.getCurrentTime());
-    }
-    
-    /**
      * Run simulation!
      */
     public void runSimulation (final JFrame currentFrame) {
@@ -484,90 +442,6 @@ public class UserInterface {
         cs.setVisible(true);
         //Resume simulation.
         gameController.resumeSimulation();
-    }
-    
-    /**
-     * Save file.
-     * @return a <code>boolean</code> which is true iff the file was saved successfully.
-     */
-    public boolean saveFile ( final JFrame currentFrame ) {
-        //Create file dialog box.
-        JFileChooser fileDialog = new JFileChooser();
-        fileDialog.setDialogTitle("Save Game");
-        //Only display files with tra extension.
-        FileNameExtensionFilter filter = new FileNameExtensionFilter("TraMS Saved Games", "tms");
-        fileDialog.setFileFilter(filter);
-        //Display file dialog.
-        int returnVal = fileDialog.showSaveDialog(currentFrame);
-        //Check if user submitted file.
-        if ( returnVal == JFileChooser.APPROVE_OPTION ) {
-            if ( fileService.saveFile(fileDialog.getSelectedFile(), prepareTramsFile()) ) {
-                String fileName = fileDialog.getSelectedFile().getPath();
-                if ( !fileName.endsWith(".tms") ) { fileName += ".tms"; }
-                JOptionPane.showMessageDialog(currentFrame, "The current simulation has been successfully saved to " + fileName, "File Saved Successfully", JOptionPane.INFORMATION_MESSAGE);
-                return true;
-            }
-            JOptionPane.showMessageDialog(currentFrame, "The file could not be saved. Please try again later.", "ERROR: File Could Not Be Saved", JOptionPane.ERROR_MESSAGE);
-        }
-        return false;
-    }
-
-    public TramsFile prepareTramsFile ( ) {
-        return new TramsFile(driverController.getAllDrivers(), gameService.getGame(), journeyService.getAllJourneys(),
-                journeyPatternService.getAllJourneyPatterns(), messageController.getAllMessages(), routeService.getAllRoutes(),
-                routeScheduleService.getAllRouteSchedules(), journeyService.getAllStops(), journeyService.getAllStopTimes(),
-                timetableService.getAllTimetables(), vehicleService.getAllVehicles());
-    }
-
-    public void reloadDatabaseWithFile ( TramsFile myFile ) {
-        //TODO: Load file into database!
-    }
-    
-    /**
-     * Load file. 
-     * @return a <code>boolean</code> which is true iff the file was loaded successfully.
-     */
-    public boolean loadFile ( final JFrame currentFrame ) {
-        //Create file dialog box.
-        JFileChooser fileDialog = new JFileChooser();
-        fileDialog.setDialogTitle("Load Game");
-        //Only display files with tra extension.
-        FileNameExtensionFilter filter = new FileNameExtensionFilter("TraMS Saved Games", "tms");
-        fileDialog.setFileFilter(filter);
-        //Display file dialog.
-        int returnVal = fileDialog.showOpenDialog(currentFrame);
-        //Check if user submitted file and print coming soon.
-        boolean validFile = true;
-        if ( returnVal == JFileChooser.APPROVE_OPTION) {
-            TramsFile myFile = fileService.loadFile(fileDialog.getSelectedFile());
-            if ( myFile != null ) {
-                reloadDatabaseWithFile(myFile);
-                JFrame oldFrame = currentFrame;
-                setManagementScreen(true);
-                ControlScreen cs = new ControlScreen(this, "", 0, 4, false);
-                //cs.drawVehicles(false);
-                //WelcomeScreen ws = new WelcomeScreen(this);
-                //cs.setVisible(true);
-                currentFrame.setVisible(true);
-                oldFrame.dispose();
-                //Set control screen.
-                cs.setVisible(true);
-                //Finally, run simulation
-                /*isEnd = false;
-                theRunningThread = new Thread(this, "simThread");
-                theRunningThread.start();*/
-                gameController.pauseSimulation();
-                //runSimulation(cs, theOperations.getSimulator());
-                return true;
-            }
-            //theScreen.dispose();
-            validFile = false;
-        }
-        if ( !validFile ) {
-            JOptionPane.showMessageDialog(currentFrame,"The selected file is not compatible with this version of TraMS.\nYou may want to check the TraMS website for a convertor at http://trams.davelee.me.uk\nPlease either choose another file or create a new game.", "ERROR: Saved Game Could Not Be Loaded", JOptionPane.ERROR_MESSAGE);
-        }
-        //If we reach here then return false.
-        return false;
     }
 
     /**
@@ -686,8 +560,7 @@ public class UserInterface {
             catch ( InterruptedException ie ) { }
         }
         ss.dispose();
-        UserInterface ui = new UserInterface();
-        new WelcomeScreen(ui);
+        new WelcomeScreen();
         //LoadingScreen ls = new LoadingScreen();
     }
     
@@ -705,18 +578,6 @@ public class UserInterface {
     
     public Calendar getPreviousSimTime ( ) {
     	return gameService.getPreviousTime();
-    }
-    
-    public int getNumberScenarios ( ) {
-        return scenarioService.getNumberAvailableScenarios();
-    }
-    
-    public String getScenarioNameByPosition ( int position ) {
-        return scenarioService.getAvailableScenarioNames()[position];
-    }
-    
-    public String getScenarioCityDescriptionByPosition ( int position ) {
-        return scenarioService.getAvailableScenarioCityDescriptions()[position];
     }
     
     public String getPlayerName ( ) {
@@ -781,19 +642,6 @@ public class UserInterface {
     
     public int getMinimumSatisfaction ( ) {
         return scenarioService.retrieveScenarioObject(getScenarioName()).getMinimumSatisfaction();
-    }
-
-    public List<Vehicle> createSuppliedVehicles( final String scenarioName, Calendar currentTime) {
-        List<Vehicle> vehicles = new ArrayList<Vehicle>();
-        Iterator<String> vehicleModels = scenarioService.retrieveScenarioObject(scenarioName).getSuppliedVehicles().keySet().iterator();
-        while (vehicleModels.hasNext()) {
-            String vehicleModel = vehicleModels.next();
-            for ( int i = 0; i < scenarioService.retrieveScenarioObject(scenarioName).getSuppliedVehicles().get(vehicleModel); i++ )  {
-                vehicles.add(vehicleService.createVehicleObject(vehicleModel, vehicleService.generateRandomReg(
-                        currentTime.get(Calendar.YEAR)), currentTime));
-            }
-        }
-        return vehicles;
     }
 
     public VehicleService getVehicleService() {

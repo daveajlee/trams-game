@@ -6,7 +6,6 @@ import java.awt.event.*;
 import javax.swing.*;
 
 import de.davelee.trams.controllers.GameController;
-import de.davelee.trams.main.UserInterface;
 import de.davelee.trams.util.DifficultyLevel;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -17,8 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class OptionsScreen extends JFrame {
     
 	private static final long serialVersionUID = 1L;
-	
-	private UserInterface userInterface;
+
     private JLabel optionsLabel;
     private JTabbedPane optionsTabbedPane;
     
@@ -29,15 +27,11 @@ public class OptionsScreen extends JFrame {
 
     @Autowired
     private GameController gameController;
-    
+
     /**
      * Create a new options screen.
-     * @param ui a <code>UserInterface</code> object with the current user interface.
      */
-    public OptionsScreen ( UserInterface ui ) {
-        
-        //Initialise user interface variable.
-        userInterface = ui;
+    public OptionsScreen ( ) {
         
         //Set image icon.
         Image img = Toolkit.getDefaultToolkit().getImage(OptionsScreen.class.getResource("/TraMSlogo.png"));
@@ -105,16 +99,16 @@ public class OptionsScreen extends JFrame {
             difficultDescrips[i].setFont(new Font("Arial", Font.ITALIC, 11));
             difficultyPanel.add(difficultDescrips[i]);
         }
-        if ( userInterface.getDifficultyLevel() == DifficultyLevel.EASY ) {
+        if ( gameController.getDifficultyLevel() == DifficultyLevel.EASY ) {
             difficultButtons[0].setSelected(true);
         }
-        else if ( userInterface.getDifficultyLevel() == DifficultyLevel.INTERMEDIATE ) {
+        else if ( gameController.getDifficultyLevel() == DifficultyLevel.INTERMEDIATE ) {
             difficultButtons[1].setSelected(true);
         }
-        else if ( userInterface.getDifficultyLevel() == DifficultyLevel.MEDIUM ) {
+        else if ( gameController.getDifficultyLevel() == DifficultyLevel.MEDIUM ) {
             difficultButtons[2].setSelected(true);
         }
-        else if ( userInterface.getDifficultyLevel() == DifficultyLevel.HARD ) {
+        else if ( gameController.getDifficultyLevel() == DifficultyLevel.HARD ) {
             difficultButtons[3].setSelected(true);
         }
         //Now add the difficulty panel to the tabbed panel.
@@ -131,20 +125,18 @@ public class OptionsScreen extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 //Process options - set difficulty level!
                 if ( difficultButtons[0].isSelected() ) {
-                    userInterface.setDifficultyLevel(DifficultyLevel.EASY);
+                    gameController.setDifficultyLevel(DifficultyLevel.EASY);
                 }
                 else if ( difficultButtons[1].isSelected() ) {
-                    userInterface.setDifficultyLevel(DifficultyLevel.INTERMEDIATE);
+                    gameController.setDifficultyLevel(DifficultyLevel.INTERMEDIATE);
                 }
                 else if ( difficultButtons[2].isSelected() ) {
-                    userInterface.setDifficultyLevel(DifficultyLevel.MEDIUM);
+                    gameController.setDifficultyLevel(DifficultyLevel.MEDIUM);
                 }
                 else if ( difficultButtons[3].isSelected() ) {
-                    userInterface.setDifficultyLevel(DifficultyLevel.HARD);
+                    gameController.setDifficultyLevel(DifficultyLevel.HARD);
                 }
-                if ( !userInterface.getManagementScreen() && !userInterface.getMessageScreen() ) {
-                    gameController.resumeSimulation();
-                }
+                gameController.resumeSimulation();
                 dispose();
             }
         });
@@ -153,9 +145,7 @@ public class OptionsScreen extends JFrame {
         closeButton = new JButton("Close Window");
         closeButton.addActionListener( new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                if ( !userInterface.getManagementScreen() && !userInterface.getMessageScreen() ) {
-                    gameController.resumeSimulation();
-                }
+                gameController.resumeSimulation();
                 dispose();
             }
         });

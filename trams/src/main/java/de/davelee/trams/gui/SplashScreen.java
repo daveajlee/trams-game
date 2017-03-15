@@ -7,6 +7,7 @@ import javax.swing.*;
 
 import de.davelee.trams.controllers.GameController;
 import de.davelee.trams.main.UserInterface;
+import de.davelee.trams.util.TramsConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -20,7 +21,6 @@ public class SplashScreen extends JFrame {
 	private ImageDisplay imageDisplay;
     private ImageDisplay logoDisplay;
     private ImageDisplay busDisplay;
-    private UserInterface userInterface;
     private JLabel presentsLabel;
     private JLabel titleLabel;
     private JLabel loadingLabel;
@@ -40,9 +40,6 @@ public class SplashScreen extends JFrame {
         this.setTitle ("TraMS - Transport Management Simulator");
         this.setResizable (true);
         this.setUndecorated(true);
-        
-        //Initialise user interface object.
-        userInterface = ui;
         
         //Set image icon.
         Image img = Toolkit.getDefaultToolkit().getImage(SplashScreen.class.getResource("/TraMSlogo.png"));
@@ -105,7 +102,7 @@ public class SplashScreen extends JFrame {
         //Construct loading panel to add to the centre panel.
         JPanel loadingPanel = new JPanel();
         loadingPanel.setBackground(Color.WHITE);
-        if ( isAboutScreen ) { loadingLabel = new JLabel("Version: " + userInterface.getVersion()); }
+        if ( isAboutScreen ) { loadingLabel = new JLabel("Version: " + TramsConstants.VERSION); }
         else { loadingLabel = new JLabel("Loading... Please Wait!"); }
         loadingLabel.setFont(new Font("Arial", Font.ITALIC, 15));
         loadingPanel.add(loadingLabel);
@@ -126,7 +123,7 @@ public class SplashScreen extends JFrame {
             this.getContentPane().addMouseListener ( new MouseListener () {
                 public void mouseClicked(MouseEvent e) {
                     dispose();
-                    if (userInterface != null) { gameController.resumeSimulation(); }
+                    gameController.resumeSimulation();
                 }
                 public void mousePressed(MouseEvent e) {}
                 public void mouseReleased(MouseEvent e) {}

@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
+import de.davelee.trams.model.ScenarioModel;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,20 +52,14 @@ public class ScenarioServiceTest {
 
 	@Test
 	public void testScenarioSize() {
-		assertEquals(scenarioService.getNumberAvailableScenarios(), 3);
+		assertEquals(scenarioService.getAvailableScenarios().length, 3);
 	}
 
 	@Test
-	public void testScenarioNames() {
-		String[] scenarioNames = scenarioService.getAvailableScenarioNames();
-		assertEquals(scenarioNames.length, 3);
-		assertEquals(scenarioNames[0], "Landuff Transport Company");
-	}
-
-	@Test
-	public void testScenarioDescriptions() {
-		String[] scenarioDescriptions = scenarioService.getAvailableScenarioCityDescriptions();
-		assertEquals(scenarioDescriptions.length, 3);
+	public void testScenarioModels() {
+		ScenarioModel[] scenarioModels = scenarioService.getAvailableScenarios();
+		assertEquals(scenarioModels.length, 3);
+		assertEquals(scenarioModels[0].getName(), "Landuff Transport Company");
 	}
 	
 }
