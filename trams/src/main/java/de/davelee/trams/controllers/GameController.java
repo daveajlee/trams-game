@@ -3,6 +3,9 @@ package de.davelee.trams.controllers;
 import java.util.Calendar;
 
 import de.davelee.trams.data.Game;
+import de.davelee.trams.data.Route;
+import de.davelee.trams.model.RouteScheduleModel;
+import de.davelee.trams.util.DateFormats;
 import de.davelee.trams.util.DifficultyLevel;
 import de.davelee.trams.util.GameThread;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +18,12 @@ public class GameController {
 	
 	@Autowired
 	private GameService gameService;
+
+	@Autowired
+	private RouteController routeController;
+
+	@Autowired
+	private RouteScheduleController routeScheduleController;
 
 	private boolean end = false;
     private Thread runningThread;
@@ -31,6 +40,10 @@ public class GameController {
     public Calendar getCurrentSimTime ( ) {
         return gameService.getCurrentTime();
     }
+
+	public Calendar getPreviousSimTime ( ) {
+		return gameService.getPreviousTime();
+	}
 
 	public String getScenarioName ( ) {
 		return gameService.getScenarioName();
@@ -108,5 +121,45 @@ public class GameController {
     public Game getGame ( ) {
         return gameService.getGame();
     }
+
+	public String formatDateString ( Calendar currentTime, DateFormats dateFormat ) {
+		return gameService.formatDateString(currentTime, dateFormat);
+	}
+
+	public double getBalance ( ) {
+		return gameService.getCurrentBalance();
+	}
+
+	public int computeAndReturnPassengerSatisfaction ( ) {
+		//Essentially satisfaction is determined by the route schedules that are running on time.
+		//Now count number of route schedules into three groups: 1 - 5 minutes late, 6 - 15 minutes late, 16+ minutes late.
+		int numSmallLateSchedules = 0; int numMediumLateSchedules = 0; int numLargeLateSchedules = 0;
+		//Now go through all routes.
+		for ( Route myRoute : routeController.getAllRoutes() ) {
+			for ( RouteScheduleModel mySchedule : routeScheduleController.getRouteSchedulesByRouteId(myRoute.getId())) {
+				//Running... 1 - 5 minutes late.
+				if ( mySchedule.getDelay() > 0 && mySchedule.getDelay() < 6 ) {
+					numSmallLateSchedules++;
+				}
+				//Running... 6 - 15 minutes late.
+				else if ( mySchedule.getDelay() > 5 && mySchedule.getDelay() < 16 ) {
+					numMediumLateSchedules++;
+				}
+				//Running... 16+ minutes late.
+				else if ( mySchedule.getDelay() > 15 ) {
+					numLargeLateSchedules++;
+				}
+			}
+		}
+		return gameService.computeAndReturnPassengerSatisfaction(numSmallLateSchedules, numMediumLateSchedules, numLargeLateSchedules);
+	}
+
+	public void setTimeIncrement ( final int timeIncrement ) {
+		gameService.setTimeIncrement(timeIncrement);
+	}
+
+	public int getTimeIncrement ( ) {
+		return gameService.getTimeIncrement();
+	}
 
 }

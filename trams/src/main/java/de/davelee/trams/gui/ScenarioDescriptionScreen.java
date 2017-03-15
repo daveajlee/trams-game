@@ -100,7 +100,7 @@ public class ScenarioDescriptionScreen extends JFrame {
         continueButton = new JButton("Continue");
         continueButton.addActionListener(new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
-                ControlScreen ocs = new ControlScreen(new UserInterface(), "", 0, 4, false);
+                ControlScreen ocs = new ControlScreen("", 0, 4, false);
                 ocs.setVisible(true);
                 dispose();
             }

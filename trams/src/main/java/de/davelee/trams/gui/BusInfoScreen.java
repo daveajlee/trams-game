@@ -42,9 +42,9 @@ public class BusInfoScreen extends JFrame {
     
     /**
      * Create a new bus information screen.
-     * @param rd a <code>RouteSchedule</code> object with the current route schedule being run by the vehicle.
+     * @param routeScheduleModel a <code>RouteScheduleModel</code> object with the current route schedule being run by the vehicle.
      */
-    public BusInfoScreen ( final long routeScheduleId ) {
+    public BusInfoScreen ( final RouteScheduleModel routeScheduleModel ) {
         
         //Set image icon.
         Image img = Toolkit.getDefaultToolkit().getImage(BusInfoScreen.class.getResource("/TraMSlogo.png"));
@@ -73,9 +73,6 @@ public class BusInfoScreen extends JFrame {
         JPanel screenPanel = new JPanel();
         screenPanel.setLayout ( new BorderLayout () );
         screenPanel.setBackground(Color.WHITE);
-
-        //Retrieve the route schedule model.
-        final RouteScheduleModel routeScheduleModel = routeScheduleController.retrieveModel(routeScheduleId);
         
         //Create panel for west - picture of bus.
         JPanel westPanel = new JPanel(new BorderLayout());
@@ -90,7 +87,7 @@ public class BusInfoScreen extends JFrame {
         JPanel eastPanel = new JPanel(new GridLayout(6,1,5,5));
         eastPanel.setBackground(Color.WHITE);
         //Timetable id.
-        timetableIDLabel = new JLabel("Timetable ID: " + routeScheduleId);
+        timetableIDLabel = new JLabel("Timetable ID: " + routeScheduleModel.getScheduleNumber());
         timetableIDLabel.setFont(new Font("Arial", Font.BOLD, 15));
         eastPanel.add(timetableIDLabel);
         //Vehicle id.
@@ -98,11 +95,11 @@ public class BusInfoScreen extends JFrame {
         vehicleIDLabel.setFont(new Font("Arial", Font.BOLD, 15));
         eastPanel.add(vehicleIDLabel);
         //Location.
-        locationLabel = new JLabel("Location: " + routeScheduleController.getCurrentStopName(routeScheduleId, gameController.getCurrentSimTime(), gameController.getDifficultyLevel()));
+        locationLabel = new JLabel("Location: " + routeScheduleController.getCurrentStopName(routeScheduleModel, gameController.getCurrentSimTime(), gameController.getDifficultyLevel()));
         locationLabel.setFont(new Font("Arial", Font.BOLD, 15));
         eastPanel.add(locationLabel);
         //Destination.
-        destinationLabel = new JLabel("Destination: " + routeScheduleController.getLastStopName(routeScheduleId, gameController.getCurrentSimTime(), gameController.getDifficultyLevel()));
+        destinationLabel = new JLabel("Destination: " + routeScheduleController.getLastStopName(routeScheduleModel, gameController.getCurrentSimTime(), gameController.getDifficultyLevel()));
         destinationLabel.setFont(new Font("Arial", Font.BOLD, 15));
         eastPanel.add(destinationLabel);
         //Delay.
@@ -119,7 +116,7 @@ public class BusInfoScreen extends JFrame {
         makeContactButton = new JButton("Make Contact");
         makeContactButton.addActionListener( new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                new MakeContactScreen(routeScheduleModel, routeScheduleId);
+                new MakeContactScreen(routeScheduleModel);
                 dispose();
             }
         });

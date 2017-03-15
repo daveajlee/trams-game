@@ -7,6 +7,7 @@ import de.davelee.trams.data.*;
 import de.davelee.trams.model.RouteModel;
 import de.davelee.trams.services.*;
 import de.davelee.trams.util.SortedJourneys;
+import de.davelee.trams.util.TramsConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,10 +27,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class UserInterface {
 	
 	private static final Logger logger = LoggerFactory.getLogger(UserInterface.class);
-
-    private LinkedList<Integer> routeDetailPos;
-    
-    private int simulationSpeed = 2000;
     
     //This is to decide which screen to show when we refresh.
     private boolean showingMessages = false;
@@ -41,8 +38,6 @@ public class UserInterface {
     private RouteScheduleService routeScheduleService;
     private JourneyService journeyService;
     private VehicleService vehicleService;
-    private GameService gameService;
-    private ScenarioService scenarioService;
     private RouteService routeService;
     private JourneyPatternService journeyPatternService;
     private TimetableService timetableService;
@@ -67,8 +62,6 @@ public class UserInterface {
      */
     public UserInterface ( ) {
         //logger.debug("We are in ui constructor");
-        //Temporalily create list here.
-        routeDetailPos = new LinkedList<Integer>();
         //Add tip messages here.
         tipMessages.add("TIP: Watch your balance! You can't buy new vehicles or run more routes if you don't have money!");
         tipMessages.add("TIP: Earn money by improving your passenger satisfaction through running vehicles on time!");
@@ -76,8 +69,6 @@ public class UserInterface {
     
         routeScheduleService = new RouteScheduleService();
         vehicleService = new VehicleService();
-        gameService = new GameService();
-        scenarioService = new ScenarioService();
         routeService = new RouteService();
         journeyService = new JourneyService();
         journeyPatternService = new JourneyPatternService();
@@ -120,170 +111,11 @@ public class UserInterface {
         Random r = new Random();
         return tipMessages.get(r.nextInt(tipMessages.size()));
     }
-    
-    /**
-     * Speed up the simulation!
-     */
-    public void speedUpSimulation() {
-        if ( simulationSpeed > 1000 ) {
-            simulationSpeed -= 250;
-        }
-    }
-    
-    /**
-     * Slow down the simulation!
-     */
-    public void slowSimulation() {
-        if ( simulationSpeed < 4000 ) {
-            simulationSpeed += 250;
-        }
-    }
-    
-    /**
-     * Get the simulation speed!
-     * @return a <code>int</code> with the simulation speed.
-     */
-    public int getSimulationSpeed() {
-        return simulationSpeed;
-    }
-    
-    /**
-     * Get the number of route display vehicles.
-     * @param routeNumber a <code>String</code> with the route number.
-     * @return a <code>int</code> with the number of route display vehicles.
-     */
-    public int getNumRouteDisplayVehicles ( String routeNumber ) {
-        if ( routeNumber.equalsIgnoreCase("<No Routes Currently Registered>") ) { return 0; }
-        return routeScheduleService.getRouteSchedulesByRouteId(routeService.getRoute(routeNumber).getId()).size();
-    }
-    
-    /**
-     * Get the difficulty level.
-     * @return a <code>Enum</code> with the difficulty level.
-     */
-    public DifficultyLevel getDifficultyLevel ( ) {
-        return gameService.getDifficultyLevel();
-    }
-    
-    /**
-     * Set the difficulty level.
-     * @param diffLevel a <code>Enum</code> with the new difficulty level.
-     */
-    public void setDifficultyLevel ( DifficultyLevel diffLevel ) {
-        gameService.setDifficultyLevel(diffLevel);
-    }
-
-    /**
-     * Get the number of stops for a particular route.
-     * @param routeNumber a <code>String</code> with the route number.
-     * @return a <code>int</code> with the number of stops.
-     */
-    public int getNumStops ( String routeNumber ) {
-        return routeService.getRoute(routeNumber).getStops().size();
-    }
-    
-    /**
-     * Get the stop name for a particular route and particular stop number.
-     * @param routeNumber a <code>String</code> with the route number.
-     * @param pos a <code>int</code> with the stop position for that route.
-     * @return a <code>String</code> with the stop name.
-     */
-    public String getStopName ( String routeNumber, int pos ) {
-        return routeService.getRoute(routeNumber).getStops().get(pos).getStopName();
-    }
-    
-    /**
-     * Set the minimum and maximum display of vehicles.
-     * @param min a <code>int</code> with the minimum.
-     * @param max a <code>int</code> with the maximum.
-     * @param routeNumber a <code>String</code> with the route number.
-     */
-    public void setCurrentDisplayMinMax ( int min, int max, String routeNumber ) {
-        //Clear the original matrix for which routes to display.
-        routeDetailPos = new LinkedList<Integer>();
-        //Store the currentDate - we will need it for display schedules.
-        Calendar currentTime = gameService.getCurrentTime();
-        //Determine the route ids we will display using these parameters.
-        logger.debug("Route number is " + routeNumber);
-        logger.debug(routeService.getRoute(routeNumber).toString());
-        logger.debug("Number of possible display schedules: " +  routeScheduleService.getRouteSchedulesByRouteId(routeService.getRoute(routeNumber).getId()).size());
-        if ( routeScheduleService.getRouteSchedulesByRouteId(routeService.getRoute(routeNumber).getId()).size() < max ) { max = routeScheduleService.getRouteSchedulesByRouteId(routeService.getRoute(routeNumber).getId()).size(); }
-        //logger.debug("Max vehicles starts at " + max + " - routeDetails size is " + routeDetails.size());
-        logger.debug("Min is " + min + " & Max is " + max);
-        if ( min == max ) {
-            if ( vehicleService.getVehicleByRouteScheduleId(routeScheduleService.getRouteSchedulesByRouteId(routeService.getRoute(routeNumber).getId()).get(min).getId()) == null ) {
-                logger.debug("A schedule was null");
-            }
-            if ( routeScheduleController.getCurrentStopName(routeScheduleService.getRouteSchedulesByRouteId(routeService.getRoute(routeNumber).getId()).get(min).getId(), currentTime, getDifficultyLevel()).equalsIgnoreCase("Depot") ) {
-                logger.debug("Vehicle in depot!");
-            }
-            if ( vehicleService.getVehicleByRouteScheduleId(routeScheduleService.getRouteSchedulesByRouteId(routeService.getRoute(routeNumber).getId()).get(min).getId()) != null && !routeScheduleController.getCurrentStopName( routeScheduleService.getRouteSchedulesByRouteId(routeService.getRoute(routeNumber).getId()).get(min).getId(), currentTime, getDifficultyLevel()).equalsIgnoreCase("Depot") ) {
-                //logger.debug("Adding Route Detail " + routeDetails.get(i).getId());
-                routeDetailPos.add(0);
-            }
-            else {
-                max++;
-                //logger.debug("Max is now " + max + " - routeDetails size is: " + routeDetails.size());
-                if ( routeScheduleService.getRouteSchedulesByRouteId(routeService.getRoute(routeNumber).getId()).size() < max ) { max = routeScheduleService.getRouteSchedulesByRouteId(routeService.getRoute(routeNumber).getId()).size(); }
-                //logger.debug("Route Detail " + routeDetails.get(i).getId() + " was null - maxVehicles is now " + max);
-            }
-        }
-        for ( int i = min; i < max; i++ ) { //Changed from i = 0; i < routeDetails.size().
-            if ( vehicleService.getVehicleByRouteScheduleId(routeScheduleService.getRouteSchedulesByRouteId(routeService.getRoute(routeNumber).getId()).get(i).getId()) == null ) {
-                logger.debug("A schedule was null");
-            }
-            if ( routeScheduleController.getCurrentStopName(routeScheduleService.getRouteSchedulesByRouteId(routeService.getRoute(routeNumber).getId()).get(i).getId(), currentTime, getDifficultyLevel()).equalsIgnoreCase("Depot") ) {
-                logger.debug("Vehicle in depot!");
-            }
-            if ( vehicleService.getVehicleByRouteScheduleId(routeScheduleService.getRouteSchedulesByRouteId(routeService.getRoute(routeNumber).getId()).get(i).getId()) != null && !routeScheduleController.getCurrentStopName(routeScheduleService.getRouteSchedulesByRouteId(routeService.getRoute(routeNumber).getId()).get(i).getId(), currentTime, getDifficultyLevel()).equalsIgnoreCase("Depot") ) {                //logger.debug("Adding Route Detail " + routeDetails.get(i).getId());
-                routeDetailPos.add(i);
-            }
-            else {
-                max++;
-                //logger.debug("Max is now " + max + " - routeDetails size is: " + routeDetails.size());
-                if ( routeScheduleService.getRouteSchedulesByRouteId(routeService.getRoute(routeNumber).getId()).size() < max ) { max = routeScheduleService.getRouteSchedulesByRouteId(routeService.getRoute(routeNumber).getId()).size(); }
-                //logger.debug("Route Detail " + routeDetails.get(i).getId() + " was null - maxVehicles is now " + max);
-            }
-        }
-    }
-
-    /**
-     * Check if any vehicles are presently running based on the current time.
-     * @param currentTime a <code>Calendar</code> object with the current time.
-     * @return a <code>boolean</code> which is true iff at least one vehicle is running.
-     */
-    public boolean areAnyVehiclesRunning (Calendar currentTime, List<Vehicle> vehicles, DifficultyLevel difficultyLevel) {
-        //Check if any vehicles are running....
-        for ( Vehicle myVehicle : vehicles ) {
-            //First one that is not in depot indicates that vehicles are running.
-            if ( !routeScheduleController.getCurrentStopName(myVehicle.getRouteScheduleId(), currentTime, difficultyLevel).equalsIgnoreCase("Depot") ) {
-                return true;
-            }
-        }
-        //Otherwise, return false;
-        return false;
-    }
-    
-    /**
-     * Get the current minimum vehicle.
-     * @return a <code>int</code> with the id of the first vehicle.
-     */
-    public int getCurrentMinVehicle ( ) {
-        return routeDetailPos.getFirst();
-    }
-    
-    /**
-     * Get the current maximum vehicle.
-     * @return a <code>int</code> with the id of the second vehicle.
-     */
-    public int getCurrentMaxVehicle ( ) {
-        return routeDetailPos.getLast();
-    }
 
     public void generateRouteSchedules (final RouteModel routeModel, Calendar currentTime, String scenarioName ) {
         //Initialise parameters.
-        long[] outgoingJourneyIds = generateJourneyTimetables(routeModel, currentTime, scenarioName, RouteService.OUTWARD_DIRECTION);
-        long[] returnJourneyIds = generateJourneyTimetables(routeModel, currentTime, scenarioName, RouteService.RETURN_DIRECTION);
+        long[] outgoingJourneyIds = generateJourneyTimetables(routeModel, currentTime, scenarioName, TramsConstants.OUTWARD_DIRECTION);
+        long[] returnJourneyIds = generateJourneyTimetables(routeModel, currentTime, scenarioName, TramsConstants.RETURN_DIRECTION);
         List<Journey> outgoingJourneys = new ArrayList<Journey>();
         for ( int i = 0; i < outgoingJourneyIds.length; i++ ) {
             outgoingJourneys.add(journeyService.getJourneyById(outgoingJourneyIds[i]));
@@ -379,32 +211,13 @@ public class UserInterface {
             counter++;
         }
     }
-    
-    /**
-     * Get the current number of display schedules.
-     * @return a <code>int</code> with the current number of display schedules.
-     */
-    public int getNumCurrentDisplaySchedules ( ) {
-        return routeDetailPos.size();
-    }
-    
-    /**
-     * Get the display schedule based on route number and position.
-     * @param routeNumber a <code>String</code> with the route number.
-     * @param pos a <code>int</code> with the position.
-     * @return a <code>long</code> object.
-     */
-    public long getDisplaySchedule ( String routeNumber, int pos ) {
-        //Store the currentDate - we will need it for display schedules.
-        return routeScheduleService.getRouteSchedulesByRouteId(routeService.getRoute(routeNumber).getId()).get(routeDetailPos.get(pos)).getId();
-    }
-    
+
     /**
      * Run simulation!
      */
     public void runSimulation (final JFrame currentFrame) {
         currentFrame.dispose();
-        ControlScreen cs = new ControlScreen(this, "", 0, 4, false);
+        ControlScreen cs = new ControlScreen("", 0, 4, false);
         cs.drawVehicles(true);
         currentFrame.setVisible(true);
         //Set control screen.
@@ -417,7 +230,7 @@ public class UserInterface {
      */
     public void changeRoute ( String routeNumber, final JFrame currentFrame ) {
         //Now create new control screen.
-        ControlScreen cs = new ControlScreen(this, routeNumber, 0, 4, false);
+        ControlScreen cs = new ControlScreen(routeNumber, 0, 4, false);
         cs.drawVehicles(true);
         currentFrame.setVisible(true);
         //Set control screen.
@@ -435,7 +248,7 @@ public class UserInterface {
      */
     public void changeDisplay ( String routeNumber, int min, int max, boolean allocations, final JFrame currentFrame ) {
         //Now create new control screen.
-        ControlScreen cs = new ControlScreen(this, routeNumber, min, max, allocations);
+        ControlScreen cs = new ControlScreen(routeNumber, min, max, allocations);
         //cs.drawVehicles(true);
         currentFrame.setVisible(true);
         //Set control screen.
@@ -490,23 +303,6 @@ public class UserInterface {
     }
     
     /**
-     * Get the allocated vehicle for a particular schedule id.
-     * @param routeSchedId a <code>String</code> with the schedule id.
-     * @return a <code>Vehicle</code> object.
-     */
-    public long getAllocatedVehicle ( long routeScheduleId ) {
-    	return vehicleService.getVehicleByRouteScheduleId(routeScheduleId).getId();
-    }
-    
-    /**
-     * Get the balance.
-     * @return a <code>double</code> with the balance amount.
-     */
-    public double getBalance ( ) {
-        return gameService.getCurrentBalance();
-    }
-    
-    /**
      * Get the number of available vehicle types.
      * @return a <code>int</code> with the number of available vehicle types.
      */
@@ -515,30 +311,10 @@ public class UserInterface {
     }
     
     /**
-     * Edit route - replace the two routes. 
-     * @param oldRoute a <code>Route</code> object with the old route.
-     * @param newRoute a <code>Route</code> object with the new route.
-     */
-    public void editRoute ( long routeId, String routeNumber, String[] stopNames ) {
-        //Delete old route.
-        routeController.deleteRoute(routeId);
-        //Add new route.
-        routeController.addNewRoute(routeNumber, stopNames);
-    }
-    
-    /**
      * Sort vehicles by alphabetical order.
      */
     public void sortVehicles ( ) {
         vehicleService.sortVehicles(vehicleService.getAllVehicles());
-    }
-
-    /**
-     * Get the current scenario name.
-     * @return a <code>String</code> object.
-     */
-    public String getScenarioName ( ) {
-        return gameService.getScenarioName();
     }
     
     /**
@@ -551,7 +327,7 @@ public class UserInterface {
         }
         catch ( Exception e ) { }
         //Display splash screen to the user.
-        SplashScreen ss = new SplashScreen(false, null);
+        SplashScreen ss = new SplashScreen(false);
         for ( int i = 12; i > -5; i-- ) {
             try {
                 Thread.sleep(200);
@@ -562,102 +338,6 @@ public class UserInterface {
         ss.dispose();
         new WelcomeScreen();
         //LoadingScreen ls = new LoadingScreen();
-    }
-    
-    public String formatDateString ( Calendar currentTime, DateFormats dateFormat ) {
-    	return gameService.formatDateString(currentTime, dateFormat);
-    }
-    
-    public void setTimeIncrement ( int timeIncrement ) {
-    	gameService.setTimeIncrement(timeIncrement);
-    }
-    
-    public int getTimeIncrement ( ) {
-    	return gameService.getTimeIncrement();
-    }
-    
-    public Calendar getPreviousSimTime ( ) {
-    	return gameService.getPreviousTime();
-    }
-    
-    public String getPlayerName ( ) {
-    	return gameService.getPlayerName();
-    }
-    
-    public String getScenarioDescriptionByName ( String name ) {
-        return scenarioService.retrieveScenarioObject(name).getDescription();
-    }
-    
-    public String getAllocatedRegistrationNumber ( long routeScheduleId ) {
-    	return vehicleService.getVehicleByRouteScheduleId(routeScheduleId).getRegistrationNumber();
-    }
-    
-    public String getAllocatedVehicleImage ( long routeScheduleId ) {
-    	return vehicleService.getVehicleByRouteScheduleId(routeScheduleId).getImagePath();
-    }
-    
-    public void generateRouteSchedules ( final RouteModel routeModel ) {
-        generateRouteSchedules(routeModel, gameController.getCurrentSimTime(), getScenarioName());
-    }
-    
-    public long[] generateOutwardJourneyTimetables ( final RouteModel routeModel, Calendar cal ) {
-        return generateJourneyTimetables(routeModel, cal, getScenarioName(), RouteService.OUTWARD_DIRECTION);
-    }
-    
-    public long[] generateReturnJourneyTimetables ( final RouteModel routeModel, Calendar cal ) {
-        return generateJourneyTimetables(routeModel, cal, getScenarioName(), RouteService.RETURN_DIRECTION);
-    }
-    
-    public String getScenarioTargets ( ) {
-        return scenarioService.retrieveScenarioObject(getScenarioName()).getTargets();
-    }
-    
-    public String getScenarioLocationMap ( ) {
-        return scenarioService.retrieveScenarioObject(getScenarioName()).getLocationMapFileName();
-    }
-
-    public int computeAndReturnPassengerSatisfaction ( ) {
-        //Essentially satisfaction is determined by the route schedules that are running on time.
-        //Now count number of route schedules into three groups: 1 - 5 minutes late, 6 - 15 minutes late, 16+ minutes late.
-        int numSmallLateSchedules = 0; int numMediumLateSchedules = 0; int numLargeLateSchedules = 0;
-        //Now go through all routes.
-        for ( Route myRoute : routeService.getAllRoutes() ) {
-             for ( RouteSchedule mySchedule : routeScheduleService.getRouteSchedulesByRouteId(myRoute.getId())) {
-                //Running... 1 - 5 minutes late.
-                if ( mySchedule.getDelayInMins() > 0 && mySchedule.getDelayInMins() < 6 ) {
-                    numSmallLateSchedules++;
-                }
-                //Running... 6 - 15 minutes late.
-                else if ( mySchedule.getDelayInMins() > 5 && mySchedule.getDelayInMins() < 16 ) {
-                    numMediumLateSchedules++;
-                }
-                //Running... 16+ minutes late.
-                else if ( mySchedule.getDelayInMins() > 15 ) {
-                    numLargeLateSchedules++;
-                }
-             }
-        }
-        return gameService.computeAndReturnPassengerSatisfaction(numSmallLateSchedules, numMediumLateSchedules, numLargeLateSchedules);
-    }
-    
-    public int getMinimumSatisfaction ( ) {
-        return scenarioService.retrieveScenarioObject(getScenarioName()).getMinimumSatisfaction();
-    }
-
-    public VehicleService getVehicleService() {
-        return vehicleService;
-    }
-
-    public void setVehicleService(VehicleService vehicleService) {
-        this.vehicleService = vehicleService;
-    }
-
-    public ScenarioService getScenarioService() {
-        return scenarioService;
-    }
-
-    public void setScenarioService(ScenarioService scenarioService) {
-        this.scenarioService = scenarioService;
     }
 
     /**
@@ -720,7 +400,7 @@ public class UserInterface {
             myTime.set(Calendar.HOUR_OF_DAY, myJourneyPattern.getStartTime().get(Calendar.HOUR_OF_DAY));
             myTime.set(Calendar.MINUTE, myJourneyPattern.getStartTime().get(Calendar.MINUTE));
             int diffDurationFreq = myJourneyPattern.getRouteDuration() % myJourneyPattern.getFrequency();
-            if ( direction == RouteService.RETURN_DIRECTION && diffDurationFreq <= (myJourneyPattern.getFrequency()/2)) {
+            if ( direction == TramsConstants.RETURN_DIRECTION && diffDurationFreq <= (myJourneyPattern.getFrequency()/2)) {
                 myTime.add(Calendar.MINUTE, myJourneyPattern.getFrequency()/2);
             }
             //logger.debug("End time is " + myJourneyPattern.getEndTime().get(Calendar.HOUR_OF_DAY) + ":" + myJourneyPattern.getEndTime().get(Calendar.MINUTE) );
@@ -735,7 +415,7 @@ public class UserInterface {
                     //Add stops - we also need to create a separate calendar to ensure we don't advance more than we want!!!!
                     Calendar journeyTime = (Calendar) myTime.clone();
                     List<Stop> journeyStops = new ArrayList<Stop>();
-                    if ( direction == RouteService.OUTWARD_DIRECTION ) {
+                    if ( direction == TramsConstants.OUTWARD_DIRECTION ) {
                         journeyStops = routeService.getStopsBetween(routeService.getRouteById(routeController.getRouteId(routeModel.getRouteNumber())), myJourneyPattern.getReturnTerminus(), myJourneyPattern.getOutgoingTerminus(), direction);
                     }
                     else {
@@ -771,10 +451,6 @@ public class UserInterface {
             journeyIds[i] = allJourneys.get(i).getId();
         }
         return journeyIds;
-    }
-
-    public int getDelay ( long routeScheduleId ) {
-        return routeScheduleService.getDelay(routeScheduleId);
     }
 
 }

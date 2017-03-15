@@ -6,11 +6,9 @@ import javax.swing.event.*;
 import de.davelee.trams.controllers.*;
 import de.davelee.trams.data.JourneyPattern;
 import de.davelee.trams.data.Timetable;
-import de.davelee.trams.model.JourneyPatternModel;
-import de.davelee.trams.model.RouteModel;
-import de.davelee.trams.model.TimetableModel;
-import de.davelee.trams.model.VehicleModel;
+import de.davelee.trams.model.*;
 import de.davelee.trams.services.*;
+import de.davelee.trams.util.TramsConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -153,8 +151,8 @@ public class ManagePanel {
     @Autowired
     private VehicleController vehicleController;
     
-    public ManagePanel ( UserInterface ui, ControlScreen cs ) {
-        userInterface = ui;
+    public ManagePanel ( ControlScreen cs ) {
+        userInterface = new UserInterface();
         controlScreen = cs;
     }
     
@@ -502,7 +500,8 @@ public class ManagePanel {
             JLabel stopLabel = new JLabel("Stop " + (i+1) + ":");
             stopLabel.setFont(new Font("Arial", Font.ITALIC, 16));
             stopPanels[i].add(stopLabel);
-            stopBoxes[i] = new JComboBox(scenarioController.getStopNames());
+            ScenarioModel scenario = scenarioController.getScenario("Landuff Transport Company");
+            stopBoxes[i] = new JComboBox(scenario.getStopNames());
             stopBoxes[i].setFont(new Font("Arial", Font.PLAIN, 14));
             stopBoxes[i].setSelectedIndex(stopBoxes[i].getItemCount()-1);
             if ( routeModel != null ) {
@@ -627,7 +626,7 @@ public class ManagePanel {
         createRouteButton.setEnabled(false);
         createRouteButton.addActionListener ( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
-               userInterface.generateRouteSchedules(selectedRouteModel);
+                userInterface.generateRouteSchedules(selectedRouteModel, gameController.getCurrentSimTime(), gameController.getScenarioName());
 
                routeController.addNewRoute(routeNumberField.getText(), selectedOutwardStops);
                //Now return to previous screen.
@@ -1230,7 +1229,7 @@ public class ManagePanel {
         //Note cumulative total.
         int cumDistance = 0;
         //Add distance of terminus1 and first item of terminus2 first of all - this is guaranteed.
-        cumDistance += routeController.getDistance(userInterface.getScenarioName(), terminus1Box.getSelectedItem().toString(), terminus2Box.getItemAt(0).toString());
+        cumDistance += routeController.getDistance(gameController.getScenarioName(), terminus1Box.getSelectedItem().toString(), terminus2Box.getItemAt(0).toString());
         //Now from 0 up until the selected index - add distances for terminus 2.
         int selectIndex = terminus2Box.getSelectedIndex();
         if ( selectIndex == 0 ) {
@@ -1244,7 +1243,7 @@ public class ManagePanel {
             return myCumFreq;
         }
         for ( int i = 1; i <= selectIndex; i++ ) {
-            cumDistance += routeController.getDistance(userInterface.getScenarioName(), terminus2Box.getItemAt(i-1).toString(), terminus2Box.getItemAt(i).toString());
+            cumDistance += routeController.getDistance(gameController.getScenarioName(), terminus2Box.getItemAt(i-1).toString(), terminus2Box.getItemAt(i).toString());
         }
         //Return distance * 2.
         int myDistance = (cumDistance*2);
@@ -1262,14 +1261,14 @@ public class ManagePanel {
         //Note cumulative total.
         int cumDistance = 0;
         //Add distance of terminus1 and first item of terminus2 first of all - this is guaranteed.
-        cumDistance += routeController.getDistance(userInterface.getScenarioName(), terminus1Box.getSelectedItem().toString(), terminus2Box.getItemAt(0).toString());
+        cumDistance += routeController.getDistance(gameController.getScenarioName(), terminus1Box.getSelectedItem().toString(), terminus2Box.getItemAt(0).toString());
         //Now from 0 up until the selected index - add distances for terminus 2.
         int selectIndex = terminus2Box.getSelectedIndex();
         if ( selectIndex == 0 ) {
             return cumDistance*2;
         }
         for ( int i = 1; i <= selectIndex; i++ ) {
-            cumDistance += routeController.getDistance(userInterface.getScenarioName(), terminus2Box.getItemAt(i-1).toString(), terminus2Box.getItemAt(i).toString());
+            cumDistance += routeController.getDistance(gameController.getScenarioName(), terminus2Box.getItemAt(i-1).toString(), terminus2Box.getItemAt(i).toString());
         }
         //Return distance * 2.
         return cumDistance*2;
@@ -1350,7 +1349,7 @@ public class ManagePanel {
         } catch ( ParseException parseEx ) {
         	//TODO: exception handling.
         }
-        long[] journeyIds = userInterface.generateOutwardJourneyTimetables(selectedRouteModel, cal);
+        long[] journeyIds = userInterface.generateJourneyTimetables(selectedRouteModel, cal, gameController.getScenarioName(), TramsConstants.OUTWARD_DIRECTION);
         //LinkedList<Service> services = theSelectedRoute.getAllOutgoingServices(theDatesComboBox.getSelectedItem().toString());
         for ( int i = 0; i < routeStops.size(); i++) {
             outgoingData[i][0] = routeStops.get(i);
@@ -1507,7 +1506,7 @@ public class ManagePanel {
         startLabelPanel.add(startLabel);
         startDate = (Calendar) gameController.getCurrentSimTime().clone();
         startDate.add(Calendar.HOUR, 72);
-        JLabel startField = new JLabel("" + userInterface.formatDateString(startDate, DateFormats.FULL_FORMAT));
+        JLabel startField = new JLabel("" + gameController.formatDateString(startDate, DateFormats.FULL_FORMAT));
         startField.setFont(new Font("Arial", Font.ITALIC, 14));
         startLabelPanel.add(startField);
         gridPanel.add(startLabelPanel);
@@ -1659,7 +1658,7 @@ public class ManagePanel {
         gridPanel.add(deliveryLabel);
         deliveryDate = (Calendar) gameController.getCurrentSimTime().clone();
         deliveryDate.add(Calendar.HOUR, 72);
-        JLabel deliveryField = new JLabel("" + userInterface.formatDateString(deliveryDate, DateFormats.FULL_FORMAT));
+        JLabel deliveryField = new JLabel("" + gameController.formatDateString(deliveryDate, DateFormats.FULL_FORMAT));
         deliveryField.setFont(new Font("Arial", Font.PLAIN, 12));
         gridPanel.add(deliveryField);
         //Create label and field for purchase price and add it to the price panel.
@@ -1685,7 +1684,7 @@ public class ManagePanel {
         quantitySpinner.addChangeListener(new ChangeListener() {
             public void stateChanged ( ChangeEvent e ) {
                 double totalPrice = Double.parseDouble(quantitySpinner.getValue().toString()) * vehicleModel.getPurchasePrice();
-                if ( totalPrice > userInterface.getBalance() ) {
+                if ( totalPrice > gameController.getBalance() ) {
                     totalPriceField.setText("£" + format.format(totalPrice) + " (Insufficient funds available)");
                     totalPriceField.setForeground(Color.RED);
                     purchaseVehicleButton.setEnabled(false);
@@ -1965,7 +1964,7 @@ public class ManagePanel {
         //Create label and field for scenario name.
         JLabel scenarioNameLabel = new JLabel("Scenario Name: ", SwingConstants.CENTER);
         scenarioNameLabel.setFont(new Font("Arial", Font.BOLD, 17));
-        JLabel scenarioActualNameLabel = new JLabel(userInterface.getScenarioName(), SwingConstants.CENTER);
+        JLabel scenarioActualNameLabel = new JLabel(gameController.getScenarioName(), SwingConstants.CENTER);
         scenarioActualNameLabel.setFont(new Font("Arial", Font.PLAIN, 17));
         scenarioNamePanel.add(scenarioNameLabel);
         scenarioNamePanel.add(scenarioActualNameLabel);
@@ -1973,6 +1972,8 @@ public class ManagePanel {
         //Add scenarioNamePanel to info panel.
         scenarioScreenPanel.add(scenarioNamePanel);
         scenarioScreenPanel.add(Box.createRigidArea(new Dimension(0,15)));
+
+        ScenarioModel scenarioModel = scenarioController.getScenario(gameController.getScenarioName());
 
         //Create panel for target field.
         JPanel targetPanel = new JPanel(new GridLayout(1,2,5,5));
@@ -1983,7 +1984,7 @@ public class ManagePanel {
         targetPanel.add(targetLabel);
         JPanel scenarioTargetPanel = new JPanel(new BorderLayout());
         scenarioTargetPanel.setBackground(Color.WHITE);
-        JTextArea scenarioTargetArea = new JTextArea(userInterface.getScenarioTargets());
+        JTextArea scenarioTargetArea = new JTextArea(scenarioModel.getTargets());
         scenarioTargetArea.setWrapStyleWord(true);
         scenarioTargetArea.setLineWrap(true);
         scenarioTargetArea.setFont(new Font("Arial", Font.ITALIC, 14));
@@ -1998,7 +1999,7 @@ public class ManagePanel {
         //Create label and field for player name.
         JLabel playerNameLabel = new JLabel("Player Name: ", SwingConstants.CENTER);
         playerNameLabel.setFont(new Font("Arial", Font.BOLD, 17));
-        JLabel playerActualNameLabel = new JLabel(userInterface.getPlayerName(), SwingConstants.CENTER);
+        JLabel playerActualNameLabel = new JLabel(gameController.getPlayerName(), SwingConstants.CENTER);
         playerActualNameLabel.setFont(new Font("Arial", Font.PLAIN, 17));
         playerNamePanel.add(playerNameLabel);
         playerNamePanel.add(playerActualNameLabel);
@@ -2025,11 +2026,13 @@ public class ManagePanel {
     }
     
     public JPanel makeLocationMapPanel ( ) {
+
+        ScenarioModel scenarioModel = scenarioController.getScenario(gameController.getScenarioName());
         
         //Create picture panel.
         JPanel picturePanel = new JPanel(new BorderLayout());
         picturePanel.setBackground(Color.WHITE);
-        ImageDisplay busDisplay = new ImageDisplay(userInterface.getScenarioLocationMap(),0,0);
+        ImageDisplay busDisplay = new ImageDisplay(scenarioModel.getLocationMapFileName(),0,0);
         busDisplay.setSize(750,380);
         busDisplay.setBackground(Color.WHITE);
         picturePanel.add(busDisplay, BorderLayout.CENTER);
@@ -2066,7 +2069,7 @@ public class ManagePanel {
         topRightPanel.add(topLabel);
         JPanel dayPanel = new JPanel();
         dayPanel.setBackground(Color.WHITE);
-        JLabel dayLabel = new JLabel(userInterface.formatDateString(gameController.getCurrentSimTime(), DateFormats.FULL_FORMAT), SwingConstants.CENTER);
+        JLabel dayLabel = new JLabel(gameController.formatDateString(gameController.getCurrentSimTime(), DateFormats.FULL_FORMAT), SwingConstants.CENTER);
         dayLabel.setFont(new Font("Arial", Font.BOLD + Font.ITALIC, 20));
         dayPanel.add(dayLabel);
         topRightPanel.add(dayPanel);
@@ -2114,9 +2117,9 @@ public class ManagePanel {
         routesList.setFixedCellWidth(270);
         routesList.setFont(new Font("Arial", Font.PLAIN, 15));
         for ( int i = 0; i < routeController.getNumberRoutes(); i++ ) {
-            String[] routeScheduleNames = routeScheduleController.getRouteScheduleNames(routeController.getRouteNumberByPosition(i));
-            for ( int j = 0; j < routeScheduleNames.length; j++ ) {
-                routesModel.addElement(routeScheduleNames[j]);
+            RouteScheduleModel[] routeScheduleModels = routeScheduleController.getRouteSchedules(routeController.getRouteNumberByPosition(i));
+            for ( int j = 0; j < routeScheduleModels.length; j++ ) {
+                routesModel.addElement(routeScheduleModels[j].getScheduleNumber());
             }
         }
         routesList.setVisibleRowCount(4);
@@ -2264,9 +2267,9 @@ public class ManagePanel {
                         String[] allocationSplit = allocationsModel.get(i).toString().split("&");
                         //Store route detail object.
                         String routeNumber = allocationSplit[0].split("/")[0]; int routeDetailPos = -1;
-                        String[] scheduleNames = routeScheduleController.getRouteScheduleNames(routeController.getRoute(routeNumber).getRouteNumber());
-                        for ( int k = 0; k < scheduleNames.length; k++ ) {
-                            if ( scheduleNames[k].equalsIgnoreCase(allocationSplit[0].trim()) ) {
+                        RouteScheduleModel[] scheduleModels = routeScheduleController.getRouteSchedules(routeController.getRoute(routeNumber).getRouteNumber());
+                        for ( int k = 0; k < scheduleModels.length; k++ ) {
+                            if ( scheduleModels[k].getScheduleNumber() == Integer.parseInt(allocationSplit[0].trim()) ) {
                                 routeDetailPos = k;
                             }
                         }
@@ -2280,7 +2283,7 @@ public class ManagePanel {
                             }
                         }
                         //Now assign route detail to vehicle.
-                        vehicleController.assignVehicleToRouteSchedule(vehicleModels[vehiclePos].getRegistrationNumber(), scheduleNames[routeDetailPos]);
+                        vehicleController.assignVehicleToRouteSchedule(vehicleModels[vehiclePos].getRegistrationNumber(), "" + scheduleModels[routeDetailPos].getScheduleNumber());
                     }
                     VehicleModel[] vehicleModels = vehicleController.getAllCreatedVehicles();
                     for ( int i = 0; i < vehicleModels.length; i++ ) {

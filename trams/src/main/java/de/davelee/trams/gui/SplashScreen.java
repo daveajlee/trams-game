@@ -34,7 +34,7 @@ public class SplashScreen extends JFrame {
      * @param isAboutScreen a <code>boolean</code> which is true iff this is the about screen rather than splash screen at beginning.
      * @param ui a <code>UserInterface</code> object with the current user interface.
      */
-    public SplashScreen ( boolean isAboutScreen, UserInterface ui ) {
+    public SplashScreen ( boolean isAboutScreen ) {
         
         //Initialise GUI with resizable, title and decorate methods.
         this.setTitle ("TraMS - Transport Management Simulator");

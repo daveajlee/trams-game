@@ -4,14 +4,19 @@ import de.davelee.trams.data.RouteSchedule;
 import de.davelee.trams.model.RouteScheduleModel;
 import de.davelee.trams.model.VehicleModel;
 import de.davelee.trams.util.DifficultyLevel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import de.davelee.trams.services.RouteScheduleService;
 
 import java.util.Calendar;
+import java.util.LinkedList;
 import java.util.List;
 
 public class RouteScheduleController {
+
+	private static final Logger logger = LoggerFactory.getLogger(RouteScheduleController.class);
 	
 	 @Autowired
 	 private RouteScheduleService routeScheduleService;
@@ -25,21 +30,26 @@ public class RouteScheduleController {
 	 @Autowired
 	 private VehicleController vehicleController;
 
+	 @Autowired
+	 private GameController gameController;
+
+	 private List<Integer> routeDetailPos;
+
 	 public long getRouteId ( final long routeScheduleId ) {
 		 return routeScheduleService.getRouteScheduleById(routeScheduleId).getRouteId();
 	 }
 
-	public String[] getRouteScheduleNames ( final String routeNumber ) {
+	public RouteScheduleModel[] getRouteSchedules ( final String routeNumber ) {
 		List<RouteSchedule> schedules = routeScheduleService.getRouteSchedulesByRouteId(routeController.getRouteId(routeNumber));
-		String[] names = new String[schedules.size()];
-		for ( int i = 0; i < names.length; i++ ) {
-			names[i] = "" + schedules.get(i).getScheduleNumber();
+		RouteScheduleModel[] routeScheduleModels = new RouteScheduleModel[schedules.size()];
+		for ( int i = 0; i < routeScheduleModels.length; i++ ) {
+			routeScheduleModels[i] = retrieveModel(schedules.get(i).getId());
 		}
-		return names;
+		return routeScheduleModels;
 	}
 
-	public long getIdFromNumber ( final String scheduleNumber ) {
-		return routeScheduleService.getIdFromScheduleNumber(Integer.parseInt(scheduleNumber));
+	public long getIdFromNumber ( final int scheduleNumber ) {
+		return routeScheduleService.getIdFromScheduleNumber(scheduleNumber);
 	}
 
 	/**
@@ -47,32 +57,29 @@ public class RouteScheduleController {
 	 * @param currentDate a <code>Calendar</code> object.
 	 * @return a <code>String</code> array with the stop details.
 	 */
-	public String getCurrentStopName ( long routeScheduleId, Calendar currentDate, DifficultyLevel difficultyLevel ) {
+	public String getCurrentStopName ( final RouteScheduleModel routeScheduleModel, Calendar currentDate, DifficultyLevel difficultyLevel ) {
 		//Copy current Date to current Time and then use delay to determine position.
 		Calendar currentTime = (Calendar) currentDate.clone();
-		currentTime.add(Calendar.MINUTE, -routeScheduleService.getRouteScheduleById(routeScheduleId).getDelayInMins());
-		String stopName = journeyController.getStopName(routeScheduleId, currentTime);
-		if ( stopName.contentEquals("Depot") ) {
-			routeScheduleService.getRouteScheduleById(routeScheduleId).setDelayInMins(0); //Finished for the day or not started.
-		}
-		else {
+		currentTime.add(Calendar.MINUTE, -routeScheduleModel.getDelay());
+		String stopName = journeyController.getStopName(getIdFromNumber(routeScheduleModel.getScheduleNumber()), currentTime);
+		if ( !stopName.contentEquals("Depot") ) {
 			//Now fiddle delay!
-			routeScheduleService.calculateNewDelay(routeScheduleService.getRouteScheduleById(routeScheduleId), difficultyLevel);
+			routeScheduleService.calculateNewDelay(routeScheduleService.getRouteScheduleById(getIdFromNumber(routeScheduleModel.getScheduleNumber())), difficultyLevel);
 		}
 		return stopName;
 	}
 
-	public String getLastStopName ( long routeScheduleId, Calendar currentDate, DifficultyLevel difficultyLevel) {
+	public String getLastStopName ( final RouteScheduleModel routeScheduleModel, Calendar currentDate, DifficultyLevel difficultyLevel) {
 		//Copy current Date to current Time and then use delay to determine position.
 		Calendar currentTime = (Calendar) currentDate.clone();
-		currentTime.add(Calendar.MINUTE, -routeScheduleService.getRouteScheduleById(routeScheduleId).getDelayInMins());
-		String stopName = journeyController.getLastStopName(routeScheduleId, currentTime);
+		currentTime.add(Calendar.MINUTE, -routeScheduleModel.getDelay());
+		String stopName = journeyController.getLastStopName(getIdFromNumber(routeScheduleModel.getScheduleNumber()), currentTime);
 		if ( stopName.contentEquals("Depot")) {
-			routeScheduleService.getRouteScheduleById(routeScheduleId).setDelayInMins(0); //Finished for the day.
+			routeScheduleService.getRouteScheduleById(getIdFromNumber(routeScheduleModel.getScheduleNumber())).setDelayInMins(0); //Finished for the day.
 		}
 		else {
 			//Now fiddle delay!
-			routeScheduleService.calculateNewDelay(routeScheduleService.getRouteScheduleById(routeScheduleId), difficultyLevel);
+			routeScheduleService.calculateNewDelay(routeScheduleService.getRouteScheduleById(getIdFromNumber(routeScheduleModel.getScheduleNumber())), difficultyLevel);
 		}
 		return stopName;
 	}
@@ -83,8 +90,19 @@ public class RouteScheduleController {
 		VehicleModel vehicleModel = vehicleController.retrieveModel(routeScheduleId);
 		routeScheduleModel.setImage(vehicleModel.getImagePath());
 		routeScheduleModel.setRegistrationNumber(vehicleModel.getRegistrationNumber());
+		routeScheduleModel.setScheduleNumber(routeScheduleService.getRouteScheduleById(routeScheduleId).getScheduleNumber());
 		return routeScheduleModel;
 	}
+
+	public RouteScheduleModel[] getRouteSchedulesByRouteId ( final long routeId ) {
+		List<RouteSchedule> routeSchedules = routeScheduleService.getRouteSchedulesByRouteId(routeId);
+		RouteScheduleModel[] routeScheduleModels = new RouteScheduleModel[routeSchedules.size()];
+		for ( int i = 0; i < routeScheduleModels.length; i++ ) {
+			routeScheduleModels[i] = retrieveModel(routeSchedules.get(i).getId());
+		}
+		return routeScheduleModels;
+	}
+
 
 	/**
 	 * Shorten schedule to the specific stop stated and reduce the delay accordingly.
@@ -122,6 +140,87 @@ public class RouteScheduleController {
 
 	public List<RouteSchedule> getAllRouteSchedules ( ) {
 		return routeScheduleService.getAllRouteSchedules();
+	}
+
+	/**
+	 * Set the minimum and maximum display of vehicles.
+	 * @param min a <code>int</code> with the minimum.
+	 * @param max a <code>int</code> with the maximum.
+	 * @param routeNumber a <code>String</code> with the route number.
+	 */
+	public int setCurrentDisplayMinMax ( final int min, final int max, final String routeNumber ) {
+		int returnMax = max;
+		//Clear the original matrix for which routes to display.
+		routeDetailPos = new LinkedList<Integer>();
+		//Store the currentDate - we will need it for display schedules.
+		Calendar currentTime = gameController.getCurrentSimTime();
+		//Determine the route ids we will display using these parameters.
+		logger.debug("Route number is " + routeNumber);
+		logger.debug("Number of possible display schedules: " +  routeScheduleService.getRouteSchedulesByRouteId(routeController.getRouteId(routeNumber)).size());
+		if ( routeScheduleService.getRouteSchedulesByRouteId(routeController.getRouteId(routeNumber)).size() < max ) { returnMax = routeScheduleService.getRouteSchedulesByRouteId(routeController.getRouteId(routeNumber)).size(); }
+		//logger.debug("Max vehicles starts at " + max + " - routeDetails size is " + routeDetails.size());
+		logger.debug("Min is " + min + " & Max is " + max);
+		if ( min == max ) {
+			if ( vehicleController.retrieveModel(routeScheduleService.getRouteSchedulesByRouteId(routeController.getRouteId(routeNumber)).get(min).getId()) == null ) {
+				logger.debug("A schedule was null");
+			}
+			if ( getCurrentStopName(getRouteSchedulesByRouteId(routeController.getRouteId(routeNumber))[min], currentTime, gameController.getDifficultyLevel()).equalsIgnoreCase("Depot") ) {
+				logger.debug("Vehicle in depot!");
+			}
+			if ( vehicleController.retrieveModel(routeScheduleService.getRouteSchedulesByRouteId(routeController.getRouteId(routeNumber)).get(min).getId()) != null && !getCurrentStopName( getRouteSchedulesByRouteId(routeController.getRouteId(routeNumber))[min], currentTime, gameController.getDifficultyLevel()).equalsIgnoreCase("Depot") ) {
+				//logger.debug("Adding Route Detail " + routeDetails.get(i).getId());
+				routeDetailPos.add(0);
+			}
+			else {
+				returnMax++;
+				//logger.debug("Max is now " + max + " - routeDetails size is: " + routeDetails.size());
+				if ( routeScheduleService.getRouteSchedulesByRouteId(routeController.getRouteId(routeNumber)).size() < max ) { returnMax = routeScheduleService.getRouteSchedulesByRouteId(routeController.getRouteId(routeNumber)).size(); }
+				//logger.debug("Route Detail " + routeDetails.get(i).getId() + " was null - maxVehicles is now " + max);
+			}
+		}
+		for ( int i = min; i < max; i++ ) { //Changed from i = 0; i < routeDetails.size().
+			if ( vehicleController.retrieveModel(routeScheduleService.getRouteSchedulesByRouteId(routeController.getRouteId(routeNumber)).get(i).getId()) == null ) {
+				logger.debug("A schedule was null");
+			}
+			if ( getCurrentStopName(getRouteSchedulesByRouteId(routeController.getRouteId(routeNumber))[i], currentTime, gameController.getDifficultyLevel()).equalsIgnoreCase("Depot") ) {
+				logger.debug("Vehicle in depot!");
+			}
+			if ( vehicleController.retrieveModel(routeScheduleService.getRouteSchedulesByRouteId(routeController.getRouteId(routeNumber)).get(i).getId()) != null && !getCurrentStopName(getRouteSchedulesByRouteId(routeController.getRouteId(routeNumber))[i], currentTime, gameController.getDifficultyLevel()).equalsIgnoreCase("Depot") ) {
+				//logger.debug("Adding Route Detail " + routeDetails.get(i).getId());
+				routeDetailPos.add(i);
+			}
+			else {
+				returnMax++;
+				//logger.debug("Max is now " + max + " - routeDetails size is: " + routeDetails.size());
+				if ( routeScheduleService.getRouteSchedulesByRouteId(routeController.getRouteId(routeNumber)).size() < max ) { returnMax = routeScheduleService.getRouteSchedulesByRouteId(routeController.getRouteId(routeNumber)).size(); }
+				//logger.debug("Route Detail " + routeDetails.get(i).getId() + " was null - maxVehicles is now " + max);
+			}
+		}
+		return returnMax;
+	}
+
+	/**
+	 * Get the current number of display schedules.
+	 * @return a <code>int</code> with the current number of display schedules.
+	 */
+	public int getNumCurrentDisplaySchedules ( ) {
+		return routeDetailPos.size();
+	}
+
+	/**
+	 * Get the current minimum schedule.
+	 * @return a <code>int</code> with the id of the first schedule.
+	 */
+	public int getCurrentMinSchedule ( ) {
+		return routeDetailPos.get(0);
+	}
+
+	/**
+	 * Get the current maximum schedule.
+	 * @return a <code>int</code> with the id of the second schedule.
+	 */
+	public int getCurrentMaxSchedule ( ) {
+		return routeDetailPos.get(routeDetailPos.size()-1);
 	}
 	 
 }

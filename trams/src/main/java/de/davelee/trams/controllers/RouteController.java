@@ -77,4 +77,16 @@ public class RouteController {
 		return routeService.getAllRoutes();
 	}
 
+	/**
+	 * Edit route - replace the two routes.
+	 * @param oldRoute a <code>Route</code> object with the old route.
+	 * @param newRoute a <code>Route</code> object with the new route.
+	 */
+    public void editRoute ( long routeId, String routeNumber, String[] stopNames ) {
+		//Delete old route.
+		deleteRoute(routeId);
+		//Add new route.
+		addNewRoute(routeNumber, stopNames);
+	}
+
 }

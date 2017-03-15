@@ -25,22 +25,22 @@ public class ScenarioServiceTest {
 	
 	@Test
 	public void testStopNames() {
-		String[] stopNames = scenarioService.getStopNames("Landuff Transport Company");
-		assertEquals(scenarioService.retrieveScenarioObject("Landuff Transport Company").getScenarioName(), "Landuff Transport Company");
-		assertEquals(stopNames[0], "Airport");
-		assertEquals(stopNames[46], "-");
-		assertEquals(stopNames.length, 47);
+		ScenarioModel scenario = scenarioService.retrieveScenarioObject("Landuff Transport Company");
+		assertEquals(scenario.getName(), "Landuff Transport Company");
+		assertEquals(scenario.getStopNames()[0], "Airport");
+		assertEquals(scenario.getStopNames()[46], "-");
+		assertEquals(scenario.getStopNames().length, 47);
 	}
 
 	@Test
 	public void testStopDistances() {
-		Scenario scenario = scenarioService.retrieveScenarioObject("Landuff Transport Company");
+		ScenarioModel scenario = scenarioService.retrieveScenarioObject("Landuff Transport Company");
 		assertNotNull(scenario);
-		assertEquals(scenario.getStopDistances().size(), 46);
+		assertEquals(scenario.getStopNames().length, 47);
 	}
 
 	public void testRetrieveScenarioObject() {
-		assertEquals(scenarioService.retrieveScenarioObject("Landuff Transport Company").getScenarioName(), "Landuff Transport Company");
+		assertEquals(scenarioService.retrieveScenarioObject("Landuff Transport Company").getName(), "Landuff Transport Company");
 		assertNull(scenarioService.retrieveScenarioObject("Berlin Transport Company"));
 	}
 

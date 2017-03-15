@@ -35,8 +35,8 @@ public class MakeContactScreen extends JFrame {
     private JButton shortenRouteButton;
     private JButton goOutOfServiceButton;
     private JButton closeButton;
-    
-    private long routeScheduleId;
+
+    private RouteScheduleModel routeScheduleModel;
 
     @Autowired
     private GameController gameController;
@@ -55,17 +55,17 @@ public class MakeContactScreen extends JFrame {
      * @param ui a <code>UserInterface</code> object.
      * @param rd a <code>RouteSchedule</code> object.
      */
-    public MakeContactScreen ( final RouteScheduleModel routeScheduleModel, final long routeScheduleId ) {
+    public MakeContactScreen ( final RouteScheduleModel routeScheduleModel ) {
         
         //Initialise route detail variables.
-        this.routeScheduleId = routeScheduleId;
+        this.routeScheduleModel = routeScheduleModel;
         
         //Set image icon.
         Image img = Toolkit.getDefaultToolkit().getImage(MakeContactScreen.class.getResource("/TraMSlogo.png"));
         setIconImage(img);
         
         //Initialise GUI with title and close attributes.
-        this.setTitle ("Contact With " + routeScheduleModel.getRegistrationNumber() + " On Route " + routeController.getRouteNumber(routeScheduleId));
+        this.setTitle ("Contact With " + routeScheduleModel.getRegistrationNumber() + " On Route " + routeController.getRouteNumber(routeScheduleController.getIdFromNumber(routeScheduleModel.getScheduleNumber())));
         this.setResizable (false);
         this.setDefaultCloseOperation (DO_NOTHING_ON_CLOSE);
         this.setBackground(Color.WHITE);
@@ -115,7 +115,7 @@ public class MakeContactScreen extends JFrame {
                         "\n\n Control: Vehicle " + routeScheduleModel.getRegistrationNumber() + ", please terminate at " + stopBox.getSelectedItem().toString() + " and proceed in service in the reverse direction. Over!" +
                          "\n\n Vehicle " + routeScheduleModel.getRegistrationNumber() + ": Message acknowledeged. Thanks. Over!");
                 //Ask vehicle to shorten current route to the specified destination.
-                routeScheduleController.shortenSchedule(routeScheduleId, stopBox.getSelectedItem().toString(), gameController.getCurrentSimTime());
+                routeScheduleController.shortenSchedule(routeScheduleController.getIdFromNumber(routeScheduleModel.getScheduleNumber()), stopBox.getSelectedItem().toString(), gameController.getCurrentSimTime());
             }
         });
         alterButtonPanel.add(shortenRouteButton);
@@ -126,7 +126,7 @@ public class MakeContactScreen extends JFrame {
                         "\n\n Control: Vehicle " + routeScheduleModel.getRegistrationNumber() + ", please go out of service until " + stopBox.getSelectedItem().toString() + ". Over!" +
                         "\n\n Vehicle " + routeScheduleModel.getRegistrationNumber() + ": Message acknowledeged. Thanks. Over!");
                 //Request vehicle to go out of service.
-                routeScheduleController.outOfService(routeScheduleId, routeScheduleController.getCurrentStopName(routeScheduleId, gameController.getCurrentSimTime(), gameController.getDifficultyLevel()), stopBox.getSelectedItem().toString(), gameController.getCurrentSimTime());
+                routeScheduleController.outOfService(routeScheduleController.getIdFromNumber(routeScheduleModel.getScheduleNumber()), routeScheduleController.getCurrentStopName(routeScheduleModel, gameController.getCurrentSimTime(), gameController.getDifficultyLevel()), stopBox.getSelectedItem().toString(), gameController.getCurrentSimTime());
             }
         });
         alterButtonPanel.add(goOutOfServiceButton);
@@ -140,7 +140,7 @@ public class MakeContactScreen extends JFrame {
         communicationArea = new JTextArea(3,5);
         communicationArea.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         communicationArea.setText("Control: Vehicle " + routeScheduleModel.getRegistrationNumber() + ", please state your current position. Over!");
-        communicationArea.setText(communicationArea.getText() + "\n\n Vehicle " + routeScheduleModel.getRegistrationNumber() + ": At " + routeScheduleController.getCurrentStopName(routeScheduleId, gameController.getCurrentSimTime(), gameController.getDifficultyLevel()) + " heading towards " + getCurrentDestination() + " with delay of " + routeScheduleModel.getDelay() + " mins. Over!");
+        communicationArea.setText(communicationArea.getText() + "\n\n Vehicle " + routeScheduleModel.getRegistrationNumber() + ": At " + routeScheduleController.getCurrentStopName(routeScheduleModel, gameController.getCurrentSimTime(), gameController.getDifficultyLevel()) + " heading towards " + getCurrentDestination() + " with delay of " + routeScheduleModel.getDelay() + " mins. Over!");
         communicationArea.setFont(new Font("Arial", Font.ITALIC, 12));
         communicationArea.setEditable(false);
         communicationArea.setLineWrap(true);
@@ -190,7 +190,7 @@ public class MakeContactScreen extends JFrame {
      * @return a <code>String</code> with the current destination.
      */
     public String getCurrentDestination ( ) {
-        return routeScheduleController.getLastStopName(routeScheduleId, gameController.getCurrentSimTime(), gameController.getDifficultyLevel());
+        return routeScheduleController.getLastStopName(routeScheduleModel, gameController.getCurrentSimTime(), gameController.getDifficultyLevel());
     }
     
     /**
@@ -199,9 +199,9 @@ public class MakeContactScreen extends JFrame {
      */
     public String[] getListOfStops() {
         //Create the String array.
-        String[] stops = new String[journeyController.getNumStopTimes(routeScheduleId, gameController.getCurrentSimTime())];
+        String[] stops = new String[journeyController.getNumStopTimes(routeScheduleController.getIdFromNumber(routeScheduleModel.getScheduleNumber()), gameController.getCurrentSimTime())];
         for ( int i = 0; i < stops.length; i++ ) {
-            stops[i] = journeyController.getStopName(routeScheduleId, gameController.getCurrentSimTime(), i);
+            stops[i] = journeyController.getStopName(routeScheduleController.getIdFromNumber(routeScheduleModel.getScheduleNumber()), gameController.getCurrentSimTime(), i);
         }
         return stops;
     }

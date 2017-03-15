@@ -23,7 +23,7 @@ public class VehicleController {
 	private GameController gameController;
 	
 	public void assignVehicleToRouteSchedule ( final String registrationNumber, final String scheduleNumber ) {
-		vehicleService.getVehicleByRegistrationNumber(registrationNumber).setRouteScheduleId(routeScheduleController.getIdFromNumber(scheduleNumber));
+		vehicleService.getVehicleByRegistrationNumber(registrationNumber).setRouteScheduleId(routeScheduleController.getIdFromNumber(Integer.parseInt(scheduleNumber)));
 	}
 
 	/**

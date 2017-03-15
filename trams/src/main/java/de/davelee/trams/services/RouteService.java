@@ -9,6 +9,7 @@ import de.davelee.trams.factory.ScenarioFactory;
 
 import de.davelee.trams.repository.RouteRepository;
 import de.davelee.trams.util.SortedRoutes;
+import de.davelee.trams.util.TramsConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class RouteService {
@@ -17,9 +18,6 @@ public class RouteService {
 
     @Autowired
     private RouteRepository routeRepository;
-    
-    public static int OUTWARD_DIRECTION = 0;
-    public static int RETURN_DIRECTION = 1;
 	
 	public RouteService() {
 	}
@@ -136,7 +134,7 @@ public class RouteService {
         boolean shouldAddStop = false;
         //Now go through route stops in the direction and add those as appropriate.
         List<Stop> relevantStops = route.getStops();
-        if ( direction == OUTWARD_DIRECTION ) { 
+        if ( direction == TramsConstants.OUTWARD_DIRECTION ) {
         	for ( int i = 0; i < relevantStops.size(); i++ ) {
                 if ( relevantStops.get(i).getStopName().equalsIgnoreCase(startStop) ) { myStops.add(relevantStops.get(i)); shouldAddStop = true; }
                 else if ( relevantStops.get(i).getStopName().equalsIgnoreCase(endStop) ) { myStops.add(relevantStops.get(i)); shouldAddStop = false; }

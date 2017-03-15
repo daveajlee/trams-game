@@ -12,13 +12,13 @@ public class ScenarioController {
 	
 	@Autowired
 	private GameController gameController;
-	
-	public String[] getStopNames ( ) {
-		return scenarioService.getStopNames(gameController.getScenarioName());
-	}
 
 	public ScenarioModel[] getAvailableScenarios ( ) {
 		return scenarioService.getAvailableScenarios();
+	}
+
+	public ScenarioModel getScenario ( final String scenarioName ) {
+		return scenarioService.retrieveScenarioObject(scenarioName);
 	}
 
 }

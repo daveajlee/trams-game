@@ -9,6 +9,9 @@ public class ScenarioModel {
 	private HashMap<String, Integer> suppliedVehicles;
 	private String targets;
 	private String description;
+	private String[] stopNames;
+	private int minimumSatisfaction;
+	private String locationMapFileName;
 	
 	public String getName() {
 		return name;
@@ -48,6 +51,30 @@ public class ScenarioModel {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	public String[] getStopNames() {
+		return stopNames;
+	}
+
+	public void setStopNames(final String[] stopNames) {
+		this.stopNames = stopNames;
+	}
+
+	public int getMinimumSatisfaction() {
+		return minimumSatisfaction;
+	}
+
+	public void setMinimumSatisfaction(final int minimumSatisfaction) {
+		this.minimumSatisfaction = minimumSatisfaction;
+	}
+
+	public String getLocationMapFileName() {
+		return locationMapFileName;
+	}
+
+	public void setLocationMapFileName(final String locationMapFileName) {
+		this.locationMapFileName = locationMapFileName;
 	}
 
 }

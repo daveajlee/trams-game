@@ -64,7 +64,7 @@ public class FileController {
             if ( myFile != null ) {
             	reloadDatabaseWithFile(myFile);
                 JFrame oldFrame = currentFrame;
-                ControlScreen cs = new ControlScreen(new UserInterface(), "", 0, 4, false);
+                ControlScreen cs = new ControlScreen("", 0, 4, false);
                 //cs.drawVehicles(false);
                 //WelcomeScreen ws = new WelcomeScreen(this);
                 //cs.setVisible(true);
