@@ -1515,7 +1515,11 @@ public class ManagePanel {
         JButton employDriverButton = new JButton("Employ Driver");
         employDriverButton.addActionListener( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
-                driverController.employDriver(driverNameField.getText(), (Integer) contractedHoursSpinner.getValue(), startDate);
+                DriverModel driverModel = new DriverModel();
+                driverModel.setName(driverNameField.getText());
+                driverModel.setContractedHours((Integer) contractedHoursSpinner.getValue());
+                driverModel.setStartDate(startDate);
+                driverController.employDriver(driverModel);
                 controlScreen.redrawManagement(ManagePanel.this.getDisplayPanel());
             }
         });

@@ -8,6 +8,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Calendar;
 
+import de.davelee.trams.model.DriverModel;
 import de.davelee.trams.repository.DriverRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,12 +32,17 @@ public class DriverServiceTest {
 	public void testCreateDriver() {
 		Calendar startDate = Calendar.getInstance();
 		startDate.set(2014, 4, 20);
-		Driver driver = driverService.createDriver("Dave Lee", 40, startDate);
-		assertEquals(driver.getName(), "Dave Lee");
-		assertEquals(driver.getContractedHours(), 40);
-		assertEquals(driver.getStartDate().get(Calendar.YEAR), 2014);
-		assertEquals(driver.getStartDate().get(Calendar.MONTH), 4);
-		assertEquals(driver.getStartDate().get(Calendar.DAY_OF_MONTH), 20);
+		DriverModel driverModel = new DriverModel();
+		driverModel.setName("Dave Lee");
+		driverModel.setContractedHours(40);
+		driverModel.setStartDate(startDate);
+		driverService.saveDriver(driverModel);
+		DriverModel driverModel2 = driverService.getDriverByName("Dave Lee");
+		assertEquals(driverModel2.getName(), "Dave Lee");
+		assertEquals(driverModel2.getContractedHours(), 40);
+		assertEquals(driverModel2.getStartDate().get(Calendar.YEAR), 2014);
+		assertEquals(driverModel2.getStartDate().get(Calendar.MONTH), 4);
+		assertEquals(driverModel2.getStartDate().get(Calendar.DAY_OF_MONTH), 20);
 	}
 	
 	@Test
@@ -64,16 +70,20 @@ public class DriverServiceTest {
 	}
 	
 	@Test
-	public void testGetDriverById ( ) {
+	public void testGetDriverByName ( ) {
 		Calendar startDate = Calendar.getInstance();
 		startDate.set(2014, 4, 20);
 		//Treble needed so that test works in both Maven and JUnit.
-		driverRepository.saveAndFlush(driverService.createDriver("Dave Lee", 40, startDate));
-		driverRepository.saveAndFlush(driverService.createDriver("Dave Lee", 40, startDate));
-		driverRepository.saveAndFlush(driverService.createDriver("Dave Lee", 40, startDate));
-		assertNotNull(driverRepository.findOne(new Long(3)));
-		assertEquals(driverRepository.findOne(new Long(3)).getName(), "Dave Lee");
-		assertNull(driverRepository.findOne(new Long(40)));
+		DriverModel driverModel = new DriverModel(); DriverModel driverModel2 = new DriverModel(); DriverModel driverModel3 = new DriverModel();
+		driverModel.setName("Dave Lee"); driverModel2.setName("Brian Lee"); driverModel.setName("Rachel Lee");
+		driverModel.setContractedHours(40); driverModel2.setContractedHours(35); driverModel3.setContractedHours(30);
+		driverModel.setStartDate(startDate); driverModel2.setStartDate(startDate); driverModel3.setStartDate(startDate);
+		driverService.saveDriver(driverModel);
+		driverService.saveDriver(driverModel2);
+		driverService.saveDriver(driverModel3);
+		assertNotNull(driverService.getDriverByName("Brian Lee"));
+		assertEquals(driverService.getDriverByName("Brian Lee").getName(), "Brian Lee");
+		assertNull(driverService.getDriverByName("Stephan Lee"));
 	}
 
 }

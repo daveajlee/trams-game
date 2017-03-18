@@ -1,8 +1,6 @@
 package de.davelee.trams.controllers;
 
-import java.util.Calendar;
-import java.util.List;
-
+import de.davelee.trams.model.DriverModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import de.davelee.trams.data.Driver;
 
@@ -18,8 +16,8 @@ public class DriverController {
 	
 	@Autowired
 	private FileController fileController;
-	
-	public List<Driver> getAllDrivers () {
+
+    public DriverModel[] getAllDrivers () {
 		return driverService.getAllDrivers();
 	}
 	
@@ -30,14 +28,14 @@ public class DriverController {
      * @param startDate a <code>Calendar</code> with the start date.
      * @return a <code>boolean</code> which is true iff the driver has been successfully employed.
      */
-    public void employDriver ( String name, int hours, Calendar startDate ) {
+    public void employDriver ( final DriverModel driverModel ) {
     	//TODO: Employing drivers should cost money.
     	gameController.withdrawBalance(0);
-    	driverService.saveDriver(driverService.createDriver(name, hours, startDate));
+        driverService.saveDriver(driverModel);
     }
     
     public int getNumberDrivers ( ) {
-        return driverService.getAllDrivers().size();
+        return driverService.getAllDrivers().length;
     }
 
     /**
@@ -46,19 +44,11 @@ public class DriverController {
      */
     public boolean hasSomeDriversBeenEmployed ( ) {
         if ( getNumberDrivers() == 0 ) { return false; }
-        for ( int i = 0; i < getNumberDrivers(); i++ ) {
-        	if ( driverService.hasStartedWork(driverService.getDriverById(getDriver(i)).getStartDate(), gameController.getCurrentSimTime()) ) { return true; }
+        DriverModel[] driverModels = driverService.getAllDrivers();
+        for ( int i = 0; i < driverModels.length; i++ ) {
+            if ( driverService.hasStartedWork(driverModels[i].getStartDate(), gameController.getCurrentSimTime()) ) { return true; }
         }
         return false;
-    }
-    
-    /**
-     * Get a driver based on its position.
-     * @param pos a <code>int</code> with the position.
-     * @return a <code>Driver</code> object.
-     */
-    public long getDriver ( int pos ) {
-        return driverService.getAllDrivers().get(pos).getId();
     }
 
 }

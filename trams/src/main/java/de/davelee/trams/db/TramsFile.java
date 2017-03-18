@@ -4,11 +4,12 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import de.davelee.trams.data.*;
+import de.davelee.trams.model.DriverModel;
 
 @XmlRootElement
 public class TramsFile {
 
-    private List<Driver> drivers;
+    private DriverModel[] driverModels;
     private Game game;
     private List<Journey> journeys;
     private List<JourneyPattern> journeyPatterns;
@@ -22,10 +23,10 @@ public class TramsFile {
 
     public TramsFile ( ) { }
 
-    public TramsFile ( List<Driver> drivers, Game game, List<Journey> journeys, List<JourneyPattern> journeyPatterns,
+    public TramsFile ( DriverModel[] driverModels, Game game, List<Journey> journeys, List<JourneyPattern> journeyPatterns,
 			List<Message> messages, List<Route> routes, List<RouteSchedule> routeSchedules,
 			List<Stop> stops, List<StopTime> stopTimes, List<Timetable> timetables, List<Vehicle> vehicles) {
-                this.drivers = drivers;
+                this.driverModels = driverModels;
                 /*this.game = game;*/
 				this.journeys = journeys;
                 this.journeyPatterns = journeyPatterns;
@@ -38,12 +39,12 @@ public class TramsFile {
                 this.vehicles = vehicles;
     }
 
-    public List<Driver> getDrivers() {
-        return drivers;
+    public DriverModel[] getDrivers() {
+        return driverModels;
     }
 
-    public void setDrivers(List<Driver> drivers) {
-        this.drivers = drivers;
+    public void setDrivers(DriverModel[] driverModels) {
+        this.driverModels = driverModels;
     }
 
     public Game getGame() {

@@ -4,6 +4,7 @@ import java.util.Calendar;
 import java.util.List;
 
 import de.davelee.trams.data.Driver;
+import de.davelee.trams.model.DriverModel;
 import de.davelee.trams.repository.DriverRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -23,29 +24,46 @@ public class DriverService {
     	}
     	return false;
     }
-    
-    public Driver createDriver ( String name, int hours, Calendar startDate ) {
+
+	private Driver convertToDriver ( final DriverModel driverModel ) {
     	Driver driver = new Driver();
-    	driver.setName(name);
-    	driver.setContractedHours(hours);
-    	driver.setStartDate(startDate);
+		driver.setName(driverModel.getName());
+		driver.setContractedHours(driverModel.getContractedHours());
+		driver.setStartDate(driverModel.getStartDate());
     	return driver;
     }
 
-    public Driver getDriverById(long id) {
-    	return driverRepository.findOne(id);
-    }
-    
-    public List<Driver> getAllDrivers ( ) {
-		return driverRepository.findAll();
-    }
-    
-    public void saveDriver ( final Driver driver ) {
-		driverRepository.saveAndFlush(driver);
-    }
+	private DriverModel convertToDriverModel ( final Driver driver ) {
+		DriverModel driverModel = new DriverModel();
+		driverModel.setName(driver.getName());
+		driverModel.setContractedHours(driver.getContractedHours());
+		driverModel.setStartDate(driver.getStartDate());
+		return driverModel;
+	}
 
-    public void removeDriver ( final Driver driver ) {
-		driverRepository.delete(driver);
-    }
+	public DriverModel getDriverByName(final String name) {
+		Driver driver = driverRepository.findByName(name);
+		if ( driver != null ) {
+			return convertToDriverModel(driver);
+		}
+		return null;
+	}
+
+	public DriverModel[] getAllDrivers ( ) {
+		List<Driver> drivers = driverRepository.findAll();
+		DriverModel[] driverModels = new DriverModel[drivers.size()];
+		for ( int i = 0; i < driverModels.length; i++ ) {
+			driverModels[i] = convertToDriverModel(drivers.get(i));
+		}
+		return driverModels;
+	}
+
+	public void saveDriver ( final DriverModel driverModel ) {
+		driverRepository.saveAndFlush(convertToDriver(driverModel));
+	}
+
+	public void removeDriver ( final DriverModel driverModel ) {
+		driverRepository.delete(convertToDriver(driverModel));
+	}
     
 }
