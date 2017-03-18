@@ -7,6 +7,7 @@ import java.util.Random;
 
 import de.davelee.trams.data.Vehicle;
 import de.davelee.trams.factory.VehicleFactory;
+import de.davelee.trams.model.VehicleModel;
 import de.davelee.trams.repository.VehicleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -14,18 +15,12 @@ public class VehicleService {
 
     @Autowired
     private VehicleRepository vehicleRepository;
+
+    @Autowired
     private VehicleFactory vehicleFactory;
 	
 	public VehicleService() {
 	}
-
-    public VehicleFactory getVehicleFactory() {
-        return vehicleFactory;
-    }
-
-    public void setVehicleFactory(VehicleFactory vehicleFactory) {
-        this.vehicleFactory = vehicleFactory;
-    }
 
 	/**
      * Check if the vehicle has been delivered yet!
@@ -59,51 +54,52 @@ public class VehicleService {
         int monthDiff = Math.abs(currentDate.get(Calendar.MONTH) - deliveryDate.get(Calendar.MONTH));
         return (yearDiff * 12) + monthDiff;
     }
-    
-    public Vehicle getVehicleById(long id) {
-    	return vehicleRepository.findOne(new Long(id));
-    }
-    
-    /**
-     * Get vehicle with the specified id - returns null if not found.
-     * @param id a <code>String</code> with the id.
-     * @return a <code>Vehicle</code> object.
-     */
-    public Vehicle getVehicle ( String id ) {
-        for ( int i = 0; i < getAllVehicles().size(); i++ ) {
-            if ( getAllVehicles().get(i).getRegistrationNumber().equalsIgnoreCase(id) ) {
-                return getAllVehicles().get(i);
-            }
+
+    public VehicleModel[] getVehicleModels ( ) {
+        List<Vehicle> vehicles = vehicleRepository.findAll();
+        VehicleModel[] vehicleModels = new VehicleModel[vehicles.size()];
+        for ( int i = 0; i < vehicleModels.length; i++ ) {
+            vehicleModels[i] = convertToVehicleModel(vehicles.get(i));
         }
-        return null;
+        return vehicleModels;
     }
-    
-    public List<Vehicle> getAllVehicles ( ) {
-    	return vehicleRepository.findAll();
-    }
-    
-    public Vehicle createVehicle ( final String registrationNumber, final Calendar deliveryDate, final double depreciationFactor,
-    		final String imagePath, final String model, final long routeScheduleId, final int seatingNum, final int standingNum,
-    		final double purchasePrice ) {
+
+    private Vehicle convertToVehicle ( final VehicleModel vehicleModel ) {
     	Vehicle vehicle = new Vehicle();
-        vehicle.setRegistrationNumber(registrationNumber);
-        vehicle.setDeliveryDate(deliveryDate);
-        vehicle.setDepreciationFactor(depreciationFactor);
-        vehicle.setImagePath(imagePath);
-        vehicle.setModel(model);
-        vehicle.setRouteScheduleId(routeScheduleId);
-        vehicle.setSeatingCapacity(seatingNum);
-        vehicle.setStandingCapacity(standingNum);
-        vehicle.setPurchasePrice(purchasePrice);
+        vehicle.setRegistrationNumber(vehicleModel.getRegistrationNumber());
+        vehicle.setDeliveryDate(vehicleModel.getDeliveryDate());
+        vehicle.setDepreciationFactor(vehicleModel.getDepreciationFactor());
+        vehicle.setImagePath(vehicleModel.getImagePath());
+        vehicle.setModel(vehicleModel.getModel());
+        vehicle.setRouteNumber(vehicleModel.getRouteNumber());
+        vehicle.setRouteScheduleNumber(vehicleModel.getRouteScheduleNumber());
+        vehicle.setSeatingCapacity(Integer.parseInt(vehicleModel.getSeatingCapacity()));
+        vehicle.setStandingCapacity(Integer.parseInt(vehicleModel.getStandingCapacity()));
+        vehicle.setPurchasePrice(vehicleModel.getPurchasePrice());
         return vehicle;
     }
-    
-    public void saveVehicle ( final Vehicle vehicle ) {
-        vehicleRepository.saveAndFlush(vehicle);
+
+    private VehicleModel convertToVehicleModel ( final Vehicle vehicle ) {
+        VehicleModel vehicleModel = new VehicleModel();
+        vehicleModel.setRegistrationNumber(vehicle.getRegistrationNumber());
+        vehicleModel.setDeliveryDate(vehicle.getDeliveryDate());
+        vehicleModel.setDepreciationFactor(vehicle.getDepreciationFactor());
+        vehicleModel.setImagePath(vehicle.getImagePath());
+        vehicleModel.setModel(vehicle.getModel());
+        vehicleModel.setRouteNumber(vehicle.getRouteNumber());
+        vehicleModel.setRouteScheduleNumber(vehicle.getRouteScheduleNumber());
+        vehicleModel.setSeatingCapacity("" + vehicle.getSeatingCapacity());
+        vehicleModel.setStandingCapacity("" + vehicle.getStandingCapacity());
+        vehicleModel.setPurchasePrice(vehicle.getPurchasePrice());
+        return vehicleModel;
     }
-    
-    public void removeVehicle ( final Vehicle vehicle ) {
-        vehicleRepository.delete(vehicle);
+
+    public void saveVehicle ( final VehicleModel vehicle ) {
+        vehicleRepository.saveAndFlush(convertToVehicle(vehicle));
+    }
+
+    public void removeVehicle ( final VehicleModel vehicleModel ) {
+        vehicleRepository.delete(vehicleRepository.findByRegistrationNumber(vehicleModel.getRegistrationNumber()));
     }
     
     /**
@@ -114,9 +110,10 @@ public class VehicleService {
         //Allocations list.
         ArrayList<String> allocations = new ArrayList<String>();
         //Now go through and add their allocation if they already have an allocation.
-        for ( int i = 0; i < getAllVehicles().size(); i++ ) {
-            if ( getAllVehicles().get(i).getRouteScheduleId() != 0 ) {
-                allocations.add(getAllVehicles().get(i).getRouteScheduleId() + " & " + getAllVehicles().get(i).getRegistrationNumber());
+        VehicleModel[] vehicleModels = getVehicleModels();
+        for ( int i = 0; i < vehicleModels.length; i++ ) {
+            if ( vehicleModels[i].getRouteScheduleNumber() != 0 ) {
+                allocations.add(vehicleModels[i].getRouteNumber() + "/" + vehicleModels[i].getRouteScheduleNumber() + " & " + vehicleModels[i].getRegistrationNumber());
             }
         }
         //Return allocations list.
@@ -127,7 +124,7 @@ public class VehicleService {
      * Helper method to generate random vehicle registration.
      * @param year a <code>String</code> with the current simulation year.
      */
-    public String generateRandomReg ( int year ) {
+    public String generateRandomReg ( final int year ) {
         //Generate random registration - in form 2 digit year - then 5 random letters.
         String alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         //This is our loop - till we get unique reg.
@@ -140,9 +137,10 @@ public class VehicleService {
                 randomReg += alphabet.charAt(r.nextInt(alphabet.length()));
             }
             //Now check that random reg not been generated before.
-            if ( getAllVehicles() != null ) {
-            	for ( int i = 0; i < getAllVehicles().size(); i++ ) {
-            		if ( getAllVehicles().get(i).getRegistrationNumber().equalsIgnoreCase(randomReg) ) {
+            VehicleModel[] vehicleModels = getVehicleModels();
+            if ( vehicleModels != null ) {
+                for ( int i = 0; i < vehicleModels.length; i++ ) {
+                    if ( vehicleModels[i].getRegistrationNumber().equalsIgnoreCase(randomReg) ) {
             			isUniqueReg = false;
             			break;
             		}
@@ -156,22 +154,16 @@ public class VehicleService {
     }
     
     //TODO: Exception when null?
-    public Vehicle getVehicleByRouteScheduleId ( long routeScheduleId ) {
-        return vehicleRepository.findByRouteScheduleId(routeScheduleId);
+    public VehicleModel getVehicleByRouteNumberAndRouteScheduleNumber ( final String routeNumber, final long routeScheduleNumber ) {
+        return convertToVehicleModel(vehicleRepository.findByRouteNumberAndRouteScheduleNumber(routeNumber, routeScheduleNumber));
     }
 
-    public Vehicle createVehicleObject ( String model, String registrationNumber, Calendar deliveryDate ) {
+    public VehicleModel createVehicleObject ( final String model, final String registrationNumber, final Calendar deliveryDate ) {
         Vehicle vehicle = vehicleFactory.createVehicleByModel(model);
         if ( vehicle != null ) {
             vehicle.setRegistrationNumber(registrationNumber);
             vehicle.setDeliveryDate(deliveryDate);
-        }
-        return vehicle;
-    }
-
-    public String getVehicleModel ( int pos ) {
-        if ( pos < getNumberVehicleTypes() ) {
-            return vehicleFactory.getAvailableVehicles().get(pos).getModel();
+            return convertToVehicleModel(vehicle);
         }
         return null;
     }
@@ -180,8 +172,44 @@ public class VehicleService {
         return vehicleFactory.getAvailableVehicles().size();
     }
 
-    public Vehicle getVehicleByRegistrationNumber ( final String registrationNumber ) {
-        return vehicleRepository.findByRegistrationNumber(registrationNumber);
+    public VehicleModel getVehicleByRegistrationNumber ( final String registrationNumber ) {
+        Vehicle vehicle = vehicleRepository.findByRegistrationNumber(registrationNumber);
+        if ( vehicle != null ) {
+            return convertToVehicleModel(vehicle);
+        }
+        return null;
+    }
+
+    public String getFirstVehicleModel ( ) {
+        return vehicleFactory.getAvailableVehicles().get(0).getModel();
+    }
+
+    public String getLastVehicleModel ( ) {
+        return vehicleFactory.getAvailableVehicles().get(vehicleFactory.getAvailableVehicles().size()-1).getModel();
+    }
+
+    public String getNextVehicleModel ( final String model ) {
+        for ( int i = 0; i < vehicleFactory.getAvailableVehicles().size(); i++ ) {
+            if ( vehicleFactory.getAvailableVehicles().get(i).getModel().contentEquals(model) ) {
+                return vehicleFactory.getAvailableVehicles().get(i+1).getModel();
+            }
+        }
+        return "";
+    }
+
+    public String getPreviousVehicleModel ( final String model ) {
+        for ( int i = 0; i < vehicleFactory.getAvailableVehicles().size(); i++ ) {
+            if ( vehicleFactory.getAvailableVehicles().get(i).getModel().contentEquals(model) ) {
+                return vehicleFactory.getAvailableVehicles().get(i-1).getModel();
+            }
+        }
+        return "";
+    }
+
+     public void assignVehicleToRouteScheduleNumber ( final VehicleModel vehicleModel, final String routeNumber, final String scheduleNumber ) {
+        Vehicle vehicle = vehicleRepository.findByRegistrationNumber(vehicleModel.getRegistrationNumber());
+        vehicle.setRouteNumber(routeNumber);
+        vehicle.setRouteScheduleNumber(Long.parseLong(scheduleNumber));
     }
     
 }

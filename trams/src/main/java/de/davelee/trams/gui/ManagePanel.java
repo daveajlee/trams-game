@@ -102,8 +102,7 @@ public class ManagePanel {
     private JButton createJPButton;
     private JCheckBox[] daysBox;
     private JTextField journeyPatternNameField;
-    
-    private int typePosition;
+
     private String vehicleType;
     
     private DefaultListModel vehiclesModel;
@@ -327,7 +326,7 @@ public class ManagePanel {
         purchaseVehicleScreenButton.addActionListener( new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 //Show the actual screen!
-                controlScreen.redrawManagement(makePurchaseVehiclePanel(0));
+                controlScreen.redrawManagement(makePurchaseVehiclePanel(vehicleController.getFirstVehicleModel()));
             }
         });
         purchaseVehicleButtonPanel.add(purchaseVehicleScreenButton);
@@ -1557,11 +1556,11 @@ public class ManagePanel {
 
         return driverScreenPanel;
     }
-    
-    public JPanel makePurchaseVehiclePanel ( int typePos ) {
-        
-        //Initialise type position variable.
-        typePosition = typePos;
+
+    public JPanel makePurchaseVehiclePanel ( final String vehicleType ) {
+
+        //Initialise type.
+        this.vehicleType = vehicleType;
         
         //Create screen panel to add things to.
         JPanel vehicleScreenPanel = new JPanel();
@@ -1578,7 +1577,7 @@ public class ManagePanel {
         vehicleScreenPanel.add(textLabelPanel);
         
         //Create vehicle object so that we can pull information from it.
-        vehicleModel = vehicleController.createVehicleObject(typePosition);
+        vehicleModel = vehicleController.getVehicleByModel(vehicleType);
         
         //Create picture panel.
         JPanel picturePanel = new JPanel(new BorderLayout());
@@ -1587,10 +1586,10 @@ public class ManagePanel {
         JPanel previousButtonPanel = new JPanel(new GridBagLayout());
         previousButtonPanel.setBackground(Color.WHITE);
         JButton previousVehicleTypeButton = new JButton("< Previous Vehicle Type");
-        if ( typePosition == 0 ) { previousVehicleTypeButton.setEnabled(false); }
+        if ( vehicleType.contentEquals(vehicleController.getFirstVehicleModel()) ) { previousVehicleTypeButton.setEnabled(false); }
         previousVehicleTypeButton.addActionListener( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
-                controlScreen.redrawManagement(ManagePanel.this.makePurchaseVehiclePanel(typePosition-1));
+                controlScreen.redrawManagement(ManagePanel.this.makePurchaseVehiclePanel(vehicleController.getPreviousVehicleModel(vehicleType)));
             }
         });
         previousButtonPanel.add(previousVehicleTypeButton);
@@ -1607,10 +1606,10 @@ public class ManagePanel {
         JPanel nextButtonPanel = new JPanel(new GridBagLayout());
         nextButtonPanel.setBackground(Color.WHITE);
         JButton nextVehicleTypeButton = new JButton("Next Vehicle Type >");
-        if ( typePosition == (vehicleController.getNumberVehicleTypes()-1) ) { nextVehicleTypeButton.setEnabled(false); }
+        if ( vehicleType.contentEquals(vehicleController.getLastVehicleModel()))  { nextVehicleTypeButton.setEnabled(false); }
         nextVehicleTypeButton.addActionListener( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
-                controlScreen.redrawManagement(ManagePanel.this.makePurchaseVehiclePanel(typePosition+1));
+                controlScreen.redrawManagement(ManagePanel.this.makePurchaseVehiclePanel(vehicleController.getNextVehicleModel(vehicleType)));
             }
         });
         nextButtonPanel.add(nextVehicleTypeButton);
@@ -1785,9 +1784,9 @@ public class ManagePanel {
         
         //Create vehicle object so that we can pull information from it.
         if ( !vehicleType.equalsIgnoreCase("") ) {
-            vehicleModel = vehicleController.getVehicle(vehicleType);
+            vehicleModel = vehicleController.getVehicleByModel(vehicleType);
         } else {
-            vehicleModel = vehicleController.getVehicle(vehiclesModel.get(0).toString());
+            vehicleModel = vehicleController.getVehicleByRegistrationNumber(vehiclesModel.get(0).toString());
         }
         
         //Create picture panel.
@@ -1860,7 +1859,7 @@ public class ManagePanel {
         assignedLabel.setFont(new Font("Arial", Font.ITALIC, 14));
         assignedLabelPanel.add(assignedLabel);
         gridPanel.add(assignedLabel);
-        JLabel assignedField = new JLabel("" + vehicleModel.getRouteScheduleId());
+        JLabel assignedField = new JLabel("" + vehicleModel.getRouteNumber() + "/" + vehicleModel.getRouteScheduleNumber());
         assignedField.setFont(new Font("Arial", Font.PLAIN, 12));
         gridPanel.add(assignedField);
         //Create label and field for value and add it to the value panel.
@@ -2134,7 +2133,7 @@ public class ManagePanel {
         vehiclesModel = new DefaultListModel();
         VehicleModel[] vehicleModels = vehicleController.getAllCreatedVehicles();
         for ( int i = 0; i < vehicleModels.length; i++ ) {
-            if ( vehicleModels[i].getRouteScheduleId() != 0 ) {
+            if ( vehicleModels[i].getRouteScheduleNumber() != 0 ) {
                 vehiclesModel.addElement(vehicleModels[i].getRegistrationNumber() + "(" + vehicleModels[i].getModel() + ")");
             }
         }
@@ -2181,8 +2180,9 @@ public class ManagePanel {
                     allocationsModel.removeElement(allocationsList.getSelectedValue());
                     String[] textParts = text.split("&");
                     routesModel.addElement(textParts[0].trim());
-                    vehiclesModel.addElement(vehicleController.getVehicle(textParts[1].trim()).getRegistrationNumber() +
-                            " (" + vehicleController.getVehicle(textParts[1].trim()).getModel() + ")");
+                    VehicleModel vehicleModel = vehicleController.getVehicleByRegistrationNumber(textParts[1].trim());
+                    vehiclesModel.addElement(vehicleModel.getRegistrationNumber() +
+                            " (" + vehicleModel.getModel() + ")");
                     //Remove this from the interface as well.
                     /*String routeNumber = textParts[0].split("/")[0]; int routeDetailPos = -1;
                     for ( int k = 0; k < theInterface.getRoute(routeNumber).getNumRouteSchedules(); k++ ) {
@@ -2198,7 +2198,8 @@ public class ManagePanel {
                             vehiclePos = j;
                         }
                     }
-                    vehicleController.assignVehicleToRouteSchedule(vehicleModels[vehiclePos].getRegistrationNumber(), "0");
+                    //TODO: Set route and route schedule number.
+                    vehicleController.assignVehicleToRouteSchedule(vehicleModels[vehiclePos].getRegistrationNumber(), "0", "0");
                 }
             }
         });
@@ -2284,12 +2285,14 @@ public class ManagePanel {
                             }
                         }
                         //Now assign route detail to vehicle.
-                        vehicleController.assignVehicleToRouteSchedule(vehicleModels[vehiclePos].getRegistrationNumber(), "" + scheduleModels[routeDetailPos].getScheduleNumber());
+                        //TODO: Set route and route schedule number.
+                        vehicleController.assignVehicleToRouteSchedule(vehicleModels[vehiclePos].getRegistrationNumber(), vehicleModels[vehiclePos].getRouteNumber(), "" + scheduleModels[routeDetailPos].getScheduleNumber());
                     }
                     VehicleModel[] vehicleModels = vehicleController.getAllCreatedVehicles();
                     for ( int i = 0; i < vehicleModels.length; i++ ) {
                         if ( !vehiclePoses.contains(i) ) {
-                            vehicleController.assignVehicleToRouteSchedule(vehicleModels[i].getRegistrationNumber(), "0");
+                            //TODO: Set route and route schedule number.
+                            vehicleController.assignVehicleToRouteSchedule(vehicleModels[i].getRegistrationNumber(), "0", "0");
                         }
                     }
                     //Now return to previous screen.

@@ -88,7 +88,7 @@ public class RouteScheduleController {
 	public RouteScheduleModel retrieveModel (long routeScheduleId ) {
 		RouteScheduleModel routeScheduleModel = new RouteScheduleModel();
 		routeScheduleModel.setDelay(routeScheduleService.getDelay(routeScheduleId));
-		VehicleModel vehicleModel = vehicleController.retrieveModel(routeScheduleId);
+		VehicleModel vehicleModel = vehicleController.getVehicleByRouteNumberAndRouteScheduleNumber(routeScheduleService.getRouteScheduleById(routeScheduleId).getRouteNumber(), "" + routeScheduleService.getRouteScheduleById(routeScheduleId).getScheduleNumber());
 		routeScheduleModel.setImage(vehicleModel.getImagePath());
 		routeScheduleModel.setRegistrationNumber(vehicleModel.getRegistrationNumber());
 		routeScheduleModel.setScheduleNumber(routeScheduleService.getRouteScheduleById(routeScheduleId).getScheduleNumber());
@@ -164,13 +164,13 @@ public class RouteScheduleController {
 		//logger.debug("Max vehicles starts at " + max + " - routeDetails size is " + routeDetails.size());
 		logger.debug("Min is " + min + " & Max is " + max);
 		if ( min == max ) {
-			if ( vehicleController.retrieveModel(routeSchedules.get(min).getId()) == null ) {
+			if ( vehicleController.getVehicleByRouteNumberAndRouteScheduleNumber(routeNumber, "" + routeSchedules.get(min).getScheduleNumber()) == null ) {
 				logger.debug("A schedule was null");
 			}
 			if ( getCurrentStopName(getRouteSchedulesByRouteNumber(routeNumber)[min], currentTime, gameController.getDifficultyLevel()).equalsIgnoreCase("Depot") ) {
 				logger.debug("Vehicle in depot!");
 			}
-			if ( vehicleController.retrieveModel(routeSchedules.get(min).getId()) != null && !getCurrentStopName( getRouteSchedulesByRouteNumber(routeNumber)[min], currentTime, gameController.getDifficultyLevel()).equalsIgnoreCase("Depot") ) {
+			if ( vehicleController.getVehicleByRouteNumberAndRouteScheduleNumber(routeNumber, "" + routeSchedules.get(min).getScheduleNumber()) != null && !getCurrentStopName( getRouteSchedulesByRouteNumber(routeNumber)[min], currentTime, gameController.getDifficultyLevel()).equalsIgnoreCase("Depot") ) {
 				//logger.debug("Adding Route Detail " + routeDetails.get(i).getId());
 				routeDetailPos.add(0);
 			}
@@ -182,13 +182,13 @@ public class RouteScheduleController {
 			}
 		}
 		for ( int i = min; i < max; i++ ) { //Changed from i = 0; i < routeDetails.size().
-			if ( vehicleController.retrieveModel(routeSchedules.get(i).getId()) == null ) {
+			if ( vehicleController.getVehicleByRouteNumberAndRouteScheduleNumber(routeNumber, "" + routeSchedules.get(i).getScheduleNumber()) == null ) {
 				logger.debug("A schedule was null");
 			}
 			if ( getCurrentStopName(getRouteSchedulesByRouteNumber(routeNumber)[i], currentTime, gameController.getDifficultyLevel()).equalsIgnoreCase("Depot") ) {
 				logger.debug("Vehicle in depot!");
 			}
-			if ( vehicleController.retrieveModel(routeSchedules.get(i).getId()) != null && !getCurrentStopName(getRouteSchedulesByRouteNumber(routeNumber)[i], currentTime, gameController.getDifficultyLevel()).equalsIgnoreCase("Depot") ) {
+			if ( vehicleController.getVehicleByRouteNumberAndRouteScheduleNumber(routeNumber, "" + routeSchedules.get(i).getScheduleNumber()) != null && !getCurrentStopName(getRouteSchedulesByRouteNumber(routeNumber)[i], currentTime, gameController.getDifficultyLevel()).equalsIgnoreCase("Depot") ) {
 				//logger.debug("Adding Route Detail " + routeDetails.get(i).getId());
 				routeDetailPos.add(i);
 			}

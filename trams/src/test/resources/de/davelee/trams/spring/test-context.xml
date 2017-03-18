@@ -17,10 +17,8 @@
        
        <bean id="journeyService" class="de.davelee.trams.services.JourneyService">
        </bean>
-       
-       <bean id="vehicleService" class="de.davelee.trams.services.VehicleService">
-		    <property name="vehicleFactory" ref="vehicleFactory"/>
-       </bean>
+
+       <bean id="vehicleService" class="de.davelee.trams.services.VehicleService"/>
        
        <bean id="journeyPatternService" class="de.davelee.trams.services.JourneyPatternService">
        </bean>

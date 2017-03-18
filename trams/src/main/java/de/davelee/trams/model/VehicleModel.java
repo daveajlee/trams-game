@@ -11,8 +11,9 @@ public class VehicleModel {
 	private double purchasePrice;
 	private Calendar deliveryDate;
 	private String registrationNumber;
-	private long routeScheduleId;
 	private double depreciationFactor;
+	private String routeNumber;
+	private long routeScheduleNumber;
 	
 	public String getImagePath() {
 		return imagePath;
@@ -70,20 +71,28 @@ public class VehicleModel {
 		this.registrationNumber = registrationNumber;
 	}
 
-	public long getRouteScheduleId() {
-		return routeScheduleId;
-	}
-
-	public void setRouteScheduleId(final long routeScheduleId) {
-		this.routeScheduleId = routeScheduleId;
-	}
-
 	public double getDepreciationFactor() {
 		return depreciationFactor;
 	}
 
 	public void setDepreciationFactor(double depreciationFactor) {
 		this.depreciationFactor = depreciationFactor;
+	}
+
+	public String getRouteNumber() {
+		return routeNumber;
+	}
+
+	public void setRouteNumber(final String routeNumber) {
+		this.routeNumber = routeNumber;
+	}
+
+	public long getRouteScheduleNumber() {
+		return routeScheduleNumber;
+	}
+
+	public void setRouteScheduleNumber(final long routeScheduleNumber) {
+		this.routeScheduleNumber = routeScheduleNumber;
 	}
 
 }

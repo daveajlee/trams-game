@@ -6,9 +6,9 @@ import org.springframework.data.repository.query.Param;
 import de.davelee.trams.data.Vehicle;
 
 public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
-	
-	public Vehicle findByRouteScheduleId(@Param("routeScheduleId") long routeScheduleId);
 
 	public Vehicle findByRegistrationNumber(@Param("registrationNumber") String registrationNumber);
+
+	public Vehicle findByRouteNumberAndRouteScheduleNumber(@Param("routeNumber") String routeNumber, @Param("routeScheduleNumber") long routeScheduleNumber);
 
 }

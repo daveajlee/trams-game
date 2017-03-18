@@ -2,46 +2,44 @@ package de.davelee.trams.data;
 
 import java.util.Calendar;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
-@Table(name="VEHICLE")
+@Table(name="VEHICLE", uniqueConstraints=@UniqueConstraint(columnNames = {"routeNumber", "routeScheduleNumber"}))
 public class Vehicle {
 	
 	@Id
 	@GeneratedValue
-	@Column(name="VEHICLE_ID")
 	private long id;
-	
-	@Column(name="REGISTRATION_NUMBER", unique = true)
+
+	@Column(unique=true)
 	private String registrationNumber;
 	
-	@Column(name="DELIVERY_DATE")
+	@Column
     private Calendar deliveryDate;
+
+	@Column
+	private String routeNumber;
 	
-	@Column(name="ROUTE_SCHEDULE_ID")
-    private long routeScheduleId;
+	@Column
+	private long routeScheduleNumber;
     
-	@Column(name="DEPRECIATION_FACTOR")
+	@Column
     private double depreciationFactor;
 	
-	@Column(name="IMAGE_PATH")
+	@Column
     private String imagePath;
 	
-	@Column(name="MODEL")
+	@Column
     private String model;
 	
-	@Column(name="SEATING_CAPACITY")
+	@Column
     private int seatingCapacity;
 	
-	@Column(name="STANDING_CAPACITY")
+	@Column
     private int standingCapacity;
 	
-	@Column(name="PURCHASE_PRICE")
+	@Column
     private double purchasePrice;
     
     public Vehicle() {
@@ -51,7 +49,7 @@ public class Vehicle {
 		return id;
 	}
 
-	public void setId(long id) {
+	public void setId(final long id) {
 		this.id = id;
 	}
 
@@ -59,7 +57,7 @@ public class Vehicle {
 		return depreciationFactor;
 	}
 
-	public void setDepreciationFactor(double depreciationFactor) {
+	public void setDepreciationFactor(final double depreciationFactor) {
 		this.depreciationFactor = depreciationFactor;
 	}
 
@@ -67,7 +65,7 @@ public class Vehicle {
 		return imagePath;
 	}
 
-	public void setImagePath(String imagePath) {
+	public void setImagePath(final String imagePath) {
 		this.imagePath = imagePath;
 	}
 
@@ -75,7 +73,7 @@ public class Vehicle {
 		return seatingCapacity;
 	}
 
-	public void setSeatingCapacity(int seatingCapacity) {
+	public void setSeatingCapacity(final int seatingCapacity) {
 		this.seatingCapacity = seatingCapacity;
 	}
 
@@ -83,16 +81,16 @@ public class Vehicle {
 		return standingCapacity;
 	}
 
-	public void setStandingCapacity(int standingCapacity) {
+	public void setStandingCapacity(final int standingCapacity) {
 		this.standingCapacity = standingCapacity;
 	}
 
-	public long getRouteScheduleId() {
-		return routeScheduleId;
+	public long getRouteScheduleNumber() {
+		return routeScheduleNumber;
 	}
-	
-	public void setRouteScheduleId(long routeScheduleId) {
-		this.routeScheduleId = routeScheduleId;
+
+	public void setRouteScheduleNumber(final long routeScheduleNumber) {
+		this.routeScheduleNumber = routeScheduleNumber;
 	}
 	
 	/**
@@ -103,7 +101,7 @@ public class Vehicle {
         return registrationNumber;
     }
 
-	public void setRegistrationNumber(String registrationNumber) {
+	public void setRegistrationNumber(final String registrationNumber) {
 		this.registrationNumber = registrationNumber;
 	}
 	
@@ -111,7 +109,7 @@ public class Vehicle {
     	return deliveryDate;
     }
 
-	public void setDeliveryDate(Calendar deliveryDate) {
+	public void setDeliveryDate(final Calendar deliveryDate) {
 		this.deliveryDate = deliveryDate;
 	}
 	
@@ -123,7 +121,7 @@ public class Vehicle {
     	return model;
     }
 
-	public void setModel(String model) {
+	public void setModel(final String model) {
 		this.model = model;
 	}
 	
@@ -135,8 +133,16 @@ public class Vehicle {
     	return purchasePrice;
     }
 
-	public void setPurchasePrice(double purchasePrice) {
+	public void setPurchasePrice(final double purchasePrice) {
 		this.purchasePrice = purchasePrice;
+	}
+
+	public String getRouteNumber() {
+		return routeNumber;
+	}
+
+	public void setRouteNumber(final String routeNumber) {
+		this.routeNumber = routeNumber;
 	}
     
     /**
@@ -155,7 +161,8 @@ public class Vehicle {
     	vehicle.setModel(this.model);
     	vehicle.setPurchasePrice(this.purchasePrice);
     	vehicle.setRegistrationNumber(this.registrationNumber);
-    	vehicle.setRouteScheduleId(this.routeScheduleId);
+		vehicle.setRouteNumber(this.routeNumber);
+		vehicle.setRouteScheduleNumber(this.routeScheduleNumber);
     	vehicle.setSeatingCapacity(this.seatingCapacity);
     	vehicle.setStandingCapacity(this.standingCapacity);
     	return vehicle;

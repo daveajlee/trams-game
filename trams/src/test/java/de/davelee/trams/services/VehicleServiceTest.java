@@ -8,13 +8,12 @@ import static org.junit.Assert.assertNull;
 
 import java.util.Calendar;
 
+import de.davelee.trams.model.VehicleModel;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import de.davelee.trams.data.Vehicle;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -30,18 +29,28 @@ public class VehicleServiceTest {
 		Calendar deliveryDate = Calendar.getInstance();
 		deliveryDate.set(2014, 4, 20);
 		//Add vehicle.
-		Vehicle vehicle = vehicleService.createVehicle("CV58 2DX", deliveryDate, 0.06, "singledecker.png", "Mercedes", 1, 45, 20, 20000.00);
-		assertEquals(vehicle.getRegistrationNumber(), "CV58 2DX");
-		assertEquals(vehicle.getDeliveryDate().get(Calendar.YEAR), 2014);
-		assertEquals(vehicle.getDeliveryDate().get(Calendar.MONTH), 4);
-		assertEquals(vehicle.getDeliveryDate().get(Calendar.DAY_OF_MONTH), 20);
-		assertEquals(vehicle.getDepreciationFactor(), 0.06, 0.0001);
-		assertEquals(vehicle.getImagePath(), "singledecker.png");
-		assertEquals(vehicle.getModel(), "Mercedes");
-		assertEquals(vehicle.getRouteScheduleId(), 1);
-		assertEquals(vehicle.getSeatingCapacity(), 45);
-		assertEquals(vehicle.getStandingCapacity(), 20);
-		assertEquals(vehicle.getPurchasePrice(), 20000.00, 0.0001);
+		VehicleModel vehicleModel = new VehicleModel();
+		vehicleModel.setRegistrationNumber("CV58 2DX");
+		vehicleModel.setDeliveryDate(deliveryDate);
+		vehicleModel.setDepreciationFactor(0.06);
+		vehicleModel.setImagePath("singledecker.png");
+		vehicleModel.setModel("Mercedes");
+		vehicleModel.setRouteNumber("155");
+		vehicleModel.setRouteScheduleNumber(1);
+		vehicleModel.setSeatingCapacity("45");
+		vehicleModel.setStandingCapacity("20");
+		vehicleModel.setPurchasePrice(20000.00);
+		assertEquals(vehicleModel.getRegistrationNumber(), "CV58 2DX");
+		assertEquals(vehicleModel.getDeliveryDate().get(Calendar.YEAR), 2014);
+		assertEquals(vehicleModel.getDeliveryDate().get(Calendar.MONTH), 4);
+		assertEquals(vehicleModel.getDeliveryDate().get(Calendar.DAY_OF_MONTH), 20);
+		assertEquals(vehicleModel.getDepreciationFactor(), 0.06, 0.0001);
+		assertEquals(vehicleModel.getImagePath(), "singledecker.png");
+		assertEquals(vehicleModel.getModel(), "Mercedes");
+		assertEquals(vehicleModel.getRouteScheduleNumber(), 1);
+		assertEquals(vehicleModel.getSeatingCapacity(), "45");
+		assertEquals(vehicleModel.getStandingCapacity(), "20");
+		assertEquals(vehicleModel.getPurchasePrice(), 20000.00, 0.0001);
 	}
 	
 	@Test
@@ -107,19 +116,27 @@ public class VehicleServiceTest {
 		Calendar deliveryDate = Calendar.getInstance();
 		deliveryDate.set(2014, 4, 20);
 		//Add a dummy first one in case of running junits tests together instead of apart.
-		if ( vehicleService.getVehicleById(1) == null )  {
-			vehicleService.saveVehicle(vehicleService.createVehicle("CV58 2XD", deliveryDate, 0.06, "singledecker.png", "Mercedes", 1, 45, 20, 20000.00));
-		}
+		VehicleModel vehicleModel = new VehicleModel();
+		vehicleModel.setRegistrationNumber("CV58 2DX");
+		vehicleModel.setDeliveryDate(deliveryDate);
+		vehicleModel.setDepreciationFactor(0.06);
+		vehicleModel.setImagePath("singledecker.png");
+		vehicleModel.setModel("Mercedes");
+		vehicleModel.setRouteNumber("155");
+		vehicleModel.setRouteScheduleNumber(1);
+		vehicleModel.setSeatingCapacity("45");
+		vehicleModel.setStandingCapacity("20");
+		vehicleModel.setPurchasePrice(20000.00);
 		//Test begins here.
-		vehicleService.saveVehicle(vehicleService.createVehicle("CV58 2DX", deliveryDate, 0.06, "singledecker.png", "Mercedes", 1, 45, 20, 20000.00));
-		assertNotNull(vehicleService.getVehicleById(2));
-		assertEquals(vehicleService.getVehicleById(2).getImagePath(), "singledecker.png");
-		assertNull(vehicleService.getVehicleById(20));
+		vehicleService.saveVehicle(vehicleModel);
+		assertNotNull(vehicleService.getVehicleByRegistrationNumber("CV58 2DX"));
+		assertEquals(vehicleService.getVehicleByRegistrationNumber("CV58 2DX").getImagePath(), "singledecker.png");
+		assertNull(vehicleService.getVehicleByRegistrationNumber("2013-001"));
 	}
 	
 	@Test
 	public void testGetAllVehicles ( ) {
-		assertEquals(vehicleService.getAllVehicles().size(), 2);
+		assertEquals(vehicleService.getVehicleModels().length, 1);
 	}
 
 	@Test
@@ -129,10 +146,9 @@ public class VehicleServiceTest {
 	}
 
 	@Test
-	public void testGetModelPos() {
-		assertNotNull(vehicleService.getVehicleModel(1));
-		assertEquals(vehicleService.getVehicleModel(1), "MyBus Double Decker");
-		assertNull(vehicleService.getVehicleModel(7));
+	public void testGetModel() {
+		assertNotNull(vehicleService.getFirstVehicleModel());
+		assertEquals(vehicleService.getFirstVehicleModel(), "MyBus Single Decker");
 	}
 
 	@Test
