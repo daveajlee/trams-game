@@ -6,12 +6,15 @@ import de.davelee.trams.data.Journey;
 import de.davelee.trams.data.RouteSchedule;
 import de.davelee.trams.data.Stop;
 import de.davelee.trams.data.StopTime;
+import de.davelee.trams.factory.ScenarioFactory;
+import de.davelee.trams.model.JourneyModel;
+import de.davelee.trams.model.JourneyPatternModel;
 import de.davelee.trams.repository.JourneyRepository;
 import de.davelee.trams.repository.StopRepository;
 import de.davelee.trams.repository.StopTimeRepository;
 import de.davelee.trams.util.DateFormats;
 import de.davelee.trams.util.JourneyStatus;
-import de.davelee.trams.util.SortedJourneys;
+import de.davelee.trams.util.TramsConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class JourneyService {
@@ -24,6 +27,9 @@ public class JourneyService {
 
     @Autowired
 	private StopTimeRepository stopTimeRepository;
+
+    @Autowired
+	private ScenarioFactory scenarioFactory;
 	
 	public JourneyService() {
 		
@@ -291,7 +297,6 @@ public class JourneyService {
                 }
             }
         }
-        Collections.sort(outgoingJourneys, new SortedJourneys());
         return outgoingJourneys;
     }
 
@@ -330,7 +335,6 @@ public class JourneyService {
                 }
             }
         }
-        Collections.sort(returnServices, new SortedJourneys());
         return returnServices;
     }
 
@@ -374,6 +378,129 @@ public class JourneyService {
 
     public List<StopTime> getAllStopTimes() {
         return stopTimeRepository.findAll();
+    }
+
+
+    public List<JourneyModel> generateJourneyTimetables ( final JourneyPatternModel[] journeyPatternModels,
+                                                          final Calendar today, final int direction, final List<String> stops, final String scenarioName ) {
+        //Create a list to store journeys.
+        List<JourneyModel> allJourneys = new ArrayList<JourneyModel>();
+        //Now we need to go through the journey patterns.
+        for ( JourneyPatternModel myJourneyPattern : journeyPatternModels ) {
+            //Clone the time so that we can add to it but keep it the same for next iteration.
+            Calendar myTime = (Calendar) today.clone();
+            //If this service pattern is not valid for this date then don't bother.
+            if ( myJourneyPattern.getDaysOfOperation().contains(myTime.get(Calendar.DAY_OF_WEEK))) { continue; }
+            //Set myTime hour and minute to the start time of the service pattern.
+            myTime.set(Calendar.HOUR_OF_DAY, myJourneyPattern.getStartTime().get(Calendar.HOUR_OF_DAY));
+            myTime.set(Calendar.MINUTE, myJourneyPattern.getStartTime().get(Calendar.MINUTE));
+            int diffDurationFreq = myJourneyPattern.getDuration() % myJourneyPattern.getFrequency();
+            if ( direction == TramsConstants.RETURN_DIRECTION && diffDurationFreq <= (myJourneyPattern.getFrequency()/2)) {
+                myTime.add(Calendar.MINUTE, myJourneyPattern.getFrequency()/2);
+            }
+            //logger.debug("End time is " + myJourneyPattern.getEndTime().get(Calendar.HOUR_OF_DAY) + ":" + myJourneyPattern.getEndTime().get(Calendar.MINUTE) );
+            //Now repeat this loop until myTime is after the journey pattern end time.
+            while ( true ) {
+                if ( (myTime.get(Calendar.HOUR_OF_DAY) > myJourneyPattern.getEndTime().get(Calendar.HOUR_OF_DAY)) ) { break; }
+                else if ( (myTime.get(Calendar.HOUR_OF_DAY) == myJourneyPattern.getEndTime().get(Calendar.HOUR_OF_DAY)) && (myTime.get(Calendar.MINUTE) > myJourneyPattern.getEndTime().get(Calendar.MINUTE)) ) { break; }
+                else {
+                    //logger.debug("I want a journey starting from both terminuses at " + myTime.get(Calendar.HOUR_OF_DAY) + ":" + myTime.get(Calendar.MINUTE));
+                    //Create an outgoing service.
+                    Journey newJourney = new Journey();
+                    //Add stops - we also need to create a separate calendar to ensure we don't advance more than we want!!!!
+                    Calendar journeyTime = (Calendar) myTime.clone();
+                    List<String> journeyStops = new ArrayList<String>();
+                    if ( direction == TramsConstants.OUTWARD_DIRECTION ) {
+                        journeyStops = getStopsBetween(stops, myJourneyPattern.getReturnTerminus(), myJourneyPattern.getOutgoingTerminus(), direction);
+                    }
+                    else {
+                        journeyStops = getStopsBetween(stops, myJourneyPattern.getOutgoingTerminus(), myJourneyPattern.getReturnTerminus(), direction);
+                    }
+                    long stopId = getStopByStopName(journeyStops.get(0)).getId();
+                    StopTime newStopTime = new StopTime();
+                    newStopTime.setJourneyId(newJourney.getId());
+                    newStopTime.setStopId(stopId);
+                    newStopTime.setTime( (Calendar) journeyTime.clone());
+                    for ( int i = 1; i < journeyStops.size(); i++ ) {
+                        //Now add to journey time the difference between the two stops.
+                        journeyTime.add(Calendar.MINUTE, getDistance(scenarioName, journeyStops.get(i-1), journeyStops.get(i)));
+                        //Create stop.
+                        long stop2Id = getStopByStopName(journeyStops.get(i)).getId();
+                        StopTime newStopTime2 = new StopTime();
+                        newStopTime2.setJourneyId(newJourney.getId());
+                        newStopTime2.setStopId(stop2Id);
+                        newStopTime.setTime( (Calendar) journeyTime.clone());
+                    }
+                    //logger.debug("Service #" + serviceId + ": " + newService.getAllDisplayStops());{
+                    journeyRepository.saveAndFlush(newJourney);
+                    allJourneys.add(convertToJourneyModel(newJourney));
+                    //Increment calendar.
+                    myTime.add(Calendar.MINUTE, myJourneyPattern.getFrequency());
+                }
+            }
+        }
+        return allJourneys;
+    }
+
+    private JourneyModel convertToJourneyModel ( final Journey journey ) {
+        JourneyModel journeyModel = new JourneyModel();
+        journeyModel.setJourneyName("J" + journey.getId() + "-RS" + journey.getRouteScheduleId());
+        return journeyModel;
+    }
+
+    private List<String> getStopsBetween ( final List<String> stops, final String startStop, final String endStop, final int direction ) {
+        List<String> relevantStops = new ArrayList<String>();
+        if ( direction == TramsConstants.OUTWARD_DIRECTION ) {
+            boolean foundStartStop = false;
+            for ( int i = 0; i < stops.size(); i++ ) {
+                if ( !foundStartStop & stops.get(i).contentEquals(startStop) ) {
+                    foundStartStop = true;
+                    relevantStops.add(stops.get(i));
+                }
+                else if ( foundStartStop & !stops.get(i).contentEquals(endStop)) {
+                    relevantStops.add(stops.get(i));
+                }
+                else if ( foundStartStop & stops.get(i).contentEquals(endStop)) {
+                    relevantStops.add(stops.get(i));
+                    break;
+                }
+            }
+        }
+        else if ( direction == TramsConstants.RETURN_DIRECTION ) {
+            boolean foundEndStop = false;
+            for ( int i = stops.size()-1; i > -1; i-- ) {
+                if ( !foundEndStop & stops.get(i).contentEquals(endStop) ) {
+                    foundEndStop = true;
+                    relevantStops.add(stops.get(i));
+                }
+                else if ( foundEndStop & !stops.get(i).contentEquals(startStop)) {
+                    relevantStops.add(stops.get(i));
+                }
+                else if ( foundEndStop & stops.get(i).contentEquals(startStop)) {
+                    relevantStops.add(stops.get(i));
+                    break;
+                }
+            }
+        }
+        return relevantStops;
+    }
+
+    /**
+     * Get the distance between two stops.
+     * @param stop1 a <code>String</code> with the name of the first stop.
+     * @param stop2 a <code>String</code> with the name of the second stop.
+     * @return a <code>int</code> with the distance between two stops.
+     */
+    public int getDistance ( String scenarioName, String stop1, String stop2 ) {
+        int stop1Pos = -1; int stop2Pos = -1; int count = 0;
+        List<String> stopDistanceList = scenarioFactory.createScenarioByName(scenarioName).getStopDistances();
+        for ( String stopDistance : stopDistanceList ) {
+            String stopName = stopDistance.split(":")[0];
+            if ( stopName.equalsIgnoreCase(stop1) ) { stop1Pos = count; }
+            else if ( stopName.equalsIgnoreCase(stop2) ) { stop2Pos = count; }
+            count++;
+        }
+        return Integer.parseInt(stopDistanceList.get(stop1Pos).split(":")[1].split(",")[stop2Pos]);
     }
 
 }

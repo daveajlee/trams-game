@@ -140,7 +140,7 @@ public class VehicleServiceTest {
 
 	@Test
 	public void testVehicleSize() {
-		assertEquals(vehicleService.getNumberAvailableVehicles(), 4);
+		assertEquals(vehicleService.getNumberVehicleTypes(), 4);
 	}
 
 }

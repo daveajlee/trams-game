@@ -9,8 +9,10 @@ public class JourneyPatternModel {
 	private List<Integer> daysOfOperation;
 	private String returnTerminus;
 	private String outgoingTerminus;
-	public Calendar startTime;
-	public Calendar endTime;
+	private Calendar startTime;
+	private Calendar endTime;
+	private int frequency;
+	private int duration;
 
 	public String getName() {
 		return name;
@@ -58,6 +60,22 @@ public class JourneyPatternModel {
 
 	public void setEndTime(Calendar endTime) {
 		this.endTime = endTime;
+	}
+
+	public int getFrequency() {
+		return frequency;
+	}
+
+	public void setFrequency(int frequency) {
+		this.frequency = frequency;
+	}
+
+	public int getDuration() {
+		return duration;
+	}
+
+	public void setDuration(int duration) {
+		this.duration = duration;
 	}
 
 }

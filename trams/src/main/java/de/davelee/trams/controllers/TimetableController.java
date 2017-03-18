@@ -35,6 +35,15 @@ public class TimetableController {
 	public TimetableModel getRouteTimetable ( final RouteModel routeModel, final String timetableName ) {
 		return convertToTimetableModel(getRouteTimetableObject(routeModel, timetableName));
 	}
+
+	public TimetableModel[] getRouteTimetables ( final RouteModel routeModel ) {
+		List<Timetable> timetables = timetableService.getTimetablesByRouteId(routeController.getRouteId(routeModel.getRouteNumber()));
+		TimetableModel[] timetableModels = new TimetableModel[timetables.size()];
+		for ( int i = 0; i < timetableModels.length; i++ ) {
+			timetableModels[i] = convertToTimetableModel(timetables.get(i));
+		}
+		return timetableModels;
+	}
 	
 	public TimetableModel getTimetable ( final String timetableName ) {
 		return convertToTimetableModel(timetableService.getTimetableByName(timetableName));

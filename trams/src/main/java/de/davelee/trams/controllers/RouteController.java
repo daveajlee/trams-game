@@ -2,11 +2,13 @@ package de.davelee.trams.controllers;
 
 import de.davelee.trams.data.Route;
 import de.davelee.trams.model.RouteModel;
+import de.davelee.trams.util.SortedRouteModels;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import de.davelee.trams.services.RouteService;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class RouteController {
@@ -19,6 +21,16 @@ public class RouteController {
 	
 	public String getRouteNumber ( final long routeScheduleId) {
 		return routeService.getRouteById(routeScheduleController.getRouteId(routeScheduleId)).getRouteNumber();
+	}
+
+	public RouteModel[] getRouteModels ( ) {
+		List<Route> routes = routeService.getAllRoutes();
+		RouteModel[] routeModels = new RouteModel[routes.size()];
+		for ( int i = 0; i < routeModels.length; i++ ) {
+			routeModels[i] = convertToRouteModel(routes.get(i));
+		}
+		Arrays.sort(routeModels, new SortedRouteModels());
+		return routeModels;
 	}
 
 	public String getRouteNumberByPosition ( final int position ) {
@@ -51,10 +63,6 @@ public class RouteController {
 		}
 		routeModel.setStopNames(stopNames);
 		return routeModel;
-	}
-
-	public int getDistance ( final String scenarioName, final String stop1, final String stop2 ) {
-		return routeService.getDistance(scenarioName, stop1, stop2);
 	}
 
 	/**

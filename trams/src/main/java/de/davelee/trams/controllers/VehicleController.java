@@ -3,10 +3,12 @@ package de.davelee.trams.controllers;
 import de.davelee.trams.data.Vehicle;
 import de.davelee.trams.model.ScenarioModel;
 import de.davelee.trams.model.VehicleModel;
+import de.davelee.trams.util.SortedVehicleModels;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import de.davelee.trams.services.VehicleService;
 
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
@@ -58,6 +60,7 @@ public class VehicleController {
 			vehicleModels[i].setDeliveryDate(vehicles.get(i).getDeliveryDate());
 			vehicleModels[i].setRegistrationNumber(vehicles.get(i).getRegistrationNumber());
 		}
+		Arrays.sort(vehicleModels, new SortedVehicleModels());
 		return vehicleModels;
 	}
 
@@ -137,6 +140,14 @@ public class VehicleController {
 
 	public List<Vehicle> getAllVehicles ( ) {
 		return vehicleService.getAllVehicles();
+	}
+
+	public List<String> getAllocations ( ) {
+		return vehicleService.getAllocations();
+	}
+
+    public int getNumberVehicleTypes ( ) {
+		return vehicleService.getNumberVehicleTypes();
 	}
 
 }

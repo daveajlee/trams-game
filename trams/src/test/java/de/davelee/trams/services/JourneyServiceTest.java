@@ -31,5 +31,20 @@ public class JourneyServiceTest {
 		assertEquals(stopTime.getTime().get(Calendar.HOUR_OF_DAY), 22);
 		assertEquals(stopTime.getTime().get(Calendar.MINUTE), 57);
 	}
+
+	@Test
+	public void testStopDistances() {
+		assertEquals(journeyService.getDistance("Landuff Transport Company", "Airport", "Cargo Terminal"), 12);
+	}
+
+	@Test(expected=IndexOutOfBoundsException.class)
+	public void testStopDistanceNull1() {
+		assertEquals(journeyService.getDistance("Landuff Transport Company", "Strasse 201", "Cargo Terminal"), 12);
+	}
+
+	@Test(expected=IndexOutOfBoundsException.class)
+	public void testStopDistanceNull2() {
+		assertEquals(journeyService.getDistance("Landuff Transport Company", "Airport", "Strasse 201"), 12);
+	}
 	
 }

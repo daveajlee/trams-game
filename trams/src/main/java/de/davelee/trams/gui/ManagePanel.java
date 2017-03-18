@@ -4,10 +4,7 @@ import javax.swing.*;
 import javax.swing.event.*;
 
 import de.davelee.trams.controllers.*;
-import de.davelee.trams.data.JourneyPattern;
-import de.davelee.trams.data.Timetable;
 import de.davelee.trams.model.*;
-import de.davelee.trams.services.*;
 import de.davelee.trams.util.TramsConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +23,6 @@ import java.util.GregorianCalendar;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.davelee.trams.main.UserInterface;
 import de.davelee.trams.util.DateFormats;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -51,8 +47,7 @@ public class ManagePanel {
     private JButton viewDriversButton;
     private JLabel allocationsLabel;
     private JButton changeAllocationButton;
-    
-    private UserInterface userInterface;
+
     private ControlScreen controlScreen;
     
     /** THESE VARIABLES ARE NEEDED FOR ACTION LISTENERS ETC. **/
@@ -146,13 +141,15 @@ public class ManagePanel {
     private ScenarioController scenarioController;
 
     @Autowired
+    private TipController tipController;
+
+    @Autowired
     private TimetableController timetableController;
 
     @Autowired
     private VehicleController vehicleController;
     
     public ManagePanel ( ControlScreen cs ) {
-        userInterface = new UserInterface();
         controlScreen = cs;
     }
     
@@ -164,7 +161,7 @@ public class ManagePanel {
         JPanel informationPanel = new JPanel();
         informationPanel.setBackground(Color.WHITE);
         ImageDisplay infoDisplay = null;
-        if ( routeController.getNumberRoutes() == 0 || vehicleController.getAllCreatedVehicles().length == 0 || userInterface.getAllocations().size() == 0 ) {
+        if ( routeController.getNumberRoutes() == 0 || vehicleController.getAllCreatedVehicles().length == 0 || vehicleController.getAllocations().size() == 0 ) {
             infoDisplay = new ImageDisplay("xpic.png",0,0);
         }
         else {
@@ -181,12 +178,12 @@ public class ManagePanel {
         else if ( vehicleController.getAllCreatedVehicles().length == 0 ) {
             informationArea.setText("WARNING: You can't run routes without vehicles. Click 'Purchase Vehicle' to buy a vehicle");
         }
-        else if ( userInterface.getAllocations().size() == 0 ) {
+        else if ( vehicleController.getAllocations().size() == 0 ) {
             informationArea.setText("WARNING: To successfully run journeys, you must assign vehicles to route schedules. Click 'Allocations' to match vehicles to route schedules");
         }
         else {
-            logger.debug("The allocations size was " + userInterface.getAllocations().size() + " which is " + userInterface.getAllocations().toString());
-            informationArea.setText(userInterface.getRandomTipMessage());
+            logger.debug("The allocations size was " + vehicleController.getAllocations().size() + " which is " + vehicleController.getAllocations().toString());
+            informationArea.setText(tipController.getRandomTipMessage());
         }
         informationArea.setRows(4);
         informationArea.setColumns(50);
@@ -626,9 +623,9 @@ public class ManagePanel {
         createRouteButton.setEnabled(false);
         createRouteButton.addActionListener ( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
-                userInterface.generateRouteSchedules(selectedRouteModel, gameController.getCurrentSimTime(), gameController.getScenarioName());
+                routeScheduleController.generateRouteSchedules(selectedRouteModel, gameController.getCurrentSimTime(), gameController.getScenarioName());
 
-               routeController.addNewRoute(routeNumberField.getText(), selectedOutwardStops);
+                routeController.addNewRoute(routeNumberField.getText(), selectedOutwardStops);
                //Now return to previous screen.
                controlScreen.redrawManagement(ManagePanel.this.getDisplayPanel());
             }
@@ -829,9 +826,9 @@ public class ManagePanel {
         journeyPatternModel = new DefaultListModel();
         //Now get all the journey pattern which we have at the moment.
         TimetableModel journeyTimetableModel = timetableController.getRouteTimetable(selectedRouteModel, timetableNameField.getText());
-        String[] journeyPatternNames = journeyPatternController.getJourneyPatternNames(journeyTimetableModel);
-        for ( int i = 0; i < journeyPatternNames.length; i++ ) {
-            journeyPatternModel.addElement(journeyPatternNames[i]);
+        JourneyPatternModel[] journeyPatternModels = journeyPatternController.getJourneyPatternModels(journeyTimetableModel);
+        for ( int i = 0; i < journeyPatternModels.length; i++ ) {
+            journeyPatternModel.addElement(journeyPatternModels[i].getName());
         }
         journeyPatternList = new JList(journeyPatternModel);
         if ( journeyPatternModel.getSize() > 0 ) { journeyPatternList.setSelectedIndex(0); }
@@ -1229,7 +1226,7 @@ public class ManagePanel {
         //Note cumulative total.
         int cumDistance = 0;
         //Add distance of terminus1 and first item of terminus2 first of all - this is guaranteed.
-        cumDistance += routeController.getDistance(gameController.getScenarioName(), terminus1Box.getSelectedItem().toString(), terminus2Box.getItemAt(0).toString());
+        cumDistance += journeyController.getDistance(gameController.getScenarioName(), terminus1Box.getSelectedItem().toString(), terminus2Box.getItemAt(0).toString());
         //Now from 0 up until the selected index - add distances for terminus 2.
         int selectIndex = terminus2Box.getSelectedIndex();
         if ( selectIndex == 0 ) {
@@ -1243,7 +1240,7 @@ public class ManagePanel {
             return myCumFreq;
         }
         for ( int i = 1; i <= selectIndex; i++ ) {
-            cumDistance += routeController.getDistance(gameController.getScenarioName(), terminus2Box.getItemAt(i-1).toString(), terminus2Box.getItemAt(i).toString());
+            cumDistance += journeyController.getDistance(gameController.getScenarioName(), terminus2Box.getItemAt(i-1).toString(), terminus2Box.getItemAt(i).toString());
         }
         //Return distance * 2.
         int myDistance = (cumDistance*2);
@@ -1261,14 +1258,14 @@ public class ManagePanel {
         //Note cumulative total.
         int cumDistance = 0;
         //Add distance of terminus1 and first item of terminus2 first of all - this is guaranteed.
-        cumDistance += routeController.getDistance(gameController.getScenarioName(), terminus1Box.getSelectedItem().toString(), terminus2Box.getItemAt(0).toString());
+        cumDistance += journeyController.getDistance(gameController.getScenarioName(), terminus1Box.getSelectedItem().toString(), terminus2Box.getItemAt(0).toString());
         //Now from 0 up until the selected index - add distances for terminus 2.
         int selectIndex = terminus2Box.getSelectedIndex();
         if ( selectIndex == 0 ) {
             return cumDistance*2;
         }
         for ( int i = 1; i <= selectIndex; i++ ) {
-            cumDistance += routeController.getDistance(gameController.getScenarioName(), terminus2Box.getItemAt(i-1).toString(), terminus2Box.getItemAt(i).toString());
+            cumDistance += journeyController.getDistance(gameController.getScenarioName(), terminus2Box.getItemAt(i-1).toString(), terminus2Box.getItemAt(i).toString());
         }
         //Return distance * 2.
         return cumDistance*2;
@@ -1322,7 +1319,7 @@ public class ManagePanel {
         datesPanel.setBackground(Color.WHITE);
         JLabel datesLabel = new JLabel("Dates:");
         datesLabel.setFont(new Font("Arial", Font.BOLD, 16));
-        datesComboBox = new JComboBox ( userInterface.getPossibleSchedulesDates(selectedRouteModel, gameController.getCurrentSimTime()) );
+        datesComboBox = new JComboBox ( journeyPatternController.getPossibleSchedulesDates(selectedRouteModel, gameController.getCurrentSimTime()) );
         datesComboBox.setSelectedIndex(dateIndex);
         datesComboBox.addItemListener(new ItemListener() {
             public void itemStateChanged ( ItemEvent e ) {
@@ -1349,23 +1346,23 @@ public class ManagePanel {
         } catch ( ParseException parseEx ) {
         	//TODO: exception handling.
         }
-        long[] journeyIds = userInterface.generateJourneyTimetables(selectedRouteModel, cal, gameController.getScenarioName(), TramsConstants.OUTWARD_DIRECTION);
+        List<JourneyModel> journeyModels = journeyController.generateJourneyTimetables(selectedRouteModel, cal, gameController.getScenarioName(), TramsConstants.OUTWARD_DIRECTION);
         //LinkedList<Service> services = theSelectedRoute.getAllOutgoingServices(theDatesComboBox.getSelectedItem().toString());
         for ( int i = 0; i < routeStops.size(); i++) {
             outgoingData[i][0] = routeStops.get(i);
             for ( int j = 0; j < 10; j++ ) {
                 int pos = (min+j);
                 logger.debug("This is #" + pos + " of the loop...");
-                if ( journeyIds.length <= (min+j) ) {
+                if ( journeyModels.size() <= (min+j) ) {
                     logger.debug("No more services!");
                     outgoingData[i][j+1] = "";
                 }
-                else if ( journeyController.getStopTime(journeyIds[min+j], routeStops.get(i)) == null ) {
+                else if ( journeyController.getStopTime(journeyModels.get(min+j), routeStops.get(i)) == null ) {
                     logger.debug("Blank data!");
                     outgoingData[i][j+1] = "";
                 }
                 else {
-                    outgoingData[i][j+1] = journeyController.getDisplayStopTime(journeyIds[min+j], routeStops.get(i));
+                    outgoingData[i][j+1] = journeyController.getDisplayStopTime(journeyModels.get(min+j), routeStops.get(i));
                 }
             }
         }
@@ -1391,7 +1388,7 @@ public class ManagePanel {
         });
         otherServicesButtonPanel.add(previousButton);
         JButton nextButton = new JButton("Next Services >");
-        if ( (min+10) > journeyIds.length ) {
+        if ( (min+10) > journeyModels.size() ) {
             nextButton.setEnabled(false);
         }
         nextButton.addActionListener(new ActionListener() {
@@ -1432,9 +1429,9 @@ public class ManagePanel {
         modelPanel.add(modelLabel);
             
         routesModel = new DefaultListModel();
-        userInterface.sortRoutes();
-        for ( int i = 0; i < routeController.getNumberRoutes(); i++ ) {
-            routesModel.addElement(routeController.getRouteNumberByPosition(i));
+        RouteModel[] routeModels = routeController.getRouteModels();
+        for ( int i = 0; i < routeModels.length; i++ ) {
+            routesModel.addElement(routeModels[i].getRouteNumber());
         }
         routesList = new JList(routesModel);
         routesList.setFixedCellWidth(40);
@@ -1606,7 +1603,7 @@ public class ManagePanel {
         JPanel nextButtonPanel = new JPanel(new GridBagLayout());
         nextButtonPanel.setBackground(Color.WHITE);
         JButton nextVehicleTypeButton = new JButton("Next Vehicle Type >");
-        if ( typePosition == (userInterface.getNumVehicleTypes()-1) ) { nextVehicleTypeButton.setEnabled(false); }
+        if ( typePosition == (vehicleController.getNumberVehicleTypes()-1) ) { nextVehicleTypeButton.setEnabled(false); }
         nextVehicleTypeButton.addActionListener( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
                 controlScreen.redrawManagement(ManagePanel.this.makePurchaseVehiclePanel(typePosition+1));
@@ -1775,7 +1772,6 @@ public class ManagePanel {
         
         //Get vehicle data now so that we can used to compile first!
         vehiclesModel = new DefaultListModel();
-        userInterface.sortVehicles();
         VehicleModel[] vehicleModels = vehicleController.getAllCreatedVehicles();
         for ( int i = 0; i < vehicleModels.length; i++ ) {
             if ( vehicleController.hasVehicleBeenDelivered(vehicleModels[i].getDeliveryDate(), gameController.getCurrentSimTime()) ) {
@@ -2220,9 +2216,9 @@ public class ManagePanel {
         JPanel allocationListPanel = new JPanel();
         allocationListPanel.setBackground(Color.WHITE);
         allocationsModel = new DefaultListModel();
-        ArrayList<String> allocations;
+        List<String> allocations;
         String currentDate = gameController.getCurrentSimTime().get(Calendar.YEAR) + "-" + gameController.getCurrentSimTime().get(Calendar.MONTH) + "-" + gameController.getCurrentSimTime().get(Calendar.DATE);
-        allocations = userInterface.getTodayAllocations(currentDate);
+        allocations = routeScheduleController.getTodayAllocations(currentDate);
         for ( int i = 0; i < allocations.size(); i++ ) {
             allocationsModel.addElement(allocations.get(i).toString());
             //For each allocation, remove route and vehicle from list.

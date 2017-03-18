@@ -51,6 +51,8 @@
 
         <bean id="journeyController" class="de.davelee.trams.controllers.JourneyController"/>
 
+        <bean id="journeyPatternController" class="de.davelee.trams.controllers.JourneyPatternController"/>
+
         <bean id="vehicleController" class="de.davelee.trams.controllers.VehicleController"/>
 
         <bean id="gameController" class="de.davelee.trams.controllers.GameController"/>

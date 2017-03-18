@@ -2,14 +2,12 @@ package de.davelee.trams.services;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
 import de.davelee.trams.data.Vehicle;
 import de.davelee.trams.factory.VehicleFactory;
 import de.davelee.trams.repository.VehicleRepository;
-import de.davelee.trams.util.SortedVehicles;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class VehicleService {
@@ -161,13 +159,6 @@ public class VehicleService {
     public Vehicle getVehicleByRouteScheduleId ( long routeScheduleId ) {
         return vehicleRepository.findByRouteScheduleId(routeScheduleId);
     }
-    
-    /**
-     * Sort vehicles by vehicle id. 
-     */
-    public void sortVehicles ( List<Vehicle> vehicles ) {
-        Collections.sort(vehicles, new SortedVehicles());
-    }
 
     public Vehicle createVehicleObject ( String model, String registrationNumber, Calendar deliveryDate ) {
         Vehicle vehicle = vehicleFactory.createVehicleByModel(model);
@@ -179,13 +170,13 @@ public class VehicleService {
     }
 
     public String getVehicleModel ( int pos ) {
-        if ( pos < getNumberAvailableVehicles() ) {
+        if ( pos < getNumberVehicleTypes() ) {
             return vehicleFactory.getAvailableVehicles().get(pos).getModel();
         }
         return null;
     }
 
-    public int getNumberAvailableVehicles ( ) {
+    public int getNumberVehicleTypes ( ) {
         return vehicleFactory.getAvailableVehicles().size();
     }
 

@@ -1,14 +1,12 @@
 package de.davelee.trams.services;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import de.davelee.trams.data.*;
 import de.davelee.trams.factory.ScenarioFactory;
 
 import de.davelee.trams.repository.RouteRepository;
-import de.davelee.trams.util.SortedRoutes;
 import de.davelee.trams.util.TramsConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -28,24 +26,6 @@ public class RouteService {
 
     public void setScenarioFactory(ScenarioFactory scenarioFactory) {
         this.scenarioFactory = scenarioFactory;
-    }
-
-    /**
-     * Get the distance between two stops.
-     * @param stop1 a <code>String</code> with the name of the first stop.
-     * @param stop2 a <code>String</code> with the name of the second stop.
-     * @return a <code>int</code> with the distance between two stops.
-     */
-    public int getDistance ( String scenarioName, String stop1, String stop2 ) {
-        int stop1Pos = -1; int stop2Pos = -1; int count = 0;
-        List<String> stopDistanceList = scenarioFactory.createScenarioByName(scenarioName).getStopDistances();
-        for ( String stopDistance : stopDistanceList ) {
-            String stopName = stopDistance.split(":")[0];
-            if ( stopName.equalsIgnoreCase(stop1) ) { stop1Pos = count; }
-            else if ( stopName.equalsIgnoreCase(stop2) ) { stop2Pos = count; }
-            count++;
-        }
-        return Integer.parseInt(stopDistanceList.get(stop1Pos).split(":")[1].split(",")[stop2Pos]);
     }
     
     /**
@@ -180,13 +160,6 @@ public class RouteService {
             }
         }
         return null;
-    }
-    
-    /**
-     * Sort routes into alphabetical order by route number,
-     */
-    public void sortRoutes ( List<Route> routes ) {
-        Collections.sort(routes, new SortedRoutes());
     }
     
     public List<Route> getAllRoutes ( ) {
