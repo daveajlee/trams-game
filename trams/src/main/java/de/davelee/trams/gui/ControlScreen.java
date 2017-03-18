@@ -686,7 +686,7 @@ public class ControlScreen extends ButtonBar {
             return allVehicleDisplayPanel;
         }
         //Otherwise add a label with the route schedule number for each potential vehicle.
-        RouteScheduleModel[] routeScheduleModels = routeScheduleController.getRouteSchedulesByRouteId(routeController.getRouteId(routeList.getSelectedValue().toString()));
+        RouteScheduleModel[] routeScheduleModels = routeScheduleController.getRouteSchedulesByRouteNumber(routeList.getSelectedValue().toString());
         for ( int i = 0; i < routeScheduleModels.length; i++ ) {
             String vehiclePos =  routeScheduleController.getCurrentStopName(routeScheduleModels[i], gameController.getCurrentSimTime(), gameController.getDifficultyLevel());
             logger.debug(routeScheduleModels[i].getScheduleNumber() + " is at " + vehiclePos + " seconds with delay " + routeScheduleModels[i].getDelay() + " minutes.");
@@ -797,9 +797,10 @@ public class ControlScreen extends ButtonBar {
 
     public void populateRouteList ( ) {
         routeModel.clear();
+        RouteModel[] routeModels = routeController.getRouteModels();
         //String[] allRouteStr = new String[theSimulator.getScenario().getNumberRoutes()];
-        for ( int i = 0; i < routeController.getNumberRoutes(); i++ ) {
-            routeModel.addElement(routeController.getRouteNumberByPosition(i));
+        for ( int i = 0; i < routeModels.length; i++ ) {
+            routeModel.addElement(routeModels[i]);
             //allRouteStr[i] = theSimulator.getScenario().getRoutes().get(i).toString();
         }
         //theRouteList = new JList(allRouteStr);

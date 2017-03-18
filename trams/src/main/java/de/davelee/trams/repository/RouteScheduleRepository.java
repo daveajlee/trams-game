@@ -8,8 +8,8 @@ import org.springframework.data.repository.query.Param;
 import de.davelee.trams.data.RouteSchedule;
 
 public interface RouteScheduleRepository extends JpaRepository<RouteSchedule, Long> {
-	
-	public List<RouteSchedule> findByRouteId(@Param("routeId") long routeId);
+
+	public List<RouteSchedule> findByRouteNumber(@Param("routeNumber") String routeNumber);
 
 	public RouteSchedule findByScheduleNumber(@Param("scheduleNumber") int scheduleNumber);
 

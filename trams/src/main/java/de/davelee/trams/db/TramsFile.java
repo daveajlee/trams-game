@@ -5,6 +5,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import de.davelee.trams.data.*;
 import de.davelee.trams.model.DriverModel;
+import de.davelee.trams.model.RouteModel;
 
 @XmlRootElement
 public class TramsFile {
@@ -14,7 +15,7 @@ public class TramsFile {
     private List<Journey> journeys;
     private List<JourneyPattern> journeyPatterns;
 	private List<Message> messages;
-	private List<Route> routes;
+    private RouteModel[] routeModels;
 	private List<RouteSchedule> routeSchedules;
     private List<Stop> stops;
     private List<StopTime> stopTimes;
@@ -24,14 +25,14 @@ public class TramsFile {
     public TramsFile ( ) { }
 
     public TramsFile ( DriverModel[] driverModels, Game game, List<Journey> journeys, List<JourneyPattern> journeyPatterns,
-			List<Message> messages, List<Route> routes, List<RouteSchedule> routeSchedules,
+			List<Message> messages, RouteModel[] routeModels, List<RouteSchedule> routeSchedules,
 			List<Stop> stops, List<StopTime> stopTimes, List<Timetable> timetables, List<Vehicle> vehicles) {
                 this.driverModels = driverModels;
                 /*this.game = game;*/
 				this.journeys = journeys;
                 this.journeyPatterns = journeyPatterns;
                 this.messages = messages;
-                this.routes = routes;
+                this.routeModels = routeModels;
                 this.routeSchedules = routeSchedules;
                 this.stops = stops;
                 this.stopTimes = stopTimes;
@@ -79,12 +80,12 @@ public class TramsFile {
         this.messages = messages;
     }
 
-    public List<Route> getRoutes() {
-        return routes;
+    public RouteModel[] getRoutes() {
+        return routeModels;
     }
 
-    public void setRoutes(List<Route> routes) {
-        this.routes = routes;
+    public void setRoutes(RouteModel[] routeModels) {
+        this.routeModels = routeModels;
     }
 
     public List<RouteSchedule> getRouteSchedules() {

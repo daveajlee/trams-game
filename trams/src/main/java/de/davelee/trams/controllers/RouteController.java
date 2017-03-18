@@ -1,13 +1,11 @@
 package de.davelee.trams.controllers;
 
-import de.davelee.trams.data.Route;
 import de.davelee.trams.model.RouteModel;
 import de.davelee.trams.util.SortedRouteModels;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import de.davelee.trams.services.RouteService;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -15,30 +13,15 @@ public class RouteController {
 	
 	@Autowired
 	private RouteService routeService;
-	
-	@Autowired
-	private RouteScheduleController routeScheduleController;
-	
-	public String getRouteNumber ( final long routeScheduleId) {
-		return routeService.getRouteById(routeScheduleController.getRouteId(routeScheduleId)).getRouteNumber();
-	}
 
 	public RouteModel[] getRouteModels ( ) {
-		List<Route> routes = routeService.getAllRoutes();
-		RouteModel[] routeModels = new RouteModel[routes.size()];
-		for ( int i = 0; i < routeModels.length; i++ ) {
-			routeModels[i] = convertToRouteModel(routes.get(i));
-		}
+		RouteModel[] routeModels = routeService.getAllRoutes();
 		Arrays.sort(routeModels, new SortedRouteModels());
 		return routeModels;
 	}
 
-	public String getRouteNumberByPosition ( final int position ) {
-		return routeService.getAllRoutes().get(position).getRouteNumber();
-	}
-
 	public int getNumberRoutes ( ) {
-		return routeService.getAllRoutes().size();
+		return routeService.getAllRoutes().length;
 	}
 
 	/**
@@ -47,52 +30,35 @@ public class RouteController {
 	 * @return a <code>RouteModel</code> object matching the string representation.
 	 */
 	public RouteModel getRoute ( final String routeNumber ) {
-		return convertToRouteModel(routeService.getRoute(routeNumber));
-	}
-
-	public long getRouteId ( final String routeNumber ) {
-		return routeService.getRoute(routeNumber).getId();
-	}
-
-	private RouteModel convertToRouteModel ( final Route route ) {
-		RouteModel routeModel = new RouteModel();
-		routeModel.setRouteNumber(route.getRouteNumber());
-		List<String> stopNames = new ArrayList<String>();
-		for ( int i = 0; i < route.getStops().size(); i++ ) {
-			stopNames.add(route.getStops().get(i).getStopName());
-		}
-		routeModel.setStopNames(stopNames);
-		return routeModel;
+		return routeService.getRoute(routeNumber);
 	}
 
 	/**
 	 * Add a new route.
 	 * @param r a <code>Route</code> object.
 	 */
-    public void addNewRoute ( String routeNumber, String[] stopNames ) {
-		routeService.saveRoute(routeService.createRoute(routeNumber, stopNames));
+	public void addNewRoute ( final String routeNumber, final List<String> stopNames ) {
+		RouteModel routeModel = new RouteModel();
+		routeModel.setRouteNumber(routeNumber);
+		routeModel.setStopNames(stopNames);
 	}
 
 	/**
 	 * Delete route.
 	 * @param r a <code>Route</code> object to delete.
 	 */
-	public void deleteRoute ( long routeId ) {
-		routeService.removeRoute(routeService.getRouteById(routeId));
-	}
-
-	public List<Route> getAllRoutes ( ) {
-		return routeService.getAllRoutes();
+	public void deleteRoute ( final RouteModel routeModel ) {
+		routeService.removeRoute(routeModel);
 	}
 
 	/**
 	 * Edit route - replace the two routes.
-	 * @param oldRoute a <code>Route</code> object with the old route.
-	 * @param newRoute a <code>Route</code> object with the new route.
+	 * @param oldRoute a <code>RouteModel</code> object with the old route.
+	 * @param newRoute a <code>RouteModel</code> object with the new route.
 	 */
-    public void editRoute ( long routeId, String routeNumber, String[] stopNames ) {
+	public void editRoute ( final RouteModel oldRouteModel, final String routeNumber, final List<String> stopNames ) {
 		//Delete old route.
-		deleteRoute(routeId);
+		deleteRoute(oldRouteModel);
 		//Add new route.
 		addNewRoute(routeNumber, stopNames);
 	}

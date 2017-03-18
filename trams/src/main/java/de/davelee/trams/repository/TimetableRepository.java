@@ -9,9 +9,9 @@ import de.davelee.trams.data.Timetable;
 
 public interface TimetableRepository extends JpaRepository<Timetable, Long> {
 
-	public List<Timetable> findByRouteId ( @Param("routeId") long routeId);
-	
-	public Timetable findByRouteIdAndName ( @Param("routeId") long routeId, @Param("timetableName") String timetableName );
+	public List<Timetable> findByRouteNumber ( @Param("routeNumber") String routeNumber);
+
+	public Timetable findByRouteNumberAndName ( @Param("routeNumber") String routeNumber, @Param("timetableName") String timetableName );
 
 	public Timetable findByName ( @Param("timetableName") String timetableName );
 

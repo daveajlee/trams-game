@@ -63,7 +63,7 @@ public class DriverService {
 	}
 
 	public void removeDriver ( final DriverModel driverModel ) {
-		driverRepository.delete(convertToDriver(driverModel));
+		driverRepository.delete(driverRepository.findByName(driverModel.getName()));
 	}
     
 }

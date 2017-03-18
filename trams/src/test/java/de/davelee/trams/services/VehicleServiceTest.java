@@ -110,19 +110,16 @@ public class VehicleServiceTest {
 		if ( vehicleService.getVehicleById(1) == null )  {
 			vehicleService.saveVehicle(vehicleService.createVehicle("CV58 2XD", deliveryDate, 0.06, "singledecker.png", "Mercedes", 1, 45, 20, 20000.00));
 		}
-		if ( vehicleService.getVehicleById(2) == null )  {
-			vehicleService.saveVehicle(vehicleService.createVehicle("CV58 2XD", deliveryDate, 0.06, "singledecker.png", "Mercedes", 1, 45, 20, 20000.00));
-		}
 		//Test begins here.
 		vehicleService.saveVehicle(vehicleService.createVehicle("CV58 2DX", deliveryDate, 0.06, "singledecker.png", "Mercedes", 1, 45, 20, 20000.00));
-		assertNotNull(vehicleService.getVehicleById(3));
-		assertEquals(vehicleService.getVehicleById(3).getImagePath(), "singledecker.png");
+		assertNotNull(vehicleService.getVehicleById(2));
+		assertEquals(vehicleService.getVehicleById(2).getImagePath(), "singledecker.png");
 		assertNull(vehicleService.getVehicleById(20));
 	}
 	
 	@Test
 	public void testGetAllVehicles ( ) {
-		assertEquals(vehicleService.getAllVehicles().size(), 3);
+		assertEquals(vehicleService.getAllVehicles().size(), 2);
 	}
 
 	@Test

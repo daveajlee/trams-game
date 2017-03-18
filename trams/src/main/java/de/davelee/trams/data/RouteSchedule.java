@@ -25,8 +25,8 @@ public class RouteSchedule {
     @Column(name="DELAY_IN_MINS")
     private int delayInMins;
 
-	@Column(name="ROUTE_ID")
-	private long routeId;
+	@Column(name="ROUTE_NUMBER")
+    private String routeNumber;
     
     /**
      * Create a new route schedule.
@@ -46,11 +46,11 @@ public class RouteSchedule {
 		return scheduleNumber;
 	}
 
-	public void setScheduleNumber(int scheduleNumber) {
+	public void setScheduleNumber(final int scheduleNumber) {
 		this.scheduleNumber = scheduleNumber;
 	}
 
-	public void setId(long id) {
+	public void setId(final long id) {
 		this.id = id;
 	}
 	
@@ -58,12 +58,12 @@ public class RouteSchedule {
     	return id;
     }
 
-	public long getRouteId() {
-		return routeId;
+	public String getRouteNumber() {
+		return routeNumber;
 	}
 
-	public void setRouteId(long routeId) {
-		this.routeId = routeId;
+	public void setRouteNumber(final String routeNumber) {
+		this.routeNumber = routeNumber;
 	}
     
 }

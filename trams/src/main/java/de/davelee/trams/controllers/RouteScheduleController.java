@@ -36,12 +36,12 @@ public class RouteScheduleController {
 
 	 private List<Integer> routeDetailPos;
 
-	 public long getRouteId ( final long routeScheduleId ) {
-		 return routeScheduleService.getRouteScheduleById(routeScheduleId).getRouteId();
-	 }
+	public String getRouteNumber ( final long routeScheduleId ) {
+		return routeScheduleService.getRouteScheduleById(routeScheduleId).getRouteNumber();
+	}
 
 	public RouteScheduleModel[] getRouteSchedules ( final String routeNumber ) {
-		List<RouteSchedule> schedules = routeScheduleService.getRouteSchedulesByRouteId(routeController.getRouteId(routeNumber));
+		List<RouteSchedule> schedules = routeScheduleService.getRouteSchedulesByRouteNumber(routeNumber);
 		RouteScheduleModel[] routeScheduleModels = new RouteScheduleModel[schedules.size()];
 		for ( int i = 0; i < routeScheduleModels.length; i++ ) {
 			routeScheduleModels[i] = retrieveModel(schedules.get(i).getId());
@@ -92,11 +92,12 @@ public class RouteScheduleController {
 		routeScheduleModel.setImage(vehicleModel.getImagePath());
 		routeScheduleModel.setRegistrationNumber(vehicleModel.getRegistrationNumber());
 		routeScheduleModel.setScheduleNumber(routeScheduleService.getRouteScheduleById(routeScheduleId).getScheduleNumber());
+		routeScheduleModel.setRouteNumber(routeScheduleService.getRouteScheduleById(routeScheduleId).getRouteNumber());
 		return routeScheduleModel;
 	}
 
-	public RouteScheduleModel[] getRouteSchedulesByRouteId ( final long routeId ) {
-		List<RouteSchedule> routeSchedules = routeScheduleService.getRouteSchedulesByRouteId(routeId);
+	public RouteScheduleModel[] getRouteSchedulesByRouteNumber ( final String routeNumber ) {
+		List<RouteSchedule> routeSchedules = routeScheduleService.getRouteSchedulesByRouteNumber(routeNumber);
 		RouteScheduleModel[] routeScheduleModels = new RouteScheduleModel[routeSchedules.size()];
 		for ( int i = 0; i < routeScheduleModels.length; i++ ) {
 			routeScheduleModels[i] = retrieveModel(routeSchedules.get(i).getId());
@@ -157,43 +158,44 @@ public class RouteScheduleController {
 		Calendar currentTime = gameController.getCurrentSimTime();
 		//Determine the route ids we will display using these parameters.
 		logger.debug("Route number is " + routeNumber);
-		logger.debug("Number of possible display schedules: " +  routeScheduleService.getRouteSchedulesByRouteId(routeController.getRouteId(routeNumber)).size());
-		if ( routeScheduleService.getRouteSchedulesByRouteId(routeController.getRouteId(routeNumber)).size() < max ) { returnMax = routeScheduleService.getRouteSchedulesByRouteId(routeController.getRouteId(routeNumber)).size(); }
+		List<RouteSchedule> routeSchedules = routeScheduleService.getRouteSchedulesByRouteNumber(routeNumber);
+		logger.debug("Number of possible display schedules: " +  routeSchedules.size());
+		if ( routeSchedules.size() < max ) { returnMax = routeSchedules.size(); }
 		//logger.debug("Max vehicles starts at " + max + " - routeDetails size is " + routeDetails.size());
 		logger.debug("Min is " + min + " & Max is " + max);
 		if ( min == max ) {
-			if ( vehicleController.retrieveModel(routeScheduleService.getRouteSchedulesByRouteId(routeController.getRouteId(routeNumber)).get(min).getId()) == null ) {
+			if ( vehicleController.retrieveModel(routeSchedules.get(min).getId()) == null ) {
 				logger.debug("A schedule was null");
 			}
-			if ( getCurrentStopName(getRouteSchedulesByRouteId(routeController.getRouteId(routeNumber))[min], currentTime, gameController.getDifficultyLevel()).equalsIgnoreCase("Depot") ) {
+			if ( getCurrentStopName(getRouteSchedulesByRouteNumber(routeNumber)[min], currentTime, gameController.getDifficultyLevel()).equalsIgnoreCase("Depot") ) {
 				logger.debug("Vehicle in depot!");
 			}
-			if ( vehicleController.retrieveModel(routeScheduleService.getRouteSchedulesByRouteId(routeController.getRouteId(routeNumber)).get(min).getId()) != null && !getCurrentStopName( getRouteSchedulesByRouteId(routeController.getRouteId(routeNumber))[min], currentTime, gameController.getDifficultyLevel()).equalsIgnoreCase("Depot") ) {
+			if ( vehicleController.retrieveModel(routeSchedules.get(min).getId()) != null && !getCurrentStopName( getRouteSchedulesByRouteNumber(routeNumber)[min], currentTime, gameController.getDifficultyLevel()).equalsIgnoreCase("Depot") ) {
 				//logger.debug("Adding Route Detail " + routeDetails.get(i).getId());
 				routeDetailPos.add(0);
 			}
 			else {
 				returnMax++;
 				//logger.debug("Max is now " + max + " - routeDetails size is: " + routeDetails.size());
-				if ( routeScheduleService.getRouteSchedulesByRouteId(routeController.getRouteId(routeNumber)).size() < max ) { returnMax = routeScheduleService.getRouteSchedulesByRouteId(routeController.getRouteId(routeNumber)).size(); }
+				if ( routeSchedules.size() < max ) { returnMax = routeSchedules.size(); }
 				//logger.debug("Route Detail " + routeDetails.get(i).getId() + " was null - maxVehicles is now " + max);
 			}
 		}
 		for ( int i = min; i < max; i++ ) { //Changed from i = 0; i < routeDetails.size().
-			if ( vehicleController.retrieveModel(routeScheduleService.getRouteSchedulesByRouteId(routeController.getRouteId(routeNumber)).get(i).getId()) == null ) {
+			if ( vehicleController.retrieveModel(routeSchedules.get(i).getId()) == null ) {
 				logger.debug("A schedule was null");
 			}
-			if ( getCurrentStopName(getRouteSchedulesByRouteId(routeController.getRouteId(routeNumber))[i], currentTime, gameController.getDifficultyLevel()).equalsIgnoreCase("Depot") ) {
+			if ( getCurrentStopName(getRouteSchedulesByRouteNumber(routeNumber)[i], currentTime, gameController.getDifficultyLevel()).equalsIgnoreCase("Depot") ) {
 				logger.debug("Vehicle in depot!");
 			}
-			if ( vehicleController.retrieveModel(routeScheduleService.getRouteSchedulesByRouteId(routeController.getRouteId(routeNumber)).get(i).getId()) != null && !getCurrentStopName(getRouteSchedulesByRouteId(routeController.getRouteId(routeNumber))[i], currentTime, gameController.getDifficultyLevel()).equalsIgnoreCase("Depot") ) {
+			if ( vehicleController.retrieveModel(routeSchedules.get(i).getId()) != null && !getCurrentStopName(getRouteSchedulesByRouteNumber(routeNumber)[i], currentTime, gameController.getDifficultyLevel()).equalsIgnoreCase("Depot") ) {
 				//logger.debug("Adding Route Detail " + routeDetails.get(i).getId());
 				routeDetailPos.add(i);
 			}
 			else {
 				returnMax++;
 				//logger.debug("Max is now " + max + " - routeDetails size is: " + routeDetails.size());
-				if ( routeScheduleService.getRouteSchedulesByRouteId(routeController.getRouteId(routeNumber)).size() < max ) { returnMax = routeScheduleService.getRouteSchedulesByRouteId(routeController.getRouteId(routeNumber)).size(); }
+				if ( routeSchedules.size() < max ) { returnMax = routeSchedules.size(); }
 				//logger.debug("Route Detail " + routeDetails.get(i).getId() + " was null - maxVehicles is now " + max);
 			}
 		}

@@ -6,6 +6,7 @@ public class RouteScheduleModel {
 	private String image;
 	private String registrationNumber;
 	private int scheduleNumber;
+	private String routeNumber;
 	
 	public int getDelay() {
 		return delay;
@@ -37,6 +38,14 @@ public class RouteScheduleModel {
 
 	public void setScheduleNumber(final int scheduleNumber) {
 		this.scheduleNumber = scheduleNumber;
+	}
+
+	public String getRouteNumber() {
+		return routeNumber;
+	}
+
+	public void setRouteNumber(final String routeNumber) {
+		this.routeNumber = routeNumber;
 	}
 
 }

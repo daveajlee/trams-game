@@ -31,8 +31,8 @@ public class Timetable {
 	@Column(name="VALID_TO_DATE")
     private Calendar validToDate;
 
-	@Column(name="ROUTE_ID")
-	private long routeId;
+	@Column(name="ROUTE_NUMBER")
+	private String routeNumber;
     
     public Timetable() {
 
@@ -74,12 +74,12 @@ public class Timetable {
         return name;
     }
 
-	public long getRouteId() {
-		return routeId;
+	public String getRouteNumber() {
+		return routeNumber;
 	}
 
-	public void setRouteId(long routeId) {
-		this.routeId = routeId;
+	public void setRouteNumber(final String routeNumber) {
+		this.routeNumber = routeNumber;
 	}
     
 }

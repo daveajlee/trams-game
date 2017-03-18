@@ -27,9 +27,9 @@ public class Route {
 	@GeneratedValue
 	@Column(name="ROUTE_ID")
 	private long id;
-	
-	@Column(name="ROUTE_NUMBER")
-	private String routeNumber;
+
+	@Column(name="NUMBER", unique=true)
+	private String number;
 	
 	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	@Fetch(value = FetchMode.SUBSELECT)
@@ -61,18 +61,18 @@ public class Route {
 
     /**
      * Set route number.
-     * @param routeNumber a <code>String</code> with the route number.
+     * @param number a <code>String</code> with the route number.
      */
-    public void setRouteNumber ( String routeNumber ) {
-        this.routeNumber = routeNumber;
+    public void setNumber ( String number ) {
+        this.number = number;
     } 
     
     /**
      * Get route number.
      * @return a <code>String</code> with the route number.
      */
-    public String getRouteNumber ( ) {
-        return routeNumber;
+    public String getNumber ( ) {
+        return number;
     }
       
     /**
@@ -80,7 +80,7 @@ public class Route {
      * @return a <code>String</code> object.
      */
     public String toString ( ) {
-        return routeNumber + ": " + stops.get(0).getStopName() + " - " + stops.get(stops.size()-1).getStopName();
+        return number + ": " + stops.get(0).getStopName() + " - " + stops.get(stops.size()-1).getStopName();
     }
     
 }

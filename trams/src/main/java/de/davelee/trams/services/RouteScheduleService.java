@@ -106,11 +106,11 @@ public class RouteScheduleService {
         return routeScheduleRepository.findOne(id);
     }
 
-    public RouteSchedule createRouteSchedule ( final long routeId, final int scheduleNumber, final int delayInMins ) {
+    public RouteSchedule createRouteSchedule ( final String routeNumber, final int scheduleNumber, final int delayInMins ) {
     	RouteSchedule schedule = new RouteSchedule();
     	schedule.setScheduleNumber(scheduleNumber);
     	schedule.setDelayInMins(delayInMins);
-        schedule.setRouteId(routeId);
+        schedule.setRouteNumber(routeNumber);
     	return schedule;
     }
 
@@ -118,8 +118,8 @@ public class RouteScheduleService {
         routeScheduleRepository.saveAndFlush(schedule);
     }
 
-    public List<RouteSchedule> getRouteSchedulesByRouteId ( long routeId ) {
-        return routeScheduleRepository.findByRouteId(routeId);
+    public List<RouteSchedule> getRouteSchedulesByRouteNumber ( final String routeNumber ) {
+        return routeScheduleRepository.findByRouteNumber(routeNumber);
     }
 
     public List<RouteSchedule> getAllRouteSchedules ( ) {

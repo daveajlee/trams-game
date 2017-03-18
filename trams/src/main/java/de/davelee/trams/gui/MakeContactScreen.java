@@ -65,7 +65,7 @@ public class MakeContactScreen extends JFrame {
         setIconImage(img);
         
         //Initialise GUI with title and close attributes.
-        this.setTitle ("Contact With " + routeScheduleModel.getRegistrationNumber() + " On Route " + routeController.getRouteNumber(routeScheduleController.getIdFromNumber(routeScheduleModel.getScheduleNumber())));
+        this.setTitle ("Contact With " + routeScheduleModel.getRegistrationNumber() + " On Route " + routeScheduleModel.getRouteNumber());
         this.setResizable (false);
         this.setDefaultCloseOperation (DO_NOTHING_ON_CLOSE);
         this.setBackground(Color.WHITE);

@@ -16,11 +16,8 @@ public class TimetableController {
 	@Autowired
 	private TimetableService timetableService;
 	
-	@Autowired
-	private RouteController routeController;
-	
 	public String[] getTimetableNames ( final RouteModel routeModel ) {
-		List<Timetable> timetables = timetableService.getTimetablesByRouteId(routeController.getRouteId(routeModel.getRouteNumber()));
+		List<Timetable> timetables = timetableService.getTimetablesByRouteNumber(routeModel.getRouteNumber());
 		String[] timetableNames = new String[timetables.size()];
 		for ( int i = 0; i < timetableNames.length; i++ ) {
 			timetableNames[i] = timetables.get(i).getName();
@@ -37,7 +34,7 @@ public class TimetableController {
 	}
 
 	public TimetableModel[] getRouteTimetables ( final RouteModel routeModel ) {
-		List<Timetable> timetables = timetableService.getTimetablesByRouteId(routeController.getRouteId(routeModel.getRouteNumber()));
+		List<Timetable> timetables = timetableService.getTimetablesByRouteNumber(routeModel.getRouteNumber());
 		TimetableModel[] timetableModels = new TimetableModel[timetables.size()];
 		for ( int i = 0; i < timetableModels.length; i++ ) {
 			timetableModels[i] = convertToTimetableModel(timetables.get(i));
@@ -50,7 +47,7 @@ public class TimetableController {
 	}
 	
 	private Timetable getRouteTimetableObject ( final RouteModel routeModel, final String timetableName ) {
-		return timetableService.getTimetableByRouteIdAndName(routeController.getRouteId(routeModel.getRouteNumber()), timetableName);
+		return timetableService.getTimetableByRouteNumberAndName(routeModel.getRouteNumber(), timetableName);
 	}
 	
 	private TimetableModel convertToTimetableModel ( final Timetable timetable ) {
@@ -62,7 +59,7 @@ public class TimetableController {
 	}
 	
 	public void createTimetable ( final String name, final Calendar validFromDate, final Calendar validToDate, final RouteModel routeModel ) {
-		timetableService.createTimetable(name, validFromDate, validToDate, routeController.getRouteId(routeModel.getRouteNumber()));
+		timetableService.createTimetable(name, validFromDate, validToDate, routeModel.getRouteNumber());
 	}
 	
 	public long getIdFromName ( final String name ) {
@@ -70,7 +67,7 @@ public class TimetableController {
 	}
 	
 	public TimetableModel getCurrentTimetable ( final RouteModel routeModel, final Calendar currentDate) {
-		return convertToTimetableModel(timetableService.getCurrentTimetable(routeController.getRouteId(routeModel.getRouteNumber()), currentDate));
+		return convertToTimetableModel(timetableService.getCurrentTimetable(routeModel.getRouteNumber(), currentDate));
 	}
 	
 	/**

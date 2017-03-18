@@ -3,7 +3,7 @@ package de.davelee.trams.controllers;
 import java.util.Calendar;
 
 import de.davelee.trams.data.Game;
-import de.davelee.trams.data.Route;
+import de.davelee.trams.model.RouteModel;
 import de.davelee.trams.model.RouteScheduleModel;
 import de.davelee.trams.util.DateFormats;
 import de.davelee.trams.util.DifficultyLevel;
@@ -135,8 +135,8 @@ public class GameController {
 		//Now count number of route schedules into three groups: 1 - 5 minutes late, 6 - 15 minutes late, 16+ minutes late.
 		int numSmallLateSchedules = 0; int numMediumLateSchedules = 0; int numLargeLateSchedules = 0;
 		//Now go through all routes.
-		for ( Route myRoute : routeController.getAllRoutes() ) {
-			for ( RouteScheduleModel mySchedule : routeScheduleController.getRouteSchedulesByRouteId(myRoute.getId())) {
+		for ( RouteModel myRoute : routeController.getRouteModels() ) {
+			for ( RouteScheduleModel mySchedule : routeScheduleController.getRouteSchedulesByRouteNumber(myRoute.getRouteNumber())) {
 				//Running... 1 - 5 minutes late.
 				if ( mySchedule.getDelay() > 0 && mySchedule.getDelay() < 6 ) {
 					numSmallLateSchedules++;

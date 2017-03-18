@@ -16,22 +16,22 @@ public class TimetableService {
 	public TimetableService() {
 		
 	}
-    
-    public Timetable createTimetable ( final String name, final Calendar validFromDate, final Calendar validToDate, final long routeId) {
+
+    public Timetable createTimetable ( final String name, final Calendar validFromDate, final Calendar validToDate, final String routeNumber) {
     	Timetable timetable = new Timetable();
         timetable.setName(name);
         timetable.setValidFromDate(validFromDate);
         timetable.setValidToDate(validToDate);
-        timetable.setRouteId(routeId);
+        timetable.setRouteNumber(routeNumber);
         return timetable;
     }
 
-    public List<Timetable> getTimetablesByRouteId (long routeId ) {
-        return timetableRepository.findByRouteId(routeId);
+    public List<Timetable> getTimetablesByRouteNumber ( final String routeNumber ) {
+        return timetableRepository.findByRouteNumber(routeNumber);
     }
 
-    public Timetable getTimetableByRouteIdAndName ( long routeId, String timetableName ) {
-        return timetableRepository.findByRouteIdAndName(routeId, timetableName);
+    public Timetable getTimetableByRouteNumberAndName ( final String routeNumber, final String timetableName ) {
+        return timetableRepository.findByRouteNumberAndName(routeNumber, timetableName);
     }
 
     public void deleteTimetable ( Timetable timetable ) {
@@ -48,8 +48,8 @@ public class TimetableService {
      * @param today a <code>Calendar</code> object with today's date.
      * @return a <code>Timetable</code> object.
      */
-    public Timetable getCurrentTimetable ( long routeId, Calendar today ) {
-        List<Timetable> timetables = timetableRepository.findByRouteId(routeId);
+    public Timetable getCurrentTimetable ( final String routeNumber, final Calendar today ) {
+        List<Timetable> timetables = timetableRepository.findByRouteNumber(routeNumber);
         for ( Timetable myTimetable : timetables ) {
             if ( (myTimetable.getValidFromDate().before(today) || myTimetable.getValidFromDate().equals(today)) && (myTimetable.getValidToDate().after(today) || myTimetable.getValidToDate().equals(today))  ) {
                 return myTimetable;

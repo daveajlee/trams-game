@@ -60,8 +60,8 @@ public class ManagePanel {
     private JButton deleteTimetableButton;
     private JButton createRouteButton;
     private RouteModel selectedRouteModel;
-    private String[] selectedOutwardStops;
-    private String[] selectedReturnStops;
+    private List<String> selectedOutwardStops;
+    private List<String> selectedReturnStops;
     private TimetableModel selectedTimetableModel;
 
     private JTextField driverNameField;
@@ -288,7 +288,7 @@ public class ManagePanel {
         routeTimetableButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 //Show the actual screen!
-                controlScreen.redrawManagement(makeTimetablePanel(routeController.getRouteNumberByPosition(0), 0, 0));
+                controlScreen.redrawManagement(makeTimetablePanel(routeController.getRouteModels()[0].getRouteNumber(), 0, 0));
             }
         });
         timetableButtonPanel.add(routeTimetableButton);
@@ -566,16 +566,16 @@ public class ManagePanel {
             public void actionPerformed ( ActionEvent e ) {
                 //First of all, set the selected route.
                 if ( selectedRouteModel == null && timetableModel.getSize() == 0 ) {
-                    selectedOutwardStops = new String[stopBoxes.length];
-                    selectedReturnStops = new String[stopBoxes.length];
+                    selectedOutwardStops = new ArrayList<String>();
+                    selectedReturnStops = new ArrayList<String>();
                     for ( int i = 0; i < stopBoxes.length; i++ ) {
                         if ( !stopBoxes[i].getSelectedItem().toString().equalsIgnoreCase("-") ) {
-                        	selectedOutwardStops[i] = stopBoxes[i].getSelectedItem().toString();
+                            selectedOutwardStops.add(stopBoxes[i].getSelectedItem().toString());
                         }
                     }
                     for ( int i = (stopBoxes.length-1); i >=0; i-- ) {
                         if ( !stopBoxes[i].getSelectedItem().toString().equalsIgnoreCase("-") ) {
-                        	selectedReturnStops[i] = stopBoxes[i].getSelectedItem().toString();
+                            selectedReturnStops.add(stopBoxes[i].getSelectedItem().toString());
                         }
                     }
                 }
@@ -2116,8 +2116,9 @@ public class ManagePanel {
         routesList = new JList(routesModel);
         routesList.setFixedCellWidth(270);
         routesList.setFont(new Font("Arial", Font.PLAIN, 15));
-        for ( int i = 0; i < routeController.getNumberRoutes(); i++ ) {
-            RouteScheduleModel[] routeScheduleModels = routeScheduleController.getRouteSchedules(routeController.getRouteNumberByPosition(i));
+        RouteModel[] routeModels = routeController.getRouteModels();
+        for ( int i = 0; i < routeModels.length; i++ ) {
+            RouteScheduleModel[] routeScheduleModels = routeScheduleController.getRouteSchedules(routeModels[i].getRouteNumber());
             for ( int j = 0; j < routeScheduleModels.length; j++ ) {
                 routesModel.addElement(routeScheduleModels[j].getScheduleNumber());
             }

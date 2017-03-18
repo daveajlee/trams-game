@@ -17,7 +17,7 @@ public class Vehicle {
 	@Column(name="VEHICLE_ID")
 	private long id;
 	
-	@Column(name="REGISTRATION_NUMBER")
+	@Column(name="REGISTRATION_NUMBER", unique = true)
 	private String registrationNumber;
 	
 	@Column(name="DELIVERY_DATE")
