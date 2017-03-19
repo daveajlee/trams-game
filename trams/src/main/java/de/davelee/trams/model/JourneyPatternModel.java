@@ -13,12 +13,14 @@ public class JourneyPatternModel {
 	private Calendar endTime;
 	private int frequency;
 	private int duration;
+	private String routeNumber;
+	private String timetableName;
 
 	public String getName() {
 		return name;
 	}
 
-	public void setName(String name) {
+	public void setName(final String name) {
 		this.name = name;
 	}
 
@@ -26,7 +28,7 @@ public class JourneyPatternModel {
 		return daysOfOperation;
 	}
 
-	public void setDaysOfOperation(List<Integer> daysOfOperation) {
+	public void setDaysOfOperation(final List<Integer> daysOfOperation) {
 		this.daysOfOperation = daysOfOperation;
 	}
 
@@ -34,7 +36,7 @@ public class JourneyPatternModel {
 		return returnTerminus;
 	}
 
-	public void setReturnTerminus(String returnTerminus) {
+	public void setReturnTerminus(final String returnTerminus) {
 		this.returnTerminus = returnTerminus;
 	}
 
@@ -42,7 +44,7 @@ public class JourneyPatternModel {
 		return outgoingTerminus;
 	}
 
-	public void setOutgoingTerminus(String outgoingTerminus) {
+	public void setOutgoingTerminus(final String outgoingTerminus) {
 		this.outgoingTerminus = outgoingTerminus;
 	}
 
@@ -50,7 +52,7 @@ public class JourneyPatternModel {
 		return startTime;
 	}
 
-	public void setStartTime(Calendar startTime) {
+	public void setStartTime(final Calendar startTime) {
 		this.startTime = startTime;
 	}
 
@@ -58,7 +60,7 @@ public class JourneyPatternModel {
 		return endTime;
 	}
 
-	public void setEndTime(Calendar endTime) {
+	public void setEndTime(final Calendar endTime) {
 		this.endTime = endTime;
 	}
 
@@ -66,7 +68,7 @@ public class JourneyPatternModel {
 		return frequency;
 	}
 
-	public void setFrequency(int frequency) {
+	public void setFrequency(final int frequency) {
 		this.frequency = frequency;
 	}
 
@@ -74,8 +76,24 @@ public class JourneyPatternModel {
 		return duration;
 	}
 
-	public void setDuration(int duration) {
+	public void setDuration(final int duration) {
 		this.duration = duration;
+	}
+
+	public String getRouteNumber() {
+		return routeNumber;
+	}
+
+	public void setRouteNumber(final String routeNumber) {
+		this.routeNumber = routeNumber;
+	}
+
+	public String getTimetableName() {
+		return timetableName;
+	}
+
+	public void setTimetableName(final String timetableName) {
+		this.timetableName = timetableName;
 	}
 
 }

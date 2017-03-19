@@ -4,10 +4,7 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import de.davelee.trams.data.*;
-import de.davelee.trams.model.DriverModel;
-import de.davelee.trams.model.RouteModel;
-import de.davelee.trams.model.TimetableModel;
-import de.davelee.trams.model.VehicleModel;
+import de.davelee.trams.model.*;
 
 @XmlRootElement
 public class TramsFile {
@@ -15,7 +12,7 @@ public class TramsFile {
     private DriverModel[] driverModels;
     private Game game;
     private List<Journey> journeys;
-    private List<JourneyPattern> journeyPatterns;
+    private JourneyPatternModel[] journeyPatternModels;
 	private List<Message> messages;
     private RouteModel[] routeModels;
 	private List<RouteSchedule> routeSchedules;
@@ -26,13 +23,13 @@ public class TramsFile {
 
     public TramsFile ( ) { }
 
-    public TramsFile ( DriverModel[] driverModels, Game game, List<Journey> journeys, List<JourneyPattern> journeyPatterns,
+    public TramsFile ( DriverModel[] driverModels, Game game, List<Journey> journeys, JourneyPatternModel[] journeyPatternModels,
 			List<Message> messages, RouteModel[] routeModels, List<RouteSchedule> routeSchedules,
 			List<Stop> stops, List<StopTime> stopTimes, TimetableModel[] timetableModels, VehicleModel[] vehicleModels) {
                 this.driverModels = driverModels;
                 /*this.game = game;*/
 				this.journeys = journeys;
-                this.journeyPatterns = journeyPatterns;
+                this.journeyPatternModels = journeyPatternModels;
                 this.messages = messages;
                 this.routeModels = routeModels;
                 this.routeSchedules = routeSchedules;
@@ -66,12 +63,12 @@ public class TramsFile {
 		this.journeys = journeys;
 	}
 
-    public List<JourneyPattern> getJourneyPatterns() {
-        return journeyPatterns;
+    public JourneyPatternModel[] getJourneyPatternModels() {
+        return journeyPatternModels;
     }
 
-    public void setJourneyPatterns(List<JourneyPattern> journeyPatterns) {
-        this.journeyPatterns = journeyPatterns;
+    public void setJourneyPatternModels(JourneyPatternModel[] journeyPatternModels) {
+        this.journeyPatternModels = journeyPatternModels;
     }
 
     public List<Message> getMessages() {

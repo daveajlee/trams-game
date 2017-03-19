@@ -17,7 +17,7 @@ public class JourneyPattern {
     
 	@Id
 	@GeneratedValue
-	@Column(name="JOURNEY_PATTERN_ID")
+	@Column
 	private long id;
 	
 	@Column
@@ -26,25 +26,25 @@ public class JourneyPattern {
 	@ElementCollection(fetch = FetchType.EAGER)
 	@CollectionTable(name="DAYS_OF_OPERATIONS")
 	@Fetch(value = FetchMode.SUBSELECT)
-	@Column(name="DAYS_OF_OPERATION")
+	@Column
     private List<Integer> daysOfOperation;
 	
-	@Column(name="RETURN_TERMINUS")
+	@Column
     private String returnTerminus;
 	
-	@Column(name="OUTGOING_TERMINUS")
+	@Column
     private String outgoingTerminus;
 	
-	@Column(name="START_TIME")
+	@Column
     private Calendar startTime;
 	
-	@Column(name="END_TIME")
+	@Column
     private Calendar endTime;
 	
-	@Column(name="FREQUENCY")
+	@Column
     private int frequency;
 	
-	@Column(name="ROUTE_DURATION")
+	@Column
     private int routeDuration;
 
 	@Column

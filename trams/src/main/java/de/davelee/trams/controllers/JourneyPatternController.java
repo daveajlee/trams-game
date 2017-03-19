@@ -12,7 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import de.davelee.trams.data.JourneyPattern;
 import de.davelee.trams.model.TimetableModel;
 import de.davelee.trams.services.JourneyPatternService;
 
@@ -27,36 +26,28 @@ public class JourneyPatternController {
 	private static final Logger logger = LoggerFactory.getLogger(JourneyPatternController.class);
 	
 	public JourneyPatternModel[] getJourneyPatternModels (final TimetableModel timetableModel, final String routeNumber ) {
-		List<JourneyPattern> journeyPatterns = journeyPatternService.getJourneyPatternsByTimetableNameAndRouteNumber(timetableModel.getName(), routeNumber);
-		JourneyPatternModel[] journeyPatternModels = new JourneyPatternModel[journeyPatterns.size()];
-		for ( int i = 0; i < journeyPatternModels.length; i++ ) {
-			journeyPatternModels[i] = convertToJourneyPatternModel(journeyPatterns.get(i));
-		}
-		return journeyPatternModels;
+		return journeyPatternService.getJourneyPatternsByTimetableNameAndRouteNumber(timetableModel.getName(), routeNumber);
 	}
 	
 	public void createJourneyPattern ( final String name, final List<Integer> operatingDays, final String outgoingTerminus, 
 			final String returnTerminus, final Calendar timeFrom, final Calendar timeTo, final int frequency, final int routeDuration,
 			final TimetableModel timetableModel, final String routeNumber ) {
-		journeyPatternService.createJourneyPattern(name, operatingDays, outgoingTerminus, returnTerminus, timeFrom, timeTo,
-				frequency, routeDuration, timetableModel.getName(), routeNumber);
-	}
-
-	public List<JourneyPattern> getAllJourneyPatterns ( ) {
-		return journeyPatternService.getAllJourneyPatterns();
-	}
-
-	private JourneyPatternModel convertToJourneyPatternModel ( final JourneyPattern journeyPattern ) {
 		JourneyPatternModel journeyPatternModel = new JourneyPatternModel();
-		journeyPatternModel.setDaysOfOperation(journeyPattern.getDaysOfOperation());
-		journeyPatternModel.setDuration(journeyPattern.getRouteDuration());
-		journeyPatternModel.setEndTime(journeyPattern.getEndTime());
-		journeyPatternModel.setFrequency(journeyPattern.getFrequency());
-		journeyPatternModel.setName(journeyPattern.getName());
-		journeyPatternModel.setOutgoingTerminus(journeyPattern.getOutgoingTerminus());
-		journeyPatternModel.setReturnTerminus(journeyPattern.getReturnTerminus());
-		journeyPatternModel.setStartTime(journeyPattern.getStartTime());
-		return journeyPatternModel;
+		journeyPatternModel.setName(name);
+		journeyPatternModel.setDaysOfOperation(operatingDays);
+		journeyPatternModel.setOutgoingTerminus(outgoingTerminus);
+		journeyPatternModel.setReturnTerminus(returnTerminus);
+		journeyPatternModel.setStartTime(timeFrom);
+		journeyPatternModel.setEndTime(timeTo);
+		journeyPatternModel.setFrequency(frequency);
+		journeyPatternModel.setDuration(routeDuration);
+		journeyPatternModel.setTimetableName(timetableModel.getName());
+		journeyPatternModel.setRouteNumber(routeNumber);
+		journeyPatternService.saveJourneyPattern(journeyPatternModel);
+	}
+
+	public JourneyPatternModel[] getAllJourneyPatterns ( ) {
+		return journeyPatternService.getAllJourneyPatterns();
 	}
 
 	/**
