@@ -2,11 +2,7 @@ package de.davelee.trams.data;
 
 import java.util.Calendar;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 import de.davelee.trams.util.MessageFolder;
 
@@ -15,27 +11,27 @@ import de.davelee.trams.util.MessageFolder;
  * @author Dave Lee
  */
 @Entity
-@Table(name="MESSAGE")
+@Table(name="MESSAGE", uniqueConstraints=@UniqueConstraint(columnNames = {"subject", "sender", "date"}))
 public class Message {
 	
 	@Id
 	@GeneratedValue
-	@Column(name="MESSAGE_ID", nullable=false)
+	@Column(nullable=false)
 	private int id;
 
-	@Column(name="SUBJECT")
+	@Column
     private String subject;
 	
-	@Column(name="TEXT")
+	@Column
     private String text;
 	
-	@Column(name="SENDER")
+	@Column
     private String sender;
 	
-	@Column(name="DATE")
+	@Column
     private Calendar date;
 	
-	@Column(name="FOLDER")
+	@Column
 	private MessageFolder folder;
 
     /**
@@ -48,7 +44,7 @@ public class Message {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(final int id) {
 		this.id = id;
 	}
 
@@ -60,7 +56,7 @@ public class Message {
         return subject;
     }
     
-    public void setSubject ( String subject ) {
+    public void setSubject ( final String subject ) {
     	this.subject = subject;
     }
 
@@ -72,7 +68,7 @@ public class Message {
         return text;
     }
     
-    public void setText ( String text ) {
+    public void setText ( final String text ) {
     	this.text = text;
     }
 
@@ -84,7 +80,7 @@ public class Message {
         return sender;
     }
     
-    public void setSender ( String sender ) {
+    public void setSender ( final String sender ) {
     	this.sender = sender;
     }
     
@@ -96,7 +92,7 @@ public class Message {
         return date;
     }
     
-    public void setDate(Calendar date) {
+    public void setDate(final Calendar date) {
     	this.date = date;
     }
 
@@ -108,7 +104,7 @@ public class Message {
     	return folder;
     }
     
-    public void setFolder ( MessageFolder folder ) {
+    public void setFolder ( final MessageFolder folder ) {
     	this.folder = folder;
     }
 

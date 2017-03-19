@@ -13,7 +13,7 @@ public class TramsFile {
     private Game game;
     private List<Journey> journeys;
     private JourneyPatternModel[] journeyPatternModels;
-	private List<Message> messages;
+    private MessageModel[] messageModels;
     private RouteModel[] routeModels;
 	private List<RouteSchedule> routeSchedules;
     private List<Stop> stops;
@@ -24,13 +24,13 @@ public class TramsFile {
     public TramsFile ( ) { }
 
     public TramsFile ( DriverModel[] driverModels, Game game, List<Journey> journeys, JourneyPatternModel[] journeyPatternModels,
-			List<Message> messages, RouteModel[] routeModels, List<RouteSchedule> routeSchedules,
+                       MessageModel[] messageModels, RouteModel[] routeModels, List<RouteSchedule> routeSchedules,
 			List<Stop> stops, List<StopTime> stopTimes, TimetableModel[] timetableModels, VehicleModel[] vehicleModels) {
                 this.driverModels = driverModels;
                 /*this.game = game;*/
 				this.journeys = journeys;
                 this.journeyPatternModels = journeyPatternModels;
-                this.messages = messages;
+                this.messageModels = messageModels;
                 this.routeModels = routeModels;
                 this.routeSchedules = routeSchedules;
                 this.stops = stops;
@@ -67,23 +67,23 @@ public class TramsFile {
         return journeyPatternModels;
     }
 
-    public void setJourneyPatternModels(JourneyPatternModel[] journeyPatternModels) {
+    public void setJourneyPatternModels(final JourneyPatternModel[] journeyPatternModels) {
         this.journeyPatternModels = journeyPatternModels;
     }
 
-    public List<Message> getMessages() {
-        return messages;
+    public MessageModel[] getMessageModels() {
+        return messageModels;
     }
 
-    public void setMessages(List<Message> messages) {
-        this.messages = messages;
+    public void setMessageModels(final MessageModel[] messageModels) {
+        this.messageModels = messageModels;
     }
 
     public RouteModel[] getRoutes() {
         return routeModels;
     }
 
-    public void setRoutes(RouteModel[] routeModels) {
+    public void setRoutes(final RouteModel[] routeModels) {
         this.routeModels = routeModels;
     }
 
@@ -115,7 +115,7 @@ public class TramsFile {
         return timetableModels;
     }
 
-    public void setTimetableModels(TimetableModel[] timetableModels) {
+    public void setTimetableModels(final TimetableModel[] timetableModels) {
         this.timetableModels = timetableModels;
     }
 
@@ -123,7 +123,7 @@ public class TramsFile {
         return vehicleModels;
     }
 
-    public void setVehicleModels(VehicleModel[] vehicleModels) {
+    public void setVehicleModels(final VehicleModel[] vehicleModels) {
         this.vehicleModels = vehicleModels;
     }
 }

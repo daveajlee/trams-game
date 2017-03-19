@@ -1,13 +1,12 @@
 package de.davelee.trams.controllers;
 
 import java.util.Calendar;
-import java.util.List;
 
+import de.davelee.trams.model.MessageModel;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import de.davelee.trams.services.MessageService;
 import de.davelee.trams.util.MessageFolder;
-import de.davelee.trams.data.Message;
 
 public class MessageController {
 	
@@ -21,23 +20,10 @@ public class MessageController {
      * @param sender a <code>String</code> with the sender.
      * @return a <code>LinkedList</code> with messages.
      */
-    public long[] getMessageIds ( final String folder, final String date, final String sender ) {
+    public MessageModel[] getMessagesByFolderDateSender ( final String folder, final String date, final String sender ) {
         //Return a message list.
-        return messageService.getMessageIds(messageService.getAllMessages(), MessageFolder.valueOf(folder), date, sender);
-    }
-    
-    public String[] getMessageSubjects ( final String folder, final String date, final String sender ) {
-    	long[] messageIds = messageService.getMessageIds(messageService.getAllMessages(), MessageFolder.valueOf(folder), date, sender);
-    	String[] subjects = new String[messageIds.length];
-    	for ( int i = 0; i < subjects.length; i++ ) {
-    		subjects[i] = messageService.getMessageById(messageIds[i]).getSubject();
-    	}
-    	return subjects;
-    }
-    
-    public String getMessageText ( final String folder, final String date, final String sender, final int pos ) {
-    	return messageService.getMessageById(messageService.getMessageIds(messageService.getAllMessages(), MessageFolder.valueOf(folder), date, sender)
-    			[pos]).getText();
+        //TODO: Implement date conversion - string to calendar.
+        return messageService.getMessagesByFolderSenderDate(MessageFolder.valueOf(folder), Calendar.getInstance(), sender);
     }
     
     /**
@@ -45,20 +31,7 @@ public class MessageController {
      * @return a <code>int</code> with the number of messages.
      */
     public int getNumberMessages ( ) {
-        return messageService.getAllMessages().size();
-    }
-    
-    /**
-     * Get the message at the supplied position.
-     * @param pos a <code>int</code> with the position.
-     * @return a <code>Message</code> object which is at the supplied position.
-     */
-    public long getMessageId ( final int pos ) {
-        return messageService.getAllMessages().get(pos).getId();
-    }
-    
-    public Calendar getMessageDateByPosition ( final int position ) {
-    	return messageService.getMessageById(position).getDate();
+        return messageService.getAllMessages().length;
     }
     
     /**
@@ -66,11 +39,16 @@ public class MessageController {
      * @param msg a <code>Message</code> object!
      */
     public void addMessage ( final String subject, final String text, final String sender, final String folder, final Calendar date) {
-    	messageService.saveMessage(messageService.createMessage(subject, text, sender, MessageFolder.valueOf(folder), date));
+        MessageModel messageModel = new MessageModel();
+        messageModel.setSubject(subject);
+        messageModel.setText(text);
+        messageModel.setSender(sender);
+        messageModel.setMessageFolder(MessageFolder.valueOf(folder));
+        messageModel.setDate(date);
+        messageService.saveMessage(messageModel);
     }
-    
-    public List<Message> getAllMessages ( ) {
-    	return messageService.getAllMessages();
+
+    public MessageModel[] getAllMessages ( ) { return messageService.getAllMessages();
     }
 
 }

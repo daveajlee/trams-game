@@ -12,6 +12,7 @@ import javax.swing.*;
 import javax.swing.event.*;
 
 import de.davelee.trams.controllers.*;
+import de.davelee.trams.model.MessageModel;
 import de.davelee.trams.model.RouteModel;
 import de.davelee.trams.model.RouteScheduleModel;
 import de.davelee.trams.model.ScenarioModel;
@@ -329,20 +330,20 @@ public class ControlScreen extends ButtonBar {
             //Now add a message to summarise days events!!!
             messageController.addMessage("Passenger Satisfaction for " + gameController.formatDateString(gameController.getPreviousSimTime(), DateFormats.FULL_FORMAT), "Congratulations you have successfully completed transport operations for " + gameController.getScenarioName() + " on " + gameController.formatDateString(gameController.getPreviousSimTime(), DateFormats.FULL_FORMAT) + " with a passenger satisfaction of " + gameController.computeAndReturnPassengerSatisfaction() + "%.\n\nNow you need to allocate vehicles to routes for " + gameController.formatDateString(gameController.getCurrentSimTime(), DateFormats.FULL_FORMAT) + " and keep the passenger satisfaction up! Click on the Management tab and then choose Allocations. Good luck!", "Council", "INBOX", gameController.getCurrentSimTime());
             //Refresh messages.
-            String[] messageSubjects = messageController.getMessageSubjects(foldersBox.getSelectedItem().toString(),dateBox.getSelectedItem().toString(),"Council");
+            MessageModel[] messageModels = messageController.getMessagesByFolderDateSender(foldersBox.getSelectedItem().toString(),dateBox.getSelectedItem().toString(),"Council");
             messagesModel.removeAllElements();
-            for ( int i = 0; i < messageSubjects.length; i++ ) {
-                messagesModel.addElement(messageSubjects[i]);
+            for ( int i = 0; i < messageModels.length; i++ ) {
+                messagesModel.addElement(messageModels[i].getSubject());
             }
             messagesList.setSelectedIndex(0);
-            if ( messageSubjects.length == 0 && dateBox.getSelectedItem().toString().equalsIgnoreCase("All Dates") ) {
+            if ( messageModels.length == 0 && dateBox.getSelectedItem().toString().equalsIgnoreCase("All Dates") ) {
                 messagesArea.setText("There are no messages in the " + foldersBox.getSelectedItem().toString() + " folder.");
             }
-            else if ( messageSubjects.length == 0 ) {
+            else if ( messageModels.length == 0 ) {
                 messagesArea.setText("There are no messages in the " + foldersBox.getSelectedItem().toString() + " folder for the date " + dateBox.getSelectedItem().toString() + ".");
             }
             else {
-                messagesArea.setText(messageController.getMessageText(foldersBox.getSelectedItem().toString(),dateBox.getSelectedItem().toString(), "Council", messagesList.getSelectedIndex()));
+                messagesArea.setText(messageModels[messagesList.getSelectedIndex()].getText());
             }
             dateModel.addElement(gameController.formatDateString(gameController.getCurrentSimTime(), DateFormats.FULL_TIME_FORMAT).split("-")[0]);
             //Then display it to the user.
@@ -471,10 +472,11 @@ public class ControlScreen extends ButtonBar {
         messagesList = new JList(messagesModel);
         messagesList.setVisibleRowCount(5);
         messagesArea = new JTextArea();
+        final MessageModel[] messageModels = messageController.getMessagesByFolderDateSender(foldersBox.getSelectedItem().toString(),dateBox.getSelectedItem().toString(),"Council");
         messagesList.addListSelectionListener( new ListSelectionListener() {
             public void valueChanged ( ListSelectionEvent lse ) {
                 if ( messagesList.getSelectedIndex() != -1 ) {
-                    messagesArea.setText(messageController.getMessageText(foldersBox.getSelectedItem().toString(),dateBox.getSelectedItem().toString(),"Council",messagesList.getSelectedIndex()));
+                    messagesArea.setText(messageModels[messagesList.getSelectedIndex()].getText());
                 }
             }
         });
@@ -493,30 +495,31 @@ public class ControlScreen extends ButtonBar {
         //Create combo box with date.
         dateModel = new DefaultComboBoxModel();
         dateModel.addElement("All Dates");
-        for ( int i = 0; i < messageController.getNumberMessages(); i++ ) {
-            logger.debug("Index of " + dateModel.getIndexOf(messageController.getMessageDateByPosition(i)));
-            if ( dateModel.getIndexOf(messageController.getMessageDateByPosition(i)) == -1 ) {
-                dateModel.addElement(messageController.getMessageDateByPosition(i));
+        final MessageModel[] allMessageModels = messageController.getAllMessages();
+        for ( int i = 0; i < allMessageModels.length; i++ ) {
+            logger.debug("Index of " + dateModel.getIndexOf(allMessageModels[i].getDate()));
+            if ( dateModel.getIndexOf(allMessageModels[i].getDate()) == -1 ) {
+                dateModel.addElement(allMessageModels[i].getDate());
             }
         }
         dateBox = new JComboBox(dateModel);
         dateBox.setFont(new Font("Arial", Font.PLAIN, 12));
         dateBox.addItemListener( new ItemListener() {
             public void itemStateChanged ( ItemEvent e ) {
-                String[] subjects = messageController.getMessageSubjects(foldersBox.getSelectedItem().toString(),dateBox.getSelectedItem().toString(), "Council");
+                MessageModel[] messageModels = messageController.getMessagesByFolderDateSender(foldersBox.getSelectedItem().toString(),dateBox.getSelectedItem().toString(), "Council");
                 messagesModel.removeAllElements();
-                for ( int i = 0; i < subjects.length; i++ ) {
-                    messagesModel.addElement(subjects[i]);
+                for ( int i = 0; i < messageModels.length; i++ ) {
+                    messagesModel.addElement(messageModels[i].getSubject());
                 }
                 messagesList.setSelectedIndex(0);
-                if ( subjects.length == 0 && dateBox.getSelectedItem().toString().equalsIgnoreCase("All Dates") ) {
+                if ( messageModels.length == 0 && dateBox.getSelectedItem().toString().equalsIgnoreCase("All Dates") ) {
                     messagesArea.setText("There are no messages in the " + foldersBox.getSelectedItem().toString() + " folder.");
                 }
-                else if ( subjects.length == 0 ) {
+                else if ( messageModels.length == 0 ) {
                     messagesArea.setText("There are no messages in the " + foldersBox.getSelectedItem().toString() + " folder for the date " + dateBox.getSelectedItem().toString() + ".");
                 }
                 else {
-                    messagesArea.setText(messageController.getMessageText(foldersBox.getSelectedItem().toString(),dateBox.getSelectedItem().toString(), "Council", messagesList.getSelectedIndex()));
+                    messagesArea.setText(messageModels[messagesList.getSelectedIndex()].getText());
                 }
             }
         });
@@ -544,20 +547,20 @@ public class ControlScreen extends ButtonBar {
         foldersBox.setFont(new Font("Arial", Font.PLAIN, 12));
         foldersBox.addItemListener ( new ItemListener() {
             public void itemStateChanged ( ItemEvent e ) {
-                String[] subjects = messageController.getMessageSubjects(foldersBox.getSelectedItem().toString(),dateBox.getSelectedItem().toString(),"Council");
+                MessageModel[] messageModels = messageController.getMessagesByFolderDateSender(foldersBox.getSelectedItem().toString(),dateBox.getSelectedItem().toString(), "Council");
                 messagesModel.removeAllElements();
-                for ( int i = 0; i < subjects.length; i++ ) {
-                    messagesModel.addElement(subjects[i]);
+                for ( int i = 0; i < messageModels.length; i++ ) {
+                    messagesModel.addElement(messageModels[i]);
                 }
                 messagesList.setSelectedIndex(0);
-                if ( subjects.length == 0 && dateBox.getSelectedItem().toString().equalsIgnoreCase("All Dates") ) {
+                if ( messageModels.length == 0 && dateBox.getSelectedItem().toString().equalsIgnoreCase("All Dates") ) {
                     messagesArea.setText("There are no messages in the " + foldersBox.getSelectedItem().toString() + " folder.");
                 }
-                else if ( subjects.length == 0 ) {
+                else if ( messageModels.length == 0 ) {
                     messagesArea.setText("There are no messages in the " + foldersBox.getSelectedItem().toString() + " folder for the date " + dateBox.getSelectedItem().toString() + ".");
                 }
                 else {
-                    messagesArea.setText(messageController.getMessageText(foldersBox.getSelectedItem().toString(),dateBox.getSelectedItem().toString(),"Council", messagesList.getSelectedIndex()));
+                    messagesArea.setText(messageModels[messagesList.getSelectedIndex()].getText());
                 }
             }
         });
@@ -567,9 +570,9 @@ public class ControlScreen extends ButtonBar {
         //Add west panel to messages panel.
         messagesPanel.add(westPanel, BorderLayout.WEST);
         //Initialise the messages list now.
-        String[] subjects = messageController.getMessageSubjects(foldersBox.getSelectedItem().toString(),dateBox.getSelectedItem().toString(),"Council");
-        for ( int i = 0; i < subjects.length; i++ ) {
-            messagesModel.addElement(subjects[i]);
+        MessageModel[] myMessageModels = messageController.getMessagesByFolderDateSender(foldersBox.getSelectedItem().toString(),dateBox.getSelectedItem().toString(), "Council");
+        for ( int i = 0; i < myMessageModels.length; i++ ) {
+            messagesModel.addElement(myMessageModels[i].getSubject());
         }
         messagesList.setSelectedIndex(0);
         
@@ -581,14 +584,14 @@ public class ControlScreen extends ButtonBar {
         JPanel messageAndButtonPanel = new JPanel(new BorderLayout());
         messageAndButtonPanel.setBackground(Color.WHITE);
         JScrollPane messagesPane = new JScrollPane();
-        if ( subjects.length == 0 && dateBox.getSelectedItem().toString().equalsIgnoreCase("All Dates") ) {
+        if ( myMessageModels.length == 0 && dateBox.getSelectedItem().toString().equalsIgnoreCase("All Dates") ) {
             messagesArea.setText("There are no messages in the " + foldersBox.getSelectedItem().toString() + " folder.");
         }
-        else if ( subjects.length == 0 ) {
+        else if ( myMessageModels.length == 0 ) {
             messagesArea.setText("There are no messages in the " + foldersBox.getSelectedItem().toString() + " for the date " + dateBox.getSelectedItem().toString() + " folder.");
         }
         else {
-            messagesArea.setText(messageController.getMessageText(foldersBox.getSelectedItem().toString(),dateBox.getSelectedItem().toString(),"Council", messagesList.getSelectedIndex()));
+            messagesArea.setText(myMessageModels[messagesList.getSelectedIndex()].getText());
         }
         messagesArea.setFont(new Font("Arial", Font.ITALIC, 12));
         messagesArea.setWrapStyleWord(true);
