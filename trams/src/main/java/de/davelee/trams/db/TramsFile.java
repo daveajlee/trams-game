@@ -6,6 +6,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import de.davelee.trams.data.*;
 import de.davelee.trams.model.DriverModel;
 import de.davelee.trams.model.RouteModel;
+import de.davelee.trams.model.TimetableModel;
 import de.davelee.trams.model.VehicleModel;
 
 @XmlRootElement
@@ -20,14 +21,14 @@ public class TramsFile {
 	private List<RouteSchedule> routeSchedules;
     private List<Stop> stops;
     private List<StopTime> stopTimes;
-	private List<Timetable> timetables;
+    private TimetableModel[] timetableModels;
     private VehicleModel[] vehicleModels;
 
     public TramsFile ( ) { }
 
     public TramsFile ( DriverModel[] driverModels, Game game, List<Journey> journeys, List<JourneyPattern> journeyPatterns,
 			List<Message> messages, RouteModel[] routeModels, List<RouteSchedule> routeSchedules,
-			List<Stop> stops, List<StopTime> stopTimes, List<Timetable> timetables, VehicleModel[] vehicleModels) {
+			List<Stop> stops, List<StopTime> stopTimes, TimetableModel[] timetableModels, VehicleModel[] vehicleModels) {
                 this.driverModels = driverModels;
                 /*this.game = game;*/
 				this.journeys = journeys;
@@ -37,7 +38,7 @@ public class TramsFile {
                 this.routeSchedules = routeSchedules;
                 this.stops = stops;
                 this.stopTimes = stopTimes;
-                this.timetables = timetables;
+                this.timetableModels = timetableModels;
                 this.vehicleModels = vehicleModels;
     }
 
@@ -113,12 +114,12 @@ public class TramsFile {
         this.stopTimes = stopTimes;
     }
 
-    public List<Timetable> getTimetables() {
-        return timetables;
+    public TimetableModel[] getTimetableModels() {
+        return timetableModels;
     }
 
-    public void setTimetables(List<Timetable> timetables) {
-        this.timetables = timetables;
+    public void setTimetableModels(TimetableModel[] timetableModels) {
+        this.timetableModels = timetableModels;
     }
 
     public VehicleModel[] getVehicleModels() {

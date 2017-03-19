@@ -4,6 +4,7 @@ import java.util.Calendar;
 import java.util.List;
 
 import de.davelee.trams.data.Timetable;
+import de.davelee.trams.model.TimetableModel;
 import de.davelee.trams.repository.TimetableRepository;
 import de.davelee.trams.util.DateFormats;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,29 +18,52 @@ public class TimetableService {
 		
 	}
 
-    public Timetable createTimetable ( final String name, final Calendar validFromDate, final Calendar validToDate, final String routeNumber) {
+    public void saveTimetable ( final TimetableModel timetableModel ) {
+        timetableRepository.saveAndFlush(convertToTimetable(timetableModel));
+    }
+
+    private Timetable convertToTimetable ( final TimetableModel timetableModel ) {
     	Timetable timetable = new Timetable();
-        timetable.setName(name);
-        timetable.setValidFromDate(validFromDate);
-        timetable.setValidToDate(validToDate);
-        timetable.setRouteNumber(routeNumber);
+        timetable.setName(timetableModel.getName());
+        timetable.setRouteNumber(timetableModel.getRouteNumber());
+        timetable.setValidFromDate(timetable.getValidFromDate());
+        timetable.setValidToDate(timetableModel.getValidToDate());
         return timetable;
     }
 
-    public List<Timetable> getTimetablesByRouteNumber ( final String routeNumber ) {
-        return timetableRepository.findByRouteNumber(routeNumber);
+    private TimetableModel convertToTimetableModel ( final Timetable timetable ) {
+        TimetableModel timetableModel = new TimetableModel();
+        timetableModel.setName(timetable.getName());
+        timetableModel.setRouteNumber(timetable.getRouteNumber());
+        timetableModel.setValidFromDate(timetable.getValidFromDate());
+        timetableModel.setValidToDate(timetable.getValidToDate());
+        return timetableModel;
     }
 
-    public Timetable getTimetableByRouteNumberAndName ( final String routeNumber, final String timetableName ) {
-        return timetableRepository.findByRouteNumberAndName(routeNumber, timetableName);
+    public TimetableModel[] getTimetablesByRouteNumber ( final String routeNumber ) {
+        List<Timetable> timetables = timetableRepository.findByRouteNumber(routeNumber);
+        TimetableModel[] timetableModels = new TimetableModel[timetables.size()];
+        for ( int i = 0; i < timetableModels.length; i++ ) {
+            timetableModels[i] = convertToTimetableModel(timetables.get(i));
+        }
+        return timetableModels;
     }
 
-    public void deleteTimetable ( Timetable timetable ) {
-        timetableRepository.delete(timetable);
+    public TimetableModel getTimetableByRouteNumberAndName ( final String routeNumber, final String timetableName ) {
+        return convertToTimetableModel(timetableRepository.findByRouteNumberAndName(routeNumber, timetableName));
     }
 
-    public List<Timetable> getAllTimetables ( ) {
-        return timetableRepository.findAll();
+    public void deleteTimetable ( final TimetableModel timetableModel ) {
+        timetableRepository.delete(timetableRepository.findByRouteNumberAndName(timetableModel.getRouteNumber(), timetableModel.getName()));
+    }
+
+    public TimetableModel[] getAllTimetableModels ( ) {
+        List<Timetable> timetables = timetableRepository.findAll();
+        TimetableModel[] timetableModels = new TimetableModel[timetables.size()];
+        for ( int i = 0; i < timetableModels.length; i++ ) {
+            timetableModels[i] = convertToTimetableModel(timetables.get(i));
+        }
+        return timetableModels;
     }
 
     /**
@@ -48,18 +72,14 @@ public class TimetableService {
      * @param today a <code>Calendar</code> object with today's date.
      * @return a <code>Timetable</code> object.
      */
-    public Timetable getCurrentTimetable ( final String routeNumber, final Calendar today ) {
+    public TimetableModel getCurrentTimetable ( final String routeNumber, final Calendar today ) {
         List<Timetable> timetables = timetableRepository.findByRouteNumber(routeNumber);
         for ( Timetable myTimetable : timetables ) {
             if ( (myTimetable.getValidFromDate().before(today) || myTimetable.getValidFromDate().equals(today)) && (myTimetable.getValidToDate().after(today) || myTimetable.getValidToDate().equals(today))  ) {
-                return myTimetable;
+                return convertToTimetableModel(myTimetable);
             }
         }
         return null; //If can't find timetable.
-    }
-
-    public Timetable getTimetableByName ( final String timetableName ) {
-        return timetableRepository.findByName(timetableName);
     }
 
 }

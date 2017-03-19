@@ -2,14 +2,7 @@ package de.davelee.trams.data;
 
 import java.util.*;
 
-import javax.persistence.CollectionTable;
-import javax.persistence.Column;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -19,7 +12,7 @@ import org.hibernate.annotations.FetchMode;
  * @author Dave Lee.
  */
 @Entity
-@Table(name="JOURNEY_PATTERN")
+@Table(name="JOURNEY_PATTERN", uniqueConstraints=@UniqueConstraint(columnNames = {"name", "routeNumber", "timetableName"}))
 public class JourneyPattern {
     
 	@Id
@@ -27,7 +20,7 @@ public class JourneyPattern {
 	@Column(name="JOURNEY_PATTERN_ID")
 	private long id;
 	
-	@Column(name="NAME")
+	@Column
     private String name;
 	
 	@ElementCollection(fetch = FetchType.EAGER)
@@ -54,8 +47,11 @@ public class JourneyPattern {
 	@Column(name="ROUTE_DURATION")
     private int routeDuration;
 
-	@Column(name="TIMETABLE_ID")
-	private long timetableId;
+	@Column
+	private String timetableName;
+
+	@Column
+	private String routeNumber;
     
 	/**
      * Create a new JourneyPattern object.
@@ -70,7 +66,7 @@ public class JourneyPattern {
         return name;
     }
     
-    public void setName(String name) {
+    public void setName(final String name) {
 		this.name = name;
 	}
     
@@ -78,7 +74,7 @@ public class JourneyPattern {
 		return id;
 	}
 
-	public void setId(long id) {
+	public void setId(final long id) {
 		this.id = id;
 	}
 
@@ -86,7 +82,7 @@ public class JourneyPattern {
 		return routeDuration;
 	}
 
-	public void setRouteDuration(int routeDuration) {
+	public void setRouteDuration(final int routeDuration) {
 		this.routeDuration = routeDuration;
 	}
 	
@@ -98,7 +94,7 @@ public class JourneyPattern {
         return daysOfOperation;
     }
 
-	public void setDaysOfOperation(List<Integer> daysOfOperation) {
+	public void setDaysOfOperation(final List<Integer> daysOfOperation) {
 		this.daysOfOperation = daysOfOperation;
 	}
 	
@@ -110,7 +106,7 @@ public class JourneyPattern {
         return returnTerminus;
     }
 
-	public void setReturnTerminus(String returnTerminus) {
+	public void setReturnTerminus(final String returnTerminus) {
 		this.returnTerminus = returnTerminus;
 	}
 	
@@ -122,7 +118,7 @@ public class JourneyPattern {
         return outgoingTerminus;
     }
 
-	public void setOutgoingTerminus(String outgoingTerminus) {
+	public void setOutgoingTerminus(final String outgoingTerminus) {
 		this.outgoingTerminus = outgoingTerminus;
 	}
 
@@ -134,7 +130,7 @@ public class JourneyPattern {
         return startTime;
     }
 	
-	public void setStartTime(Calendar startTime) {
+	public void setStartTime(final Calendar startTime) {
 		this.startTime = startTime;
 	}
 	
@@ -146,7 +142,7 @@ public class JourneyPattern {
         return endTime;
     }
 
-	public void setEndTime(Calendar endTime) {
+	public void setEndTime(final Calendar endTime) {
 		this.endTime = endTime;
 	}
 	
@@ -158,16 +154,24 @@ public class JourneyPattern {
         return frequency;
     }
 
-	public void setFrequency(int frequency) {
+	public void setFrequency(final int frequency) {
 		this.frequency = frequency;
 	}
 
-	public long getTimetableId() {
-		return id;
+	public String getTimetableName() {
+		return timetableName;
 	}
 
-	public void setTimetableId(long id) {
-		this.id = id;
+	public void setTimetableName(final String timetableName) {
+		this.timetableName = timetableName;
+	}
+
+	public String getRouteNumber() {
+		return routeNumber;
+	}
+
+	public void setRouteNumber(final String routeNumber) {
+		this.routeNumber = routeNumber;
 	}
 
 }

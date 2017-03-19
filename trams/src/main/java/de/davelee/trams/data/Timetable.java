@@ -2,11 +2,7 @@ package de.davelee.trams.data;
 
 import java.util.*;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 /**
  * This class represents timetable outlines for the Easy Timetable Generator in TraMS.
@@ -14,24 +10,24 @@ import javax.persistence.Table;
  */
 
 @Entity
-@Table(name="TIMETABLE")
+@Table(name="TIMETABLE", uniqueConstraints=@UniqueConstraint(columnNames = {"routeNumber", "name"}))
 public class Timetable {
 
 	@Id
 	@GeneratedValue
-	@Column(name="TIMETABLE_ID")
+	@Column
 	private long id;
 	
-	@Column(name="NAME")
+	@Column
     private String name;
 	
-	@Column(name="VALID_FROM_DATE")
+	@Column
     private Calendar validFromDate;
 	
-	@Column(name="VALID_TO_DATE")
+	@Column
     private Calendar validToDate;
 
-	@Column(name="ROUTE_NUMBER")
+	@Column
 	private String routeNumber;
     
     public Timetable() {

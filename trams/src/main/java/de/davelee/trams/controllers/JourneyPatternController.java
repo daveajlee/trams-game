@@ -26,8 +26,8 @@ public class JourneyPatternController {
 
 	private static final Logger logger = LoggerFactory.getLogger(JourneyPatternController.class);
 	
-	public JourneyPatternModel[] getJourneyPatternModels (final TimetableModel timetableModel ) {
-		List<JourneyPattern> journeyPatterns = journeyPatternService.getJourneyPatternsByTimetableId(timetableController.getIdFromName(timetableModel.getName()));
+	public JourneyPatternModel[] getJourneyPatternModels (final TimetableModel timetableModel, final String routeNumber ) {
+		List<JourneyPattern> journeyPatterns = journeyPatternService.getJourneyPatternsByTimetableNameAndRouteNumber(timetableModel.getName(), routeNumber);
 		JourneyPatternModel[] journeyPatternModels = new JourneyPatternModel[journeyPatterns.size()];
 		for ( int i = 0; i < journeyPatternModels.length; i++ ) {
 			journeyPatternModels[i] = convertToJourneyPatternModel(journeyPatterns.get(i));
@@ -37,9 +37,9 @@ public class JourneyPatternController {
 	
 	public void createJourneyPattern ( final String name, final List<Integer> operatingDays, final String outgoingTerminus, 
 			final String returnTerminus, final Calendar timeFrom, final Calendar timeTo, final int frequency, final int routeDuration,
-			final TimetableModel timetableModel ) {
-		journeyPatternService.createJourneyPattern(name, operatingDays, outgoingTerminus, returnTerminus, timeFrom, timeTo, 
-				frequency, routeDuration, timetableController.getIdFromName(timetableModel.getName()));
+			final TimetableModel timetableModel, final String routeNumber ) {
+		journeyPatternService.createJourneyPattern(name, operatingDays, outgoingTerminus, returnTerminus, timeFrom, timeTo,
+				frequency, routeDuration, timetableModel.getName(), routeNumber);
 	}
 
 	public List<JourneyPattern> getAllJourneyPatterns ( ) {
@@ -77,7 +77,7 @@ public class JourneyPatternController {
 				//Check if we have added this date before...
 				if ( !myCalendar.contains(thisDate) ) {
 					//Finally check that at least one of the journey patterns has an operating service on this day.
-					JourneyPatternModel[] journeyPatternModels = getJourneyPatternModels(timeT);
+					JourneyPatternModel[] journeyPatternModels = getJourneyPatternModels(timeT, routeModel.getRouteNumber());
 					for ( JourneyPatternModel jpm : journeyPatternModels ) {
 						if ( jpm.getDaysOfOperation().contains(thisDate.get(Calendar.DAY_OF_WEEK)) ) {
 							myCalendar.add(thisDate);

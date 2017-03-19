@@ -5,6 +5,7 @@ import java.util.Calendar;
 public class TimetableModel {
 	
 	private String name;
+	private String routeNumber;
 	private Calendar validFromDate;
 	private Calendar validToDate;
 	
@@ -12,10 +13,18 @@ public class TimetableModel {
 		return name;
 	}
 	
-	public void setName(String name) {
+	public void setName(final String name) {
 		this.name = name;
 	}
-	
+
+	public String getRouteNumber() {
+		return routeNumber;
+	}
+
+	public void setRouteNumber(final String routeNumber) {
+		this.routeNumber = routeNumber;
+	}
+
 	public Calendar getValidFromDate() {
 		return validFromDate;
 	}

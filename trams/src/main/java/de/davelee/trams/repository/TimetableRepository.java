@@ -11,8 +11,8 @@ public interface TimetableRepository extends JpaRepository<Timetable, Long> {
 
 	public List<Timetable> findByRouteNumber ( @Param("routeNumber") String routeNumber);
 
-	public Timetable findByRouteNumberAndName ( @Param("routeNumber") String routeNumber, @Param("timetableName") String timetableName );
+	public Timetable findByRouteNumberAndName ( @Param("routeNumber") String routeNumber, @Param("name") String name );
 
-	public Timetable findByName ( @Param("timetableName") String timetableName );
+	public Timetable findByName ( @Param("name") String name );
 
 }

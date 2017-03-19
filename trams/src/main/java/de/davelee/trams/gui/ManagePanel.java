@@ -540,9 +540,9 @@ public class ManagePanel {
         timetableModel = new DefaultListModel();
         //Now get all the timetables which we have at the moment.
         try {
-            String[] timetableNames = timetableController.getTimetableNames(selectedRouteModel);
-            for ( String timetableName : timetableNames ) {
-                timetableModel.addElement(timetableName);
+            TimetableModel[] timetables = timetableController.getRouteTimetables(selectedRouteModel);
+            for ( TimetableModel timetable : timetables) {
+                timetableModel.addElement(timetable.getName());
             }
         } 
         catch (NullPointerException npe) { }
@@ -587,7 +587,7 @@ public class ManagePanel {
         if ( timetableModel.getSize() == 0 ) { modifyTimetableButton.setEnabled(false); }
         modifyTimetableButton.addActionListener ( new ActionListener() {
             public void actionPerformed (ActionEvent e ) {
-                controlScreen.redrawManagement(makeCreateTimetablePanel(timetableController.getTimetable(timetableList.getSelectedValue().toString())));
+                controlScreen.redrawManagement(makeCreateTimetablePanel(timetableController.getRouteTimetable(selectedRouteModel, timetableList.getSelectedValue().toString())));
             }
         });
         timetableButtonPanel.add(modifyTimetableButton);
@@ -825,7 +825,7 @@ public class ManagePanel {
         journeyPatternModel = new DefaultListModel();
         //Now get all the journey pattern which we have at the moment.
         TimetableModel journeyTimetableModel = timetableController.getRouteTimetable(selectedRouteModel, timetableNameField.getText());
-        JourneyPatternModel[] journeyPatternModels = journeyPatternController.getJourneyPatternModels(journeyTimetableModel);
+        JourneyPatternModel[] journeyPatternModels = journeyPatternController.getJourneyPatternModels(journeyTimetableModel, selectedRouteModel.getRouteNumber());
         for ( int i = 0; i < journeyPatternModels.length; i++ ) {
             journeyPatternModel.addElement(journeyPatternModels[i].getName());
         }
@@ -1176,7 +1176,7 @@ public class ManagePanel {
                             terminus1Box.getSelectedItem().toString(), terminus2Box.getSelectedItem().toString(), timeFrom,
                             timeTo, Integer.parseInt(everyMinuteSpinner.getValue().toString()),
                             getCurrentRouteDuration(Integer.parseInt(everyMinuteSpinner.getValue().toString())),
-                            selectedTimetableModel);
+                            selectedTimetableModel, selectedRouteModel.getRouteNumber());
                 }
                 //Now return to the timetable screen.
                 controlScreen.redrawManagement(ManagePanel.this.makeCreateTimetablePanel(selectedTimetableModel));

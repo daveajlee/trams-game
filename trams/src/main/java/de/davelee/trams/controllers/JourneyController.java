@@ -127,7 +127,7 @@ public class JourneyController {
 		logger.debug("I'm generating timetable for route number " + routeModel.getRouteNumber() + " for " + DateFormats.DAY_MONTH_YEAR_FORMAT.getFormat().format(today.getTime()));
 		//First of all, get the current timetable.
 		TimetableModel currentTimetableModel = timetableController.getCurrentTimetable(routeModel, today);
-		JourneyPatternModel[] journeyPatternModels = journeyPatternController.getJourneyPatternModels(currentTimetableModel);
+		JourneyPatternModel[] journeyPatternModels = journeyPatternController.getJourneyPatternModels(currentTimetableModel, routeModel.getRouteNumber());
 		//Generate journeys.
 		List<JourneyModel> journeyModels = journeyService.generateJourneyTimetables(journeyPatternModels, today, direction, routeModel.getStopNames(), scenarioName);
 		//Sort all journeys.
