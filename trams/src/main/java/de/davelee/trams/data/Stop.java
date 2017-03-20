@@ -19,10 +19,10 @@ public class Stop {
 	 */
 	@Id
 	@GeneratedValue
-	@Column(name="STOP_ID", nullable=false)
+	@Column(nullable=false)
 	private long id;
 	
-	@Column(name="STOP_NAME")
+	@Column(unique=true)
 	private String stopName;
     
 	/**
@@ -36,7 +36,7 @@ public class Stop {
 		return id;
 	}
 
-	public void setId(long id) {
+	public void setId(final long id) {
 		this.id = id;
 	}
 	
@@ -48,16 +48,8 @@ public class Stop {
         return stopName;
     }
 
-	public void setStopName(String stopName) {
+	public void setStopName(final String stopName) {
 		this.stopName = stopName;
 	}
-    
-    /**
-     * Return a string representation of this Stop object.
-     * @return a <code>String</code> with the stop name.
-     */
-    public String toString ( ) {
-        return stopName;
-    }
 
 }

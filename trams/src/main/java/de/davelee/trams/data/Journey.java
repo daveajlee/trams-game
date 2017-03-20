@@ -1,17 +1,13 @@
 package de.davelee.trams.data;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 /**
  * Class to represent a journey (i.e. one run of a route from terminus to terminus) in the TraMS program.
  * @author Dave
  */
 @Entity
-@Table(name="JOURNEY")
+@Table(name="JOURNEY", uniqueConstraints=@UniqueConstraint(columnNames = {"routeScheduleNumber", "routeNumber", "journeyNumber"}))
 public class Journey {
     
     /**
@@ -19,11 +15,17 @@ public class Journey {
 	 */
 	@Id
 	@GeneratedValue
-	@Column(name="JOURNEY_ID")
+	@Column
 	private long id;
 
-    @Column(name="ROUTE_SCHEDULE_ID")
-	private long routeScheduleId;
+    @Column
+	private int journeyNumber;
+
+    @Column
+	private int routeScheduleNumber;
+
+    @Column
+	private String routeNumber;
     
     /**
      * Create a new journey.
@@ -39,16 +41,32 @@ public class Journey {
         return id;
     }
     
-    public void setId(long id) {
+    public void setId(final long id) {
 		this.id = id;
 	}
 
-    public long getRouteScheduleId() {
-        return routeScheduleId;
+    public int getJourneyNumber() {
+        return journeyNumber;
     }
 
-    public void setRouteScheduleId(long routeScheduleId) {
-        this.routeScheduleId = routeScheduleId;
+    public void setJourneyNumber(final int journeyNumber) {
+        this.journeyNumber = journeyNumber;
+    }
+
+    public int getRouteScheduleNumber() {
+        return routeScheduleNumber;
+    }
+
+    public void setRouteScheduleNumber(final int routeScheduleNumber) {
+        this.routeScheduleNumber = routeScheduleNumber;
+    }
+
+    public String getRouteNumber() {
+        return routeNumber;
+    }
+
+    public void setRouteNumber(final String routeNumber) {
+        this.routeNumber = routeNumber;
     }
     
 }

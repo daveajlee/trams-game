@@ -9,9 +9,9 @@ import de.davelee.trams.model.JourneyModel;
  * @author Dave Lee
  */
 public class SortedJourneyModels implements Comparator<JourneyModel> {
-    
-    public int compare (JourneyModel o1, JourneyModel o2 ) {
-    	return o1.getJourneyName().compareTo(o2.getJourneyName());
+
+    public int compare (final JourneyModel o1, final JourneyModel o2 ) {
+        return ((Integer) o1.getJourneyNumber()).compareTo((Integer) o2.getJourneyNumber());
     }
 
 }

@@ -1,6 +1,5 @@
 package de.davelee.trams.db;
 
-import java.util.List;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import de.davelee.trams.data.*;
@@ -11,30 +10,30 @@ public class TramsFile {
 
     private DriverModel[] driverModels;
     private Game game;
-    private List<Journey> journeys;
+    private JourneyModel[] journeyModels;
     private JourneyPatternModel[] journeyPatternModels;
     private MessageModel[] messageModels;
     private RouteModel[] routeModels;
-	private List<RouteSchedule> routeSchedules;
-    private List<Stop> stops;
-    private List<StopTime> stopTimes;
+    private RouteScheduleModel[] routeScheduleModels;
+	private String[] stops;
+	private StopTimeModel[] stopTimeModels;
     private TimetableModel[] timetableModels;
     private VehicleModel[] vehicleModels;
 
     public TramsFile ( ) { }
 
-    public TramsFile ( DriverModel[] driverModels, Game game, List<Journey> journeys, JourneyPatternModel[] journeyPatternModels,
-                       MessageModel[] messageModels, RouteModel[] routeModels, List<RouteSchedule> routeSchedules,
-			List<Stop> stops, List<StopTime> stopTimes, TimetableModel[] timetableModels, VehicleModel[] vehicleModels) {
+    public TramsFile ( final DriverModel[] driverModels, final Game game, final JourneyModel[] journeyModels, final JourneyPatternModel[] journeyPatternModels,
+                       final MessageModel[] messageModels, final RouteModel[] routeModels, final RouteScheduleModel[] routeScheduleModels,
+                       final String[] stops, final StopTimeModel[] stopTimeModels, final TimetableModel[] timetableModels, final VehicleModel[] vehicleModels) {
                 this.driverModels = driverModels;
                 /*this.game = game;*/
-				this.journeys = journeys;
+                this.journeyModels = journeyModels;
                 this.journeyPatternModels = journeyPatternModels;
                 this.messageModels = messageModels;
                 this.routeModels = routeModels;
-                this.routeSchedules = routeSchedules;
+                this.routeScheduleModels = routeScheduleModels;
                 this.stops = stops;
-                this.stopTimes = stopTimes;
+                this.stopTimeModels = stopTimeModels;
                 this.timetableModels = timetableModels;
                 this.vehicleModels = vehicleModels;
     }
@@ -43,7 +42,7 @@ public class TramsFile {
         return driverModels;
     }
 
-    public void setDrivers(DriverModel[] driverModels) {
+    public void setDrivers(final DriverModel[] driverModels) {
         this.driverModels = driverModels;
     }
 
@@ -51,17 +50,17 @@ public class TramsFile {
 		return game;
 	}
 
-	public void setGame(Game game) {
+	public void setGame(final Game game) {
 		this.game = game;
 	}
 
-	public List<Journey> getJourneys() {
-		return journeys;
-	}
+    public JourneyModel[] getJourneyModels() {
+        return journeyModels;
+    }
 
-	public void setJourneys(List<Journey> journeys) {
-		this.journeys = journeys;
-	}
+    public void setJourneyModels(final JourneyModel[] journeyModels) {
+        this.journeyModels = journeyModels;
+    }
 
     public JourneyPatternModel[] getJourneyPatternModels() {
         return journeyPatternModels;
@@ -87,28 +86,28 @@ public class TramsFile {
         this.routeModels = routeModels;
     }
 
-    public List<RouteSchedule> getRouteSchedules() {
-		return routeSchedules;
-	}
+    public RouteScheduleModel[] getRouteScheduleModels() {
+        return routeScheduleModels;
+    }
 
-	public void setRouteSchedules(List<RouteSchedule> routeSchedules) {
-		this.routeSchedules = routeSchedules;
-	}
+    public void setRouteScheduleModels(final RouteScheduleModel[] routeScheduleModels) {
+        this.routeScheduleModels = routeScheduleModels;
+    }
 
-    public List<Stop> getStops() {
+    public String[] getStops() {
         return stops;
     }
 
-    public void setStops(List<Stop> stops) {
+    public void setStops(final String[] stops) {
         this.stops = stops;
     }
 
-    public List<StopTime> getStopTimes() {
-        return stopTimes;
+    public StopTimeModel[] getStopTimeModels() {
+        return stopTimeModels;
     }
 
-	public void setStopTimes(List<StopTime> stopTimes) {
-        this.stopTimes = stopTimes;
+    public void setStopTimeModels(final StopTimeModel[] stopTimeModels) {
+        this.stopTimeModels = stopTimeModels;
     }
 
     public TimetableModel[] getTimetableModels() {

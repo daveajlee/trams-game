@@ -1,10 +1,8 @@
 package de.davelee.trams.controllers;
 
-import de.davelee.trams.data.RouteSchedule;
 import de.davelee.trams.model.JourneyModel;
 import de.davelee.trams.model.RouteModel;
 import de.davelee.trams.model.RouteScheduleModel;
-import de.davelee.trams.model.VehicleModel;
 import de.davelee.trams.util.DifficultyLevel;
 import de.davelee.trams.util.TramsConstants;
 import org.slf4j.Logger;
@@ -36,23 +34,6 @@ public class RouteScheduleController {
 
 	 private List<Integer> routeDetailPos;
 
-	public String getRouteNumber ( final long routeScheduleId ) {
-		return routeScheduleService.getRouteScheduleById(routeScheduleId).getRouteNumber();
-	}
-
-	public RouteScheduleModel[] getRouteSchedules ( final String routeNumber ) {
-		List<RouteSchedule> schedules = routeScheduleService.getRouteSchedulesByRouteNumber(routeNumber);
-		RouteScheduleModel[] routeScheduleModels = new RouteScheduleModel[schedules.size()];
-		for ( int i = 0; i < routeScheduleModels.length; i++ ) {
-			routeScheduleModels[i] = retrieveModel(schedules.get(i).getId());
-		}
-		return routeScheduleModels;
-	}
-
-	public long getIdFromNumber ( final int scheduleNumber ) {
-		return routeScheduleService.getIdFromScheduleNumber(scheduleNumber);
-	}
-
 	/**
 	 * Get the current stop name which this route schedule is on based on the current date.
 	 * @param currentDate a <code>Calendar</code> object.
@@ -62,10 +43,10 @@ public class RouteScheduleController {
 		//Copy current Date to current Time and then use delay to determine position.
 		Calendar currentTime = (Calendar) currentDate.clone();
 		currentTime.add(Calendar.MINUTE, -routeScheduleModel.getDelay());
-		String stopName = journeyController.getStopName(getIdFromNumber(routeScheduleModel.getScheduleNumber()), currentTime);
+		String stopName = journeyController.getStopName(routeScheduleModel, currentTime);
 		if ( !stopName.contentEquals("Depot") ) {
 			//Now fiddle delay!
-			routeScheduleService.calculateNewDelay(routeScheduleService.getRouteScheduleById(getIdFromNumber(routeScheduleModel.getScheduleNumber())), difficultyLevel);
+			routeScheduleService.calculateNewDelay(routeScheduleModel, difficultyLevel);
 		}
 		return stopName;
 	}
@@ -74,35 +55,19 @@ public class RouteScheduleController {
 		//Copy current Date to current Time and then use delay to determine position.
 		Calendar currentTime = (Calendar) currentDate.clone();
 		currentTime.add(Calendar.MINUTE, -routeScheduleModel.getDelay());
-		String stopName = journeyController.getLastStopName(getIdFromNumber(routeScheduleModel.getScheduleNumber()), currentTime);
+		String stopName = journeyController.getLastStopName(routeScheduleModel, currentTime);
 		if ( stopName.contentEquals("Depot")) {
-			routeScheduleService.getRouteScheduleById(getIdFromNumber(routeScheduleModel.getScheduleNumber())).setDelayInMins(0); //Finished for the day.
+			routeScheduleService.reduceDelay(routeScheduleModel, routeScheduleModel.getDelay()); //Finished for the day.
 		}
 		else {
 			//Now fiddle delay!
-			routeScheduleService.calculateNewDelay(routeScheduleService.getRouteScheduleById(getIdFromNumber(routeScheduleModel.getScheduleNumber())), difficultyLevel);
+			routeScheduleService.calculateNewDelay(routeScheduleModel, difficultyLevel);
 		}
 		return stopName;
 	}
 
-	public RouteScheduleModel retrieveModel (long routeScheduleId ) {
-		RouteScheduleModel routeScheduleModel = new RouteScheduleModel();
-		routeScheduleModel.setDelay(routeScheduleService.getDelay(routeScheduleId));
-		VehicleModel vehicleModel = vehicleController.getVehicleByRouteNumberAndRouteScheduleNumber(routeScheduleService.getRouteScheduleById(routeScheduleId).getRouteNumber(), "" + routeScheduleService.getRouteScheduleById(routeScheduleId).getScheduleNumber());
-		routeScheduleModel.setImage(vehicleModel.getImagePath());
-		routeScheduleModel.setRegistrationNumber(vehicleModel.getRegistrationNumber());
-		routeScheduleModel.setScheduleNumber(routeScheduleService.getRouteScheduleById(routeScheduleId).getScheduleNumber());
-		routeScheduleModel.setRouteNumber(routeScheduleService.getRouteScheduleById(routeScheduleId).getRouteNumber());
-		return routeScheduleModel;
-	}
-
 	public RouteScheduleModel[] getRouteSchedulesByRouteNumber ( final String routeNumber ) {
-		List<RouteSchedule> routeSchedules = routeScheduleService.getRouteSchedulesByRouteNumber(routeNumber);
-		RouteScheduleModel[] routeScheduleModels = new RouteScheduleModel[routeSchedules.size()];
-		for ( int i = 0; i < routeScheduleModels.length; i++ ) {
-			routeScheduleModels[i] = retrieveModel(routeSchedules.get(i).getId());
-		}
-		return routeScheduleModels;
+		return routeScheduleService.getRouteSchedulesByRouteNumber(routeNumber);
 	}
 
 
@@ -111,19 +76,18 @@ public class RouteScheduleController {
 	 * @param stop a <code>String</code> with the stop to terminate at.
 	 * @param currentTime a <code>Calendar</code> with the current time.
 	 */
-	public void shortenSchedule ( long routeScheduleId, String stop, Calendar currentTime ) {
-		RouteSchedule schedule = routeScheduleService.getRouteScheduleById(routeScheduleId);
+	public void shortenSchedule ( final RouteScheduleModel routeScheduleModel, final String stop, final Calendar currentTime ) {
 		//Shorten schedule to the specific stop stated and reduce the delay accordingly - for current service remove stops after the specified stop.
 		//logger.debug("Service was ending at: " + theAssignedSchedule.getCurrentService().getEndDestination());
-		String oldEnd = journeyController.getLastStopName(routeScheduleId, currentTime);
+		String oldEnd = journeyController.getLastStopName(routeScheduleModel, currentTime);
 		//Now we need to remove the stops in beteen!
-		long timeDiff = journeyController.removeStopsFromCurrentJourney(routeScheduleId, currentTime, stop, oldEnd);
+		long timeDiff = journeyController.removeStopsFromCurrentJourney(routeScheduleModel, currentTime, stop, oldEnd);
 		//Now for the next service we need to remove stops between first stop and stop.
-		long timeDiff2 = journeyController.removeStopsFromNextJourney(routeScheduleId, currentTime, stop, oldEnd);
+		long timeDiff2 = journeyController.removeStopsFromNextJourney(routeScheduleModel, currentTime, stop, oldEnd);
 		//Divide both timeDiff's by 60 to convert to minutes and then use that to reduce vehicle delay.
 		long delayReduction = (timeDiff/60) + (timeDiff2/60);
 		//Reduce delay!
-		routeScheduleService.reduceDelay(schedule, (int) delayReduction);
+		routeScheduleService.reduceDelay(routeScheduleModel, (int) delayReduction);
 	}
 
 	/**
@@ -132,15 +96,14 @@ public class RouteScheduleController {
 	 * @param newStop a <code>String</code> with the stop to resume service from.
 	 * @param currentTime a <code>Calendar</code> object with the current time.
 	 */
-	public void outOfService ( long routeScheduleId, String currentStop, String newStop, Calendar currentTime ) {
+	public void outOfService ( final RouteScheduleModel routeScheduleModel, final String currentStop, final String newStop, final Calendar currentTime ) {
 		//Get the time difference between current stop and new stop.
-		RouteSchedule schedule = routeScheduleService.getRouteScheduleById(routeScheduleId);
-		long timeDiff = journeyController.getStopMaxTimeDiff(routeScheduleId, currentTime, currentStop, newStop);
-		routeScheduleService.reduceDelay(schedule, (int) (timeDiff/2));
+		long timeDiff = journeyController.getStopMaxTimeDiff(routeScheduleModel, currentTime, currentStop, newStop);
+		routeScheduleService.reduceDelay(routeScheduleModel, (int) (timeDiff/2));
 		//logger.debug("Vehicle delay reduced from " + oldDelay + " mins to " + getVehicleDelay() + " mins.");
 	}
 
-	public List<RouteSchedule> getAllRouteSchedules ( ) {
+	public RouteScheduleModel[] getAllRouteSchedules ( ) {
 		return routeScheduleService.getAllRouteSchedules();
 	}
 
@@ -158,44 +121,44 @@ public class RouteScheduleController {
 		Calendar currentTime = gameController.getCurrentSimTime();
 		//Determine the route ids we will display using these parameters.
 		logger.debug("Route number is " + routeNumber);
-		List<RouteSchedule> routeSchedules = routeScheduleService.getRouteSchedulesByRouteNumber(routeNumber);
-		logger.debug("Number of possible display schedules: " +  routeSchedules.size());
-		if ( routeSchedules.size() < max ) { returnMax = routeSchedules.size(); }
+		RouteScheduleModel[] routeScheduleModels = routeScheduleService.getRouteSchedulesByRouteNumber(routeNumber);
+		logger.debug("Number of possible display schedules: " +  routeScheduleModels.length);
+		if ( routeScheduleModels.length < max ) { returnMax = routeScheduleModels.length; }
 		//logger.debug("Max vehicles starts at " + max + " - routeDetails size is " + routeDetails.size());
 		logger.debug("Min is " + min + " & Max is " + max);
 		if ( min == max ) {
-			if ( vehicleController.getVehicleByRouteNumberAndRouteScheduleNumber(routeNumber, "" + routeSchedules.get(min).getScheduleNumber()) == null ) {
+			if ( vehicleController.getVehicleByRouteNumberAndRouteScheduleNumber(routeNumber, "" + routeScheduleModels[min].getScheduleNumber()) == null ) {
 				logger.debug("A schedule was null");
 			}
 			if ( getCurrentStopName(getRouteSchedulesByRouteNumber(routeNumber)[min], currentTime, gameController.getDifficultyLevel()).equalsIgnoreCase("Depot") ) {
 				logger.debug("Vehicle in depot!");
 			}
-			if ( vehicleController.getVehicleByRouteNumberAndRouteScheduleNumber(routeNumber, "" + routeSchedules.get(min).getScheduleNumber()) != null && !getCurrentStopName( getRouteSchedulesByRouteNumber(routeNumber)[min], currentTime, gameController.getDifficultyLevel()).equalsIgnoreCase("Depot") ) {
+			if ( vehicleController.getVehicleByRouteNumberAndRouteScheduleNumber(routeNumber, "" + routeScheduleModels[min].getScheduleNumber()) != null && !getCurrentStopName( getRouteSchedulesByRouteNumber(routeNumber)[min], currentTime, gameController.getDifficultyLevel()).equalsIgnoreCase("Depot") ) {
 				//logger.debug("Adding Route Detail " + routeDetails.get(i).getId());
 				routeDetailPos.add(0);
 			}
 			else {
 				returnMax++;
 				//logger.debug("Max is now " + max + " - routeDetails size is: " + routeDetails.size());
-				if ( routeSchedules.size() < max ) { returnMax = routeSchedules.size(); }
+				if ( routeScheduleModels.length < max ) { returnMax = routeScheduleModels.length; }
 				//logger.debug("Route Detail " + routeDetails.get(i).getId() + " was null - maxVehicles is now " + max);
 			}
 		}
 		for ( int i = min; i < max; i++ ) { //Changed from i = 0; i < routeDetails.size().
-			if ( vehicleController.getVehicleByRouteNumberAndRouteScheduleNumber(routeNumber, "" + routeSchedules.get(i).getScheduleNumber()) == null ) {
+			if ( vehicleController.getVehicleByRouteNumberAndRouteScheduleNumber(routeNumber, "" + routeScheduleModels[i].getScheduleNumber()) == null ) {
 				logger.debug("A schedule was null");
 			}
 			if ( getCurrentStopName(getRouteSchedulesByRouteNumber(routeNumber)[i], currentTime, gameController.getDifficultyLevel()).equalsIgnoreCase("Depot") ) {
 				logger.debug("Vehicle in depot!");
 			}
-			if ( vehicleController.getVehicleByRouteNumberAndRouteScheduleNumber(routeNumber, "" + routeSchedules.get(i).getScheduleNumber()) != null && !getCurrentStopName(getRouteSchedulesByRouteNumber(routeNumber)[i], currentTime, gameController.getDifficultyLevel()).equalsIgnoreCase("Depot") ) {
+			if ( vehicleController.getVehicleByRouteNumberAndRouteScheduleNumber(routeNumber, "" + routeScheduleModels[i].getScheduleNumber()) != null && !getCurrentStopName(getRouteSchedulesByRouteNumber(routeNumber)[i], currentTime, gameController.getDifficultyLevel()).equalsIgnoreCase("Depot") ) {
 				//logger.debug("Adding Route Detail " + routeDetails.get(i).getId());
 				routeDetailPos.add(i);
 			}
 			else {
 				returnMax++;
 				//logger.debug("Max is now " + max + " - routeDetails size is: " + routeDetails.size());
-				if ( routeSchedules.size() < max ) { returnMax = routeSchedules.size(); }
+				if ( routeScheduleModels.length < max ) { returnMax = routeScheduleModels.length; }
 				//logger.debug("Route Detail " + routeDetails.get(i).getId() + " was null - maxVehicles is now " + max);
 			}
 		}
@@ -227,7 +190,7 @@ public class RouteScheduleController {
 	}
 
 
-	public void generateRouteSchedules ( final RouteModel routeModel, Calendar currentTime, String scenarioName ) {
+	public void generateRouteSchedules ( final RouteModel routeModel, final Calendar currentTime, final String scenarioName ) {
 		//Initialise parameters.
 		List<JourneyModel> outgoingJourneyModels = journeyController.generateJourneyTimetables(routeModel, currentTime, scenarioName, TramsConstants.OUTWARD_DIRECTION);
 		List<JourneyModel> returnJourneyModels = journeyController.generateJourneyTimetables(routeModel, currentTime, scenarioName, TramsConstants.RETURN_DIRECTION);
@@ -237,7 +200,7 @@ public class RouteScheduleController {
 			//Control what journey we want - initially we don't care.
 			boolean wantOutgoing = true; boolean wantReturn = true;
 			//Create a new route schedule.
-			RouteSchedule mySchedule = new RouteSchedule ( );
+			RouteScheduleModel mySchedule = new RouteScheduleModel ( );
 			mySchedule.setScheduleNumber(counter);
 			//Create our calendar object and set it to midnight.
 			Calendar myCal = new GregorianCalendar(2009,7,7,0,0);
@@ -277,7 +240,7 @@ public class RouteScheduleController {
 						if ( wantOutgoing && journeyController.getFirstStopTime(outgoingJourneyModels.get(loopPos)).get(Calendar.HOUR_OF_DAY) == myCal.get(Calendar.HOUR_OF_DAY) && journeyController.getFirstStopTime(outgoingJourneyModels.get(loopPos)).get(Calendar.MINUTE) == myCal.get(Calendar.MINUTE)) {
 							//logger.debug("Adding service " + outgoingServices.get(loopPos).getAllDisplayStops() + " to route schedule " + counter);
 							//We have found our journey - its an outgoing one!!!
-							journeyController.assignRouteSchedule(outgoingJourneyModels.get(loopPos),mySchedule.getId());
+							journeyController.assignRouteSchedule(outgoingJourneyModels.get(loopPos),mySchedule);
 							//Set calendar equal to last stop time.
 							myCal = (Calendar) journeyController.getLastStopTime(outgoingJourneyModels.get(loopPos)).clone();
 							//myCal.add(Calendar.MINUTE, -1); //This prevents bad effect of adding one later!
@@ -294,7 +257,7 @@ public class RouteScheduleController {
 						if ( wantReturn && journeyController.getFirstStopTime(returnJourneyModels.get(loopPos)).get(Calendar.HOUR_OF_DAY) == myCal.get(Calendar.HOUR_OF_DAY) && journeyController.getFirstStopTime(returnJourneyModels.get(loopPos)).get(Calendar.MINUTE) == myCal.get(Calendar.MINUTE)) {
 							//logger.debug("Adding service " + returnServices.get(loopPos).getAllDisplayStops() + " to route schedule " + counter);
 							//We have found our journey - its a return one!!!
-							journeyController.assignRouteSchedule(returnJourneyModels.get(loopPos), mySchedule.getId());
+							journeyController.assignRouteSchedule(returnJourneyModels.get(loopPos), mySchedule);
 							//Set calendar equal to last stop time.
 							myCal = (Calendar) journeyController.getLastStopTime(returnJourneyModels.get(loopPos)).clone();
 							//myCal.add(Calendar.MINUTE, -1); //This prevents bad effect of adding one later!
@@ -324,13 +287,13 @@ public class RouteScheduleController {
 	 * @param currentDate a <code>String</code> with the current date.
 	 * @return a <code>LinkedList</code> of allocations.
 	 */
-	public List<String> getTodayAllocations ( String currentDate ) {
+	public List<String> getTodayAllocations ( final String currentDate ) {
 		List<String> allAllocations = vehicleController.getAllocations();
 		List<String> runningIds = new ArrayList<String>();
 		RouteModel[] routeModels = routeController.getRouteModels();
 		for ( int h = 0; h < routeModels.length; h++ ) {
-			for ( int i = 0; i < getRouteSchedules(routeModels[h].getRouteNumber()).length; i++ ) {
-				runningIds.add("" + getRouteSchedules(routeModels[h].getRouteNumber())[i].getScheduleNumber());
+			for ( int i = 0; i < getRouteSchedulesByRouteNumber(routeModels[h].getRouteNumber()).length; i++ ) {
+				runningIds.add("" + getRouteSchedulesByRouteNumber(routeModels[h].getRouteNumber())[i].getScheduleNumber());
 			}
 		}
 		for ( int i = 0; i < allAllocations.size(); i++ ) {

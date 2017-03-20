@@ -11,6 +11,6 @@ public interface RouteScheduleRepository extends JpaRepository<RouteSchedule, Lo
 
 	public List<RouteSchedule> findByRouteNumber(@Param("routeNumber") String routeNumber);
 
-	public RouteSchedule findByScheduleNumber(@Param("scheduleNumber") int scheduleNumber);
+	public RouteSchedule findByScheduleNumberAndRouteNumber(@Param("scheduleNumber") int scheduleNumber, @Param("routeNumber") String routeNumber);
 
 }

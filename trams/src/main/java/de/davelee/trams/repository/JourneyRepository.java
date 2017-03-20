@@ -7,7 +7,9 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface JourneyRepository extends JpaRepository<Journey, Long> {
-	
-	public List<Journey> findByRouteScheduleId(@Param("routeScheduleId") long routeScheduleId);
+
+	public List<Journey> findByRouteScheduleNumberAndRouteNumber(@Param("routeScheduleNumber") int routeScheduleNumber, @Param("routeNumber") String routeNumber);
+
+	public Journey findByJourneyNumberAndRouteScheduleNumberAndRouteNumber(@Param("journeyNumber") int journeyNumber, @Param("routeScheduleNumber") int routeScheduleNumber, @Param("routeNumber") String routeNumber);
 
 }

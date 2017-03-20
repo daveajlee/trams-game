@@ -1,31 +1,27 @@
 package de.davelee.trams.data;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 /**
  * Class represents a route schedule (i.e. a particular timetable instance of a route) in the TraMS program.
  * @author Dave Lee.
  */
 @Entity
-@Table(name="ROUTE_SCHEDULE")
+@Table(name="ROUTE_SCHEDULE", uniqueConstraints=@UniqueConstraint(columnNames = {"scheduleNumber", "routeNumber"}))
 public class RouteSchedule {
     
 	@Id
 	@GeneratedValue
-	@Column(name="ID")
+	@Column()
 	private long id;
 	
-	@Column(name="SCHEDULE_NUMBER")
+	@Column()
 	private int scheduleNumber;
 	
-    @Column(name="DELAY_IN_MINS")
+    @Column()
     private int delayInMins;
 
-	@Column(name="ROUTE_NUMBER")
+	@Column()
     private String routeNumber;
     
     /**
@@ -38,7 +34,7 @@ public class RouteSchedule {
 		return delayInMins;
 	}
 
-	public void setDelayInMins(int delayInMins) {
+	public void setDelayInMins(final int delayInMins) {
 		this.delayInMins = delayInMins;
 	}
 

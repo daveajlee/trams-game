@@ -8,7 +8,7 @@ import org.springframework.data.repository.query.Param;
 import de.davelee.trams.data.Stop;
 
 public interface StopRepository extends JpaRepository<Stop, Long> {
-	
-	public List<Stop> findByStopName(@Param("stopName") String stopName);
+
+	public Stop findByStopName(@Param("stopName") String stopName);
 
 }

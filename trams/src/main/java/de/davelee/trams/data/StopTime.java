@@ -1,63 +1,59 @@
 package de.davelee.trams.data;
 
 import java.util.Calendar;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 /**
  * Class to represent a time for a journey to arrive at a stop.
  * @author Dave Lee
  */
 @Entity
-@Table(name="STOP_TIME")
+@Table(name="STOP_TIME", uniqueConstraints=@UniqueConstraint(columnNames = {"journeyNumber", "stopName", "time"}))
 public class StopTime {
 
     @Id
 	@GeneratedValue
-	@Column(name="STOP_TIME_ID")
+	@Column
 	private long id;
 
-    @Column(name="JOURNEY_ID")
-	private long journeyId;
+    @Column
+	private int journeyNumber;
 
-    @Column(name="STOP_ID")
-	private long stopId;
+    @Column
+	private String stopName;
 
-    @Column(name="TIME")
+    @Column()
 	private Calendar time;
 
     public long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(final long id) {
         this.id = id;
     }
 
-    public long getJourneyId() {
-        return journeyId;
+    public int getJourneyNumber() {
+        return journeyNumber;
     }
 
-    public void setJourneyId(long journeyId) {
-        this.journeyId = journeyId;
+    public void setJourneyNumber(final int journeyNumber) {
+        this.journeyNumber = journeyNumber;
     }
 
-    public long getStopId() {
-        return stopId;
+    public String getStopName() {
+        return stopName;
     }
 
-    public void setStopId(long stopId) {
-        this.stopId = stopId;
+    public void setStopName(final String stopName) {
+        this.stopName = stopName;
     }
 
     public Calendar getTime() {
         return time;
     }
 
-    public void setTime(Calendar time) {
+    public void setTime(final Calendar time) {
         this.time = time;
     }
 }

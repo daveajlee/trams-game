@@ -2117,7 +2117,7 @@ public class ManagePanel {
         routesList.setFont(new Font("Arial", Font.PLAIN, 15));
         RouteModel[] routeModels = routeController.getRouteModels();
         for ( int i = 0; i < routeModels.length; i++ ) {
-            RouteScheduleModel[] routeScheduleModels = routeScheduleController.getRouteSchedules(routeModels[i].getRouteNumber());
+            RouteScheduleModel[] routeScheduleModels = routeScheduleController.getRouteSchedulesByRouteNumber(routeModels[i].getRouteNumber());
             for ( int j = 0; j < routeScheduleModels.length; j++ ) {
                 routesModel.addElement(routeScheduleModels[j].getScheduleNumber());
             }
@@ -2269,7 +2269,7 @@ public class ManagePanel {
                         String[] allocationSplit = allocationsModel.get(i).toString().split("&");
                         //Store route detail object.
                         String routeNumber = allocationSplit[0].split("/")[0]; int routeDetailPos = -1;
-                        RouteScheduleModel[] scheduleModels = routeScheduleController.getRouteSchedules(routeController.getRoute(routeNumber).getRouteNumber());
+                        RouteScheduleModel[] scheduleModels = routeScheduleController.getRouteSchedulesByRouteNumber(routeController.getRoute(routeNumber).getRouteNumber());
                         for ( int k = 0; k < scheduleModels.length; k++ ) {
                             if ( scheduleModels[k].getScheduleNumber() == Integer.parseInt(allocationSplit[0].trim()) ) {
                                 routeDetailPos = k;

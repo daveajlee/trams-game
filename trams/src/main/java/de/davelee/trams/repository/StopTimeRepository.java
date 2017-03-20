@@ -9,6 +9,8 @@ import de.davelee.trams.data.StopTime;
 
 public interface StopTimeRepository extends JpaRepository<StopTime, Long> {
 
-	public List<StopTime> findByJourneyId(@Param("journeyId") long journeyId);
+	public List<StopTime> findByJourneyNumber(@Param("journeyNumber") int journeyNumber);
+
+	public StopTime findByJourneyNumberAndStopName(@Param("journeyNumber") int journeyNumber, @Param("routeNumber") String routeNumber);
 	
 }

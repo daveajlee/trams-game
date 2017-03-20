@@ -702,10 +702,10 @@ public class ControlScreen extends ButtonBar {
                 outwardStops.add(((JLabel) stopPanels.get(j).getComponent(0)).getText());
             }
             int direction = DrawingPanel.RIGHT_TO_LEFT;
-            if ( journeyController.getCurrentJourney(routeScheduleController.getIdFromNumber(routeScheduleModels[i].getScheduleNumber()), gameController.getCurrentSimTime()) == null ) {
+            if ( journeyController.getCurrentJourney(routeScheduleModels[i], gameController.getCurrentSimTime()) == null ) {
                 continue; //Don't print if the vehicle is at a terminus.
             }
-            if ( journeyController.isOutwardJourney(routeScheduleController.getIdFromNumber(routeScheduleModels[i].getScheduleNumber()), gameController.getCurrentSimTime(), outwardStops) ) {
+            if ( journeyController.isOutwardJourney(routeScheduleModels[i], gameController.getCurrentSimTime(), outwardStops) ) {
                 direction = DrawingPanel.LEFT_TO_RIGHT;
                 direction = DrawingPanel.LEFT_TO_RIGHT; 
             }
@@ -731,7 +731,7 @@ public class ControlScreen extends ButtonBar {
                         xPos = startPos;
                     }
                     else {
-                        long maxTimeDiff = Math.abs(journeyController.getStopMaxTimeDiff(routeScheduleController.getIdFromNumber(routeScheduleModels[i].getScheduleNumber()), gameController.getCurrentSimTime(), previousStop, myLabel.getText()));
+                        long maxTimeDiff = Math.abs(journeyController.getStopMaxTimeDiff(routeScheduleModels[i], gameController.getCurrentSimTime(), previousStop, myLabel.getText()));
                         if ( maxTimeDiff == Integer.MAX_VALUE ) {
                             xPos = startPos;
                         } 
@@ -752,7 +752,7 @@ public class ControlScreen extends ButtonBar {
                     previousStop = myLabel.getText();
                 }
             }
-            logger.debug("I'm drawing route schedule " + routeScheduleController.getIdFromNumber(routeScheduleModels[i].getScheduleNumber()));
+            logger.debug("I'm drawing route schedule " + routeScheduleModels[i].getScheduleNumber());
             JPanel drawPanel = new DrawingPanel(xPos, direction, routeScheduleModels[i].getDelay() > 0 );
             drawPanel.addMouseListener(new BusMouseListener(routeScheduleModels[i]));
             vehiclePanel.add(drawPanel);
@@ -920,7 +920,7 @@ public class ControlScreen extends ButtonBar {
         //logger.debug("Min for this page is: " + min);
         currentPage = (minVehicle/4); if ( (minVehicle+1) % 4 !=0 || currentPage == 0 ) { currentPage++; }
         int totalPages;
-        final RouteScheduleModel[] routeScheduleModels = routeScheduleController.getRouteSchedules(routeList.getSelectedValue().toString());
+        final RouteScheduleModel[] routeScheduleModels = routeScheduleController.getRouteSchedulesByRouteNumber(routeList.getSelectedValue().toString());
         if ( routeList.getModel().getSize() > 0 ) {
             totalPages = (routeScheduleModels.length/4); if ((routeScheduleModels.length%4) !=0 || totalPages == 0 ) { totalPages++; }
         }

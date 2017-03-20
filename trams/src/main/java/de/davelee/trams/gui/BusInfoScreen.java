@@ -7,8 +7,10 @@ import javax.swing.*;
 
 import de.davelee.trams.controllers.GameController;
 import de.davelee.trams.controllers.RouteScheduleController;
+import de.davelee.trams.controllers.VehicleController;
 import de.davelee.trams.main.UserInterface;
 import de.davelee.trams.model.RouteScheduleModel;
+import de.davelee.trams.model.VehicleModel;
 import org.springframework.beans.factory.annotation.Autowired;
 
 
@@ -38,14 +40,19 @@ public class BusInfoScreen extends JFrame {
 
     @Autowired
     private RouteScheduleController routeScheduleController;
-    
+
+    @Autowired
+    private VehicleController vehicleController;
     
     /**
      * Create a new bus information screen.
      * @param routeScheduleModel a <code>RouteScheduleModel</code> object with the current route schedule being run by the vehicle.
      */
     public BusInfoScreen ( final RouteScheduleModel routeScheduleModel ) {
-        
+
+        //Retrieve vehicle model.
+        VehicleModel vehicleModel = vehicleController.getVehicleByRouteNumberAndRouteScheduleNumber(routeScheduleModel.getRouteNumber(), "" + routeScheduleModel.getScheduleNumber());
+
         //Set image icon.
         Image img = Toolkit.getDefaultToolkit().getImage(BusInfoScreen.class.getResource("/TraMSlogo.png"));
         setIconImage(img);
@@ -77,7 +84,7 @@ public class BusInfoScreen extends JFrame {
         //Create panel for west - picture of bus.
         JPanel westPanel = new JPanel(new BorderLayout());
         westPanel.setBackground(Color.WHITE);
-        busDisplay = new ImageDisplay(routeScheduleModel.getImage(),0,0);
+        busDisplay = new ImageDisplay(vehicleModel.getImagePath(),0,0);
         busDisplay.setSize(220,200);
         busDisplay.setBackground(Color.WHITE);
         westPanel.add(busDisplay);
@@ -91,7 +98,7 @@ public class BusInfoScreen extends JFrame {
         timetableIDLabel.setFont(new Font("Arial", Font.BOLD, 15));
         eastPanel.add(timetableIDLabel);
         //Vehicle id.
-        vehicleIDLabel = new JLabel("Vehicle ID: " + routeScheduleModel.getRegistrationNumber());
+        vehicleIDLabel = new JLabel("Vehicle ID: " + vehicleModel.getRegistrationNumber());
         vehicleIDLabel.setFont(new Font("Arial", Font.BOLD, 15));
         eastPanel.add(vehicleIDLabel);
         //Location.
