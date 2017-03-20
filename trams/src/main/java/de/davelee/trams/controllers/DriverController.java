@@ -1,6 +1,7 @@
 package de.davelee.trams.controllers;
 
 import de.davelee.trams.model.DriverModel;
+import de.davelee.trams.model.GameModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import de.davelee.trams.data.Driver;
 
@@ -30,7 +31,7 @@ public class DriverController {
      */
     public void employDriver ( final DriverModel driverModel ) {
     	//TODO: Employing drivers should cost money.
-    	gameController.withdrawBalance(0);
+        gameController.withdrawBalance(0, gameController.getCurrentPlayerName());
         driverService.saveDriver(driverModel);
     }
     
@@ -45,8 +46,9 @@ public class DriverController {
     public boolean hasSomeDriversBeenEmployed ( ) {
         if ( getNumberDrivers() == 0 ) { return false; }
         DriverModel[] driverModels = driverService.getAllDrivers();
+        GameModel gameModel = gameController.getGameModel();
         for ( int i = 0; i < driverModels.length; i++ ) {
-            if ( driverService.hasStartedWork(driverModels[i].getStartDate(), gameController.getCurrentSimTime()) ) { return true; }
+            if ( driverService.hasStartedWork(driverModels[i].getStartDate(), gameModel.getCurrentTime()) ) { return true; }
         }
         return false;
     }

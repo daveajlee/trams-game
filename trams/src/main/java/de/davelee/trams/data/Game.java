@@ -20,31 +20,31 @@ public class Game {
 	
 	@Id
 	@GeneratedValue
-	@Column(name="GAME_ID", nullable=false)
+	@Column(nullable=false)
 	private int id;
 	
-	@Column(name="PASSENGER_SATISFACTION")
+	@Column
     private int passengerSatisfaction;
 	
-	@Column(name="PLAYER_NAME")
+	@Column(unique=true)
     private String playerName;
 	
-	@Column(name="BALANCE")
+	@Column
     private double balance;
 	
-	@Column(name="DIFFICULTY_LEVEL")
+	@Column
 	private DifficultyLevel difficultyLevel = DifficultyLevel.EASY; //Default to easy.
 	
-	@Column(name="SCENARIO_NAME")
+	@Column
 	private String scenarioName;
 
-    @Column(name="CURRENT_TIME")
+    @Column
 	private Calendar currentTime;
 
-    @Column(name="TIME_INCREMENT")
+    @Column
     private int timeIncrement;
 
-    @Column(name="PREVIOUS_TIME")
+    @Column
     private Calendar previousTime;
     
     public Game() {

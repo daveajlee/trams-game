@@ -4,8 +4,11 @@ import static junit.framework.Assert.assertNotNull;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 
+import de.davelee.trams.model.GameModel;
 import de.davelee.trams.repository.GameRepository;
+import de.davelee.trams.util.DifficultyLevel;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,12 +29,22 @@ public class GameServiceTest {
 	
 	@Test
 	public void testIncrement() {
-		gameRepository.saveAndFlush(gameService.createGame("Dave Lee", "Landuff Transport Company"));
-		assertNotNull(gameService.getGame());
-		assertEquals(DateFormats.HOUR_MINUTE_FORMAT.getFormat().format(gameService.getCurrentTime().getTime()), "05:00");
-		gameService.setTimeIncrement(15);
-		gameService.incrementTime();
-		assertEquals(DateFormats.HOUR_MINUTE_FORMAT.getFormat().format(gameService.getCurrentTime().getTime()), "05:15");
+		GameModel gameModel = new GameModel();
+		gameModel.setPlayerName("Dave A J Lee");
+		gameModel.setScenarioName("Landuff Transport Company");
+		gameModel.setBalance(80000.0);
+		gameModel.setCurrentTime(new GregorianCalendar(2009,Calendar.AUGUST,20,5,0,0));
+		gameModel.setTimeIncrement(15);
+		gameModel.setDifficultyLevel(DifficultyLevel.EASY);
+		gameModel.setPassengerSatisfaction(100);
+		gameModel.setPreviousTime((Calendar) gameModel.getCurrentTime().clone());
+		gameService.saveGame(gameModel);
+		assertNotNull(gameService.getGameByPlayerName("Dave A J Lee"));
+		GameModel gameModel2 = gameService.getGameByPlayerName("Dave A J Lee");
+		assertEquals(DateFormats.HOUR_MINUTE_FORMAT.getFormat().format(gameModel2.getCurrentTime().getTime()), "05:00");
+		gameService.incrementTime("Dave A J Lee");
+		gameModel2 = gameService.getGameByPlayerName("Dave A J Lee");
+		assertEquals(DateFormats.HOUR_MINUTE_FORMAT.getFormat().format(gameModel2.getCurrentTime().getTime()), "05:15");
 	}
 	
 	@Test

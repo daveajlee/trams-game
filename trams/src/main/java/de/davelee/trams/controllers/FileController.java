@@ -7,9 +7,8 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import de.davelee.trams.db.TramsFile;
+import de.davelee.trams.beans.TramsFile;
 import de.davelee.trams.gui.ControlScreen;
-import de.davelee.trams.main.UserInterface;
 import de.davelee.trams.services.FileService;
 
 public class FileController {
@@ -121,7 +120,7 @@ public class FileController {
     }
     
     public TramsFile prepareTramsFile ( ) {
-    	return new TramsFile(driverController.getAllDrivers(), gameController.getGame(), journeyController.getAllJourneys(), 
+    	return new TramsFile(driverController.getAllDrivers(), gameController.getAllGames(), journeyController.getAllJourneys(),
 				journeyPatternController.getAllJourneyPatterns(), messageController.getAllMessages(), routeController.getRouteModels(),
 				routeScheduleController.getAllRouteSchedules(), journeyController.getAllStops(), journeyController.getAllStopTimes(),
 				timetableController.getAllTimetableModels(), vehicleController.getVehicleModels());

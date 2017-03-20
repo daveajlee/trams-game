@@ -8,6 +8,7 @@ import de.davelee.trams.controllers.GameController;
 import de.davelee.trams.controllers.MessageController;
 import de.davelee.trams.controllers.ScenarioController;
 import de.davelee.trams.controllers.VehicleController;
+import de.davelee.trams.model.GameModel;
 import de.davelee.trams.model.ScenarioModel;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -161,6 +162,8 @@ public class NewGameScreen extends JFrame {
         createGameButton.setEnabled(false);
         createGameButton.addActionListener ( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
+                GameModel gameModel = gameController.getGameModel();
+
                 int selectedPosition = 0;
             	for ( int i = 0; i < scenarioButtons.length; i++ ) {
             		if ( scenarioButtons[i].isSelected() ) {
@@ -169,11 +172,11 @@ public class NewGameScreen extends JFrame {
             		}
             	}
                 //Create supplied vehicles.
-                vehicleController.createSuppliedVehicles(scenarioModels[selectedPosition], gameController.getCurrentSimTime());
+                vehicleController.createSuppliedVehicles(scenarioModels[selectedPosition], gameModel.getCurrentTime());
                 //Create welcome message.
                 messageController.addMessage("Welcome Message", "Congratulations on your appointment as Managing Director of the " +
                         scenarioModels[selectedPosition].getName() + "! \n\n Your targets for the coming days and months are: " +
-                        scenarioModels[selectedPosition].getTargets(),"Council","INBOX",gameController.getCurrentSimTime());
+                        scenarioModels[selectedPosition].getTargets(),"Council","INBOX",gameModel.getCurrentTime());
                 new ScenarioDescriptionScreen(scenarioModels[selectedPosition]);
                 dispose();
             }

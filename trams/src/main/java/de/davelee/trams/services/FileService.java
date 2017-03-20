@@ -1,6 +1,6 @@
 package de.davelee.trams.services;
 
-import de.davelee.trams.db.TramsFile;
+import de.davelee.trams.beans.TramsFile;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;

@@ -1,10 +1,10 @@
 package de.davelee.trams.services;
 
 import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.Hashtable;
+import java.util.List;
 
 import de.davelee.trams.data.Game;
+import de.davelee.trams.model.GameModel;
 import de.davelee.trams.repository.GameRepository;
 import de.davelee.trams.util.DateFormats;
 import de.davelee.trams.util.DifficultyLevel;
@@ -18,41 +18,56 @@ public class GameService {
 	public GameService() {
 	}
 
-	public Game createGame ( String playerName, String scenarioName ) {
-        return createGame(playerName, scenarioName, 80000.00, 100, DifficultyLevel.EASY);
-	}
+    public void saveGame ( final GameModel gameModel ) {
+        gameRepository.saveAndFlush(convertToGame(gameModel));
+    }
 
-    public Game createGame ( String playerName, String scenarioName, double balance, int passengerSatisfaction, DifficultyLevel difficultyLevel ) {
+    private Game convertToGame ( final GameModel gameModel ) {
         Game game = new Game();
-        game.setPlayerName(playerName);
-        game.setBalance(balance);
-        game.setPassengerSatisfaction(passengerSatisfaction);
-        game.setScenarioName(scenarioName);
-        game.setDifficultyLevel(difficultyLevel);
-        game.setCurrentTime(new GregorianCalendar(2009,Calendar.AUGUST,20,5,0,0));
-        game.setTimeIncrement(15);
-        game.setPreviousTime((Calendar) game.getCurrentTime().clone());
+        game.setPlayerName(gameModel.getPlayerName());
+        game.setBalance(gameModel.getBalance());
+        game.setPassengerSatisfaction(gameModel.getPassengerSatisfaction());
+        game.setScenarioName(gameModel.getScenarioName());
+        game.setDifficultyLevel(gameModel.getDifficultyLevel());
+        game.setCurrentTime(gameModel.getCurrentTime());
+        game.setTimeIncrement(gameModel.getTimeIncrement());
+        game.setPreviousTime(gameModel.getPreviousTime());
         return game;
     }
 
-    public Game getGame ( )  {
-        return gameRepository.findAll().get(0);
+    public GameModel getGameByPlayerName ( final String playerName )  {
+        return convertToGameModel(gameRepository.findByPlayerName(playerName));
+    }
+
+     private GameModel convertToGameModel ( final Game game ) {
+        GameModel gameModel = new GameModel();
+        gameModel.setPlayerName(game.getPlayerName());
+        gameModel.setBalance(game.getBalance());
+        gameModel.setPassengerSatisfaction(game.getPassengerSatisfaction());
+        gameModel.setScenarioName(game.getScenarioName());
+        gameModel.setDifficultyLevel(game.getDifficultyLevel());
+        gameModel.setCurrentTime(game.getCurrentTime());
+        gameModel.setTimeIncrement(game.getTimeIncrement());
+        gameModel.setPreviousTime(game.getPreviousTime());
+        return gameModel;
     }
     
     /**
      * Deduct money from the balance.
      * @param amount a <code>double</code> with the amount to deduct from the balance.
      */
-    public void withdrawBalance ( double amount ) {
-        getGame().setBalance(getGame().getBalance()-amount);
+    public void withdrawBalance ( final double amount, final String playerName ) {
+        GameModel gameModel = getGameByPlayerName(playerName);
+        gameRepository.findByPlayerName(playerName).setBalance(gameModel.getBalance()-amount);
     }
     
     /**
      * Add money to the balance.
      * @param amount a <code>double</code> with the amount to credit the balance.
      */
-    public void creditBalance ( double amount ) {
-        getGame().setBalance(getGame().getBalance()+amount);
+    public void creditBalance ( final double amount, final String playerName ) {
+        GameModel gameModel = getGameByPlayerName(playerName);
+        gameRepository.findByPlayerName(playerName).setBalance(gameModel.getBalance()+amount);
     }
 
     /**
@@ -60,74 +75,44 @@ public class GameService {
      * @param currentTime a <code>Calendar</code> object with the current time.
      * @param difficultyLevel a <code>String</code> with the difficulty level.
      */
-    public int computeAndReturnPassengerSatisfaction ( final int numSmallLateSchedules, final int numMediumLateSchedules, final int numLargeLateSchedules ) {
-        int totalSubtract = 0; Game game = getGame();
+    public int computeAndReturnPassengerSatisfaction ( final String playerName, final int numSmallLateSchedules, final int numMediumLateSchedules, final int numLargeLateSchedules ) {
+        int totalSubtract = 0;
+
+        GameModel gameModel = getGameByPlayerName(playerName);
 
         //Easy: numSmallLateSchedules / 2 and numMediumLateSchedules and numLargeLateSchedules*2.
-        if ( game.getDifficultyLevel() == DifficultyLevel.EASY ) {
+        if ( gameModel.getDifficultyLevel() == DifficultyLevel.EASY ) {
             totalSubtract = (numSmallLateSchedules/2) + numMediumLateSchedules + (numLargeLateSchedules*2);
         }
-        else if ( game.getDifficultyLevel() == DifficultyLevel.INTERMEDIATE ) {
+        else if ( gameModel.getDifficultyLevel() == DifficultyLevel.INTERMEDIATE ) {
             totalSubtract = (numSmallLateSchedules) + (numMediumLateSchedules*2) + (numLargeLateSchedules*3);
         }
-        else if ( game.getDifficultyLevel() == DifficultyLevel.MEDIUM ) {
+        else if ( gameModel.getDifficultyLevel() == DifficultyLevel.MEDIUM ) {
             totalSubtract = (numSmallLateSchedules*2) + (numMediumLateSchedules*3) + (numLargeLateSchedules*4);
         }
-        else if ( game.getDifficultyLevel() == DifficultyLevel.HARD ) {
+        else if ( gameModel.getDifficultyLevel() == DifficultyLevel.HARD ) {
             totalSubtract = (numSmallLateSchedules*3) + (numMediumLateSchedules*4) + (numLargeLateSchedules*5);
         }
         //Subtract from passenger satisfaction.
-        game.setPassengerSatisfaction(game.getPassengerSatisfaction() - totalSubtract);
+        gameRepository.findByPlayerName(playerName).setPassengerSatisfaction(gameModel.getPassengerSatisfaction() - totalSubtract);
         //After all of this check that passenger satisfaction is greater than 0.
-        if ( game.getPassengerSatisfaction() < 0 ) { game.setPassengerSatisfaction(0); }
-        return game.getPassengerSatisfaction();
+        if ( gameModel.getPassengerSatisfaction() < 0 ) { gameRepository.findByPlayerName(playerName).setPassengerSatisfaction(0); }
+        return gameRepository.findByPlayerName(playerName).getPassengerSatisfaction();
     }
-
-    //TODO: Remove once File Service no longer needed.
-    public Hashtable<String, String> getGameAsString ( ) {
-        Game game = getGame();
-        Hashtable<String, String> gameTable = new Hashtable<String, String>();
-        gameTable.put("DifficultyLevel", game.getDifficultyLevel().name());
-        gameTable.put("PassengerSatisfaction", "" + game.getPassengerSatisfaction());
-        gameTable.put("PlayerName", game.getPlayerName());
-        gameTable.put("scenarioName", game.getScenarioName());
-        gameTable.put("Balance", "" + game.getBalance());
-        return gameTable;
-    }
-
-    public DifficultyLevel getDifficultyLevel ( ) {
-        return getGame().getDifficultyLevel();
-    }
-
-    public void setDifficultyLevel ( DifficultyLevel difficultyLevel ) {
-        getGame().setDifficultyLevel(difficultyLevel);
-    }
-
-    public double getCurrentBalance ( ) {
-        return getGame().getBalance();
-    }
-
-    public String getScenarioName ( ) {
-        return getGame().getScenarioName();
-    }
-
-    public String getPlayerName ( ) {
-        return getGame().getPlayerName();
-    }
-
 
     /**
      * Increment the current time.
      */
-    public void incrementTime ( ) {
-        Game game = getGame();
+    public void incrementTime ( final String playerName ) {
+        GameModel gameModel = getGameByPlayerName(playerName);
         //Copy previous time first.
-        game.setPreviousTime(getCurrentTime());
+        gameRepository.findByPlayerName(playerName).setPreviousTime(gameModel.getCurrentTime());
         //Increment time.
-        Calendar newCurrentTime = game.getCurrentTime();
-        newCurrentTime.add(Calendar.MINUTE, game.getTimeIncrement());
+        Calendar newCurrentTime = gameModel.getCurrentTime();
+        newCurrentTime.add(Calendar.MINUTE, gameModel.getTimeIncrement());
+        Game game = gameRepository.findByPlayerName(playerName);
         game.setCurrentTime(newCurrentTime);
-        gameRepository.saveAndFlush(game);
+        gameRepository.save(game);
     }
 
     /**
@@ -135,24 +120,21 @@ public class GameService {
      * @param calDate a <code>Calendar</code> object to format.
      * @return a <code>String</code> with the formatted string.
      */
-     public String formatDateString ( Calendar calDate, DateFormats dateFormat ) {
+     public String formatDateString ( final Calendar calDate, final DateFormats dateFormat ) {
         return dateFormat.getFormat().format(calDate.getTime());
      }
 
-     public Calendar getCurrentTime ( ) {
-        return (Calendar) getGame().getCurrentTime().clone();
-     }
+    public String getCurrentPlayerName ( ) {
+        return getAllGames()[0].getPlayerName();
+    }
 
-     public int getTimeIncrement ( ) {
-        return getGame().getTimeIncrement();
-     }
-
-     public void setTimeIncrement ( final int timeIncrement ) {
-        getGame().setTimeIncrement(timeIncrement);
-     }
-
-     public Calendar getPreviousTime ( ) {
-        return (Calendar) getGame().getPreviousTime().clone();
-     }
+    public GameModel[] getAllGames ( ) {
+        List<Game> games = gameRepository.findAll();
+        GameModel[] gameModels = new GameModel[games.size()];
+        for ( int i = 0; i < gameModels.length; i++ ) {
+            gameModels[i] = convertToGameModel(games.get(i));
+        }
+        return gameModels;
+    }
     
 }

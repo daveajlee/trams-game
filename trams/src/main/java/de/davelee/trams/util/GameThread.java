@@ -26,7 +26,7 @@ public class GameThread extends Thread implements Runnable {
         //Keep running this until pause.
         while ( !gameController.stillRunning() ) {
             //Increment time.
-        	gameController.incrementTime();
+			gameController.incrementTime(gameController.getCurrentPlayerName());
             //controlScreen.drawVehicles(true);
             //Now sleep!
             try { this.sleep(simulationSpeed); } catch (InterruptedException ie) {}

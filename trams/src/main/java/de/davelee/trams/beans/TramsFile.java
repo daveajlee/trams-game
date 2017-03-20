@@ -1,15 +1,14 @@
-package de.davelee.trams.db;
+package de.davelee.trams.beans;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-import de.davelee.trams.data.*;
 import de.davelee.trams.model.*;
 
 @XmlRootElement
 public class TramsFile {
 
     private DriverModel[] driverModels;
-    private Game game;
+    private GameModel[] gameModel;
     private JourneyModel[] journeyModels;
     private JourneyPatternModel[] journeyPatternModels;
     private MessageModel[] messageModels;
@@ -22,11 +21,11 @@ public class TramsFile {
 
     public TramsFile ( ) { }
 
-    public TramsFile ( final DriverModel[] driverModels, final Game game, final JourneyModel[] journeyModels, final JourneyPatternModel[] journeyPatternModels,
+    public TramsFile ( final DriverModel[] driverModels, final GameModel[] gameModel, final JourneyModel[] journeyModels, final JourneyPatternModel[] journeyPatternModels,
                        final MessageModel[] messageModels, final RouteModel[] routeModels, final RouteScheduleModel[] routeScheduleModels,
                        final String[] stops, final StopTimeModel[] stopTimeModels, final TimetableModel[] timetableModels, final VehicleModel[] vehicleModels) {
                 this.driverModels = driverModels;
-                /*this.game = game;*/
+                this.gameModel = gameModel;
                 this.journeyModels = journeyModels;
                 this.journeyPatternModels = journeyPatternModels;
                 this.messageModels = messageModels;
@@ -46,13 +45,13 @@ public class TramsFile {
         this.driverModels = driverModels;
     }
 
-    public Game getGame() {
-		return game;
-	}
+    public GameModel[] getGameModel() {
+        return gameModel;
+    }
 
-	public void setGame(final Game game) {
-		this.game = game;
-	}
+    public void setGameModel(final GameModel[] gameModel) {
+       this.gameModel = gameModel;
+    }
 
     public JourneyModel[] getJourneyModels() {
         return journeyModels;

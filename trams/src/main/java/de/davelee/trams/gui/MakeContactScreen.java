@@ -7,6 +7,7 @@ import javax.swing.*;
 
 import de.davelee.trams.controllers.*;
 import de.davelee.trams.main.UserInterface;
+import de.davelee.trams.model.GameModel;
 import de.davelee.trams.model.RouteScheduleModel;
 import de.davelee.trams.model.VehicleModel;
 import de.davelee.trams.services.JourneyService;
@@ -91,6 +92,8 @@ public class MakeContactScreen extends JFrame {
         JPanel screenPanel = new JPanel();
         screenPanel.setLayout ( new BorderLayout () );
         screenPanel.setBackground(Color.WHITE);
+
+        final GameModel gameModel = gameController.getGameModel();
         
         //Create panel for west - picture of bus.
         JPanel westPanel = new JPanel(new BorderLayout());
@@ -108,7 +111,7 @@ public class MakeContactScreen extends JFrame {
         stopLabel = new JLabel("Stop");
         stopLabel.setFont(new Font("Arial", Font.BOLD, 12));
         stopPanel.add(stopLabel);
-        stopBox = new JComboBox(getListOfStops());
+        stopBox = new JComboBox(getListOfStops(gameModel));
         stopPanel.add(stopBox);
         alterButtonPanel.add(stopPanel);
         shortenRouteButton = new JButton("Terminate At Stop");
@@ -119,7 +122,7 @@ public class MakeContactScreen extends JFrame {
                         "\n\n Control: Vehicle " + vehicleModel.getRegistrationNumber() + ", please terminate at " + stopBox.getSelectedItem().toString() + " and proceed in service in the reverse direction. Over!" +
                         "\n\n Vehicle " + vehicleModel.getRegistrationNumber() + ": Message acknowledeged. Thanks. Over!");
                 //Ask vehicle to shorten current route to the specified destination.
-                routeScheduleController.shortenSchedule(routeScheduleModel, stopBox.getSelectedItem().toString(), gameController.getCurrentSimTime());
+                routeScheduleController.shortenSchedule(routeScheduleModel, stopBox.getSelectedItem().toString(), gameModel.getCurrentTime());
             }
         });
         alterButtonPanel.add(shortenRouteButton);
@@ -130,7 +133,7 @@ public class MakeContactScreen extends JFrame {
                         "\n\n Control: Vehicle " + vehicleModel.getRegistrationNumber() + ", please go out of service until " + stopBox.getSelectedItem().toString() + ". Over!" +
                         "\n\n Vehicle " + vehicleModel.getRegistrationNumber() + ": Message acknowledeged. Thanks. Over!");
                 //Request vehicle to go out of service.
-                routeScheduleController.outOfService(routeScheduleModel, routeScheduleController.getCurrentStopName(routeScheduleModel, gameController.getCurrentSimTime(), gameController.getDifficultyLevel()), stopBox.getSelectedItem().toString(), gameController.getCurrentSimTime());
+                routeScheduleController.outOfService(routeScheduleModel, routeScheduleController.getCurrentStopName(routeScheduleModel, gameModel.getCurrentTime(), gameModel.getDifficultyLevel()), stopBox.getSelectedItem().toString(), gameModel.getCurrentTime());
             }
         });
         alterButtonPanel.add(goOutOfServiceButton);
@@ -144,7 +147,7 @@ public class MakeContactScreen extends JFrame {
         communicationArea = new JTextArea(3,5);
         communicationArea.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         communicationArea.setText("Control: Vehicle " + vehicleModel.getRegistrationNumber() + ", please state your current position. Over!");
-        communicationArea.setText(communicationArea.getText() + "\n\n Vehicle " + vehicleModel.getRegistrationNumber() + ": At " + routeScheduleController.getCurrentStopName(routeScheduleModel, gameController.getCurrentSimTime(), gameController.getDifficultyLevel()) + " heading towards " + getCurrentDestination() + " with delay of " + routeScheduleModel.getDelay() + " mins. Over!");
+        communicationArea.setText(communicationArea.getText() + "\n\n Vehicle " + vehicleModel.getRegistrationNumber() + ": At " + routeScheduleController.getCurrentStopName(routeScheduleModel, gameModel.getCurrentTime(), gameModel.getDifficultyLevel()) + " heading towards " + getCurrentDestination(gameModel) + " with delay of " + routeScheduleModel.getDelay() + " mins. Over!");
         communicationArea.setFont(new Font("Arial", Font.ITALIC, 12));
         communicationArea.setEditable(false);
         communicationArea.setLineWrap(true);
@@ -193,19 +196,19 @@ public class MakeContactScreen extends JFrame {
      * Get the current destination of the vehicle.
      * @return a <code>String</code> with the current destination.
      */
-    public String getCurrentDestination ( ) {
-        return routeScheduleController.getLastStopName(routeScheduleModel, gameController.getCurrentSimTime(), gameController.getDifficultyLevel());
+    public String getCurrentDestination ( final GameModel gameModel ) {
+        return routeScheduleController.getLastStopName(routeScheduleModel, gameModel.getCurrentTime(), gameModel.getDifficultyLevel());
     }
     
     /**
      * Get the list of stops of the vehicle.
      * @return a <code>String</code> array of stops.
      */
-    public String[] getListOfStops() {
+    public String[] getListOfStops(final GameModel gameModel) {
         //Create the String array.
-        String[] stops = new String[journeyController.getNumStopTimes(routeScheduleModel, gameController.getCurrentSimTime())];
+        String[] stops = new String[journeyController.getNumStopTimes(routeScheduleModel, gameModel.getCurrentTime())];
         for ( int i = 0; i < stops.length; i++ ) {
-            stops[i] = journeyController.getStopName(routeScheduleModel, gameController.getCurrentSimTime(), i);
+            stops[i] = journeyController.getStopName(routeScheduleModel, gameModel.getCurrentTime(), i);
         }
         return stops;
     }

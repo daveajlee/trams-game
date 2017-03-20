@@ -9,6 +9,7 @@ import de.davelee.trams.controllers.GameController;
 import de.davelee.trams.controllers.RouteScheduleController;
 import de.davelee.trams.controllers.VehicleController;
 import de.davelee.trams.main.UserInterface;
+import de.davelee.trams.model.GameModel;
 import de.davelee.trams.model.RouteScheduleModel;
 import de.davelee.trams.model.VehicleModel;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,7 +90,9 @@ public class BusInfoScreen extends JFrame {
         busDisplay.setBackground(Color.WHITE);
         westPanel.add(busDisplay);
         screenPanel.add(westPanel, BorderLayout.WEST);
-        
+
+        GameModel gameModel = gameController.getGameModel();
+
         //Create panel for east - description of current status.
         JPanel eastPanel = new JPanel(new GridLayout(6,1,5,5));
         eastPanel.setBackground(Color.WHITE);
@@ -102,11 +105,11 @@ public class BusInfoScreen extends JFrame {
         vehicleIDLabel.setFont(new Font("Arial", Font.BOLD, 15));
         eastPanel.add(vehicleIDLabel);
         //Location.
-        locationLabel = new JLabel("Location: " + routeScheduleController.getCurrentStopName(routeScheduleModel, gameController.getCurrentSimTime(), gameController.getDifficultyLevel()));
+        locationLabel = new JLabel("Location: " + routeScheduleController.getCurrentStopName(routeScheduleModel, gameModel.getCurrentTime(), gameModel.getDifficultyLevel()));
         locationLabel.setFont(new Font("Arial", Font.BOLD, 15));
         eastPanel.add(locationLabel);
         //Destination.
-        destinationLabel = new JLabel("Destination: " + routeScheduleController.getLastStopName(routeScheduleModel, gameController.getCurrentSimTime(), gameController.getDifficultyLevel()));
+        destinationLabel = new JLabel("Destination: " + routeScheduleController.getLastStopName(routeScheduleModel, gameModel.getCurrentTime(), gameModel.getDifficultyLevel()));
         destinationLabel.setFont(new Font("Arial", Font.BOLD, 15));
         eastPanel.add(destinationLabel);
         //Delay.

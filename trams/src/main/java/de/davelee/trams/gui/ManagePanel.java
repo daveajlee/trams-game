@@ -153,6 +153,8 @@ public class ManagePanel {
     }
     
     public JPanel getDisplayPanel ( ) {
+        final GameModel gameModel = gameController.getGameModel();
+
         //Create an overall screen panel.
         JPanel overallScreenPanel = new JPanel(new BorderLayout());
         overallScreenPanel.setBackground(Color.WHITE);
@@ -224,7 +226,7 @@ public class ManagePanel {
         viewScenarioButton.addActionListener( new ActionListener() {
             public void actionPerformed (ActionEvent e) {
                 //Show the actual screen!
-                controlScreen.redrawManagement(makeScenarioPanel());
+                controlScreen.redrawManagement(makeScenarioPanel(), gameModel);
             }
         });
         viewScenarioButtonPanel.add(viewScenarioButton);
@@ -236,7 +238,7 @@ public class ManagePanel {
         locationMapButton.addActionListener( new ActionListener() {
             public void actionPerformed (ActionEvent e) {
                 //Show the actual screen!
-                controlScreen.redrawManagement(makeLocationMapPanel());
+                controlScreen.redrawManagement(makeLocationMapPanel(), gameModel);
             }
         });
         locationMapButtonPanel.add(locationMapButton);
@@ -274,7 +276,7 @@ public class ManagePanel {
         addRouteButton.addActionListener( new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 //Show the actual screen!
-                controlScreen.redrawManagement(makeAddRoutePanel(null));
+                controlScreen.redrawManagement(makeAddRoutePanel(null),gameModel);
             }
         });
         createRouteButtonPanel.add(addRouteButton);
@@ -287,7 +289,7 @@ public class ManagePanel {
         routeTimetableButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 //Show the actual screen!
-                controlScreen.redrawManagement(makeTimetablePanel(routeController.getRouteModels()[0].getRouteNumber(), 0, 0));
+                controlScreen.redrawManagement(makeTimetablePanel(routeController.getRouteModels()[0].getRouteNumber(), 0, 0), gameModel);
             }
         });
         timetableButtonPanel.add(routeTimetableButton);
@@ -326,7 +328,7 @@ public class ManagePanel {
         purchaseVehicleScreenButton.addActionListener( new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 //Show the actual screen!
-                controlScreen.redrawManagement(makePurchaseVehiclePanel(vehicleController.getFirstVehicleModel()));
+                controlScreen.redrawManagement(makePurchaseVehiclePanel(vehicleController.getFirstVehicleModel()), gameModel);
             }
         });
         purchaseVehicleButtonPanel.add(purchaseVehicleScreenButton);
@@ -339,7 +341,7 @@ public class ManagePanel {
         viewDepotButton.addActionListener( new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 //Show the actual screen!
-                controlScreen.redrawManagement(makeVehicleDepotPanel(""));
+                controlScreen.redrawManagement(makeVehicleDepotPanel(""), gameModel);
             }
         });
         viewDepotButtonPanel.add(viewDepotButton);
@@ -378,7 +380,7 @@ public class ManagePanel {
         employDriversButton.addActionListener( new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 //Show the actual screen!
-                controlScreen.redrawManagement(makeEmployDriverPanel(0));
+                controlScreen.redrawManagement(makeEmployDriverPanel(0), gameModel);
             }
         });
         employDriverButtonPanel.add(employDriversButton);
@@ -391,7 +393,7 @@ public class ManagePanel {
         viewDriversButton.addActionListener( new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 //Show the actual screen!
-                controlScreen.redrawManagement(makeViewDriversPanel(""));
+                controlScreen.redrawManagement(makeViewDriversPanel(""), gameModel);
             }
         });
         viewDriversButtonPanel.add(viewDriversButton);
@@ -426,7 +428,7 @@ public class ManagePanel {
         changeAllocationButton.addActionListener( new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 //Show the actual screen!
-                controlScreen.redrawManagement(makeAllocationPanel());
+                controlScreen.redrawManagement(makeAllocationPanel(), gameModel);
             }
         });
         allocationButtonPanel.add(changeAllocationButton);
@@ -445,6 +447,8 @@ public class ManagePanel {
     }
     
     public JPanel makeAddRoutePanel( RouteModel routeModel ) {
+
+        final GameModel gameModel = gameController.getGameModel();
         
         //Create routeScreen panel to add things to.
         JPanel routeScreenPanel = new JPanel();
@@ -579,7 +583,7 @@ public class ManagePanel {
                     }
                 }
                 //Show the actual screen!
-                controlScreen.redrawManagement(makeCreateTimetablePanel(null));
+                controlScreen.redrawManagement(makeCreateTimetablePanel(null), gameModel);
             }
         });
         timetableButtonPanel.add(createTimetableButton);
@@ -587,7 +591,7 @@ public class ManagePanel {
         if ( timetableModel.getSize() == 0 ) { modifyTimetableButton.setEnabled(false); }
         modifyTimetableButton.addActionListener ( new ActionListener() {
             public void actionPerformed (ActionEvent e ) {
-                controlScreen.redrawManagement(makeCreateTimetablePanel(timetableController.getRouteTimetable(selectedRouteModel, timetableList.getSelectedValue().toString())));
+                controlScreen.redrawManagement(makeCreateTimetablePanel(timetableController.getRouteTimetable(selectedRouteModel, timetableList.getSelectedValue().toString())), gameModel);
             }
         });
         timetableButtonPanel.add(modifyTimetableButton);
@@ -622,11 +626,11 @@ public class ManagePanel {
         createRouteButton.setEnabled(false);
         createRouteButton.addActionListener ( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
-                routeScheduleController.generateRouteSchedules(selectedRouteModel, gameController.getCurrentSimTime(), gameController.getScenarioName());
+                routeScheduleController.generateRouteSchedules(selectedRouteModel, gameModel.getCurrentTime(), gameModel.getScenarioName());
 
                 routeController.addNewRoute(routeNumberField.getText(), selectedOutwardStops);
-               //Now return to previous screen.
-               controlScreen.redrawManagement(ManagePanel.this.getDisplayPanel());
+                //Now return to previous screen.
+                controlScreen.redrawManagement(ManagePanel.this.getDisplayPanel(), gameModel);
             }
         });
         bottomButtonPanel.add(createRouteButton);
@@ -635,7 +639,7 @@ public class ManagePanel {
         JButton previousScreenButton = new JButton("Return to Previous Screen");
         previousScreenButton.addActionListener ( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
-                controlScreen.redrawManagement(ManagePanel.this.getDisplayPanel());
+                controlScreen.redrawManagement(ManagePanel.this.getDisplayPanel(), gameModel);
             }
         });
         bottomButtonPanel.add(previousScreenButton);
@@ -651,6 +655,8 @@ public class ManagePanel {
     }
 
     public JPanel makeCreateTimetablePanel(final TimetableModel timetableModel) {
+
+        final GameModel gameModel = gameController.getGameModel();
 
         //Create timetableScreen panel to add things to.
         JPanel timetableScreenPanel = new JPanel();
@@ -705,7 +711,7 @@ public class ManagePanel {
         validFromLabel.setFont(new Font("Arial", Font.ITALIC, 16));
         validityPanel.add(validFromLabel);
         //Get the calendar object with current time.
-        Calendar currTime = (Calendar) gameController.getCurrentSimTime().clone();
+        Calendar currTime = (Calendar) gameModel.getCurrentTime().clone();
         currTime.add(Calendar.HOUR, 0); //TODO: Change this to 48!!!!
         //Valid From Day.
         fromStartDay = currTime.get(Calendar.DAY_OF_MONTH);
@@ -756,7 +762,7 @@ public class ManagePanel {
         validToLabel.setFont(new Font("Arial", Font.ITALIC, 16));
         validityPanel.add(validToLabel);
         //Get the calendar object with current time.
-        Calendar myCurrTime = (Calendar) gameController.getCurrentSimTime().clone();
+        Calendar myCurrTime = (Calendar) gameModel.getCurrentTime().clone();
         myCurrTime.add(Calendar.HOUR, 72);
         //Valid To Day.
         toStartDay = myCurrTime.get(Calendar.DAY_OF_MONTH);
@@ -867,7 +873,7 @@ public class ManagePanel {
                     }
                 }
                 //Show the actual screen!
-                controlScreen.redrawManagement(makeJourneyPatternPanel(stops, selectedTimetableModel, null));
+                controlScreen.redrawManagement(makeJourneyPatternPanel(stops, selectedTimetableModel, null), gameModel);
             }
         });
         journeyPatternButtonPanel.add(createJourneyPatternButton);
@@ -923,7 +929,7 @@ public class ManagePanel {
         createTimetableButton.addActionListener ( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
                 //Timetable is already saved so we just go back to the original screen.
-                controlScreen.redrawManagement(ManagePanel.this.makeAddRoutePanel(selectedRouteModel));
+                controlScreen.redrawManagement(ManagePanel.this.makeAddRoutePanel(selectedRouteModel), gameModel);
             }
         });
         bottomButtonPanel.add(createTimetableButton);
@@ -931,7 +937,7 @@ public class ManagePanel {
         previousScreenButton.addActionListener ( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
                 //Cancel addition.
-                controlScreen.redrawManagement(ManagePanel.this.makeAddRoutePanel(selectedRouteModel));
+                controlScreen.redrawManagement(ManagePanel.this.makeAddRoutePanel(selectedRouteModel), gameModel);
             }
         });
         bottomButtonPanel.add(previousScreenButton);
@@ -1146,6 +1152,8 @@ public class ManagePanel {
         //Create bottom button panel for next two buttons.
         JPanel bottomButtonPanel = new JPanel();
         bottomButtonPanel.setBackground(Color.WHITE);
+
+        final GameModel gameModel = gameController.getGameModel();
         
         //Create new journey pattern button and add it to screen panel.
         createJPButton = new JButton("Create Journey Pattern");
@@ -1179,7 +1187,7 @@ public class ManagePanel {
                             selectedTimetableModel, selectedRouteModel.getRouteNumber());
                 }
                 //Now return to the timetable screen.
-                controlScreen.redrawManagement(ManagePanel.this.makeCreateTimetablePanel(selectedTimetableModel));
+                controlScreen.redrawManagement(ManagePanel.this.makeCreateTimetablePanel(selectedTimetableModel), gameModel);
             }
         });
         bottomButtonPanel.add(createJPButton);
@@ -1187,7 +1195,7 @@ public class ManagePanel {
         previousScreenButton.addActionListener ( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
                 //Return to the timetable screen.
-                controlScreen.redrawManagement(ManagePanel.this.makeCreateTimetablePanel(selectedTimetableModel));
+                controlScreen.redrawManagement(ManagePanel.this.makeCreateTimetablePanel(selectedTimetableModel), gameModel);
             }
         });
         bottomButtonPanel.add(previousScreenButton);
@@ -1221,11 +1229,12 @@ public class ManagePanel {
     }
     
     private int getCurrentRouteDuration ( int frequency ) {
+        final GameModel gameModel = gameController.getGameModel();
         //So duration is the distance between selected one in terminus1 and then distance between all ones in terminus2 up to selected item.
         //Note cumulative total.
         int cumDistance = 0;
         //Add distance of terminus1 and first item of terminus2 first of all - this is guaranteed.
-        cumDistance += journeyController.getDistance(gameController.getScenarioName(), terminus1Box.getSelectedItem().toString(), terminus2Box.getItemAt(0).toString());
+        cumDistance += journeyController.getDistance(gameModel.getScenarioName(), terminus1Box.getSelectedItem().toString(), terminus2Box.getItemAt(0).toString());
         //Now from 0 up until the selected index - add distances for terminus 2.
         int selectIndex = terminus2Box.getSelectedIndex();
         if ( selectIndex == 0 ) {
@@ -1239,7 +1248,7 @@ public class ManagePanel {
             return myCumFreq;
         }
         for ( int i = 1; i <= selectIndex; i++ ) {
-            cumDistance += journeyController.getDistance(gameController.getScenarioName(), terminus2Box.getItemAt(i-1).toString(), terminus2Box.getItemAt(i).toString());
+            cumDistance += journeyController.getDistance(gameModel.getScenarioName(), terminus2Box.getItemAt(i-1).toString(), terminus2Box.getItemAt(i).toString());
         }
         //Return distance * 2.
         int myDistance = (cumDistance*2);
@@ -1253,18 +1262,19 @@ public class ManagePanel {
     }
 
     private int getMaxRouteDuration ( ) {
+        final GameModel gameModel = gameController.getGameModel();
         //So duration is the distance between selected one in terminus1 and then distance between all ones in terminus2 up to selected item.
         //Note cumulative total.
         int cumDistance = 0;
         //Add distance of terminus1 and first item of terminus2 first of all - this is guaranteed.
-        cumDistance += journeyController.getDistance(gameController.getScenarioName(), terminus1Box.getSelectedItem().toString(), terminus2Box.getItemAt(0).toString());
+        cumDistance += journeyController.getDistance(gameModel.getScenarioName(), terminus1Box.getSelectedItem().toString(), terminus2Box.getItemAt(0).toString());
         //Now from 0 up until the selected index - add distances for terminus 2.
         int selectIndex = terminus2Box.getSelectedIndex();
         if ( selectIndex == 0 ) {
             return cumDistance*2;
         }
         for ( int i = 1; i <= selectIndex; i++ ) {
-            cumDistance += journeyController.getDistance(gameController.getScenarioName(), terminus2Box.getItemAt(i-1).toString(), terminus2Box.getItemAt(i).toString());
+            cumDistance += journeyController.getDistance(gameModel.getScenarioName(), terminus2Box.getItemAt(i-1).toString(), terminus2Box.getItemAt(i).toString());
         }
         //Return distance * 2.
         return cumDistance*2;
@@ -1275,6 +1285,7 @@ public class ManagePanel {
     }
     
     public JPanel makeTimetablePanel ( String route, int min, int dateIndex ) {
+        final GameModel gameModel = gameController.getGameModel();
         
         //Initialise variables.
         selectedRouteStr = route;
@@ -1303,10 +1314,10 @@ public class ManagePanel {
         //Show valid information.
         JPanel validityPanel = new JPanel(new BorderLayout());
         validityPanel.setBackground(Color.WHITE);
-        JLabel validFromDateLabel = new JLabel("Valid From: " + timetableController.getDateInfo(timetableController.getCurrentTimetable(selectedRouteModel, gameController.getCurrentSimTime()).getValidFromDate()));
+        JLabel validFromDateLabel = new JLabel("Valid From: " + timetableController.getDateInfo(timetableController.getCurrentTimetable(selectedRouteModel, gameModel.getCurrentTime()).getValidFromDate()));
         validFromDateLabel.setFont(new Font("Arial", Font.ITALIC, 14));
         validityPanel.add(validFromDateLabel, BorderLayout.NORTH);
-        JLabel validToDateLabel = new JLabel("Valid To: " + timetableController.getDateInfo(timetableController.getCurrentTimetable(selectedRouteModel, gameController.getCurrentSimTime()).getValidToDate()));
+        JLabel validToDateLabel = new JLabel("Valid To: " + timetableController.getDateInfo(timetableController.getCurrentTimetable(selectedRouteModel, gameModel.getCurrentTime()).getValidToDate()));
         validityPanel.add(validToDateLabel, BorderLayout.SOUTH);
         topPanel.add(validityPanel, BorderLayout.SOUTH);
         //Add top panel to topLabel panel and topLabel panel to screenPanel.
@@ -1318,11 +1329,11 @@ public class ManagePanel {
         datesPanel.setBackground(Color.WHITE);
         JLabel datesLabel = new JLabel("Dates:");
         datesLabel.setFont(new Font("Arial", Font.BOLD, 16));
-        datesComboBox = new JComboBox ( journeyPatternController.getPossibleSchedulesDates(selectedRouteModel, gameController.getCurrentSimTime()) );
+        datesComboBox = new JComboBox ( journeyPatternController.getPossibleSchedulesDates(selectedRouteModel, gameModel.getCurrentTime()) );
         datesComboBox.setSelectedIndex(dateIndex);
         datesComboBox.addItemListener(new ItemListener() {
             public void itemStateChanged ( ItemEvent e ) {
-                controlScreen.redrawManagement(makeTimetablePanel(selectedRouteModel.getRouteNumber(), 0, datesComboBox.getSelectedIndex()));
+                controlScreen.redrawManagement(makeTimetablePanel(selectedRouteModel.getRouteNumber(), 0, datesComboBox.getSelectedIndex()), gameModel);
             }
         });
         datesPanel.add(datesLabel); datesPanel.add(datesComboBox);
@@ -1345,7 +1356,7 @@ public class ManagePanel {
         } catch ( ParseException parseEx ) {
         	//TODO: exception handling.
         }
-        List<JourneyModel> journeyModels = journeyController.generateJourneyTimetables(selectedRouteModel, cal, gameController.getScenarioName(), TramsConstants.OUTWARD_DIRECTION);
+        List<JourneyModel> journeyModels = journeyController.generateJourneyTimetables(selectedRouteModel, cal, gameModel.getScenarioName(), TramsConstants.OUTWARD_DIRECTION);
         //LinkedList<Service> services = theSelectedRoute.getAllOutgoingServices(theDatesComboBox.getSelectedItem().toString());
         for ( int i = 0; i < routeStops.size(); i++) {
             outgoingData[i][0] = routeStops.get(i);
@@ -1382,7 +1393,7 @@ public class ManagePanel {
         }
         previousButton.addActionListener(new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
-                controlScreen.redrawManagement(makeTimetablePanel(selectedRouteStr, currentMin-10, datesComboBox.getSelectedIndex()));
+                controlScreen.redrawManagement(makeTimetablePanel(selectedRouteStr, currentMin-10, datesComboBox.getSelectedIndex()), gameModel);
             }
         });
         otherServicesButtonPanel.add(previousButton);
@@ -1392,7 +1403,7 @@ public class ManagePanel {
         }
         nextButton.addActionListener(new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
-                controlScreen.redrawManagement(makeTimetablePanel(selectedRouteStr, currentMin+10, datesComboBox.getSelectedIndex()));
+                controlScreen.redrawManagement(makeTimetablePanel(selectedRouteStr, currentMin+10, datesComboBox.getSelectedIndex()), gameModel);
             }
         });
         otherServicesButtonPanel.add(nextButton);
@@ -1400,7 +1411,7 @@ public class ManagePanel {
         amendRouteButton.addActionListener(new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
                 //Show the actual screen!
-                controlScreen.redrawManagement(makeAddRoutePanel(selectedRouteModel));
+                controlScreen.redrawManagement(makeAddRoutePanel(selectedRouteModel), gameModel);
                 //int confirm = JOptionPane.showConfirmDialog(null, "Are you sure you wish to delete route " + ((Route) theRoutesModel.get(theRoutesList.getSelectedIndex())).getRouteNumber() + "?", "Confirm Delete", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
                 //if ( confirm == JOptionPane.YES_OPTION ) {
                 //    theInterface.deleteRoute(((Route) theRoutesModel.get(theRoutesList.getSelectedIndex())));
@@ -1411,7 +1422,7 @@ public class ManagePanel {
         JButton managementScreenButton = new JButton("Back to Management Screen");
         managementScreenButton.addActionListener(new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
-                controlScreen.redrawManagement(getDisplayPanel());
+                controlScreen.redrawManagement(getDisplayPanel(), gameModel);
             }
         });
         otherServicesButtonPanel.add(managementScreenButton);
@@ -1440,7 +1451,7 @@ public class ManagePanel {
         if ( routesModel.getSize() > 0 ) { routesList.setSelectedValue(route, true); }
         routesList.addListSelectionListener ( new ListSelectionListener() {
             public void valueChanged ( ListSelectionEvent e ) {
-                controlScreen.redrawManagement(makeTimetablePanel(routesList.getSelectedValue().toString(), 0, 0));
+                controlScreen.redrawManagement(makeTimetablePanel(routesList.getSelectedValue().toString(), 0, 0), gameModel);
             }
         });
         JScrollPane routesPane = new JScrollPane(routesList);
@@ -1494,13 +1505,15 @@ public class ManagePanel {
 
         gridPanel.add(contractedHoursPanel);
 
+        final GameModel gameModel = gameController.getGameModel();
+
         //Create label and field for start date and add it to the start panel.
         JPanel startLabelPanel = new JPanel();
         startLabelPanel.setBackground(Color.WHITE);
         JLabel startLabel = new JLabel("Start Date:", SwingConstants.CENTER);
         startLabel.setFont(new Font("Arial", Font.BOLD, 16));
         startLabelPanel.add(startLabel);
-        startDate = (Calendar) gameController.getCurrentSimTime().clone();
+        startDate = (Calendar) gameModel.getCurrentTime().clone();
         startDate.add(Calendar.HOUR, 72);
         JLabel startField = new JLabel("" + gameController.formatDateString(startDate, DateFormats.FULL_FORMAT));
         startField.setFont(new Font("Arial", Font.ITALIC, 14));
@@ -1519,14 +1532,14 @@ public class ManagePanel {
                 driverModel.setContractedHours((Integer) contractedHoursSpinner.getValue());
                 driverModel.setStartDate(startDate);
                 driverController.employDriver(driverModel);
-                controlScreen.redrawManagement(ManagePanel.this.getDisplayPanel());
+                controlScreen.redrawManagement(ManagePanel.this.getDisplayPanel(), gameModel);
             }
         });
         buttonPanel.add(employDriverButton);
         JButton managementScreenButton = new JButton("Return to Management Screen");
         managementScreenButton.addActionListener ( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
-                controlScreen.redrawManagement(ManagePanel.this.getDisplayPanel());
+                controlScreen.redrawManagement(ManagePanel.this.getDisplayPanel(), gameModel);
             }
         });
         buttonPanel.add(managementScreenButton);
@@ -1536,6 +1549,8 @@ public class ManagePanel {
     }
 
     public JPanel makeViewDriversPanel ( String text ) {
+        final GameModel gameModel = gameController.getGameModel();
+
         //Create screen panel to add things to.
         JPanel driverScreenPanel = new JPanel();
         driverScreenPanel.setLayout ( new BoxLayout ( driverScreenPanel, BoxLayout.PAGE_AXIS ) );
@@ -1549,7 +1564,7 @@ public class ManagePanel {
         JButton managementScreenButton = new JButton("Return to Management Screen");
         managementScreenButton.addActionListener ( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
-                controlScreen.redrawManagement(ManagePanel.this.getDisplayPanel());
+                controlScreen.redrawManagement(ManagePanel.this.getDisplayPanel(), gameModel);
             }
         });
         driverScreenPanel.add(managementScreenButton);
@@ -1578,6 +1593,8 @@ public class ManagePanel {
         
         //Create vehicle object so that we can pull information from it.
         vehicleModel = vehicleController.getVehicleByModel(vehicleType);
+
+        final GameModel gameModel = gameController.getGameModel();
         
         //Create picture panel.
         JPanel picturePanel = new JPanel(new BorderLayout());
@@ -1589,7 +1606,7 @@ public class ManagePanel {
         if ( vehicleType.contentEquals(vehicleController.getFirstVehicleModel()) ) { previousVehicleTypeButton.setEnabled(false); }
         previousVehicleTypeButton.addActionListener( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
-                controlScreen.redrawManagement(ManagePanel.this.makePurchaseVehiclePanel(vehicleController.getPreviousVehicleModel(vehicleType)));
+                controlScreen.redrawManagement(ManagePanel.this.makePurchaseVehiclePanel(vehicleController.getPreviousVehicleModel(vehicleType)), gameModel);
             }
         });
         previousButtonPanel.add(previousVehicleTypeButton);
@@ -1609,7 +1626,7 @@ public class ManagePanel {
         if ( vehicleType.contentEquals(vehicleController.getLastVehicleModel()))  { nextVehicleTypeButton.setEnabled(false); }
         nextVehicleTypeButton.addActionListener( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
-                controlScreen.redrawManagement(ManagePanel.this.makePurchaseVehiclePanel(vehicleController.getNextVehicleModel(vehicleType)));
+                controlScreen.redrawManagement(ManagePanel.this.makePurchaseVehiclePanel(vehicleController.getNextVehicleModel(vehicleType)), gameModel);
             }
         });
         nextButtonPanel.add(nextVehicleTypeButton);
@@ -1656,7 +1673,7 @@ public class ManagePanel {
         deliveryLabel.setFont(new Font("Arial", Font.ITALIC, 14));
         deliveryLabelPanel.add(deliveryLabel);
         gridPanel.add(deliveryLabel);
-        deliveryDate = (Calendar) gameController.getCurrentSimTime().clone();
+        deliveryDate = (Calendar) gameModel.getCurrentTime().clone();
         deliveryDate.add(Calendar.HOUR, 72);
         JLabel deliveryField = new JLabel("" + gameController.formatDateString(deliveryDate, DateFormats.FULL_FORMAT));
         deliveryField.setFont(new Font("Arial", Font.PLAIN, 12));
@@ -1684,7 +1701,7 @@ public class ManagePanel {
         quantitySpinner.addChangeListener(new ChangeListener() {
             public void stateChanged ( ChangeEvent e ) {
                 double totalPrice = Double.parseDouble(quantitySpinner.getValue().toString()) * vehicleModel.getPurchasePrice();
-                if ( totalPrice > gameController.getBalance() ) {
+                if ( totalPrice > gameModel.getBalance() ) {
                     totalPriceField.setText("£" + format.format(totalPrice) + " (Insufficient funds available)");
                     totalPriceField.setForeground(Color.RED);
                     purchaseVehicleButton.setEnabled(false);
@@ -1725,7 +1742,7 @@ public class ManagePanel {
                 for ( int i = 0; i < quantity; i++ ) {
                     vehicleController.purchaseVehicle(vehicleModel.getModel(), deliveryDate);
                 }
-                controlScreen.redrawManagement(ManagePanel.this.getDisplayPanel()); 
+                controlScreen.redrawManagement(ManagePanel.this.getDisplayPanel(), gameModel);
             }
         });
         bottomButtonPanel.add(purchaseVehicleButton);
@@ -1734,7 +1751,7 @@ public class ManagePanel {
         JButton managementScreenButton = new JButton("Return to Management Screen");
         managementScreenButton.addActionListener ( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
-                controlScreen.redrawManagement(ManagePanel.this.getDisplayPanel()); 
+                controlScreen.redrawManagement(ManagePanel.this.getDisplayPanel(), gameModel);
             }
         });
         bottomButtonPanel.add(managementScreenButton);
@@ -1772,12 +1789,14 @@ public class ManagePanel {
         JPanel centrePanel = new JPanel();
         centrePanel.setLayout ( new BoxLayout ( centrePanel, BoxLayout.PAGE_AXIS ) );
         centrePanel.setBackground(Color.WHITE);
+
+        final GameModel gameModel = gameController.getGameModel();
         
         //Get vehicle data now so that we can used to compile first!
         vehiclesModel = new DefaultListModel();
         VehicleModel[] vehicleModels = vehicleController.getAllCreatedVehicles();
         for ( int i = 0; i < vehicleModels.length; i++ ) {
-            if ( vehicleController.hasVehicleBeenDelivered(vehicleModels[i].getDeliveryDate(), gameController.getCurrentSimTime()) ) {
+            if ( vehicleController.hasVehicleBeenDelivered(vehicleModels[i].getDeliveryDate(), gameModel.getCurrentTime()) ) {
                 vehiclesModel.addElement(vehicleModels[i].getRegistrationNumber());
             }
         }
@@ -1829,7 +1848,7 @@ public class ManagePanel {
         ageLabelPanel.add(ageLabel);
         gridPanel.add(ageLabel);
         JLabel ageField = new JLabel(vehicleController.getAge(vehicleModel.getDeliveryDate(),
-                gameController.getCurrentSimTime()) + " months");
+                gameModel.getCurrentTime()) + " months");
         ageField.setFont(new Font("Arial", Font.PLAIN, 12));
         gridPanel.add(ageField);
         //Create label and field for seating capacity and add it to the seating panel.
@@ -1870,7 +1889,7 @@ public class ManagePanel {
         valueLabelPanel.add(valueLabel);
         gridPanel.add(valueLabel);
         format = new DecimalFormat("0.00");
-        JLabel valueField = new JLabel("£" + format.format(vehicleController.getValue(vehicleModel, gameController.getCurrentSimTime())));
+        JLabel valueField = new JLabel("£" + format.format(vehicleController.getValue(vehicleModel, gameModel.getCurrentTime())));
         valueField.setFont(new Font("Arial", Font.PLAIN, 12));
         gridPanel.add(valueField);
         
@@ -1886,7 +1905,7 @@ public class ManagePanel {
         sellVehicleButton.addActionListener ( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
                 vehicleController.sellVehicle(vehicleModel);
-                controlScreen.redrawManagement(makeVehicleDepotPanel(""));
+                controlScreen.redrawManagement(makeVehicleDepotPanel(""), gameModel);
             }
         });
         bottomButtonPanel.add(sellVehicleButton);
@@ -1895,7 +1914,7 @@ public class ManagePanel {
         JButton managementScreenButton = new JButton("Return to Management Screen");
         managementScreenButton.addActionListener ( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
-                controlScreen.redrawManagement(ManagePanel.this.getDisplayPanel()); 
+                controlScreen.redrawManagement(ManagePanel.this.getDisplayPanel(), gameModel);
             }
         });
         bottomButtonPanel.add(managementScreenButton);
@@ -1921,7 +1940,7 @@ public class ManagePanel {
         vehiclesList.addListSelectionListener(new ListSelectionListener() {
             public void valueChanged ( ListSelectionEvent e ) {
                 String selectedValue = vehiclesList.getSelectedValue().toString();
-                controlScreen.redrawManagement(ManagePanel.this.makeVehicleDepotPanel(selectedValue)); 
+                controlScreen.redrawManagement(ManagePanel.this.makeVehicleDepotPanel(selectedValue), gameModel);
             }
         });
         JScrollPane vehiclesPane = new JScrollPane(vehiclesList);
@@ -1957,13 +1976,15 @@ public class ManagePanel {
         /*JPanel infoPanel = new JPanel(new BorderLayout());
         infoPanel.setBackground(Color.WHITE);*/
 
+        final GameModel gameModel = gameController.getGameModel();
+
         //Create panel for scenario name field.
         JPanel scenarioNamePanel = new JPanel(new GridLayout(1,2,5,5));
         scenarioNamePanel.setBackground(Color.WHITE);
         //Create label and field for scenario name.
         JLabel scenarioNameLabel = new JLabel("Scenario Name: ", SwingConstants.CENTER);
         scenarioNameLabel.setFont(new Font("Arial", Font.BOLD, 17));
-        JLabel scenarioActualNameLabel = new JLabel(gameController.getScenarioName(), SwingConstants.CENTER);
+        JLabel scenarioActualNameLabel = new JLabel(gameModel.getScenarioName(), SwingConstants.CENTER);
         scenarioActualNameLabel.setFont(new Font("Arial", Font.PLAIN, 17));
         scenarioNamePanel.add(scenarioNameLabel);
         scenarioNamePanel.add(scenarioActualNameLabel);
@@ -1972,7 +1993,7 @@ public class ManagePanel {
         scenarioScreenPanel.add(scenarioNamePanel);
         scenarioScreenPanel.add(Box.createRigidArea(new Dimension(0,15)));
 
-        ScenarioModel scenarioModel = scenarioController.getScenario(gameController.getScenarioName());
+        ScenarioModel scenarioModel = scenarioController.getScenario(gameModel.getScenarioName());
 
         //Create panel for target field.
         JPanel targetPanel = new JPanel(new GridLayout(1,2,5,5));
@@ -1998,7 +2019,7 @@ public class ManagePanel {
         //Create label and field for player name.
         JLabel playerNameLabel = new JLabel("Player Name: ", SwingConstants.CENTER);
         playerNameLabel.setFont(new Font("Arial", Font.BOLD, 17));
-        JLabel playerActualNameLabel = new JLabel(gameController.getPlayerName(), SwingConstants.CENTER);
+        JLabel playerActualNameLabel = new JLabel(gameModel.getPlayerName(), SwingConstants.CENTER);
         playerActualNameLabel.setFont(new Font("Arial", Font.PLAIN, 17));
         playerNamePanel.add(playerNameLabel);
         playerNamePanel.add(playerActualNameLabel);
@@ -2013,7 +2034,7 @@ public class ManagePanel {
         JButton managementScreenButton = new JButton("Return to Management Screen");
         managementScreenButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                controlScreen.redrawManagement(ManagePanel.this.getDisplayPanel()); 
+                controlScreen.redrawManagement(ManagePanel.this.getDisplayPanel(), gameModel);
             }
         });
         optionsButtonPanel.add(managementScreenButton);
@@ -2026,7 +2047,9 @@ public class ManagePanel {
     
     public JPanel makeLocationMapPanel ( ) {
 
-        ScenarioModel scenarioModel = scenarioController.getScenario(gameController.getScenarioName());
+        final GameModel gameModel = gameController.getGameModel();
+
+        ScenarioModel scenarioModel = scenarioController.getScenario(gameModel.getScenarioName());
         
         //Create picture panel.
         JPanel picturePanel = new JPanel(new BorderLayout());
@@ -2042,7 +2065,7 @@ public class ManagePanel {
         JButton managementScreenButton = new JButton("Return to Management Screen");
         managementScreenButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                controlScreen.redrawManagement(ManagePanel.this.getDisplayPanel()); 
+                controlScreen.redrawManagement(ManagePanel.this.getDisplayPanel(), gameModel);
             }
         });
         optionsButtonPanel.add(managementScreenButton);
@@ -2057,6 +2080,8 @@ public class ManagePanel {
         allocationScreenPanel.setLayout ( new BoxLayout ( allocationScreenPanel, BoxLayout.PAGE_AXIS ) );
         allocationScreenPanel.setBackground(Color.WHITE);
 
+        final GameModel gameModel = gameController.getGameModel();
+
         //Create label at top of screen in topLabelPanel and add it to screenPanel.
         JPanel topLabelPanel = new JPanel(new BorderLayout());
         topLabelPanel.setBackground(Color.WHITE);
@@ -2068,7 +2093,7 @@ public class ManagePanel {
         topRightPanel.add(topLabel);
         JPanel dayPanel = new JPanel();
         dayPanel.setBackground(Color.WHITE);
-        JLabel dayLabel = new JLabel(gameController.formatDateString(gameController.getCurrentSimTime(), DateFormats.FULL_FORMAT), SwingConstants.CENTER);
+        JLabel dayLabel = new JLabel(gameController.formatDateString(gameModel.getCurrentTime(), DateFormats.FULL_FORMAT), SwingConstants.CENTER);
         dayLabel.setFont(new Font("Arial", Font.BOLD + Font.ITALIC, 20));
         dayPanel.add(dayLabel);
         topRightPanel.add(dayPanel);
@@ -2223,7 +2248,7 @@ public class ManagePanel {
         allocationListPanel.setBackground(Color.WHITE);
         allocationsModel = new DefaultListModel();
         List<String> allocations;
-        String currentDate = gameController.getCurrentSimTime().get(Calendar.YEAR) + "-" + gameController.getCurrentSimTime().get(Calendar.MONTH) + "-" + gameController.getCurrentSimTime().get(Calendar.DATE);
+        String currentDate = gameModel.getCurrentTime().get(Calendar.YEAR) + "-" + gameModel.getCurrentTime().get(Calendar.MONTH) + "-" + gameModel.getCurrentTime().get(Calendar.DATE);
         allocations = routeScheduleController.getTodayAllocations(currentDate);
         for ( int i = 0; i < allocations.size(); i++ ) {
             allocationsModel.addElement(allocations.get(i).toString());
@@ -2296,7 +2321,7 @@ public class ManagePanel {
                         }
                     }
                     //Now return to previous screen.
-                    controlScreen.redrawManagement(ManagePanel.this.getDisplayPanel());
+                    controlScreen.redrawManagement(ManagePanel.this.getDisplayPanel(), gameModel);
                 }
             }
         });
@@ -2305,7 +2330,7 @@ public class ManagePanel {
         previousScreenButton.addActionListener( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
                 //Now return to previous screen.
-                controlScreen.redrawManagement(ManagePanel.this.getDisplayPanel());
+                controlScreen.redrawManagement(ManagePanel.this.getDisplayPanel(), gameModel);
             }
         });
         bottomButtonPanel.add(previousScreenButton);

@@ -1,5 +1,6 @@
 package de.davelee.trams.controllers;
 
+import de.davelee.trams.model.GameModel;
 import de.davelee.trams.model.ScenarioModel;
 import de.davelee.trams.model.VehicleModel;
 import de.davelee.trams.util.SortedVehicleModels;
@@ -44,9 +45,10 @@ public class VehicleController {
 	 */
 	public boolean hasSomeVehiclesBeenDelivered ( ) {
 		VehicleModel[] vehicleModels = getAllCreatedVehicles();
+		GameModel gameModel = gameController.getGameModel();
 		if ( vehicleModels.length == 0 ) { return false; }
 		for ( int i = 0; i < vehicleModels.length; i++ ) {
-			if ( hasVehicleBeenDelivered(vehicleModels[i].getDeliveryDate(), gameController.getCurrentSimTime()) ) { return true; }
+			if ( hasVehicleBeenDelivered(vehicleModels[i].getDeliveryDate(), gameModel.getCurrentTime()) ) { return true; }
 		}
 		return false;
 	}
@@ -75,7 +77,8 @@ public class VehicleController {
 	 * @return a <code>boolean</code> which is true iff the vehicle was sold.
 	 */
 	public void sellVehicle ( final VehicleModel vehicleModel ) {
-		gameController.creditBalance(vehicleService.getValue(vehicleModel.getPurchasePrice(), vehicleModel.getDepreciationFactor(), vehicleModel.getDeliveryDate(), gameController.getCurrentSimTime()));
+		GameModel gameModel = gameController.getGameModel();
+		gameController.creditBalance(vehicleService.getValue(vehicleModel.getPurchasePrice(), vehicleModel.getDepreciationFactor(), vehicleModel.getDeliveryDate(), gameModel.getCurrentTime()), gameModel.getPlayerName());
 		vehicleService.removeVehicle(vehicleModel);
 	}
 
@@ -86,9 +89,10 @@ public class VehicleController {
 	 * @return a <code>boolean</code> which is true iff the vehicle has been purchased successfully.
 	 */
 	public void purchaseVehicle ( final String type, final Calendar deliveryDate ) {
+		GameModel gameModel = gameController.getGameModel();
 		VehicleModel vehicle = vehicleService.createVehicleObject(type, vehicleService.generateRandomReg(
-			gameController.getCurrentSimTime().get(Calendar.YEAR)), deliveryDate);
-		gameController.withdrawBalance(vehicle.getPurchasePrice());
+		gameModel.getCurrentTime().get(Calendar.YEAR)), deliveryDate);
+		gameController.withdrawBalance(vehicle.getPurchasePrice(), gameModel.getPlayerName());
 		vehicleService.saveVehicle(vehicle);
 	}
 

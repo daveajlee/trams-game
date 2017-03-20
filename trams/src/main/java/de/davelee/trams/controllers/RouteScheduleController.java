@@ -1,5 +1,6 @@
 package de.davelee.trams.controllers;
 
+import de.davelee.trams.model.GameModel;
 import de.davelee.trams.model.JourneyModel;
 import de.davelee.trams.model.RouteModel;
 import de.davelee.trams.model.RouteScheduleModel;
@@ -118,7 +119,7 @@ public class RouteScheduleController {
 		//Clear the original matrix for which routes to display.
 		routeDetailPos = new LinkedList<Integer>();
 		//Store the currentDate - we will need it for display schedules.
-		Calendar currentTime = gameController.getCurrentSimTime();
+		GameModel gameModel = gameController.getGameModel();
 		//Determine the route ids we will display using these parameters.
 		logger.debug("Route number is " + routeNumber);
 		RouteScheduleModel[] routeScheduleModels = routeScheduleService.getRouteSchedulesByRouteNumber(routeNumber);
@@ -130,10 +131,10 @@ public class RouteScheduleController {
 			if ( vehicleController.getVehicleByRouteNumberAndRouteScheduleNumber(routeNumber, "" + routeScheduleModels[min].getScheduleNumber()) == null ) {
 				logger.debug("A schedule was null");
 			}
-			if ( getCurrentStopName(getRouteSchedulesByRouteNumber(routeNumber)[min], currentTime, gameController.getDifficultyLevel()).equalsIgnoreCase("Depot") ) {
+			if ( getCurrentStopName(getRouteSchedulesByRouteNumber(routeNumber)[min], gameModel.getCurrentTime(), gameModel.getDifficultyLevel()).equalsIgnoreCase("Depot") ) {
 				logger.debug("Vehicle in depot!");
 			}
-			if ( vehicleController.getVehicleByRouteNumberAndRouteScheduleNumber(routeNumber, "" + routeScheduleModels[min].getScheduleNumber()) != null && !getCurrentStopName( getRouteSchedulesByRouteNumber(routeNumber)[min], currentTime, gameController.getDifficultyLevel()).equalsIgnoreCase("Depot") ) {
+			if ( vehicleController.getVehicleByRouteNumberAndRouteScheduleNumber(routeNumber, "" + routeScheduleModels[min].getScheduleNumber()) != null && !getCurrentStopName( getRouteSchedulesByRouteNumber(routeNumber)[min], gameModel.getCurrentTime(), gameModel.getDifficultyLevel()).equalsIgnoreCase("Depot") ) {
 				//logger.debug("Adding Route Detail " + routeDetails.get(i).getId());
 				routeDetailPos.add(0);
 			}
@@ -148,10 +149,10 @@ public class RouteScheduleController {
 			if ( vehicleController.getVehicleByRouteNumberAndRouteScheduleNumber(routeNumber, "" + routeScheduleModels[i].getScheduleNumber()) == null ) {
 				logger.debug("A schedule was null");
 			}
-			if ( getCurrentStopName(getRouteSchedulesByRouteNumber(routeNumber)[i], currentTime, gameController.getDifficultyLevel()).equalsIgnoreCase("Depot") ) {
+			if ( getCurrentStopName(getRouteSchedulesByRouteNumber(routeNumber)[i], gameModel.getCurrentTime(), gameModel.getDifficultyLevel()).equalsIgnoreCase("Depot") ) {
 				logger.debug("Vehicle in depot!");
 			}
-			if ( vehicleController.getVehicleByRouteNumberAndRouteScheduleNumber(routeNumber, "" + routeScheduleModels[i].getScheduleNumber()) != null && !getCurrentStopName(getRouteSchedulesByRouteNumber(routeNumber)[i], currentTime, gameController.getDifficultyLevel()).equalsIgnoreCase("Depot") ) {
+			if ( vehicleController.getVehicleByRouteNumberAndRouteScheduleNumber(routeNumber, "" + routeScheduleModels[i].getScheduleNumber()) != null && !getCurrentStopName(getRouteSchedulesByRouteNumber(routeNumber)[i], gameModel.getCurrentTime(), gameModel.getDifficultyLevel()).equalsIgnoreCase("Depot") ) {
 				//logger.debug("Adding Route Detail " + routeDetails.get(i).getId());
 				routeDetailPos.add(i);
 			}

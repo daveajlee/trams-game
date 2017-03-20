@@ -6,6 +6,7 @@ import java.awt.event.*;
 import javax.swing.*;
 
 import de.davelee.trams.controllers.GameController;
+import de.davelee.trams.model.GameModel;
 import de.davelee.trams.util.DifficultyLevel;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -69,6 +70,8 @@ public class OptionsScreen extends JFrame {
         optionsLabel.setFont(new Font("Arial", Font.BOLD, 20));
         optionsLabelPanel.add(optionsLabel);
         northPanel.add(optionsLabelPanel, BorderLayout.NORTH);
+
+        final GameModel gameModel = gameController.getGameModel();
         
         //Create panel for centre - options in grid layout.
         optionsTabbedPane = new JTabbedPane();
@@ -99,16 +102,16 @@ public class OptionsScreen extends JFrame {
             difficultDescrips[i].setFont(new Font("Arial", Font.ITALIC, 11));
             difficultyPanel.add(difficultDescrips[i]);
         }
-        if ( gameController.getDifficultyLevel() == DifficultyLevel.EASY ) {
+        if ( gameModel.getDifficultyLevel() == DifficultyLevel.EASY ) {
             difficultButtons[0].setSelected(true);
         }
-        else if ( gameController.getDifficultyLevel() == DifficultyLevel.INTERMEDIATE ) {
+        else if ( gameModel.getDifficultyLevel() == DifficultyLevel.INTERMEDIATE ) {
             difficultButtons[1].setSelected(true);
         }
-        else if ( gameController.getDifficultyLevel() == DifficultyLevel.MEDIUM ) {
+        else if ( gameModel.getDifficultyLevel() == DifficultyLevel.MEDIUM ) {
             difficultButtons[2].setSelected(true);
         }
-        else if ( gameController.getDifficultyLevel() == DifficultyLevel.HARD ) {
+        else if ( gameModel.getDifficultyLevel() == DifficultyLevel.HARD ) {
             difficultButtons[3].setSelected(true);
         }
         //Now add the difficulty panel to the tabbed panel.
@@ -125,16 +128,16 @@ public class OptionsScreen extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 //Process options - set difficulty level!
                 if ( difficultButtons[0].isSelected() ) {
-                    gameController.setDifficultyLevel(DifficultyLevel.EASY);
+                    gameModel.setDifficultyLevel(DifficultyLevel.EASY);
                 }
                 else if ( difficultButtons[1].isSelected() ) {
-                    gameController.setDifficultyLevel(DifficultyLevel.INTERMEDIATE);
+                    gameModel.setDifficultyLevel(DifficultyLevel.INTERMEDIATE);
                 }
                 else if ( difficultButtons[2].isSelected() ) {
-                    gameController.setDifficultyLevel(DifficultyLevel.MEDIUM);
+                    gameModel.setDifficultyLevel(DifficultyLevel.MEDIUM);
                 }
                 else if ( difficultButtons[3].isSelected() ) {
-                    gameController.setDifficultyLevel(DifficultyLevel.HARD);
+                    gameModel.setDifficultyLevel(DifficultyLevel.HARD);
                 }
                 gameController.resumeSimulation();
                 dispose();

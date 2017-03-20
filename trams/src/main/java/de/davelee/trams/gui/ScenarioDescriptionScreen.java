@@ -78,7 +78,7 @@ public class ScenarioDescriptionScreen extends JFrame {
         //Create the MDLabelPanel first of all.
         JPanel MDLabelPanel = new JPanel();
         MDLabelPanel.setBackground(Color.WHITE);
-        mDLabel = new JLabel(gameController.getPlayerName() + " appointed Managing Director of " + scenarioModel.getName());
+        mDLabel = new JLabel(gameController.getCurrentPlayerName() + " appointed Managing Director of " + scenarioModel.getName());
         mDLabel.setFont(new Font("Arial", Font.BOLD, 18));
         MDLabelPanel.add(mDLabel);
         screenPanel.add(MDLabelPanel);

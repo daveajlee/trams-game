@@ -2,11 +2,10 @@ package de.davelee.trams.controllers;
 
 import java.util.Calendar;
 
-import de.davelee.trams.data.Game;
+import de.davelee.trams.model.GameModel;
 import de.davelee.trams.model.RouteModel;
 import de.davelee.trams.model.RouteScheduleModel;
 import de.davelee.trams.util.DateFormats;
-import de.davelee.trams.util.DifficultyLevel;
 import de.davelee.trams.util.GameThread;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -28,29 +27,25 @@ public class GameController {
 	private boolean end = false;
     private Thread runningThread;
     private boolean simulationRunning = false;
-	
-	public void withdrawBalance ( double amount ) {
-		gameService.withdrawBalance(amount);
-	}
-	
-	/**
-     * Get current simulated time. 
-     * @return a <code>Calendar</code> representing the current simulated time.
-     */
-    public Calendar getCurrentSimTime ( ) {
-        return gameService.getCurrentTime();
-    }
 
-	public Calendar getPreviousSimTime ( ) {
-		return gameService.getPreviousTime();
+	public void withdrawBalance ( final double amount, final String playerName ) {
+		gameService.withdrawBalance(amount, playerName);
 	}
 
-	public String getScenarioName ( ) {
-		return gameService.getScenarioName();
+	public void creditBalance ( final double amount, final String playerName ) {
+		gameService.creditBalance(amount, playerName);
 	}
 
-	public void creditBalance ( double amount ) {
-		gameService.creditBalance(amount);
+	public GameModel getGameModel() {
+		return getGameModelByPlayerName(getCurrentPlayerName());
+	}
+
+	public GameModel getGameModelByPlayerName ( final String playerName ) {
+		return gameService.getGameByPlayerName(playerName);
+	}
+
+	public String getCurrentPlayerName ( ) {
+		return gameService.getCurrentPlayerName();
 	}
 
 	/**
@@ -82,8 +77,8 @@ public class GameController {
 		return end;
 	}
 
-	public void incrementTime ( ) {
-		gameService.incrementTime();
+	public void incrementTime ( final String playerName ) {
+		gameService.incrementTime(playerName);
 	}
 
 	public void runSimulation ( ) {
@@ -92,14 +87,6 @@ public class GameController {
 		runningThread = new GameThread("simThread");
 		runningThread.start();
 	}
-
-	public DifficultyLevel getDifficultyLevel ( ) {
-		return gameService.getDifficultyLevel();
-	}
-
-    public void setDifficultyLevel ( final DifficultyLevel difficultyLevel ) {
-        gameService.setDifficultyLevel(difficultyLevel);
-    }
 
     /**
      * Confirm and exit the TraMS program.
@@ -114,23 +101,11 @@ public class GameController {
         if (wasSimulationRunning) { resumeSimulation(); }
     }
 
-    public String getPlayerName ( ) {
-        return gameService.getPlayerName();
-    }
-
-    public Game getGame ( ) {
-        return gameService.getGame();
-    }
-
-	public String formatDateString ( Calendar currentTime, DateFormats dateFormat ) {
+	public String formatDateString ( final Calendar currentTime, final DateFormats dateFormat ) {
 		return gameService.formatDateString(currentTime, dateFormat);
 	}
 
-	public double getBalance ( ) {
-		return gameService.getCurrentBalance();
-	}
-
-	public int computeAndReturnPassengerSatisfaction ( ) {
+	public int computeAndReturnPassengerSatisfaction ( final String playerName ) {
 		//Essentially satisfaction is determined by the route schedules that are running on time.
 		//Now count number of route schedules into three groups: 1 - 5 minutes late, 6 - 15 minutes late, 16+ minutes late.
 		int numSmallLateSchedules = 0; int numMediumLateSchedules = 0; int numLargeLateSchedules = 0;
@@ -151,15 +126,11 @@ public class GameController {
 				}
 			}
 		}
-		return gameService.computeAndReturnPassengerSatisfaction(numSmallLateSchedules, numMediumLateSchedules, numLargeLateSchedules);
+		return gameService.computeAndReturnPassengerSatisfaction(playerName, numSmallLateSchedules, numMediumLateSchedules, numLargeLateSchedules);
 	}
 
-	public void setTimeIncrement ( final int timeIncrement ) {
-		gameService.setTimeIncrement(timeIncrement);
-	}
-
-	public int getTimeIncrement ( ) {
-		return gameService.getTimeIncrement();
+	public GameModel[] getAllGames () {
+		return gameService.getAllGames();
 	}
 
 }

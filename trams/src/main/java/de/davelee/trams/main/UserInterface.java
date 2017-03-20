@@ -4,7 +4,6 @@ import javax.swing.*;
 
 import de.davelee.trams.controllers.*;
 
-import de.davelee.trams.gui.ControlScreen;
 import de.davelee.trams.gui.SplashScreen;
 import de.davelee.trams.gui.WelcomeScreen;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,51 +53,6 @@ public class UserInterface {
      */
     public boolean getManagementScreen ( ) {
         return showingManagement;
-    }
-
-    /**
-     * Run simulation!
-     */
-    public void runSimulation (final JFrame currentFrame) {
-        currentFrame.dispose();
-        ControlScreen cs = new ControlScreen("", 0, 4, false);
-        cs.drawVehicles(true);
-        currentFrame.setVisible(true);
-        //Set control screen.
-        cs.setVisible(true);
-    }
-    
-    /**
-     * Change the selected route.
-     * @param routeNumber a <code>String</code> with the new route number.
-     */
-    public void changeRoute ( String routeNumber, final JFrame currentFrame ) {
-        //Now create new control screen.
-        ControlScreen cs = new ControlScreen(routeNumber, 0, 4, false);
-        cs.drawVehicles(true);
-        currentFrame.setVisible(true);
-        //Set control screen.
-        cs.setVisible(true);
-        //Resume simulation.
-        gameController.resumeSimulation();
-    }
-    
-    /**
-     * Change the display to show other vehicles.
-     * @param routeNumber a <code>String</code> with the route number.
-     * @param min a <code>int</code> with the new min vehicle id.
-     * @param max a <code>int</code> with the new max vehicle id.
-     * @param allocations a <code>boolean</code> which is true iff allocations have been performed.
-     */
-    public void changeDisplay ( String routeNumber, int min, int max, boolean allocations, final JFrame currentFrame ) {
-        //Now create new control screen.
-        ControlScreen cs = new ControlScreen(routeNumber, min, max, allocations);
-        //cs.drawVehicles(true);
-        currentFrame.setVisible(true);
-        //Set control screen.
-        cs.setVisible(true);
-        //Resume simulation.
-        gameController.resumeSimulation();
     }
 
     /**
