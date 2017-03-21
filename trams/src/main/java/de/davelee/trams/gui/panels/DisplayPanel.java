@@ -62,7 +62,7 @@ public class DisplayPanel {
         JPanel informationPanel = new JPanel();
         informationPanel.setBackground(Color.WHITE);
         ImageDisplay infoDisplay = null;
-        if ( routeController.getNumberRoutes() == 0 || vehicleController.getAllCreatedVehicles().length == 0 || vehicleController.getAllocations().size() == 0 ) {
+        if ( routeController.getNumberRoutes() == 0 || (vehicleController.getAllCreatedVehicles() != null && vehicleController.getAllCreatedVehicles().length == 0) || (vehicleController.getAllocations() != null && vehicleController.getAllocations().size() == 0 )) {
             infoDisplay = new ImageDisplay("xpic.png",0,0);
         }
         else {

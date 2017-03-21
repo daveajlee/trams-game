@@ -13,6 +13,9 @@ public class FileDialog {
 	
 	@Autowired
 	private FileController fileController;
+
+    @Autowired
+	private ControlScreen controlScreen;
 	
 	public boolean createLoadFileDialog ( final JFrame currentFrame ) {
 		JFileChooser fileDialog = new JFileChooser();
@@ -27,14 +30,14 @@ public class FileDialog {
         if ( returnVal == JFileChooser.APPROVE_OPTION) {
         	if ( fileController.loadFile(fileDialog.getSelectedFile()) ) {
         		JFrame oldFrame = currentFrame;
-                ControlScreen cs = new ControlScreen("", 0, 4, false);
+                controlScreen.displayScreen("", 0, 4, false);
                 //cs.drawVehicles(false);
                 //WelcomeScreen ws = new WelcomeScreen(this);
                 //cs.setVisible(true);
                 currentFrame.setVisible(true);
                 oldFrame.dispose();
                 //Set control screen.
-                cs.setVisible(true);
+                controlScreen.setVisible(true);
                 //Finally, run simulation
                 /*isEnd = false;
                 theRunningThread = new Thread(this, "simThread");

@@ -28,6 +28,9 @@ public class ScenarioDescriptionScreen extends JFrame {
 
     @Autowired
     private ExitDialog exitDialog;
+
+    @Autowired
+    private ControlScreen controlScreen;
     
     /**
      * Create a new scenario description screen.
@@ -103,8 +106,8 @@ public class ScenarioDescriptionScreen extends JFrame {
         continueButton = new JButton("Continue");
         continueButton.addActionListener(new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
-                ControlScreen ocs = new ControlScreen("", 0, 4, false);
-                ocs.setVisible(true);
+                controlScreen.displayScreen("", 0, 4, false);
+                controlScreen.setVisible(true);
                 dispose();
             }
         });

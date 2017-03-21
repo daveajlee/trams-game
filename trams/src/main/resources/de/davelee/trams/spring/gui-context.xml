@@ -10,9 +10,15 @@
        <bean name="gui:newGameScreen" class="de.davelee.trams.gui.NewGameScreen"/>
        
        <bean name="gui:scenarioDescriptionScreen" class="de.davelee.trams.gui.ScenarioDescriptionScreen"/>
+
+       <bean name="gui:controlScreen" class="de.davelee.trams.gui.ControlScreen"/>
        
        <!-- Dialogs -->
        
        <bean name="gui:exitDialog" class="de.davelee.trams.gui.ExitDialog"/>
+
+       <!-- Panels -->
+
+       <bean name="gui:displayPanel" class="de.davelee.trams.gui.panels.DisplayPanel"/>
        
 </beans>

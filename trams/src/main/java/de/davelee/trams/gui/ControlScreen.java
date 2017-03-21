@@ -87,19 +87,28 @@ public class ControlScreen extends ButtonBar {
     @Autowired
     private ScenarioController scenarioController;
 
+    @Autowired
+    private DisplayPanel displayPanel;
+
+    @Autowired
+    private ExitDialog exitDialog;
+
     private int simulationSpeed = 2000;
 
     /**
      * Create a new control screen.
+     */
+    public ControlScreen ( ) {
+    }
+
+    /**
+     * Display a control screen.
      * @param routeNumber a <code>String</code> with the route number
      * @param min a <code>int</code> with the minimum number of vehicles to display.
      * @param max a <code>int</code> with the maximum number of vehicles to display.
      * @param allocationsDone a <code>boolean</code> which is true iff all allocations have been done.
      */
-    public ControlScreen ( String routeNumber, int min, int max, boolean allocationsDone ) {
-        
-        //Call super constructor.
-        super ( );
+    public void displayScreen ( final String routeNumber, final int min, final int max, final boolean allocationsDone ) {
 
         //Initialise variables
         this.routeNumber = routeNumber;
@@ -125,7 +134,6 @@ public class ControlScreen extends ButtonBar {
         //Call the Exit method in the UserInterface class if the user hits exit.
         this.addWindowListener ( new WindowAdapter() {
             public void windowClosing ( WindowEvent e ) {
-                ExitDialog exitDialog = new ExitDialog();
                 exitDialog.createExitDialog(ControlScreen.this);
             }
         });
@@ -201,7 +209,7 @@ public class ControlScreen extends ButtonBar {
             }
         });
         //Create manage tab.
-        tabbedPane.addTab("Management", new DisplayPanel().createPanel(this));
+        tabbedPane.addTab("Management", displayPanel.createPanel(this));
         /*if ( userInterface.getManagementScreen() ) {
             topPanel.getComponent(1).setVisible(false);
             tabbedPane.setSelectedIndex(2);
@@ -266,7 +274,6 @@ public class ControlScreen extends ButtonBar {
         JButton exitButton = new JButton("Exit Game");
         exitButton.addActionListener( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
-                ExitDialog exitDialog = new ExitDialog();
                 exitDialog.createExitDialog(ControlScreen.this);
             }
         });
@@ -472,7 +479,26 @@ public class ControlScreen extends ButtonBar {
         messagesList = new JList(messagesModel);
         messagesList.setVisibleRowCount(5);
         messagesArea = new JTextArea();
-        final MessageModel[] messageModels = messageController.getMessagesByFolderDateSender(foldersBox.getSelectedItem().toString(),dateBox.getSelectedItem().toString(),"Council");
+        foldersBox = new JComboBox(new String[] { "INBOX", "Sent Items" });
+        //Create combo box with date.
+        dateModel = new DefaultComboBoxModel();
+        dateModel.addElement("All Dates");
+        final MessageModel[] allMessageModels = messageController.getAllMessages();
+        for ( int i = 0; i < allMessageModels.length; i++ ) {
+            logger.debug("Index of " + dateModel.getIndexOf(allMessageModels[i].getDate()));
+            if ( dateModel.getIndexOf(allMessageModels[i].getDate()) == -1 ) {
+                dateModel.addElement(allMessageModels[i].getDate());
+            }
+        }
+        dateBox = new JComboBox(dateModel);
+        final MessageModel[] messageModels;
+        if ( foldersBox.getSelectedItem() != null  && dateBox.getSelectedItem() != null ) {
+            System.out.println("Selected items: " + foldersBox.getSelectedItem().toString() + " and " + dateBox.getSelectedItem().toString());
+            messageModels = messageController.getMessagesByFolderDateSender(foldersBox.getSelectedItem().toString(),dateBox.getSelectedItem().toString(),"Council");
+        }
+        else {
+            messageModels = messageController.getAllMessages();
+        }
         messagesList.addListSelectionListener( new ListSelectionListener() {
             public void valueChanged ( ListSelectionEvent lse ) {
                 if ( messagesList.getSelectedIndex() != -1 ) {
@@ -492,17 +518,6 @@ public class ControlScreen extends ButtonBar {
         JLabel dateLabel = new JLabel("Date:");
         dateLabel.setFont(new Font("Arial", Font.BOLD, 14));
         datePanel.add(dateLabel);
-        //Create combo box with date.
-        dateModel = new DefaultComboBoxModel();
-        dateModel.addElement("All Dates");
-        final MessageModel[] allMessageModels = messageController.getAllMessages();
-        for ( int i = 0; i < allMessageModels.length; i++ ) {
-            logger.debug("Index of " + dateModel.getIndexOf(allMessageModels[i].getDate()));
-            if ( dateModel.getIndexOf(allMessageModels[i].getDate()) == -1 ) {
-                dateModel.addElement(allMessageModels[i].getDate());
-            }
-        }
-        dateBox = new JComboBox(dateModel);
         dateBox.setFont(new Font("Arial", Font.PLAIN, 12));
         dateBox.addItemListener( new ItemListener() {
             public void itemStateChanged ( ItemEvent e ) {
@@ -543,7 +558,6 @@ public class ControlScreen extends ButtonBar {
         foldersLabel.setFont(new Font("Arial", Font.BOLD, 14));
         foldersPanel.add(foldersLabel);
         //Create combo box with folders list.
-        foldersBox = new JComboBox(new String[] { "Inbox", "Sent Items" });
         foldersBox.setFont(new Font("Arial", Font.PLAIN, 12));
         foldersBox.addItemListener ( new ItemListener() {
             public void itemStateChanged ( ItemEvent e ) {
@@ -646,14 +660,21 @@ public class ControlScreen extends ButtonBar {
         //Call set display method first.
         if ( routeModel.getSize() > 0) {
             routeScheduleController.setCurrentDisplayMinMax(minVehicle, maxVehicle,routeNumber.split(":")[0]);
+            //Create vehicle Panel as a JPanel!
+            if ( routeScheduleController.getNumCurrentDisplaySchedules() == 0 ) {
+                vehiclePanel = new JPanel(new GridLayout(2, 1));
+            }
+            else {
+                vehiclePanel = new JPanel(new GridLayout(routeScheduleController.getNumCurrentDisplaySchedules()+1, 1));
+                logger.debug("Route number in vehicle panel is " + routeList.getSelectedValue().toString().split(":")[0]);
+            }
         }
         //Create vehicle Panel as a JPanel!
         if ( routeScheduleController.getNumCurrentDisplaySchedules() == 0 ) {
             vehiclePanel = new JPanel(new GridLayout(2, 1));
         }
         else {
-            vehiclePanel = new JPanel(new GridLayout(routeScheduleController.getNumCurrentDisplaySchedules()+1, 1));
-            logger.debug("Route number in vehicle panel is " + routeList.getSelectedValue().toString().split(":")[0]);
+            vehiclePanel = new JPanel(new GridLayout(2, 1));
         }
         JPanel stopRowPanel;
         if (routeModel.getSize() > 0 ) {
@@ -680,7 +701,7 @@ public class ControlScreen extends ButtonBar {
         }
         vehiclePanel.add(stopRowPanel);
         //If there are no current display vehicles then print a message!
-        if ( routeScheduleController.getNumCurrentDisplaySchedules() == 0 ) {
+        if ( routeModel.getSize() == 0 || routeScheduleController.getNumCurrentDisplaySchedules() == 0 ) {
             JLabel noVehiclesLabel = new JLabel("This route currently has no vehicles!");
             noVehiclesLabel.setFont(new Font("Arial", Font.BOLD, 20));
             vehiclePanel.add(noVehiclesLabel);
@@ -920,12 +941,14 @@ public class ControlScreen extends ButtonBar {
         //logger.debug("Min for this page is: " + min);
         currentPage = (minVehicle/4); if ( (minVehicle+1) % 4 !=0 || currentPage == 0 ) { currentPage++; }
         int totalPages;
-        final RouteScheduleModel[] routeScheduleModels = routeScheduleController.getRouteSchedulesByRouteNumber(routeList.getSelectedValue().toString());
+        final int routeScheduleModelsLength;
         if ( routeList.getModel().getSize() > 0 ) {
-            totalPages = (routeScheduleModels.length/4); if ((routeScheduleModels.length%4) !=0 || totalPages == 0 ) { totalPages++; }
+            routeScheduleModelsLength = routeScheduleController.getRouteSchedulesByRouteNumber(routeList.getSelectedValue().toString()).length;
+            totalPages = (routeScheduleModelsLength/4); if ((routeScheduleModelsLength%4) !=0 || totalPages == 0 ) { totalPages++; }
         }
         else {
             totalPages = 0;
+            routeScheduleModelsLength = 0;
         }
         numPagesLabel = new JLabel("Page " + currentPage + " / " + totalPages);
         logger.debug("This is page " + currentPage + " / " + totalPages);
@@ -948,7 +971,7 @@ public class ControlScreen extends ButtonBar {
                 //dispose();
             }
         });
-        if ( totalPages == 0 || routeScheduleModels.length < 5 || minVehicle == 0 ) {
+        if ( totalPages == 0 || routeScheduleModelsLength < 5 || minVehicle == 0 ) {
             previousVehiclesButton.setEnabled(false);
         }
         vehicleInfoPanel.add(previousVehiclesButton);
@@ -959,8 +982,8 @@ public class ControlScreen extends ButtonBar {
                 //Add 4 to the min and max.
                 minVehicle = routeScheduleController.getCurrentMinSchedule() + 4; maxVehicle = routeScheduleController.getCurrentMaxSchedule() + 5;
                 //Now check if max vehicle is bigger than display vehicles - if it is then set it to display vehicles.
-                if ( maxVehicle > routeScheduleModels.length ) {
-                    maxVehicle = routeScheduleModels.length;
+                if ( maxVehicle > routeScheduleModelsLength ) {
+                    maxVehicle = routeScheduleModelsLength;
                 }
                 gameController.pauseSimulation();
                 ControlScreen.this.redrawVehicles(generateNewVehiclePanel(gameModel));
@@ -969,7 +992,7 @@ public class ControlScreen extends ButtonBar {
                 //dispose();
             }
         });
-        if ( totalPages == 0 || routeScheduleModels.length < 5 || maxVehicle == routeScheduleModels.length ) {
+        if ( totalPages == 0 || routeScheduleModelsLength < 5 || maxVehicle == routeScheduleModelsLength ) {
             nextVehiclesButton.setEnabled(false);
         }
         vehicleInfoPanel.add(nextVehiclesButton);
@@ -1000,11 +1023,9 @@ public class ControlScreen extends ButtonBar {
      */
     public void runSimulation ( final JFrame currentFrame ) {
         currentFrame.dispose();
-        ControlScreen cs = new ControlScreen("", 0, 4, false);
-        cs.drawVehicles(true, gameController.getGameModel());
-        currentFrame.setVisible(true);
-        //Set control screen.
-        cs.setVisible(true);
+        displayScreen("", 0, 4, false);
+        drawVehicles(true, gameController.getGameModel());
+        setVisible(true);
     }
 
     /**
@@ -1013,11 +1034,11 @@ public class ControlScreen extends ButtonBar {
      */
     public void changeRoute ( String routeNumber, final JFrame currentFrame ) {
         //Now create new control screen.
-        ControlScreen cs = new ControlScreen(routeNumber, 0, 4, false);
-        cs.drawVehicles(true, gameController.getGameModel());
+        displayScreen(routeNumber, 0, 4, false);
+        drawVehicles(true, gameController.getGameModel());
         currentFrame.setVisible(true);
         //Set control screen.
-        cs.setVisible(true);
+        setVisible(true);
         //Resume simulation.
         gameController.resumeSimulation();
     }
@@ -1031,11 +1052,11 @@ public class ControlScreen extends ButtonBar {
      */
     public void changeDisplay ( String routeNumber, int min, int max, boolean allocations, final JFrame currentFrame ) {
         //Now create new control screen.
-        ControlScreen cs = new ControlScreen(routeNumber, min, max, allocations);
+        displayScreen(routeNumber, min, max, allocations);
         //cs.drawVehicles(true);
         currentFrame.setVisible(true);
         //Set control screen.
-        cs.setVisible(true);
+        setVisible(true);
         //Resume simulation.
         gameController.resumeSimulation();
     }
