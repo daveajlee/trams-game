@@ -8,7 +8,6 @@ import javax.swing.*;
 import de.davelee.trams.controllers.GameController;
 import de.davelee.trams.controllers.RouteScheduleController;
 import de.davelee.trams.controllers.VehicleController;
-import de.davelee.trams.main.UserInterface;
 import de.davelee.trams.model.GameModel;
 import de.davelee.trams.model.RouteScheduleModel;
 import de.davelee.trams.model.VehicleModel;

@@ -3,7 +3,6 @@ package de.davelee.trams.gui;
 import java.awt.event.*;
 
 import de.davelee.trams.controllers.GameController;
-import de.davelee.trams.main.UserInterface;
 import de.davelee.trams.model.RouteScheduleModel;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -14,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class BusMouseListener implements MouseListener {
 
     private RouteScheduleModel routeScheduleModel;
-    private UserInterface userInterface;
 
     @Autowired
     private GameController gameController;

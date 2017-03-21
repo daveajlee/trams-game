@@ -6,13 +6,9 @@ import java.awt.event.*;
 import javax.swing.*;
 
 import de.davelee.trams.controllers.*;
-import de.davelee.trams.main.UserInterface;
 import de.davelee.trams.model.GameModel;
 import de.davelee.trams.model.RouteScheduleModel;
 import de.davelee.trams.model.VehicleModel;
-import de.davelee.trams.services.JourneyService;
-import de.davelee.trams.services.RouteScheduleService;
-import de.davelee.trams.services.RouteService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 
@@ -26,7 +22,6 @@ public class MakeContactScreen extends JFrame {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private UserInterface userInterface;
     private ImageDisplay busDisplay;
     private JTextArea communicationArea;
     private JLabel stopLabel;

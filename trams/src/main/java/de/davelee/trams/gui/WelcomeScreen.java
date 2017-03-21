@@ -6,7 +6,6 @@ import javax.swing.*;
 
 import de.davelee.trams.controllers.FileController;
 import de.davelee.trams.controllers.GameController;
-import de.davelee.trams.main.UserInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**

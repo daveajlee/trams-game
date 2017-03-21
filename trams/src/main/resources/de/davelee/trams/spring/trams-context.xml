@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+       <import resource="scenario-context.xml"/>
+       <import resource="vehicle-context.xml"/>
+       <import resource="database-context.xml"/>
+       
+       <bean id="driverService" class="de.davelee.trams.services.DriverService" />
+       
+       <bean id="routeService" class="de.davelee.trams.services.RouteService"/>
+       
+       <bean id="routeScheduleService" class="de.davelee.trams.services.RouteScheduleService"/>
+       
+       <bean id="journeyService" class="de.davelee.trams.services.JourneyService"/>
+       
+       <bean id="vehicleService" class="de.davelee.trams.services.VehicleService"/>
+       
+       <bean id="journeyPatternService" class="de.davelee.trams.services.JourneyPatternService"/>
+       
+       <bean id="timetableService" class="de.davelee.trams.services.TimetableService"/>
+       
+       <bean id="scenarioService" class="de.davelee.trams.services.ScenarioService">
+       		<property name="scenarioFactory" ref="scenarioFactory"/>
+       </bean>
+       
+       <bean id="gameService" class="de.davelee.trams.services.GameService"/>
+       
+       <bean id="messageService" class="de.davelee.trams.services.MessageService"/>
+       
+       <bean id="fileService" class="de.davelee.trams.services.FileService"/>
+       
+       <bean id="routeController" class="de.davelee.trams.controllers.RouteController"/>
+       
+       <bean id="routeScheduleController" class="de.davelee.trams.controllers.RouteScheduleController"/>
+       
+       <bean id="timetableController" class="de.davelee.trams.controllers.TimetableController"/>
+       
+       <bean id="journeyController" class="de.davelee.trams.controllers.JourneyController"/>
+       
+       <bean id="journeyPatternController" class="de.davelee.trams.controllers.JourneyPatternController"/>
+       
+       <bean id="vehicleController" class="de.davelee.trams.controllers.VehicleController"/>
+       
+       <bean id="gameController" class="de.davelee.trams.controllers.GameController"/>
+       
+</beans>

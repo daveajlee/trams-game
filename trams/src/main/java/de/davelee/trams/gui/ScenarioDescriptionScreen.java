@@ -1,7 +1,6 @@
 package de.davelee.trams.gui;
 
 import de.davelee.trams.controllers.GameController;
-import de.davelee.trams.main.UserInterface;
 import de.davelee.trams.model.ScenarioModel;
 import org.springframework.beans.factory.annotation.Autowired;
 

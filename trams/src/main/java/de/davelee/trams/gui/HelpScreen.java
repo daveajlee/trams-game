@@ -10,7 +10,6 @@ import javax.swing.*;
 import javax.swing.event.*;
 //Import trams main package.
 import de.davelee.trams.controllers.GameController;
-import de.davelee.trams.main.UserInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
