@@ -48,7 +48,8 @@ public class WelcomeScreen extends JFrame {
         //Call the Exit method in the UserInterface class if the user hits exit.
         this.addWindowListener ( new WindowAdapter() {
             public void windowClosing ( WindowEvent e ) {
-                gameController.exit(WelcomeScreen.this);
+                ExitDialog exitDialog = new ExitDialog();
+                exitDialog.createExitDialog(WelcomeScreen.this);
             }
         });
         
@@ -112,7 +113,8 @@ public class WelcomeScreen extends JFrame {
         loadBusDisplay.setBackground(Color.WHITE);
         loadBusDisplay.addMouseListener ( new MouseListener () {
             public void mouseClicked(MouseEvent e) {
-                if ( fileController.loadFile(WelcomeScreen.this) ) {
+                FileDialog fileDialog = new FileDialog();
+                if ( fileDialog.createLoadFileDialog(WelcomeScreen.this) ) {
                     dispose();
                 }
             }
@@ -136,7 +138,8 @@ public class WelcomeScreen extends JFrame {
         exitBusDisplay.setBackground(Color.WHITE);
         exitBusDisplay.addMouseListener ( new MouseListener () {
             public void mouseClicked(MouseEvent e) {
-                gameController.exit(WelcomeScreen.this);
+                ExitDialog exitDialog = new ExitDialog();
+                exitDialog.createExitDialog(WelcomeScreen.this);
             }
             public void mousePressed(MouseEvent e) {}
             public void mouseReleased(MouseEvent e) {}
@@ -149,7 +152,8 @@ public class WelcomeScreen extends JFrame {
         bottomPanel.add(exitPanel);
         bottomPanel.addMouseListener ( new MouseListener () {
             public void mouseClicked(MouseEvent e) {
-                gameController.exit(WelcomeScreen.this);
+                ExitDialog exitDialog = new ExitDialog();
+                exitDialog.createExitDialog(WelcomeScreen.this);
             }
             public void mousePressed(MouseEvent e) {}
             public void mouseReleased(MouseEvent e) {}
@@ -201,7 +205,8 @@ public class WelcomeScreen extends JFrame {
         panel.setBackground(Color.WHITE);
         panel.addMouseListener ( new MouseListener () {
             public void mouseClicked(MouseEvent e) {
-                if ( fileController.loadFile(WelcomeScreen.this) ) {
+                FileDialog fileDialog = new FileDialog();
+                if ( fileDialog.createLoadFileDialog(WelcomeScreen.this) ) {
                     dispose();
                 }
                 else {
@@ -223,7 +228,8 @@ public class WelcomeScreen extends JFrame {
         panel.setBackground(Color.WHITE);
         panel.addMouseListener ( new MouseListener () {
             public void mouseClicked(MouseEvent e) {
-                gameController.exit(WelcomeScreen.this);
+                ExitDialog exitDialog = new ExitDialog();
+                exitDialog.createExitDialog(WelcomeScreen.this);
             }
             public void mousePressed(MouseEvent e) {}
             public void mouseReleased(MouseEvent e) {}

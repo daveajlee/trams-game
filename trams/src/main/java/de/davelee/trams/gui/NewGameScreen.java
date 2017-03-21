@@ -63,7 +63,8 @@ public class NewGameScreen extends JFrame {
         //Call the Exit method in the UserInterface class if the user hits exit.
         this.addWindowListener ( new WindowAdapter() {
             public void windowClosing ( WindowEvent e ) {
-                gameController.exit(NewGameScreen.this);
+                ExitDialog exitDialog = new ExitDialog();
+                exitDialog.createExitDialog(NewGameScreen.this);
             }
         });
         

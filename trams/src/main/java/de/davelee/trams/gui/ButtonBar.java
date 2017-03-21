@@ -59,7 +59,8 @@ public class ButtonBar extends JFrame {
         loadGameItem.addActionListener ( new ActionListener () {
             public void actionPerformed ( ActionEvent e ) {
                 gameController.pauseSimulation();
-                fileController.loadFile(ButtonBar.this);
+                FileDialog fileDialog = new FileDialog();
+                fileDialog.createLoadFileDialog(ButtonBar.this);
             }
         });
         fileMenu.add(loadGameItem);
@@ -70,7 +71,8 @@ public class ButtonBar extends JFrame {
         saveGameItem.addActionListener ( new ActionListener () {
             public void actionPerformed ( ActionEvent e ) {
                 gameController.pauseSimulation();
-                fileController.saveFile(ButtonBar.this);
+                FileDialog fileDialog = new FileDialog();
+                fileDialog.createSaveFileDialog(ButtonBar.this);
                 gameController.resumeSimulation();
             }
         });
@@ -81,7 +83,8 @@ public class ButtonBar extends JFrame {
         exitGameItem = new JMenuItem("Exit Game");
         exitGameItem.addActionListener ( new ActionListener () {
             public void actionPerformed ( ActionEvent e ) {
-                gameController.exit(ButtonBar.this);
+                ExitDialog exitDialog = new ExitDialog();
+                exitDialog.createExitDialog(ButtonBar.this);
             }
         });
         fileMenu.add(exitGameItem);

@@ -11,8 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import de.davelee.trams.services.GameService;
 
-import javax.swing.*;
-
 public class GameController {
 	
 	@Autowired
@@ -87,19 +85,6 @@ public class GameController {
 		runningThread = new GameThread("simThread");
 		runningThread.start();
 	}
-
-    /**
-     * Confirm and exit the TraMS program.
-     */
-    public void exit ( final JFrame currentFrame ) {
-        //Confirm user did wish to exit.
-        boolean wasSimulationRunning = pauseSimulation();
-        int result = JOptionPane.showOptionDialog(currentFrame, "Are you sure you wish to exit TraMS?", "Please Confirm Exit", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, new String[] { "Yes", "No" }, "No");
-        if ( result == JOptionPane.YES_OPTION ) {
-            System.exit(0);
-        }
-        if (wasSimulationRunning) { resumeSimulation(); }
-    }
 
 	public String formatDateString ( final Calendar currentTime, final DateFormats dateFormat ) {
 		return gameService.formatDateString(currentTime, dateFormat);
