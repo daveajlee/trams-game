@@ -32,8 +32,6 @@ public class NewGameScreen extends JFrame {
     private JButton createGameButton;
     private JButton welcomeScreenButton;
 
-    private ScenarioModel[] scenarioModels;
-
     @Autowired
     private GameController gameController;
 
@@ -228,7 +226,15 @@ public class NewGameScreen extends JFrame {
             			break;
             		}
             	}
-                saveNewGame(selectedPosition);
+                //Create Game
+                GameModel gameModel = gameController.createGameModel(playerNameField.getText(), scenarioModels[selectedPosition].getName());
+                //Create supplied vehicles.
+                vehicleController.createSuppliedVehicles(scenarioModels[selectedPosition], gameModel.getCurrentTime());
+                //Create welcome message.
+                messageController.addMessage("Welcome Message", "Congratulations on your appointment as Managing Director of the " +
+                        scenarioModels[selectedPosition].getName() + "! \n\n Your targets for the coming days and months are: " +
+                        scenarioModels[selectedPosition].getTargets(),"Council","INBOX",gameModel.getCurrentTime());
+                scenarioDescriptionScreen.displayScreen(scenarioModels[selectedPosition]);
                 dispose();
             }
         });
@@ -257,24 +263,6 @@ public class NewGameScreen extends JFrame {
         this.setVisible (true);
         this.setSize ( new Dimension(650,500) );
         
-    }
-
-    public void doInit() {
-        playerNameField = new JTextField();
-        playerNameField.setText("Dave Lee");
-    }
-
-    public void saveNewGame ( int selectedPosition ) {
-        scenarioModels = scenarioController.getAvailableScenarios();
-        //Create Game
-        GameModel gameModel = gameController.createGameModel(playerNameField.getText(), scenarioModels[selectedPosition].getName());
-        //Create supplied vehicles.
-        vehicleController.createSuppliedVehicles(scenarioModels[selectedPosition], gameModel.getCurrentTime());
-        //Create welcome message.
-        messageController.addMessage("Welcome Message", "Congratulations on your appointment as Managing Director of the " +
-                scenarioModels[selectedPosition].getName() + "! \n\n Your targets for the coming days and months are: " +
-                scenarioModels[selectedPosition].getTargets(),"Council","INBOX",gameModel.getCurrentTime());
-        scenarioDescriptionScreen.displayScreen(scenarioModels[selectedPosition]);
     }
     
 }
