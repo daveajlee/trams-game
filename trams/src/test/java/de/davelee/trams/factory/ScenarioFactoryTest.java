@@ -13,7 +13,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import de.davelee.trams.beans.Scenario;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration("/de/davelee/trams/spring/scenario-context.xml")
+@ContextConfiguration("/de/davelee/trams/spring/test-context.xml")
 public class ScenarioFactoryTest {
 	
 	@Autowired

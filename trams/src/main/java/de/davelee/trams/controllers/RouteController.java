@@ -5,10 +5,12 @@ import de.davelee.trams.util.SortedRouteModels;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import de.davelee.trams.services.RouteService;
+import org.springframework.stereotype.Controller;
 
 import java.util.Arrays;
 import java.util.List;
 
+@Controller
 public class RouteController {
 	
 	@Autowired

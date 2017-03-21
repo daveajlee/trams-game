@@ -25,13 +25,17 @@ public class ScenarioDescriptionScreen extends JFrame {
 
     @Autowired
     private GameController gameController;
+
+    @Autowired
+    private ExitDialog exitDialog;
     
     /**
      * Create a new scenario description screen.
-     * @param ui a <code>UserInterface</code> object with the current user interface.
      */
-    public ScenarioDescriptionScreen ( final ScenarioModel scenarioModel ) {
-        
+    public ScenarioDescriptionScreen ( ) {
+    }
+
+    public void displayScreen (  final ScenarioModel scenarioModel ) {
         //Initialise GUI with title and close attributes.
         this.setTitle ("TraMS - Transport Management Simulator");
         this.setResizable (false);
@@ -45,7 +49,6 @@ public class ScenarioDescriptionScreen extends JFrame {
         //Call the Exit method in the UserInterface class if the user hits exit.
         this.addWindowListener ( new WindowAdapter() {
             public void windowClosing ( WindowEvent e ) {
-                ExitDialog exitDialog = new ExitDialog();
                 exitDialog.createExitDialog(ScenarioDescriptionScreen.this);
             }
         });
@@ -86,7 +89,7 @@ public class ScenarioDescriptionScreen extends JFrame {
         //Create the descriptionPanel.
         JPanel descriptionPanel = new JPanel();
         descriptionPanel.setBackground(Color.WHITE);
-        scenarioDescriptionArea = new JTextArea(scenarioModel.getDescription());
+        scenarioDescriptionArea = new JTextArea(gameController.getCurrentPlayerName() + " " + scenarioModel.getDescription());
         scenarioDescriptionArea.setFont(new Font("Arial", Font.PLAIN, 16));
         scenarioDescriptionArea.setLineWrap(true);
         scenarioDescriptionArea.setWrapStyleWord(true);
@@ -121,7 +124,6 @@ public class ScenarioDescriptionScreen extends JFrame {
         this.pack ();
         this.setVisible (true);
         this.setSize ( new Dimension(700,500) );
-        
     }
     
 }

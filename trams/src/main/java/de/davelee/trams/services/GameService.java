@@ -9,7 +9,10 @@ import de.davelee.trams.repository.GameRepository;
 import de.davelee.trams.util.DateFormats;
 import de.davelee.trams.util.DifficultyLevel;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+@Service
 public class GameService {
 
     @Autowired
@@ -19,7 +22,9 @@ public class GameService {
 	}
 
     public void saveGame ( final GameModel gameModel ) {
-        gameRepository.saveAndFlush(convertToGame(gameModel));
+        Game game = convertToGame(gameModel);
+        game.getBalance();
+        gameRepository.saveAndFlush(game);
     }
 
     private Game convertToGame ( final GameModel gameModel ) {
@@ -36,7 +41,11 @@ public class GameService {
     }
 
     public GameModel getGameByPlayerName ( final String playerName )  {
-        return convertToGameModel(gameRepository.findByPlayerName(playerName));
+        Game game = gameRepository.findByPlayerName(playerName);
+        if ( game != null ) {
+            return convertToGameModel(game);
+        }
+        return null;
     }
 
      private GameModel convertToGameModel ( final Game game ) {
@@ -125,9 +134,14 @@ public class GameService {
      }
 
     public String getCurrentPlayerName ( ) {
-        return getAllGames()[0].getPlayerName();
+        GameModel[] gameModels = getAllGames();
+        if ( gameModels.length > 0 ) {
+            return gameModels[0].getPlayerName();
+        }
+        return null;
     }
 
+    @Transactional
     public GameModel[] getAllGames ( ) {
         List<Game> games = gameRepository.findAll();
         GameModel[] gameModels = new GameModel[games.size()];

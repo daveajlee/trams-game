@@ -14,7 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import de.davelee.trams.model.TimetableModel;
 import de.davelee.trams.services.JourneyPatternService;
+import org.springframework.stereotype.Controller;
 
+@Controller
 public class JourneyPatternController {
 	
 	@Autowired

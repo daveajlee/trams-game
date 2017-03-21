@@ -13,7 +13,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import de.davelee.trams.data.Vehicle;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration("/de/davelee/trams/spring/vehicle-context.xml")
+@ContextConfiguration("/de/davelee/trams/spring/test-context.xml")
 public class VehicleFactoryTest {
 
 	@Autowired

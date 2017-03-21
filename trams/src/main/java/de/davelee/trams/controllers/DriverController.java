@@ -6,7 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import de.davelee.trams.data.Driver;
 
 import de.davelee.trams.services.DriverService;
+import org.springframework.stereotype.Controller;
 
+@Controller
 public class DriverController {
 	
 	@Autowired

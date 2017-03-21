@@ -6,10 +6,6 @@
        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd"
        >
        
-       <bean id="vehicleFactory" class="de.davelee.trams.factory.VehicleFactory">
-       		<property name="availableVehicles" ref="availableVehiclesList"/>
-       </bean>
-       
        <util:list id="availableVehiclesList" value-type="de.davelee.trams.data.Vehicle">
        		<ref bean="vehicle1"/>
        		<ref bean="vehicle2"/>

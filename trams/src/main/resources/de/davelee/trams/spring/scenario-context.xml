@@ -1,14 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:util="http://www.springframework.org/schema/util"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd"
-       >
-       
-       <bean id="scenarioFactory" class="de.davelee.trams.factory.ScenarioFactory">
-       		<property name="availableScenarios" ref="availableScenariosList"/>
-       </bean>
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:util="http://www.springframework.org/schema/util"
+	   xmlns:context="http://www.springframework.org/schema/context"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/beans/spring-context-3.0.xsd">
        
        <util:list id="availableScenariosList" value-type="de.davelee.trams.beans.Scenario">
        		<ref bean="landuffScenario"/>
@@ -20,7 +17,8 @@
        		<property name="scenarioName" value="Landuff Transport Company"/>
        		<property name="stopDistances" ref="landuffStopDistancesList"/>
        		<property name="cityDescription" value="Landuff Town is a small town with a very friendly town council. They want to work with you in providing an efficient and effective transport service for Landuff Town."/>
-       		<property name="minimumSatisfaction" value="70"/>
+		    <property name="description" value="has been appointed Managing Director of the Landuff Transport Company saying 'I am delighted to be taking on this role and look forward to delivering a transport system worthy of the fantastic city of Landuff. \n\nLanduff Council will provide access to 36 bus stops around the city. In addition, the council has supplied €80,000 of initial funding and 4 new single decker buses. The council expects the Landuff Transport Company to offer a very frequent service to all bus stops without subsidy and with a very high level of passenger satisfaction. If the passenger satisfaction drops below 70% then the contract will be immediately revoked. The council looks forward to seeing if the Landuff Transport Company can meet these ambitious targets."/>
+		    <property name="minimumSatisfaction" value="70"/>
        		<property name="suppliedVehicles" ref="suppliedVehiclesMap1"/>
        		<property name="locationMapFileName" value="landuffmappic.jpg"/>
        </bean>

@@ -10,7 +10,9 @@ import de.davelee.trams.factory.VehicleFactory;
 import de.davelee.trams.model.VehicleModel;
 import de.davelee.trams.repository.VehicleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+@Service
 public class VehicleService {
 
     @Autowired

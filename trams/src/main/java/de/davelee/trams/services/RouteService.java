@@ -10,7 +10,9 @@ import de.davelee.trams.model.RouteModel;
 import de.davelee.trams.repository.RouteRepository;
 import de.davelee.trams.util.TramsConstants;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+@Service
 public class RouteService {
 
     @Autowired
@@ -30,7 +32,8 @@ public class RouteService {
      */
     public boolean moveStops (final RouteModel routeModel, final String stopName, final boolean moveup ) {
     	//Search for stop in linked list.
-        List<Stop> stops = routeRepository.findRouteByNumber(routeModel.getRouteNumber()).getStops();
+        List<Stop> stops = new ArrayList<Stop>();
+        //List<Stop> stops = routeRepository.findRouteByNumber(routeModel.getRouteNumber()).getStops();
         for ( int i = 0; i < stops.size(); i++ ) {
         	if ( stops.get(i).getStopName().equalsIgnoreCase(stopName) ) {
         		//Here is the swap.
@@ -55,7 +58,7 @@ public class RouteService {
                     }
                 }
             }
-            routeRepository.findRouteByNumber(routeModel.getRouteNumber()).setStops(stops);
+            //routeRepository.findRouteByNumber(routeModel.getRouteNumber()).setStops(stops);
             routeModel.setStopNames(convertStops(stops));
         } 
         return true;
@@ -75,7 +78,8 @@ public class RouteService {
      * @return a <code>boolean</code> which is true iff the stop was deleted successfully.
      */
     public boolean deleteStop ( final RouteModel routeModel, final String stopName ) {
-        List<Stop> stops = routeRepository.findRouteByNumber(routeModel.getRouteNumber()).getStops();
+        List<Stop> stops = new ArrayList<Stop>();
+        //List<Stop> stops = routeRepository.findRouteByNumber(routeModel.getRouteNumber()).getStops();
         boolean result = false;
         for ( int i = 0; i < stops.size(); i++ ) {
         	if ( stops.get(i).getStopName().equalsIgnoreCase(stopName) ) {
@@ -83,7 +87,7 @@ public class RouteService {
         	}
         }
         if ( result == true ) {
-            routeRepository.findRouteByNumber(routeModel.getRouteNumber()).setStops(stops);
+            //routeRepository.findRouteByNumber(routeModel.getRouteNumber()).setStops(stops);
         }
         return result;
     }
@@ -96,10 +100,11 @@ public class RouteService {
     public boolean addStop ( final RouteModel routeModel, final String stopName ) {
         Stop stop = new Stop();
         stop.setStopName(stopName);
-        List<Stop> stops = routeRepository.findRouteByNumber(routeModel.getRouteNumber()).getStops();
+        List<Stop> stops = new ArrayList<Stop>();
+        //List<Stop> stops = routeRepository.findRouteByNumber(routeModel.getRouteNumber()).getStops();
         boolean result = stops.add(stop);
         if ( result ) {
-            routeRepository.findRouteByNumber(routeModel.getRouteNumber()).setStops(stops);
+            //routeRepository.findRouteByNumber(routeModel.getRouteNumber()).setStops(stops);
         }
         return result;
     }
@@ -148,14 +153,15 @@ public class RouteService {
             stop.setStopName(routeModel.getStopNames().get(i));
     		stops.add(stop);
     	}
-    	route.setStops(stops);
+    	//route.setStops(stops);
     	return route;
     }
 
     private RouteModel convertToRouteModel ( final Route route ) {
         RouteModel routeModel = new RouteModel();
         routeModel.setRouteNumber(route.getNumber());
-        List<Stop> stops = route.getStops();
+        //List<Stop> stops = route.getStops();
+        List<Stop> stops = new ArrayList<Stop>();
         List<String> stopNames = new ArrayList<String>();
         for ( int i = 0; i < stops.size(); i++ ) {
             stopNames.add(stops.get(i).getStopName());

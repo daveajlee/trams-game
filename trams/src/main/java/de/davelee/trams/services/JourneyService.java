@@ -17,7 +17,9 @@ import de.davelee.trams.util.DateFormats;
 import de.davelee.trams.util.JourneyStatus;
 import de.davelee.trams.util.TramsConstants;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+@Service
 public class JourneyService {
 
     @Autowired

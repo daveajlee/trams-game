@@ -1,12 +1,14 @@
 package de.davelee.trams.services;
 
 import de.davelee.trams.beans.TramsFile;
+import org.springframework.stereotype.Service;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import java.io.*;
 
+@Service
 public class FileService {
 
     //TODO: Log exceptions.

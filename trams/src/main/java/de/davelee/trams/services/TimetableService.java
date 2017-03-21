@@ -8,7 +8,9 @@ import de.davelee.trams.model.TimetableModel;
 import de.davelee.trams.repository.TimetableRepository;
 import de.davelee.trams.util.DateFormats;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+@Service
 public class TimetableService {
 
     @Autowired

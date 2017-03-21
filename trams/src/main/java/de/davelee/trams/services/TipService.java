@@ -1,7 +1,10 @@
 package de.davelee.trams.services;
 
+import org.springframework.stereotype.Service;
+
 import java.util.Random;
 
+@Service
 public class TipService {
 	
 	//This is where we keep the tip messages.

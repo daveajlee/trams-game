@@ -7,7 +7,9 @@ import de.davelee.trams.model.RouteScheduleModel;
 import de.davelee.trams.repository.RouteScheduleRepository;
 import de.davelee.trams.util.DifficultyLevel;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+@Service
 public class RouteScheduleService {
 
     @Autowired

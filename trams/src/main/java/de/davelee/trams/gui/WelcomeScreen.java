@@ -23,16 +23,12 @@ public class WelcomeScreen extends JFrame {
     private ImageDisplay exitBusDisplay;
 
     @Autowired
-    private GameController gameController;
+    private ExitDialog exitDialog;
 
     @Autowired
-    private FileController fileController;
-    
-    /**
-     * Create a new welcome screen.
-     * @param ui a <code>UserInterface</code> object with the current user interface.
-     */
-    public WelcomeScreen ( ) {
+    private NewGameScreen newGameScreen;
+
+    public void displayScreen ( ) {
         
         //Initialise GUI with title and close attributes.
         this.setTitle ("TraMS - Transport Management Simulator");
@@ -47,7 +43,6 @@ public class WelcomeScreen extends JFrame {
         //Call the Exit method in the UserInterface class if the user hits exit.
         this.addWindowListener ( new WindowAdapter() {
             public void windowClosing ( WindowEvent e ) {
-                ExitDialog exitDialog = new ExitDialog();
                 exitDialog.createExitDialog(WelcomeScreen.this);
             }
         });
@@ -88,7 +83,7 @@ public class WelcomeScreen extends JFrame {
         newBusDisplay.setBackground(Color.WHITE);
         newBusDisplay.addMouseListener ( new MouseListener () {
             public void mouseClicked(MouseEvent e) {
-                new NewGameScreen();
+                newGameScreen.displayScreen();
                 dispose();
             }
             public void mousePressed(MouseEvent e) {}
@@ -137,7 +132,6 @@ public class WelcomeScreen extends JFrame {
         exitBusDisplay.setBackground(Color.WHITE);
         exitBusDisplay.addMouseListener ( new MouseListener () {
             public void mouseClicked(MouseEvent e) {
-                ExitDialog exitDialog = new ExitDialog();
                 exitDialog.createExitDialog(WelcomeScreen.this);
             }
             public void mousePressed(MouseEvent e) {}
@@ -175,7 +169,6 @@ public class WelcomeScreen extends JFrame {
         this.pack ();
         this.setVisible (true);
         this.setSize ( new Dimension(750,600) );
-        
     }
     
     /**
@@ -186,7 +179,7 @@ public class WelcomeScreen extends JFrame {
         panel.setBackground(Color.WHITE);
         panel.addMouseListener ( new MouseListener () {
             public void mouseClicked(MouseEvent e) {
-                new NewGameScreen();
+                newGameScreen.displayScreen();
                 dispose();
             }
             public void mousePressed(MouseEvent e) {}
@@ -227,7 +220,6 @@ public class WelcomeScreen extends JFrame {
         panel.setBackground(Color.WHITE);
         panel.addMouseListener ( new MouseListener () {
             public void mouseClicked(MouseEvent e) {
-                ExitDialog exitDialog = new ExitDialog();
                 exitDialog.createExitDialog(WelcomeScreen.this);
             }
             public void mousePressed(MouseEvent e) {}

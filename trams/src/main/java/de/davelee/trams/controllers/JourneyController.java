@@ -12,7 +12,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import de.davelee.trams.services.JourneyService;
+import org.springframework.stereotype.Controller;
 
+@Controller
 public class JourneyController {
 
 	private static final Logger logger = LoggerFactory.getLogger(JourneyController.class);

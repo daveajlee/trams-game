@@ -4,9 +4,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import de.davelee.trams.beans.TramsFile;
 import de.davelee.trams.services.FileService;
+import org.springframework.stereotype.Controller;
 
 import java.io.File;
 
+@Controller
 public class FileController {
 	
 	@Autowired

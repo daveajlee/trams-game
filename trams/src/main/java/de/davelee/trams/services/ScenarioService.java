@@ -5,21 +5,17 @@ import java.util.List;
 import de.davelee.trams.beans.Scenario;
 import de.davelee.trams.factory.ScenarioFactory;
 import de.davelee.trams.model.ScenarioModel;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+@Service
 public class ScenarioService {
 
+	@Autowired
 	private ScenarioFactory scenarioFactory;
 	
 	public ScenarioService() {
 		
-	}
-
-	public ScenarioFactory getScenarioFactory() {
-		return scenarioFactory;
-	}
-
-	public void setScenarioFactory(ScenarioFactory scenarioFactory) {
-		this.scenarioFactory = scenarioFactory;
 	}
 
 	/**

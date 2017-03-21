@@ -7,7 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import de.davelee.trams.services.MessageService;
 import de.davelee.trams.util.MessageFolder;
+import org.springframework.stereotype.Controller;
 
+@Controller
 public class MessageController {
 	
 	@Autowired

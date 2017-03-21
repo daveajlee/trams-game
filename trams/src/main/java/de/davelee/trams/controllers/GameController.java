@@ -6,11 +6,14 @@ import de.davelee.trams.model.GameModel;
 import de.davelee.trams.model.RouteModel;
 import de.davelee.trams.model.RouteScheduleModel;
 import de.davelee.trams.util.DateFormats;
+import de.davelee.trams.util.DifficultyLevel;
 import de.davelee.trams.util.GameThread;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import de.davelee.trams.services.GameService;
+import org.springframework.stereotype.Controller;
 
+@Controller
 public class GameController {
 	
 	@Autowired
@@ -36,6 +39,19 @@ public class GameController {
 
 	public GameModel getGameModel() {
 		return getGameModelByPlayerName(getCurrentPlayerName());
+	}
+
+	public GameModel createGameModel ( final String playerName, final String scenarioName ) {
+		GameModel gameModel = new GameModel();
+		gameModel.setBalance(80000.00);
+		gameModel.setCurrentTime(Calendar.getInstance());
+		gameModel.setDifficultyLevel(DifficultyLevel.EASY);
+		gameModel.setPlayerName(playerName);
+		gameModel.setScenarioName(scenarioName);
+		gameModel.setPreviousTime(Calendar.getInstance());
+		gameModel.setTimeIncrement(15);
+		gameService.saveGame(gameModel);
+		return getGameModel();
 	}
 
 	public GameModel getGameModelByPlayerName ( final String playerName ) {

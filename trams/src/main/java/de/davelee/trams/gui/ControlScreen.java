@@ -12,6 +12,7 @@ import javax.swing.*;
 import javax.swing.event.*;
 
 import de.davelee.trams.controllers.*;
+import de.davelee.trams.gui.panels.DisplayPanel;
 import de.davelee.trams.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,7 +45,6 @@ public class ControlScreen extends ButtonBar {
     private JTabbedPane tabbedPane;
     private JPanel graphicsPanel;
     private JPanel messagesPanel;
-    private ManagePanel managementPanel;
     private List<JPanel> stopPanels;
     private JLabel timeLabel;
     private JProgressBar passengerSatisfactionBar;
@@ -201,8 +201,7 @@ public class ControlScreen extends ButtonBar {
             }
         });
         //Create manage tab.
-        managementPanel = new ManagePanel(this);
-        tabbedPane.addTab("Management", managementPanel.getDisplayPanel());
+        tabbedPane.addTab("Management", new DisplayPanel().createPanel(this));
         /*if ( userInterface.getManagementScreen() ) {
             topPanel.getComponent(1).setVisible(false);
             tabbedPane.setSelectedIndex(2);
@@ -391,7 +390,7 @@ public class ControlScreen extends ButtonBar {
             drawMessages();
             tabbedPane.addTab("Messages", messagesPanel);
             //Create manage tab.
-            tabbedPane.addTab("Management", managementPanel.getDisplayPanel());
+            tabbedPane.addTab("Management", new DisplayPanel().createPanel(this));
             /*if ( userInterface.getMessageScreen() ) {
                 tabbedPane.setSelectedIndex(1);
             }

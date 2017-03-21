@@ -32,6 +32,8 @@ public class NewGameScreen extends JFrame {
     private JButton createGameButton;
     private JButton welcomeScreenButton;
 
+    private ScenarioModel[] scenarioModels;
+
     @Autowired
     private GameController gameController;
 
@@ -44,11 +46,67 @@ public class NewGameScreen extends JFrame {
     @Autowired
     private MessageController messageController;
 
+    @Autowired
+    private ExitDialog exitDialog;
+
+    @Autowired
+    private WelcomeScreen welcomeScreen;
+
+    @Autowired
+    private ScenarioDescriptionScreen scenarioDescriptionScreen;
+
+    public ExitDialog getExitDialog() {
+        return exitDialog;
+    }
+
+    public void setExitDialog(final ExitDialog exitDialog) {
+        this.exitDialog = exitDialog;
+    }
+
+    public WelcomeScreen getWelcomeScreen() {
+        return welcomeScreen;
+    }
+
+    public void setWelcomeScreen(final WelcomeScreen welcomeScreen) {
+        this.welcomeScreen = welcomeScreen;
+    }
+
+    public GameController getGameController() {
+        return gameController;
+    }
+
+    public void setGameController(GameController gameController) {
+        this.gameController = gameController;
+    }
+
+    public ScenarioController getScenarioController() {
+        return scenarioController;
+    }
+
+    public void setScenarioController(ScenarioController scenarioController) {
+        this.scenarioController = scenarioController;
+    }
+
+    public VehicleController getVehicleController() {
+        return vehicleController;
+    }
+
+    public void setVehicleController(VehicleController vehicleController) {
+        this.vehicleController = vehicleController;
+    }
+
+    public MessageController getMessageController() {
+        return messageController;
+    }
+
+  	public void setMessageController(MessageController messageController) {
+        this.messageController = messageController;
+    }
+
     /**
-     * Create a new new game screen.
-     * @param ui a <code>UserInterface</code> object with the current user interface.
+     * Display the new game screen appropriately.
      */
-    public NewGameScreen ( ) {
+    public void displayScreen ( ) {
         
         //Initialise GUI with title and close attributes.
         this.setTitle ("TraMS - Transport Management Simulator");
@@ -63,7 +121,6 @@ public class NewGameScreen extends JFrame {
         //Call the Exit method in the UserInterface class if the user hits exit.
         this.addWindowListener ( new WindowAdapter() {
             public void windowClosing ( WindowEvent e ) {
-                ExitDialog exitDialog = new ExitDialog();
                 exitDialog.createExitDialog(NewGameScreen.this);
             }
         });
@@ -163,8 +220,7 @@ public class NewGameScreen extends JFrame {
         createGameButton.setEnabled(false);
         createGameButton.addActionListener ( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
-                GameModel gameModel = gameController.getGameModel();
-
+                //Get selected scenario.
                 int selectedPosition = 0;
             	for ( int i = 0; i < scenarioButtons.length; i++ ) {
             		if ( scenarioButtons[i].isSelected() ) {
@@ -172,13 +228,7 @@ public class NewGameScreen extends JFrame {
             			break;
             		}
             	}
-                //Create supplied vehicles.
-                vehicleController.createSuppliedVehicles(scenarioModels[selectedPosition], gameModel.getCurrentTime());
-                //Create welcome message.
-                messageController.addMessage("Welcome Message", "Congratulations on your appointment as Managing Director of the " +
-                        scenarioModels[selectedPosition].getName() + "! \n\n Your targets for the coming days and months are: " +
-                        scenarioModels[selectedPosition].getTargets(),"Council","INBOX",gameModel.getCurrentTime());
-                new ScenarioDescriptionScreen(scenarioModels[selectedPosition]);
+                saveNewGame(selectedPosition);
                 dispose();
             }
         });
@@ -186,7 +236,7 @@ public class NewGameScreen extends JFrame {
         welcomeScreenButton = new JButton("Back to Welcome Screen");
         welcomeScreenButton.addActionListener ( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
-                new WelcomeScreen();
+                welcomeScreen.displayScreen();
                 dispose();
             }
         });
@@ -207,6 +257,24 @@ public class NewGameScreen extends JFrame {
         this.setVisible (true);
         this.setSize ( new Dimension(650,500) );
         
+    }
+
+    public void doInit() {
+        playerNameField = new JTextField();
+        playerNameField.setText("Dave Lee");
+    }
+
+    public void saveNewGame ( int selectedPosition ) {
+        scenarioModels = scenarioController.getAvailableScenarios();
+        //Create Game
+        GameModel gameModel = gameController.createGameModel(playerNameField.getText(), scenarioModels[selectedPosition].getName());
+        //Create supplied vehicles.
+        vehicleController.createSuppliedVehicles(scenarioModels[selectedPosition], gameModel.getCurrentTime());
+        //Create welcome message.
+        messageController.addMessage("Welcome Message", "Congratulations on your appointment as Managing Director of the " +
+                scenarioModels[selectedPosition].getName() + "! \n\n Your targets for the coming days and months are: " +
+                scenarioModels[selectedPosition].getTargets(),"Council","INBOX",gameModel.getCurrentTime());
+        scenarioDescriptionScreen.displayScreen(scenarioModels[selectedPosition]);
     }
     
 }

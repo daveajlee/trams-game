@@ -11,9 +11,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import de.davelee.trams.services.RouteScheduleService;
+import org.springframework.stereotype.Controller;
 
 import java.util.*;
 
+@Controller
 public class RouteScheduleController {
 
 	private static final Logger logger = LoggerFactory.getLogger(RouteScheduleController.class);

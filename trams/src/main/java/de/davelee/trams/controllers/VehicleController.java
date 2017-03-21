@@ -7,12 +7,14 @@ import de.davelee.trams.util.SortedVehicleModels;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import de.davelee.trams.services.VehicleService;
+import org.springframework.stereotype.Controller;
 
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
 
+@Controller
 public class VehicleController {
 	
 	@Autowired
