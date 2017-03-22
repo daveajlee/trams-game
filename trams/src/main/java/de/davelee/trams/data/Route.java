@@ -31,16 +31,16 @@ public class Route {
 	@Column(name="NUMBER", unique=true)
 	private String number;
 	
-	/*@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	@Fetch(value = FetchMode.SUBSELECT)
     @Column(name="ROUTE_STOPS")
-	private List<Stop> stops;*/
+	private List<Stop> stops;
 
     /**
      * Create a new route.
      */
     public Route ( ) {
-        //stops = new ArrayList<Stop>();
+        stops = new ArrayList<Stop>();
     }
     
     public long getId() {
@@ -51,13 +51,13 @@ public class Route {
 		this.id = id;
 	}
 
-	/*public List<Stop> getStops() {
+	public List<Stop> getStops() {
 		return stops;
 	}
 
 	public void setStops(List<Stop> stops) {
 		this.stops = stops;
-	}*/
+	}
 
     /**
      * Set route number.

@@ -17,7 +17,6 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -36,7 +35,6 @@ import de.davelee.trams.controllers.TimetableController;
 import de.davelee.trams.gui.ControlScreen;
 import de.davelee.trams.model.GameModel;
 import de.davelee.trams.model.RouteModel;
-import de.davelee.trams.model.ScenarioModel;
 import de.davelee.trams.model.TimetableModel;
 
 public class RoutePanel {
@@ -58,8 +56,9 @@ public class RoutePanel {
 
     @Autowired
 	private TimetablePanel myTimetablePanel;
-	
-	private JComboBox[] stopBoxes;
+
+    private DefaultListModel availableStopModel;
+	private DefaultListModel routeStopModel;
 	private DefaultListModel timetableModel;
 	private JButton createRouteButton;
 	private JButton createTimetableButton;
@@ -104,43 +103,67 @@ public class RoutePanel {
         routeScreenPanel.add(routeNumberPanel);
         routeScreenPanel.add(Box.createRigidArea(new Dimension(0,10))); //Spacer.
         
-        //Now create stops - a 2 x 3 grid layout.
-        JPanel stopGridPanel = new JPanel(new GridLayout(2,3,5,5));
+        //Now create stops - a 1 x 3 grid layout.
+        JPanel stopGridPanel = new JPanel(new GridLayout(1,3,5,5));
         stopGridPanel.setBackground(Color.WHITE);
-        //Create the boxes and labels as appropriate.
-        //Create the stops.
-        JPanel[] stopPanels = new JPanel[5];
-        stopBoxes = new JComboBox[5];
-        for ( int i = 0; i < stopPanels.length; i++ ) {
-            stopPanels[i] = new JPanel(new GridBagLayout());
-            stopPanels[i].setBackground(Color.WHITE);
-            JLabel stopLabel = new JLabel("Stop " + (i+1) + ":");
-            stopLabel.setFont(new Font("Arial", Font.ITALIC, 16));
-            stopPanels[i].add(stopLabel);
-            ScenarioModel scenario = scenarioController.getScenario("Landuff Transport Company");
-            stopBoxes[i] = new JComboBox(scenario.getStopNames());
-            stopBoxes[i].setFont(new Font("Arial", Font.PLAIN, 14));
-            stopBoxes[i].setSelectedIndex(stopBoxes[i].getItemCount()-1);
-            if ( routeModel != null ) { 
-                if ( routeModel.getStopNames().size() > i ) {
-                    int findIndexPos = findIndex(routeModel.getStopNames().get(i), i);
-                    if ( findIndexPos != -1 ) { stopBoxes[i].setSelectedIndex(findIndexPos); }
-                }
-            }
-            if ( i < 2 ) {
-                stopBoxes[i].addActionListener( new ActionListener() {
-                    public void actionPerformed ( ActionEvent e ) {
-                        enableCreateButtons();
-                    }
-                });
-            }
-            stopPanels[i].add(stopBoxes[i]);
-            stopGridPanel.add(stopPanels[i]);
+
+        //Create the route stop panel.
+        routeStopModel = new DefaultListModel();
+        String[] stopNames = scenarioController.getScenario(gameController.getGameModel().getScenarioName()).getStopNames();
+        availableStopModel = new DefaultListModel();
+        for ( int i = 0; i < stopNames.length; i++ ) {
+            availableStopModel.addElement(stopNames[i]);
         }
-        //There's no stop 6 so it is just a filler.
-        JPanel tempPanel = new JPanel();
-        tempPanel.setBackground(Color.WHITE);
-        stopGridPanel.add(tempPanel);
+        final JList availableStopList = new JList(availableStopModel);
+        final JList routeStopList = new JList(routeStopModel);
+        final JPanel routeStopListPanel = new JPanel(new BorderLayout());
+        routeStopListPanel.setBackground(Color.WHITE);
+        JLabel routeStopListLabel = new JLabel("Route Stops:");
+        routeStopListLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        routeStopListLabel.setFont(new Font("Arial", Font.BOLD + Font.ITALIC, 14));
+        routeStopListPanel.add(routeStopListLabel, BorderLayout.NORTH);
+        final JScrollPane routeScrollPane = new JScrollPane(routeStopList);
+        routeStopList.setVisibleRowCount(5);
+        routeStopList.setFont(new Font("Arial", Font.PLAIN, 12));
+        routeStopListPanel.add(routeScrollPane, BorderLayout.SOUTH);
+        stopGridPanel.add(routeStopListPanel);
+        //Create the buttons panel.
+        final JPanel stopButtonPanel = new JPanel(new BorderLayout());
+        stopButtonPanel.setBackground(Color.WHITE);
+        final JButton routeAddStopButton = new JButton("<<");
+        routeAddStopButton.addActionListener(new ActionListener() {
+            public void actionPerformed ( ActionEvent e ) {
+                String stopName = availableStopList.getSelectedValue().toString();
+                routeStopModel.addElement(stopName);
+                availableStopModel.removeElement(stopName);
+                enableCreateButtons();
+            }
+        });
+        routeAddStopButton.setHorizontalAlignment(SwingConstants.CENTER);
+        stopButtonPanel.add(routeAddStopButton, BorderLayout.NORTH);
+        final JButton routeRemoveStopButton = new JButton(">>");
+        routeRemoveStopButton.addActionListener(new ActionListener() {
+            public void actionPerformed ( ActionEvent e ) {
+                String stopName = routeStopList.getSelectedValue().toString();
+                availableStopModel.addElement(stopName);
+                routeStopModel.removeElement(stopName);
+                enableCreateButtons();
+            }
+        });
+        routeRemoveStopButton.setHorizontalAlignment(SwingConstants.CENTER);
+        stopButtonPanel.add(routeRemoveStopButton, BorderLayout.SOUTH);
+        stopGridPanel.add(stopButtonPanel);
+        final JPanel availableStopListPanel = new JPanel(new BorderLayout());
+        availableStopListPanel.setBackground(Color.WHITE);
+        JLabel availableStopListLabel = new JLabel("Available Stops:");
+        availableStopListLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        availableStopListLabel.setFont(new Font("Arial", Font.BOLD + Font.ITALIC, 14));
+        availableStopListPanel.add(availableStopListLabel, BorderLayout.NORTH);
+        final JScrollPane availableScrollPane = new JScrollPane(availableStopList);
+        availableStopList.setVisibleRowCount(5);
+        availableStopList.setFont(new Font("Arial", Font.PLAIN, 12));
+        availableStopListPanel.add(availableScrollPane, BorderLayout.SOUTH);
+        stopGridPanel.add(availableStopListPanel);
         
         //Add the stopGrid panel to the screen panel.
         routeScreenPanel.add(stopGridPanel);
@@ -187,20 +210,19 @@ public class RoutePanel {
                 //First of all, set the selected route.
                 if ( routeModel == null && timetableModel.getSize() == 0 ) {
                     List<String> selectedOutwardStops = new ArrayList<String>();
-                    List<String> selectedReturnStops = new ArrayList<String>();
-                    for ( int i = 0; i < stopBoxes.length; i++ ) {
-                        if ( !stopBoxes[i].getSelectedItem().toString().equalsIgnoreCase("-") ) {
-                        	selectedOutwardStops.add(stopBoxes[i].getSelectedItem().toString());
-                        }
+                    for ( int i = 0; i < routeStopModel.size(); i++ ) {
+                        selectedOutwardStops.add(routeStopModel.getElementAt(i).toString());
                     }
-                    for ( int i = (stopBoxes.length-1); i >=0; i-- ) {
-                        if ( !stopBoxes[i].getSelectedItem().toString().equalsIgnoreCase("-") ) {
-                        	selectedReturnStops.add(stopBoxes[i].getSelectedItem().toString());
-                        }
-                    }
+                    RouteModel routeModel2 = new RouteModel();
+                    routeModel2.setRouteNumber(routeNumberField.getText());
+                    routeModel2.setStopNames(selectedOutwardStops);
+                    //Show the actual screen!
+                    controlScreen.redrawManagement(myTimetablePanel.createPanel(null, routeModel2, controlScreen, RoutePanel.this, displayPanel), gameController.getGameModel());
                 }
-                //Show the actual screen!
-                controlScreen.redrawManagement(myTimetablePanel.createPanel(null, routeModel, controlScreen, RoutePanel.this, displayPanel), gameController.getGameModel());
+                else {
+                    //Show the actual screen!
+                    controlScreen.redrawManagement(myTimetablePanel.createPanel(null, routeModel, controlScreen, RoutePanel.this, displayPanel), gameController.getGameModel());
+                }
             }
         });
         timetableButtonPanel.add(createTimetableButton);
@@ -246,10 +268,8 @@ public class RoutePanel {
                final GameModel gameModel = gameController.getGameModel();
                routeScheduleController.generateRouteSchedules(routeModel, gameModel.getCurrentTime(), gameModel.getScenarioName()); 
                List<String> selectedOutwardStops = new ArrayList<String>();
-               for ( int i = 0; i < stopBoxes.length; i++ ) {
-                   if ( !stopBoxes[i].getSelectedItem().toString().equalsIgnoreCase("-") ) {
-                   	selectedOutwardStops.add(stopBoxes[i].getSelectedItem().toString());
-                   }
+               for ( int i = 0; i < routeStopModel.size(); i++ ) {
+                    selectedOutwardStops.add(routeStopModel.getElementAt(i).toString());
                }
                routeController.addNewRoute(routeNumberField.getText(), selectedOutwardStops);
                //Now return to previous screen.
@@ -279,22 +299,13 @@ public class RoutePanel {
 	
 	private void enableCreateButtons ( ) {
         //To enable create timetable button we need the selected item in stop1Box and stop2Box to not be -.
-        if ( !stopBoxes[0].getSelectedItem().toString().equalsIgnoreCase("-") && !stopBoxes[1].getSelectedItem().toString().equalsIgnoreCase("-") && !routeNumberField.getText().equalsIgnoreCase("") ) {
+        if ( routeStopModel.getSize() > 1 && !routeNumberField.getText().equalsIgnoreCase("") ) {
             createTimetableButton.setEnabled(true);
             //In addition, the timetable model must not be 0 to create a route.
             if ( timetableModel.getSize() > 0 ) {
                 createRouteButton.setEnabled(true);
             }
         }
-    }
-	
-	private int findIndex ( String text, int pos ) {
-        for ( int i = 0; i < stopBoxes[pos].getItemCount(); i++ ) {
-            if ( stopBoxes[pos].getItemAt(i).toString().equalsIgnoreCase(text) ) {
-                return i;
-            }
-        }
-        return -1;
     }
 
 }

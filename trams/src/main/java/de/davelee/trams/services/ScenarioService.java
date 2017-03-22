@@ -28,8 +28,6 @@ public class ScenarioService {
 		for ( int i = 0; i < stopDistances.size(); i++ ) {
 			possStops[i] = stopDistances.get(i).split(":")[0];
 		}
-        //Add dash at end.
-		possStops[stopDistances.size()] = "-";
         //Return stop names.
         return possStops;
     }
