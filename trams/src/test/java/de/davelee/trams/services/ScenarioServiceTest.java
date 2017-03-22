@@ -28,6 +28,7 @@ public class ScenarioServiceTest {
 		ScenarioModel scenario = scenarioService.retrieveScenarioObject("Landuff Transport Company");
 		assertEquals(scenario.getName(), "Landuff Transport Company");
 		assertEquals(scenario.getStopNames()[0], "Airport");
+		assertEquals(scenario.getStopNames()[45], "Mile Inn");
 		assertEquals(scenario.getStopNames().length, 47);
 	}
 

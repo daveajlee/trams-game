@@ -14,7 +14,8 @@ public class Application {
         }
         catch ( Exception e ) { }
         //Display splash screen to the user.
-        SplashScreen ss = new SplashScreen(false);
+        SplashScreen ss = new SplashScreen();
+        ss.displayScreen(false);
         ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("de/davelee/trams/spring/trams-context.xml");
         for ( int i = 12; i > -5; i-- ) {
             try {

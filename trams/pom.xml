@@ -87,6 +87,12 @@
   </dependencies>
   
   <build>
+	  <resources>
+		  <resource>
+		  	<directory>src/main/resources</directory>
+		    <filtering>true</filtering>
+		  </resource>
+	  </resources>
   	<pluginManagement>
   		<plugins>
   			<plugin>
@@ -103,7 +109,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>de.davelee.trams.main.UserInterface</mainClass>
+							<mainClass>de.davelee.trams.app.Application</mainClass>
 						</manifest>
 					</archive>
 					<descriptorRefs>

@@ -6,7 +6,6 @@ import java.awt.event.*;
 import javax.swing.*;
 
 import de.davelee.trams.controllers.GameController;
-import de.davelee.trams.util.TramsConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -27,13 +26,25 @@ public class SplashScreen extends JFrame {
 
     @Autowired
     private GameController gameController;
+
+    private String version;
+
+    public SplashScreen ( ) {
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+	public void setVersion(String version) {
+        this.version = version;
+    }
     
     /**
      * Create a new splash screen.
      * @param isAboutScreen a <code>boolean</code> which is true iff this is the about screen rather than splash screen at beginning.
-     * @param ui a <code>UserInterface</code> object with the current user interface.
      */
-    public SplashScreen ( boolean isAboutScreen ) {
+    public void displayScreen ( boolean isAboutScreen ) {
         
         //Initialise GUI with resizable, title and decorate methods.
         this.setTitle ("TraMS - Transport Management Simulator");
@@ -101,7 +112,7 @@ public class SplashScreen extends JFrame {
         //Construct loading panel to add to the centre panel.
         JPanel loadingPanel = new JPanel();
         loadingPanel.setBackground(Color.WHITE);
-        if ( isAboutScreen ) { loadingLabel = new JLabel("Version: " + TramsConstants.VERSION); }
+        if ( isAboutScreen ) { loadingLabel = new JLabel("Version: " + version); }
         else { loadingLabel = new JLabel("Loading... Please Wait!"); }
         loadingLabel.setFont(new Font("Arial", Font.ITALIC, 15));
         loadingPanel.add(loadingLabel);

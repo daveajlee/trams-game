@@ -93,6 +93,9 @@ public class ControlScreen extends ButtonBar {
     @Autowired
     private ExitDialog exitDialog;
 
+    @Autowired
+    private SplashScreen splashScreen;
+
     private int simulationSpeed = 2000;
 
     /**
@@ -321,7 +324,7 @@ public class ControlScreen extends ButtonBar {
                 gameController.pauseSimulation();
                 Thread aboutThread = new Thread() {
                     public void run () {
-                        new SplashScreen(true);
+                        splashScreen.displayScreen(true);
                     }
                 };
                 aboutThread.start();
