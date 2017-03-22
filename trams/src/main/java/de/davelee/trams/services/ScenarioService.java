@@ -59,6 +59,7 @@ public class ScenarioService {
 		scenarioModel.setDescription(scenario.getDescription());
 		scenarioModel.setStopNames(getStopNames(scenario.getStopDistances()));
 		scenarioModel.setMinimumSatisfaction(scenario.getMinimumSatisfaction());
+		scenarioModel.setLocationMapFileName(scenario.getLocationMapFileName());
 		return scenarioModel;
 	}
 

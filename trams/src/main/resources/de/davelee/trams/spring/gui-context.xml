@@ -24,5 +24,21 @@
        <bean name="gui:scenarioPanel" class="de.davelee.trams.gui.panels.ScenarioPanel"/>
 
        <bean name="gui:locationMapPanel" class="de.davelee.trams.gui.panels.LocationMapPanel"/>
+
+       <bean name="gui:viewTimetablePanel" class="de.davelee.trams.gui.panels.ViewTimetablePanel"/>
+
+       <bean name="gui:timetablePanel" class="de.davelee.trams.gui.panels.TimetablePanel"/>
+
+       <bean name="gui:journeyPatternPanel" class="de.davelee.trams.gui.panels.JourneyPatternPanel"/>
+
+       <bean name="gui:routePanel" class="de.davelee.trams.gui.panels.RoutePanel"/>
+
+       <bean name="gui:purchaseVehiclePanel" class="de.davelee.trams.gui.panels.PurchaseVehiclePanel"/>
+
+       <bean name="gui:vehicleDepotPanel" class="de.davelee.trams.gui.panels.VehicleDepotPanel"/>
+
+       <bean name="gui:employDriverPanel" class="de.davelee.trams.gui.panels.EmployDriverPanel"/>
+
+       <bean name="gui:allocationPanel" class="de.davelee.trams.gui.panels.AllocationPanel"/>
        
 </beans>

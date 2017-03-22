@@ -42,7 +42,7 @@ public class PurchaseVehiclePanel {
 	private JLabel totalPriceField;
 	private JButton purchaseVehicleButton;
 	
-	public JPanel createPanel ( final String vehicleType, final ControlScreen controlScreen) {
+	public JPanel createPanel ( final String vehicleType, final ControlScreen controlScreen, final DisplayPanel displayPanel) {
         
         //Create screen panel to add things to.
         JPanel vehicleScreenPanel = new JPanel();
@@ -73,7 +73,7 @@ public class PurchaseVehiclePanel {
         if ( vehicleType.contentEquals(vehicleController.getFirstVehicleModel()) ) { previousVehicleTypeButton.setEnabled(false); }
         previousVehicleTypeButton.addActionListener( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
-                controlScreen.redrawManagement(createPanel(vehicleController.getPreviousVehicleModel(vehicleType), controlScreen), gameModel);
+                    controlScreen.redrawManagement(createPanel(vehicleController.getPreviousVehicleModel(vehicleType), controlScreen, displayPanel), gameModel);
             }
         });
         previousButtonPanel.add(previousVehicleTypeButton);
@@ -93,7 +93,7 @@ public class PurchaseVehiclePanel {
         if ( vehicleType.contentEquals(vehicleController.getLastVehicleModel()))  { nextVehicleTypeButton.setEnabled(false); }
         nextVehicleTypeButton.addActionListener( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
-                controlScreen.redrawManagement(createPanel(vehicleController.getNextVehicleModel(vehicleType), controlScreen), gameModel);
+                    controlScreen.redrawManagement(createPanel(vehicleController.getNextVehicleModel(vehicleType), controlScreen, displayPanel), gameModel);
             }
         });
         nextButtonPanel.add(nextVehicleTypeButton);
@@ -209,7 +209,7 @@ public class PurchaseVehiclePanel {
                 for ( int i = 0; i < quantity; i++ ) {
                     vehicleController.purchaseVehicle(vehicleModel.getModel(), deliveryDate);
                 }
-                controlScreen.redrawManagement(new DisplayPanel().createPanel(controlScreen), gameModel); 
+                controlScreen.redrawManagement(displayPanel.createPanel(controlScreen), gameModel);
             }
         });
         bottomButtonPanel.add(purchaseVehicleButton);
@@ -218,7 +218,7 @@ public class PurchaseVehiclePanel {
         JButton managementScreenButton = new JButton("Return to Management Screen");
         managementScreenButton.addActionListener ( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
-                controlScreen.redrawManagement(new DisplayPanel().createPanel(controlScreen), gameModel); 
+                    controlScreen.redrawManagement(displayPanel.createPanel(controlScreen), gameModel);
             }
         });
         bottomButtonPanel.add(managementScreenButton);

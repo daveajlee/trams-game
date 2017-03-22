@@ -51,6 +51,12 @@ public class JourneyPatternPanel {
 	
 	@Autowired
 	private JourneyController journeyController;
+
+    @Autowired
+	private RoutePanel myRoutePanel;
+
+    @Autowired
+	private TimetablePanel myTimetablePanel;
 	
 	private JCheckBox[] daysBox;
 	private JButton createJourneyPatternButton;
@@ -62,7 +68,7 @@ public class JourneyPatternPanel {
 	private static final Logger logger = LoggerFactory.getLogger(JourneyPatternPanel.class);
 	
 	public JPanel createPanel ( final List<String> stopNames, final TimetableModel timetableModel, final JourneyPatternModel journeyPatternModel,
-			final RouteModel routeModel, final ControlScreen controlScreen) {
+			final RouteModel routeModel, final ControlScreen controlScreen, final DisplayPanel displayPanel) {
         
         //Create journeyPatternScreen panel to add things to.
         JPanel journeyPatternScreenPanel = new JPanel();
@@ -290,7 +296,7 @@ public class JourneyPatternPanel {
             				timetableModel, routeModel.getRouteNumber());
                     }
                 //Now return to the timetable screen.
-                controlScreen.redrawManagement(new TimetablePanel().createPanel(timetableModel, routeModel, controlScreen), gameModel);
+                controlScreen.redrawManagement(myTimetablePanel.createPanel(timetableModel, routeModel, controlScreen, myRoutePanel, displayPanel), gameModel);
             }
         });
         bottomButtonPanel.add(createJourneyPatternButton);
@@ -298,7 +304,7 @@ public class JourneyPatternPanel {
         previousScreenButton.addActionListener ( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
                 //Return to the timetable screen.
-                controlScreen.redrawManagement(new TimetablePanel().createPanel(timetableModel, routeModel, controlScreen), gameModel);
+                controlScreen.redrawManagement(myTimetablePanel.createPanel(timetableModel, routeModel, controlScreen, myRoutePanel, displayPanel), gameModel);
             }
         });
         bottomButtonPanel.add(previousScreenButton);

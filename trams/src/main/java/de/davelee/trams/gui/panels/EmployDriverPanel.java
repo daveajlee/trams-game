@@ -34,7 +34,7 @@ public class EmployDriverPanel {
 	@Autowired
 	private DriverController driverController;
 	
-	public JPanel createPanel ( final ControlScreen controlScreen ) {
+	public JPanel createPanel ( final ControlScreen controlScreen, final DisplayPanel displayPanel ) {
 		//Create screen panel to add things to.
         JPanel driverScreenPanel = new JPanel();
         driverScreenPanel.setLayout ( new BoxLayout ( driverScreenPanel, BoxLayout.PAGE_AXIS ) );
@@ -104,14 +104,14 @@ public class EmployDriverPanel {
             	driverModel.setContractedHours((Integer) contractedHoursSpinner.getValue());
             	driverModel.setStartDate(startDate);
                 driverController.employDriver(driverModel);
-                controlScreen.redrawManagement(new DisplayPanel().createPanel(controlScreen), gameModel);
+                controlScreen.redrawManagement(displayPanel.createPanel(controlScreen), gameModel);
             }
         });
         buttonPanel.add(employDriverButton);
         JButton managementScreenButton = new JButton("Return to Management Screen");
         managementScreenButton.addActionListener ( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
-                controlScreen.redrawManagement(new DisplayPanel().createPanel(controlScreen), gameModel);
+                    controlScreen.redrawManagement(displayPanel.createPanel(controlScreen), gameModel);
             }
         });
         buttonPanel.add(managementScreenButton);

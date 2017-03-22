@@ -60,7 +60,7 @@ public class ViewTimetablePanel {
 	
 	private static final Logger logger = LoggerFactory.getLogger(ViewTimetablePanel.class);
 	
-	public JPanel createPanel ( final String route, final int min, final int dateIndex, final ControlScreen controlScreen ) {
+	public JPanel createPanel ( final String route, final int min, final int dateIndex, final ControlScreen controlScreen, final RoutePanel routePanel, final DisplayPanel displayPanel ) {
         
         //Create screen panel to add things to.
         JPanel routeScreenPanel = new JPanel();
@@ -106,7 +106,7 @@ public class ViewTimetablePanel {
         datesComboBox.setSelectedIndex(dateIndex);
         datesComboBox.addItemListener(new ItemListener() {
             public void itemStateChanged ( ItemEvent e ) {
-                controlScreen.redrawManagement(createPanel(routeModel.getRouteNumber(), 0, datesComboBox.getSelectedIndex(), controlScreen), gameModel);
+                controlScreen.redrawManagement(createPanel(routeModel.getRouteNumber(), 0, datesComboBox.getSelectedIndex(), controlScreen, routePanel, displayPanel), gameModel);
             }
         });
         datesPanel.add(datesLabel); datesPanel.add(datesComboBox);
@@ -166,7 +166,7 @@ public class ViewTimetablePanel {
         }
         previousButton.addActionListener(new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
-                controlScreen.redrawManagement(createPanel(route, min-10, datesComboBox.getSelectedIndex(), controlScreen), gameModel);
+                controlScreen.redrawManagement(createPanel(route, min-10, datesComboBox.getSelectedIndex(), controlScreen, routePanel, displayPanel), gameModel);
             }
         });
         otherServicesButtonPanel.add(previousButton);
@@ -176,7 +176,7 @@ public class ViewTimetablePanel {
         }
         nextButton.addActionListener(new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
-                controlScreen.redrawManagement(createPanel(route, min+10, datesComboBox.getSelectedIndex(), controlScreen), gameModel);
+                controlScreen.redrawManagement(createPanel(route, min+10, datesComboBox.getSelectedIndex(), controlScreen, routePanel, displayPanel), gameModel);
             }
         });
         otherServicesButtonPanel.add(nextButton);
@@ -184,7 +184,7 @@ public class ViewTimetablePanel {
         amendRouteButton.addActionListener(new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
                 //Show the actual screen!
-                controlScreen.redrawManagement(new RoutePanel().createPanel(routeModel, controlScreen), gameModel);
+                controlScreen.redrawManagement(routePanel.createPanel(routeModel, controlScreen, displayPanel), gameModel);
                 //int confirm = JOptionPane.showConfirmDialog(null, "Are you sure you wish to delete route " + ((Route) theRoutesModel.get(theRoutesList.getSelectedIndex())).getRouteNumber() + "?", "Confirm Delete", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
                 //if ( confirm == JOptionPane.YES_OPTION ) {
                 //    theInterface.deleteRoute(((Route) theRoutesModel.get(theRoutesList.getSelectedIndex())));
@@ -195,7 +195,7 @@ public class ViewTimetablePanel {
         JButton managementScreenButton = new JButton("Back to Management Screen");
         managementScreenButton.addActionListener(new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
-                controlScreen.redrawManagement(new DisplayPanel().createPanel(controlScreen), gameModel);
+                controlScreen.redrawManagement(routePanel.createPanel(routeModel, controlScreen, displayPanel), gameModel);
             }
         });
         otherServicesButtonPanel.add(managementScreenButton);
@@ -224,7 +224,7 @@ public class ViewTimetablePanel {
         if ( routesModel.getSize() > 0 ) { routesList.setSelectedValue(route, true); }
         routesList.addListSelectionListener ( new ListSelectionListener() {
             public void valueChanged ( ListSelectionEvent e ) {
-                controlScreen.redrawManagement(createPanel(routesList.getSelectedValue().toString(), 0, 0, controlScreen), gameModel);
+                controlScreen.redrawManagement(createPanel(routesList.getSelectedValue().toString(), 0, 0, controlScreen, routePanel, displayPanel), gameModel);
             }
         });
         JScrollPane routesPane = new JScrollPane(routesList);

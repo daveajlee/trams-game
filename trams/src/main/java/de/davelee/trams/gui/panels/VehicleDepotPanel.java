@@ -38,7 +38,7 @@ public class VehicleDepotPanel {
 	@Autowired
 	private VehicleController vehicleController;
 	
-	public JPanel createPanel ( final String vehicleType, final ControlScreen controlScreen ) {
+	public JPanel createPanel ( final String vehicleType, final ControlScreen controlScreen, final DisplayPanel displayPanel ) {
         
         //Create screen panel to add things to.
         JPanel vehicleScreenPanel = new JPanel();
@@ -179,7 +179,7 @@ public class VehicleDepotPanel {
         sellVehicleButton.addActionListener ( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
                 vehicleController.sellVehicle(vehicleModel);
-                controlScreen.redrawManagement(createPanel("", controlScreen), gameModel);
+                controlScreen.redrawManagement(createPanel("", controlScreen, displayPanel), gameModel);
             }
         });
         bottomButtonPanel.add(sellVehicleButton);
@@ -214,7 +214,7 @@ public class VehicleDepotPanel {
         vehiclesList.addListSelectionListener(new ListSelectionListener() {
             public void valueChanged ( ListSelectionEvent e ) {
                 String selectedValue = vehiclesList.getSelectedValue().toString();
-                controlScreen.redrawManagement(createPanel(selectedValue, controlScreen), gameModel); 
+                controlScreen.redrawManagement(createPanel(selectedValue, controlScreen, displayPanel), gameModel);
             }
         });
         JScrollPane vehiclesPane = new JScrollPane(vehiclesList);

@@ -48,11 +48,14 @@ public class TimetablePanel {
 	
 	@Autowired
 	private JourneyPatternController journeyPatternController;
+
+    @Autowired
+	private JourneyPatternPanel journeyPatternPanel;
 	
 	private JButton createJourneyPatternButton;
 	private JButton deleteJourneyPatternButton;
 	
-	public JPanel createPanel ( final TimetableModel timetableModel, final RouteModel routeModel, final ControlScreen controlScreen ) {
+	public JPanel createPanel ( final TimetableModel timetableModel, final RouteModel routeModel, final ControlScreen controlScreen, final RoutePanel routePanel, final DisplayPanel displayPanel ) {
 		final GameModel gameModel = gameController.getGameModel();
         
         //Create timetableScreen panel to add things to.
@@ -260,7 +263,7 @@ public class TimetablePanel {
                     //logger.debug("Adding timetable with name " + theTimetableNameField.getText() + " to route " + theSelectedRoute.getRouteNumber());
                 }
                 //Show the actual screen!
-                controlScreen.redrawManagement(new JourneyPatternPanel().createPanel(routeModel.getStopNames(), selectedTimetableModel, null, routeModel, controlScreen), gameModel);
+                controlScreen.redrawManagement(journeyPatternPanel.createPanel(routeModel.getStopNames(), selectedTimetableModel, null, routeModel, controlScreen, displayPanel), gameModel);
             }
         });
         journeyPatternButtonPanel.add(createJourneyPatternButton);
@@ -316,7 +319,7 @@ public class TimetablePanel {
         createTimetableButton.addActionListener ( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
                 //Timetable is already saved so we just go back to the original screen.
-                controlScreen.redrawManagement(new RoutePanel().createPanel(routeModel, controlScreen), gameModel);
+                controlScreen.redrawManagement(routePanel.createPanel(routeModel, controlScreen, displayPanel), gameModel);
             }
         });
         bottomButtonPanel.add(createTimetableButton);
@@ -324,7 +327,7 @@ public class TimetablePanel {
         previousScreenButton.addActionListener ( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
                 //Cancel addition.
-                controlScreen.redrawManagement(new RoutePanel().createPanel(routeModel, controlScreen), gameModel);
+                controlScreen.redrawManagement(routePanel.createPanel(routeModel, controlScreen, displayPanel), gameModel);
             }
         });
         bottomButtonPanel.add(previousScreenButton);

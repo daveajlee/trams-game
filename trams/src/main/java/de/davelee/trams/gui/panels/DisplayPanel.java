@@ -57,6 +57,24 @@ public class DisplayPanel {
 	@Autowired
 	private LocationMapPanel myLocationMapPanel;
 
+    @Autowired
+	private RoutePanel myRoutePanel;
+
+    @Autowired
+	private ViewTimetablePanel myViewTimetablePanel;
+
+    @Autowired
+	private PurchaseVehiclePanel myPurchaseVehiclePanel;
+
+    @Autowired
+	private VehicleDepotPanel vehicleDepotPanel;
+
+    @Autowired
+	private EmployDriverPanel employDriverPanel;
+
+    @Autowired
+	private AllocationPanel myAllocationPanel;
+
 	private static final Logger logger = LoggerFactory.getLogger(DisplayPanel.class);
 	
 	public JPanel createPanel ( final ControlScreen controlScreen ) {
@@ -182,7 +200,7 @@ public class DisplayPanel {
         addRouteButton.addActionListener( new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 //Show the actual screen!
-                controlScreen.redrawManagement(new RoutePanel().createPanel(null, controlScreen), gameController.getGameModel());
+                    controlScreen.redrawManagement(myRoutePanel.createPanel(null, controlScreen, DisplayPanel.this), gameController.getGameModel());
             }
         });
         createRouteButtonPanel.add(addRouteButton);
@@ -195,7 +213,7 @@ public class DisplayPanel {
         routeTimetableButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 //Show the actual screen!
-                controlScreen.redrawManagement(new ViewTimetablePanel().createPanel(routeController.getRouteModels()[0].getRouteNumber(), 0, 0, controlScreen), gameController.getGameModel());
+                    controlScreen.redrawManagement(myViewTimetablePanel.createPanel(routeController.getRouteModels()[0].getRouteNumber(), 0, 0, controlScreen, myRoutePanel, DisplayPanel.this), gameController.getGameModel());
             }
         });
         timetableButtonPanel.add(routeTimetableButton);
@@ -234,7 +252,7 @@ public class DisplayPanel {
         purchaseVehicleScreenButton.addActionListener( new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 //Show the actual screen!
-                controlScreen.redrawManagement(new PurchaseVehiclePanel().createPanel(vehicleController.getFirstVehicleModel(), controlScreen), gameController.getGameModel());
+                    controlScreen.redrawManagement(myPurchaseVehiclePanel.createPanel(vehicleController.getFirstVehicleModel(), controlScreen, DisplayPanel.this), gameController.getGameModel());
             }
         });
         purchaseVehicleButtonPanel.add(purchaseVehicleScreenButton);
@@ -247,7 +265,7 @@ public class DisplayPanel {
         viewDepotButton.addActionListener( new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 //Show the actual screen!
-                controlScreen.redrawManagement(new VehicleDepotPanel().createPanel("", controlScreen), gameController.getGameModel());
+                    controlScreen.redrawManagement(vehicleDepotPanel.createPanel("", controlScreen, DisplayPanel.this), gameController.getGameModel());
             }
         });
         viewDepotButtonPanel.add(viewDepotButton);
@@ -286,7 +304,7 @@ public class DisplayPanel {
         employDriversButton.addActionListener( new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 //Show the actual screen!
-                controlScreen.redrawManagement(new EmployDriverPanel().createPanel(controlScreen), gameController.getGameModel());
+                    controlScreen.redrawManagement(employDriverPanel.createPanel(controlScreen, DisplayPanel.this), gameController.getGameModel());
             }
         });
         employDriverButtonPanel.add(employDriversButton);
@@ -334,7 +352,7 @@ public class DisplayPanel {
         changeAllocationButton.addActionListener( new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 //Show the actual screen!
-                controlScreen.redrawManagement(new AllocationPanel().createPanel(controlScreen), gameController.getGameModel());
+                    controlScreen.redrawManagement(myAllocationPanel.createPanel(controlScreen, DisplayPanel.this), gameController.getGameModel());
             }
         });
         allocationButtonPanel.add(changeAllocationButton);

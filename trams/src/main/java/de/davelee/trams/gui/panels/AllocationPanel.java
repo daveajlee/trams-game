@@ -53,7 +53,7 @@ public class AllocationPanel {
 	private DefaultListModel allocationsModel;
 	private JList allocationsList;
 	
-	public JPanel createPanel ( final ControlScreen controlScreen ) {
+	public JPanel createPanel ( final ControlScreen controlScreen, final DisplayPanel displayPanel  ) {
 		//Create allocation screen panel to add things to.
         JPanel allocationScreenPanel = new JPanel();
         allocationScreenPanel.setLayout ( new BoxLayout ( allocationScreenPanel, BoxLayout.PAGE_AXIS ) );
@@ -300,7 +300,7 @@ public class AllocationPanel {
                         }
                     }
                     //Now return to previous screen.
-                    controlScreen.redrawManagement(new DisplayPanel().createPanel(controlScreen), gameModel);
+                    controlScreen.redrawManagement(displayPanel.createPanel(controlScreen), gameModel);
                 }
             }
         });
@@ -309,7 +309,7 @@ public class AllocationPanel {
         previousScreenButton.addActionListener( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
                 //Now return to previous screen.
-                controlScreen.redrawManagement(new DisplayPanel().createPanel(controlScreen), gameModel);
+                controlScreen.redrawManagement(displayPanel.createPanel(controlScreen), gameModel);
             }
         });
         bottomButtonPanel.add(previousScreenButton);

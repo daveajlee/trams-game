@@ -55,6 +55,9 @@ public class RoutePanel {
 	
 	@Autowired
 	private RouteScheduleController routeScheduleController;
+
+    @Autowired
+	private TimetablePanel myTimetablePanel;
 	
 	private JComboBox[] stopBoxes;
 	private DefaultListModel timetableModel;
@@ -62,7 +65,7 @@ public class RoutePanel {
 	private JButton createTimetableButton;
 	private JTextField routeNumberField;
 	
-	public JPanel createPanel ( final RouteModel routeModel, final ControlScreen controlScreen ) {
+	public JPanel createPanel ( final RouteModel routeModel, final ControlScreen controlScreen, final DisplayPanel displayPanel ) {
         
         //Create routeScreen panel to add things to.
         JPanel routeScreenPanel = new JPanel();
@@ -197,7 +200,7 @@ public class RoutePanel {
                     }
                 }
                 //Show the actual screen!
-                controlScreen.redrawManagement(new TimetablePanel().createPanel(null, routeModel, controlScreen), gameController.getGameModel());
+                controlScreen.redrawManagement(myTimetablePanel.createPanel(null, routeModel, controlScreen, RoutePanel.this, displayPanel), gameController.getGameModel());
             }
         });
         timetableButtonPanel.add(createTimetableButton);
@@ -205,7 +208,7 @@ public class RoutePanel {
         if ( timetableModel.getSize() == 0 ) { modifyTimetableButton.setEnabled(false); }
         modifyTimetableButton.addActionListener ( new ActionListener() {
             public void actionPerformed (ActionEvent e ) {
-                controlScreen.redrawManagement(new TimetablePanel().createPanel(timetableController.getRouteTimetable(routeModel, timetableList.getSelectedValue().toString()), routeModel, controlScreen), gameController.getGameModel());
+                controlScreen.redrawManagement(myTimetablePanel.createPanel(timetableController.getRouteTimetable(routeModel, timetableList.getSelectedValue().toString()), routeModel, controlScreen, RoutePanel.this, displayPanel), gameController.getGameModel());
             }
         });
         timetableButtonPanel.add(modifyTimetableButton);
@@ -250,7 +253,7 @@ public class RoutePanel {
                }
                routeController.addNewRoute(routeNumberField.getText(), selectedOutwardStops);
                //Now return to previous screen.
-               controlScreen.redrawManagement(new DisplayPanel().createPanel(controlScreen), gameModel);
+                controlScreen.redrawManagement(displayPanel.createPanel(controlScreen), gameModel);
             }
         });
         bottomButtonPanel.add(createRouteButton);
@@ -259,7 +262,7 @@ public class RoutePanel {
         JButton previousScreenButton = new JButton("Return to Previous Screen");
         previousScreenButton.addActionListener ( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
-                controlScreen.redrawManagement(new DisplayPanel().createPanel(controlScreen), gameController.getGameModel());
+                controlScreen.redrawManagement(displayPanel.createPanel(controlScreen), gameController.getGameModel());
             }
         });
         bottomButtonPanel.add(previousScreenButton);
