@@ -20,5 +20,9 @@
        <!-- Panels -->
 
        <bean name="gui:displayPanel" class="de.davelee.trams.gui.panels.DisplayPanel"/>
+
+       <bean name="gui:scenarioPanel" class="de.davelee.trams.gui.panels.ScenarioPanel"/>
+
+       <bean name="gui:locationMapPanel" class="de.davelee.trams.gui.panels.LocationMapPanel"/>
        
 </beans>

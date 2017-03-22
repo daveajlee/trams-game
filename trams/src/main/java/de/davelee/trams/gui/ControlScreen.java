@@ -163,6 +163,7 @@ public class ControlScreen extends ButtonBar {
         if ( routeController.getNumberRoutes() > 0 ) {
             drawVehicles(false, gameModel);
             tabbedPane.addTab("Live Situation", graphicsPanel);
+            tabbedPane.setSelectedIndex(0);
         }
         else {
             drawVehicles(false, gameModel);
@@ -217,6 +218,8 @@ public class ControlScreen extends ButtonBar {
         //Disable the live situation tab if appropriate.
         if ( routeController.getNumberRoutes() > 0 ) {
             tabbedPane.setEnabledAt(0, false);
+        } else {
+            tabbedPane.setSelectedIndex(2);
         }
         /*theTabbedPane.addChangeListener(new ChangeListener() {
             public void stateChanged ( ChangeEvent e ) {

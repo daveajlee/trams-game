@@ -21,8 +21,9 @@ public class Message {
 
 	@Column
     private String subject;
-	
-	@Column
+
+    @Lob
+	@Column(name="text", length=1024)
     private String text;
 	
 	@Column

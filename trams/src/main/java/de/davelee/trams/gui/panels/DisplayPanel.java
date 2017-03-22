@@ -50,7 +50,13 @@ public class DisplayPanel {
 	
 	@Autowired
 	private TipController tipController;
-	
+
+	@Autowired
+	private ScenarioPanel myScenarioPanel;
+
+	@Autowired
+	private LocationMapPanel myLocationMapPanel;
+
 	private static final Logger logger = LoggerFactory.getLogger(DisplayPanel.class);
 	
 	public JPanel createPanel ( final ControlScreen controlScreen ) {
@@ -126,7 +132,7 @@ public class DisplayPanel {
         viewScenarioButton.addActionListener( new ActionListener() {
             public void actionPerformed (ActionEvent e) {
                 //Show the actual screen!
-                controlScreen.redrawManagement(new ScenarioPanel().createPanel(controlScreen), gameController.getGameModel());
+                    controlScreen.redrawManagement(myScenarioPanel.createPanel(controlScreen, DisplayPanel.this), gameController.getGameModel());
             }
         });
         viewScenarioButtonPanel.add(viewScenarioButton);
@@ -138,7 +144,7 @@ public class DisplayPanel {
         locationMapButton.addActionListener( new ActionListener() {
             public void actionPerformed (ActionEvent e) {
                 //Show the actual screen!
-                controlScreen.redrawManagement(new LocationMapPanel().createPanel(controlScreen), gameController.getGameModel());
+                    controlScreen.redrawManagement(myLocationMapPanel.createPanel(controlScreen, DisplayPanel.this), gameController.getGameModel());
             }
         });
         locationMapButtonPanel.add(locationMapButton);

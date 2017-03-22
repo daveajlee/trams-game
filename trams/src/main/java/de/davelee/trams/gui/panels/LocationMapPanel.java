@@ -25,7 +25,7 @@ public class LocationMapPanel {
 	@Autowired
 	private ScenarioController scenarioController;
 	
-	public JPanel createPanel ( final ControlScreen controlScreen ) {
+	public JPanel createPanel ( final ControlScreen controlScreen, final DisplayPanel displayPanel  ) {
 		final GameModel gameModel = gameController.getGameModel();
     	
     	ScenarioModel scenarioModel = scenarioController.getScenario(gameModel.getScenarioName());
@@ -44,7 +44,7 @@ public class LocationMapPanel {
         JButton managementScreenButton = new JButton("Return to Management Screen");
         managementScreenButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                controlScreen.redrawManagement(new DisplayPanel().createPanel(controlScreen), gameModel); 
+                controlScreen.redrawManagement(displayPanel.createPanel(controlScreen), gameModel);
             }
         });
         optionsButtonPanel.add(managementScreenButton);
