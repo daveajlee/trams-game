@@ -109,6 +109,12 @@ public class RoutePanel {
 
         //Create the route stop panel.
         routeStopModel = new DefaultListModel();
+        if ( routeModel != null ) {
+            List<String> currentStopNames = routeModel.getStopNames();
+            for ( int i = 0; i < currentStopNames.size(); i++ ) {
+                routeStopModel.addElement(currentStopNames.get(i));
+            }
+        }
         String[] stopNames = scenarioController.getScenario(gameController.getGameModel().getScenarioName()).getStopNames();
         availableStopModel = new DefaultListModel();
         for ( int i = 0; i < stopNames.length; i++ ) {

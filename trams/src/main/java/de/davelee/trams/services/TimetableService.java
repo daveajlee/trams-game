@@ -28,7 +28,7 @@ public class TimetableService {
     	Timetable timetable = new Timetable();
         timetable.setName(timetableModel.getName());
         timetable.setRouteNumber(timetableModel.getRouteNumber());
-        timetable.setValidFromDate(timetable.getValidFromDate());
+        timetable.setValidFromDate(timetableModel.getValidFromDate());
         timetable.setValidToDate(timetableModel.getValidToDate());
         return timetable;
     }
@@ -52,7 +52,9 @@ public class TimetableService {
     }
 
     public TimetableModel getTimetableByRouteNumberAndName ( final String routeNumber, final String timetableName ) {
-        return convertToTimetableModel(timetableRepository.findByRouteNumberAndName(routeNumber, timetableName));
+        Timetable timetable = timetableRepository.findByRouteNumberAndName(routeNumber, timetableName);
+        if ( timetable != null ) { return convertToTimetableModel(timetable); }
+        return null;
     }
 
     public void deleteTimetable ( final TimetableModel timetableModel ) {
@@ -77,11 +79,20 @@ public class TimetableService {
     public TimetableModel getCurrentTimetable ( final String routeNumber, final Calendar today ) {
         List<Timetable> timetables = timetableRepository.findByRouteNumber(routeNumber);
         for ( Timetable myTimetable : timetables ) {
-            if ( (myTimetable.getValidFromDate().before(today) || myTimetable.getValidFromDate().equals(today)) && (myTimetable.getValidToDate().after(today) || myTimetable.getValidToDate().equals(today))  ) {
+            boolean clause1 = today.after(myTimetable.getValidFromDate());
+            boolean clause2 = compareDayMonthYear(myTimetable.getValidFromDate(), today);
+            boolean clause3 = today.before(myTimetable.getValidToDate());
+            boolean clause4 = compareDayMonthYear(myTimetable.getValidToDate(), today);
+            if ( (clause1 || clause2) && ( clause3 || clause4 ) ) {
                 return convertToTimetableModel(myTimetable);
             }
         }
         return null; //If can't find timetable.
+    }
+
+    private boolean compareDayMonthYear ( final Calendar cal1, final Calendar cal2 ) {
+        return cal1.get(Calendar.DAY_OF_MONTH)==cal2.get(Calendar.DAY_OF_MONTH) && cal1.get(Calendar.MONTH)==cal2.get(Calendar.MONTH)
+            && cal1.get(Calendar.YEAR)==cal2.get(Calendar.YEAR);
     }
 
 }

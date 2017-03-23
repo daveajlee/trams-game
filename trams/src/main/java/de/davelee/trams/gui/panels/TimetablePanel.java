@@ -9,7 +9,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.text.ParseException;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 
 import javax.swing.Box;
@@ -125,11 +127,11 @@ public class TimetablePanel {
         //Valid From Month.
         final JComboBox validFromMonthBox = new JComboBox();
         for ( int i = 0; i < 4; i++ ) {
-            validFromMonthBox.addItem(DateFormats.MONTH_YEAR_FORMAT.getFormat().format(currTime));
+            validFromMonthBox.addItem(DateFormats.MONTH_YEAR_FORMAT.getFormat().format(currTime.getTime()));
             currTime.add(Calendar.MONTH, 1);
         }
         if ( timetableModel != null ) {
-            validFromMonthBox.setSelectedItem(DateFormats.MONTH_YEAR_FORMAT.getFormat().format(timetableModel.getValidFromDate()));
+            validFromMonthBox.setSelectedItem(DateFormats.MONTH_YEAR_FORMAT.getFormat().format(timetableModel.getValidFromDate().getTime()));
         }
         validFromMonthBox.setFont(new Font("Arial", Font.PLAIN, 14));
         validFromMonthBox.addActionListener( new ActionListener() {
@@ -176,11 +178,11 @@ public class TimetablePanel {
         //Valid To Month.
         final JComboBox validToMonthBox = new JComboBox();
         for ( int i = 0; i < 25; i++ ) {
-            validToMonthBox.addItem(DateFormats.MONTH_YEAR_FORMAT.getFormat().format(myCurrTime));
+            validToMonthBox.addItem(DateFormats.MONTH_YEAR_FORMAT.getFormat().format(myCurrTime.getTime()));
             myCurrTime.add(Calendar.MONTH, 1);
         }
         if ( timetableModel != null ) {
-            validToMonthBox.setSelectedItem(DateFormats.MONTH_YEAR_FORMAT.getFormat().format(timetableModel.getValidToDate()));
+            validToMonthBox.setSelectedItem(DateFormats.MONTH_YEAR_FORMAT.getFormat().format(timetableModel.getValidToDate().getTime()));
         }
         validToMonthBox.setFont(new Font("Arial", Font.PLAIN, 14));
         validToMonthBox.addActionListener( new ActionListener() {
@@ -228,9 +230,11 @@ public class TimetablePanel {
         DefaultListModel journeyPatternModel = new DefaultListModel();
         //Now get all the journey pattern which we have at the moment.
         TimetableModel journeyTimetableModel = timetableController.getRouteTimetable(routeModel, timetableNameField.getText());
-        JourneyPatternModel[] journeyPatternModels = journeyPatternController.getJourneyPatternModels(journeyTimetableModel, routeModel.getRouteNumber());
-        for ( int i = 0; i < journeyPatternModels.length; i++ ) {
-            journeyPatternModel.addElement(journeyPatternModels[i].getName());
+        if ( journeyTimetableModel != null ) {
+            JourneyPatternModel[] journeyPatternModels = journeyPatternController.getJourneyPatternModels(journeyTimetableModel, routeModel.getRouteNumber());
+            for ( int i = 0; i < journeyPatternModels.length; i++ ) {
+                journeyPatternModel.addElement(journeyPatternModels[i].getName());
+            }
         }
         JList journeyPatternList = new JList(journeyPatternModel);
         if ( journeyPatternModel.getSize() > 0 ) { journeyPatternList.setSelectedIndex(0); } 
@@ -250,17 +254,22 @@ public class TimetablePanel {
             	TimetableModel selectedTimetableModel = timetableController.getRouteTimetable(routeModel, timetableNameField.getText());
                 //Create relevant calendar object.
                 if ( selectedTimetableModel == null) {
-                    int vfYear = Integer.parseInt(validFromMonthBox.getSelectedItem().toString().split(" ")[1]);
-                    int vfMonth = validFromMonthBox.getSelectedIndex();
-                    int vfDay = Integer.parseInt(validFromDayModel.getSelectedItem().toString());
-                    GregorianCalendar validFrom = new GregorianCalendar(vfYear, vfMonth, vfDay);
-                    int vtYear = Integer.parseInt(validToMonthBox.getSelectedItem().toString().split(" ")[1]);
-                    int vtMonth = validToMonthBox.getSelectedIndex();
-                    int vtDay = Integer.parseInt(validToDayModel.getSelectedItem().toString());
-                    GregorianCalendar validTo = new GregorianCalendar(vtYear, vtMonth, vtDay);
-                    //Save this timetable with valid dates first.
-                    timetableController.createTimetable(timetableNameField.getText(), validFrom, validTo, routeModel);
-                    //logger.debug("Adding timetable with name " + theTimetableNameField.getText() + " to route " + theSelectedRoute.getRouteNumber());
+                    try {
+                        Calendar validFrom = Calendar.getInstance();
+                        Date date = DateFormats.MONTH_YEAR_FORMAT.getFormat().parse(validFromMonthBox.getSelectedItem().toString());
+                        validFrom.setTime(date);
+                        validFrom.set(Calendar.DAY_OF_MONTH, Integer.parseInt(validFromDayModel.getSelectedItem().toString()));
+                        Calendar validTo = Calendar.getInstance();
+                        Date dateTo = DateFormats.MONTH_YEAR_FORMAT.getFormat().parse(validToMonthBox.getSelectedItem().toString());
+                        validTo.setTime(dateTo);
+                        validTo.set(Calendar.DAY_OF_MONTH, Integer.parseInt(validToDayModel.getSelectedItem().toString()));
+                        //Save this timetable with valid dates first.
+                        timetableController.createTimetable(timetableNameField.getText(), validFrom, validTo, routeModel);
+                        selectedTimetableModel = timetableController.getRouteTimetable(routeModel, timetableNameField.getText());
+                        //logger.debug("Adding timetable with name " + theTimetableNameField.getText() + " to route " + theSelectedRoute.getRouteNumber());
+                    } catch ( ParseException pe ) {
+                        pe.printStackTrace();
+                    }
                 }
                 //Show the actual screen!
                 controlScreen.redrawManagement(journeyPatternPanel.createPanel(routeModel.getStopNames(), selectedTimetableModel, null, routeModel, controlScreen, displayPanel), gameModel);
@@ -287,8 +296,8 @@ public class TimetablePanel {
         if ( journeyPatternModel.getSize() == 0 ) { modifyJourneyPatternButton.setEnabled(false); }
         journeyPatternButtonPanel.add(modifyJourneyPatternButton);
         //TODO: reimplement delete.
-        /*deleteJourneyPatternButton = new JButton("Delete");
-        deleteJourneyPatternButton.addActionListener( new ActionListener() {
+        deleteJourneyPatternButton = new JButton("Delete");
+        /*deleteJourneyPatternButton.addActionListener( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
                 routeService.getRouteById(selectedRouteId).getTimetable(timetableNameField.getText()).
                 	deleteJourneyPattern(journeyPatternList.getSelectedValue().toString());
