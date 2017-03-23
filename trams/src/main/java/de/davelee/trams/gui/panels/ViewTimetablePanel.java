@@ -11,20 +11,12 @@ import java.text.ParseException;
 import java.util.Calendar;
 import java.util.List;
 
-import javax.swing.BoxLayout;
-import javax.swing.DefaultListModel;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.ListSelectionModel;
-import javax.swing.SwingConstants;
+import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import de.davelee.trams.gui.util.ScrollableTable;
+import de.davelee.trams.model.TimetableModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,9 +72,62 @@ public class ViewTimetablePanel {
         //Here, we have the "Route Selection Screen" label.
         JPanel topPanel = new JPanel(new BorderLayout());
         topPanel.setBackground(Color.WHITE);
-        JLabel topLabel = new JLabel("Timetable for Route " + routeModel.getRouteNumber(), SwingConstants.CENTER);
-        topLabel.setFont(new Font("Arial", Font.BOLD, 25));
-        topPanel.add(topLabel, BorderLayout.NORTH);
+        //Selection options.
+        JPanel selectionPanel = new JPanel();
+        selectionPanel.setBackground(Color.WHITE);
+        //Choose route.
+        JLabel routeSelectionLabel = new JLabel("Route:");
+        routeSelectionLabel.setFont(new Font("Arial", Font.BOLD, 16));
+        selectionPanel.add(routeSelectionLabel);
+        final DefaultComboBoxModel routeSelectionModel = new DefaultComboBoxModel();
+        RouteModel[] routeModels = routeController.getRouteModels();
+        for ( int i = 0; i < routeModels.length; i++ ) {
+            routeSelectionModel.addElement(routeModels[i].getRouteNumber());
+        }
+        final JComboBox routeSelectionBox = new JComboBox(routeSelectionModel);
+        routeSelectionBox.addActionListener ( new ActionListener() {
+            public void actionPerformed ( ActionEvent e ) {
+                controlScreen.redrawManagement(createPanel(routeSelectionBox.getSelectedItem().toString(), 0, 0, controlScreen, routePanel, displayPanel), gameModel);
+            }
+        });
+        routeSelectionBox.setFont(new Font("Arial", Font.PLAIN, 15));
+        selectionPanel.add(routeSelectionBox);
+        //Choose stop.
+        JLabel stopSelectionLabel = new JLabel("Stop:");
+        stopSelectionLabel.setFont(new Font("Arial", Font.BOLD, 16));
+        selectionPanel.add(stopSelectionLabel);
+        final DefaultComboBoxModel stopSelectionModel = new DefaultComboBoxModel();
+        List<String> routeStopNames = routeModel.getStopNames();
+        for ( int i = 0; i < routeStopNames.size(); i++ ) {
+            stopSelectionModel.addElement(routeStopNames.get(i));
+        }
+        final JComboBox stopSelectionBox = new JComboBox(stopSelectionModel);
+        stopSelectionBox.setFont(new Font("Arial", Font.PLAIN, 15));
+        selectionPanel.add(stopSelectionBox);
+        //Choose direction.
+        JLabel directionSelectionLabel = new JLabel("Direction:");
+        directionSelectionLabel.setFont(new Font("Arial", Font.BOLD, 16));
+        selectionPanel.add(directionSelectionLabel);
+        final DefaultComboBoxModel directionSelectionModel = new DefaultComboBoxModel();
+        directionSelectionModel.addElement(routeStopNames.get(routeStopNames.size()-1));
+        directionSelectionModel.addElement(routeStopNames.get(0));
+        final JComboBox directionSelectionBox = new JComboBox(directionSelectionModel);
+        directionSelectionBox.setFont(new Font("Arial", Font.PLAIN, 15));
+        selectionPanel.add(directionSelectionBox);
+        //Choose timetable.
+        JLabel timetableSelectionLabel = new JLabel("Timetable:");
+        timetableSelectionLabel.setFont(new Font("Arial", Font.BOLD, 16));
+        selectionPanel.add(timetableSelectionLabel);
+        final DefaultComboBoxModel timetableSelectionModel = new DefaultComboBoxModel();
+        TimetableModel[] timetableModels = timetableController.getRouteTimetables(routeModel);
+        for ( int i = 0; i < timetableModels.length; i++ ) {
+            timetableSelectionModel.addElement(timetableModels[i].getName());
+        }
+        final JComboBox timetableSelectionBox = new JComboBox(timetableSelectionModel);
+        timetableSelectionBox.setFont(new Font("Arial", Font.PLAIN, 15));
+        selectionPanel.add(timetableSelectionBox);
+        //Add to top panel.
+        topPanel.add(selectionPanel, BorderLayout.NORTH);
         //Show valid information.
         JPanel validityPanel = new JPanel(new BorderLayout());
         validityPanel.setBackground(Color.WHITE);
@@ -97,44 +142,26 @@ public class ViewTimetablePanel {
         topLabelPanel.add(topPanel, BorderLayout.NORTH);
         routeScreenPanel.add(topLabelPanel);
             
-        //Create day of the week label and field.
-        JPanel datesPanel = new JPanel();
-        datesPanel.setBackground(Color.WHITE);
-        JLabel datesLabel = new JLabel("Dates:");
-        datesLabel.setFont(new Font("Arial", Font.BOLD, 16));
-        final JComboBox datesComboBox = new JComboBox ( journeyPatternController.getPossibleSchedulesDates(routeModel, gameModel.getCurrentTime()) );
-        datesComboBox.setSelectedIndex(dateIndex);
-        datesComboBox.addItemListener(new ItemListener() {
-            public void itemStateChanged ( ItemEvent e ) {
-                controlScreen.redrawManagement(createPanel(routeModel.getRouteNumber(), 0, datesComboBox.getSelectedIndex(), controlScreen, routePanel, displayPanel), gameModel);
-            }
-        });
-        datesPanel.add(datesLabel); datesPanel.add(datesComboBox);
-        routeScreenPanel.add(datesPanel);
-            
-        List<String> routeStops = routeModel.getStopNames();
-        //Now make the first portion of the screen - this will list the stops in ascending order.
-        JPanel outgoingPanel = new JPanel(new BorderLayout());
-        outgoingPanel.setBackground(Color.WHITE);
-        JLabel outgoingLabel = new JLabel(routeStops.get(0) + " - " + routeStops.get(routeStops.size()-1));
-        outgoingLabel.setFont(new Font("Arial", Font.BOLD, 18));
-        outgoingPanel.add(outgoingLabel, BorderLayout.NORTH);
-            
         //Process data...
-        String[] outgoingColumnNames = new String[] { "Stop Name", "", "", "", "", "", "", "", "", "", "" };
-        Object[][] outgoingData = new Object[routeModel.getStopNames().size()][11];
-        Calendar cal = Calendar.getInstance();
+        JPanel tablePanel = new JPanel();
+        tablePanel.setBackground(Color.WHITE);
+        String[] columnNames = new String[] { "", "Monday - Friday", "Saturday", "Sunday" };
+        String[][] data = new String[24][4];
+        //TODO: Preprocessing necessary?
+        /*Calendar cal = Calendar.getInstance();
         try {
         	cal.setTime(DateFormats.FULL_FORMAT.getFormat().parse(datesComboBox.getSelectedItem().toString()));
         } catch ( ParseException parseEx ) {
         	//TODO: exception handling.
         }
-        List<JourneyModel> journeyModels = journeyController.generateJourneyTimetables(routeModel, cal, gameModel.getScenarioName(), TramsConstants.OUTWARD_DIRECTION);
+        List<JourneyModel> journeyModels = journeyController.generateJourneyTimetables(routeModel, cal, gameModel.getScenarioName(), TramsConstants.OUTWARD_DIRECTION);*/
         //LinkedList<Service> services = theSelectedRoute.getAllOutgoingServices(theDatesComboBox.getSelectedItem().toString());
-        for ( int i = 0; i < routeStops.size(); i++) {
-            outgoingData[i][0] = routeStops.get(i);
-            for ( int j = 0; j < 10; j++ ) {
-                int pos = (min+j);
+        for ( int i = 0; i < 24; i++) {
+            data[i][0] = "" + i;
+            for ( int j = 1; j < 4; j++ ) {
+                data[i][j] = "";
+                //TODO: get timetable data.
+                /*int pos = (min+j);
                 logger.debug("This is #" + pos + " of the loop...");
                 if ( journeyModels.size() <= (min+j) ) {
                     logger.debug("No more services!");
@@ -146,40 +173,19 @@ public class ViewTimetablePanel {
                 }
                 else {
                     outgoingData[i][j+1] = journeyController.getDisplayStopTime(journeyModels.get(min+j), routeStops.get(i));
-                }
+                }*/
             }
         }
         //Display it!
-        JTable outgoingTable = new JTable(outgoingData, outgoingColumnNames);
-        JScrollPane outgoingScrollPane = new JScrollPane(outgoingTable);
-        outgoingTable.setFillsViewportHeight(true);
-        outgoingPanel.add(outgoingScrollPane, BorderLayout.CENTER);
+        ScrollableTable scrollableTable = new ScrollableTable(data, columnNames);
+        scrollableTable.setFont(new Font("Arial", Font.PLAIN, 10));
+        tablePanel.add(scrollableTable, BorderLayout.CENTER);
 
-        routeScreenPanel.add(outgoingPanel);
+        routeScreenPanel.add(tablePanel);
             
         //Create two buttons for previous and next.
         JPanel otherServicesButtonPanel = new JPanel();
         otherServicesButtonPanel.setBackground(Color.WHITE);
-        JButton previousButton = new JButton("< Previous Services");
-        if ( min == 0 ) {
-            previousButton.setEnabled(false);
-        }
-        previousButton.addActionListener(new ActionListener() {
-            public void actionPerformed ( ActionEvent e ) {
-                controlScreen.redrawManagement(createPanel(route, min-10, datesComboBox.getSelectedIndex(), controlScreen, routePanel, displayPanel), gameModel);
-            }
-        });
-        otherServicesButtonPanel.add(previousButton);
-        JButton nextButton = new JButton("Next Services >");
-        if ( (min+10) > journeyModels.size() ) {
-            nextButton.setEnabled(false);
-        }
-        nextButton.addActionListener(new ActionListener() {
-            public void actionPerformed ( ActionEvent e ) {
-                controlScreen.redrawManagement(createPanel(route, min+10, datesComboBox.getSelectedIndex(), controlScreen, routePanel, displayPanel), gameModel);
-            }
-        });
-        otherServicesButtonPanel.add(nextButton);
         JButton amendRouteButton = new JButton("Amend Route");
         amendRouteButton.addActionListener(new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
@@ -202,35 +208,6 @@ public class ViewTimetablePanel {
         routeScreenPanel.add(otherServicesButtonPanel);
             
         overallScreenPanel.add(routeScreenPanel, BorderLayout.CENTER);
-            
-        //Third part of route panel is list of routes.
-        JPanel modelPanel = new JPanel();
-        modelPanel.setLayout( new BoxLayout(modelPanel, BoxLayout.PAGE_AXIS));
-        modelPanel.setBackground(Color.WHITE);
-        JLabel modelLabel = new JLabel("Routes:");
-        modelLabel.setFont(new Font("Arial", Font.BOLD, 16));
-        modelPanel.add(modelLabel);
-            
-        DefaultListModel routesModel = new DefaultListModel();
-        RouteModel[] routeModels = routeController.getRouteModels();
-        for ( int i = 0; i < routeModels.length; i++ ) {
-            routesModel.addElement(routeModels[i].getRouteNumber());
-        }
-        final JList routesList = new JList(routesModel);
-        routesList.setFixedCellWidth(40);
-        routesList.setVisibleRowCount(15);
-        routesList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        routesList.setFont(new Font("Arial", Font.PLAIN, 15));
-        if ( routesModel.getSize() > 0 ) { routesList.setSelectedValue(route, true); }
-        routesList.addListSelectionListener ( new ListSelectionListener() {
-            public void valueChanged ( ListSelectionEvent e ) {
-                controlScreen.redrawManagement(createPanel(routesList.getSelectedValue().toString(), 0, 0, controlScreen, routePanel, displayPanel), gameModel);
-            }
-        });
-        JScrollPane routesPane = new JScrollPane(routesList);
-        modelPanel.add(routesPane);
-            
-        overallScreenPanel.add(modelPanel, BorderLayout.EAST);
             
         return overallScreenPanel;
 	}
