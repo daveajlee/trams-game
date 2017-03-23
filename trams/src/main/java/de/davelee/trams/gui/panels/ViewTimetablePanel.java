@@ -195,7 +195,7 @@ public class ViewTimetablePanel {
         JButton managementScreenButton = new JButton("Back to Management Screen");
         managementScreenButton.addActionListener(new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
-                controlScreen.redrawManagement(routePanel.createPanel(routeModel, controlScreen, displayPanel), gameModel);
+                controlScreen.redrawManagement(displayPanel.createPanel(controlScreen), gameModel);
             }
         });
         otherServicesButtonPanel.add(managementScreenButton);

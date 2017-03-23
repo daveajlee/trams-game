@@ -160,8 +160,7 @@ public class RouteService {
     private RouteModel convertToRouteModel ( final Route route ) {
         RouteModel routeModel = new RouteModel();
         routeModel.setRouteNumber(route.getNumber());
-        //List<Stop> stops = route.getStops();
-        List<Stop> stops = new ArrayList<Stop>();
+        List<Stop> stops = route.getStops();
         List<String> stopNames = new ArrayList<String>();
         for ( int i = 0; i < stops.size(); i++ ) {
             stopNames.add(stops.get(i).getStopName());
