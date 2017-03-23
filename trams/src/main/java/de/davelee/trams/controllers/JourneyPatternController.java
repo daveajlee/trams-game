@@ -86,7 +86,7 @@ public class JourneyPatternController {
 		String[] myCalDates = new String[myCalendar.size()];
 		logger.debug("MyCalDates length is " + myCalDates.length);
 		for ( int i = 0; i < myCalDates.length; i++ ) {
-			myCalDates[i] = DateFormats.FULL_FORMAT.getFormat().format(myCalendar);
+			myCalDates[i] = DateFormats.FULL_FORMAT.getFormat().format(myCalendar.get(i).getTime());
 		}
 		return myCalDates;
 	}

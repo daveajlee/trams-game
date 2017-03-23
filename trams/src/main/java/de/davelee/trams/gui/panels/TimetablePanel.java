@@ -166,7 +166,7 @@ public class TimetablePanel {
         //Valid To Day.
         final int toStartDay = myCurrTime.get(Calendar.DAY_OF_MONTH);
         final DefaultComboBoxModel validToDayModel = new DefaultComboBoxModel();
-        for ( int i = myCurrTime.get(Calendar.DAY_OF_MONTH); i <= myCurrTime.getActualMaximum(Calendar.MONTH); i++ ) {
+        for ( int i = myCurrTime.get(Calendar.DAY_OF_MONTH); i <= myCurrTime.getActualMaximum(Calendar.DAY_OF_MONTH); i++ ) {
             validToDayModel.addElement(i);
         }
         JComboBox validToDayBox = new JComboBox(validToDayModel);

@@ -153,7 +153,7 @@ public class RouteService {
             stop.setStopName(routeModel.getStopNames().get(i));
     		stops.add(stop);
     	}
-    	//route.setStops(stops);
+        route.setStops(stops);
     	return route;
     }
 

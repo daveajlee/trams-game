@@ -43,6 +43,7 @@ public class RouteController {
 		RouteModel routeModel = new RouteModel();
 		routeModel.setRouteNumber(routeNumber);
 		routeModel.setStopNames(stopNames);
+		routeService.createAndSaveRoute(routeModel);
 	}
 
 	/**
