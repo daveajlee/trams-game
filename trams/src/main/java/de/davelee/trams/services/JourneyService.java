@@ -306,6 +306,7 @@ public class JourneyService {
      * @param routeScheduleModels a <code>RouteScheduleModel</code> array with all available route schedules.
      * @param stops a <code>String</code> list with the stops to be served.
      * @param day a <code>String</code> with the day to get the outgoing journeys for.
+     * @return a <code>JourneyModel</code> list with all outgoing journeys.
      */
     public JourneyModel[] getAllOutgoingJourneys (final RouteScheduleModel[] routeScheduleModels, final List<String> stops, final String day ) {
         //Initialise list to store the journeys.
@@ -354,6 +355,7 @@ public class JourneyService {
      * @param scheduleModels a <code>RouteScheduleModel</code> array with all available route schedules.
      * @param stops a <code>String</code> list with the stops to be served.
      * @param day a <code>String</code> with the day to get the outgoing journeys for.
+     * @return a <code>JourneyModel</code> list with all return journeys.
      */
     public JourneyModel[] getAllReturnJourneys ( final RouteScheduleModel[] scheduleModels, final List<String> stops, final String day ) {
         //Initialise list to store the journeys.

@@ -76,7 +76,6 @@ public class VehicleController {
 	/**
 	 * Sell a vehicle.
 	 * @param vehicleModel a <code>VehicleModel</code> object representing the vehicle to sell.
-	 * @return a <code>boolean</code> which is true iff the vehicle was sold.
 	 */
 	public void sellVehicle ( final VehicleModel vehicleModel ) {
 		GameModel gameModel = gameController.getGameModel();
@@ -88,7 +87,6 @@ public class VehicleController {
 	 * Purchase a new vehicle.
 	 * @param type a <code>String</code> with the vehicle type.
 	 * @param deliveryDate a <code>Calendar</code> with the delivery date.
-	 * @return a <code>boolean</code> which is true iff the vehicle has been purchased successfully.
 	 */
 	public void purchaseVehicle ( final String type, final Calendar deliveryDate ) {
 		GameModel gameModel = gameController.getGameModel();

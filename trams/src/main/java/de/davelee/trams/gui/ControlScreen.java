@@ -658,7 +658,7 @@ public class ControlScreen extends ButtonBar {
     
     /**
      * Generate a new vehicle panel to display the vehicles.
-     * @param newVehiclePanel a <code>JPanel</code> containing the new vehicle panel.
+     * @param gameModel a <code>GameModel</code> object containing the current game information.
      * @return a <code>JPanel</code> object.
      */
     public JPanel generateNewVehiclePanel ( final GameModel gameModel ) {
@@ -1044,6 +1044,7 @@ public class ControlScreen extends ButtonBar {
     /**
      * Change the selected route.
      * @param routeNumber a <code>String</code> with the new route number.
+     * @param currentFrame a <code>JFrame</code> with the current frame.
      */
     public void changeRoute ( String routeNumber, final JFrame currentFrame ) {
         //Now create new control screen.

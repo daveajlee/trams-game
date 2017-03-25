@@ -59,7 +59,7 @@ public class RouteController {
 	 * Edit route - replace the two routes.
 	 * @param oldRouteModel a <code>RouteModel</code> object with the old route.
 	 * @param routeNumber a <code>String</code> with the string representation of the route.
-	 * @return a <code>RouteModel</code> object matching the string representation.
+	 * @param stopNames a <code>String</code> list with the name of the stops for this route.
 	 */
 	public void editRoute ( final RouteModel oldRouteModel, final String routeNumber, final List<String> stopNames ) {
 		//Delete old route.

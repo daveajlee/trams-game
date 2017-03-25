@@ -87,6 +87,7 @@ public class GameService {
      * @param numSmallLateSchedules a <code>int</code> with the number of route schedules running marginally late.
      * @param numMediumLateSchedules a <code>int</code> with the number of route schedules running substantially late.
      * @param numLargeLateSchedules a <code>int</code> with the number of route schedules running very late.
+     * @return a <code>int</code> with the computed passenger satisfaction.
      */
     public int computeAndReturnPassengerSatisfaction ( final String playerName, final int numSmallLateSchedules, final int numMediumLateSchedules, final int numLargeLateSchedules ) {
         int totalSubtract = 0;

@@ -119,6 +119,7 @@ public class RouteScheduleController {
 	 * @param min a <code>int</code> with the minimum.
 	 * @param max a <code>int</code> with the maximum.
 	 * @param routeNumber a <code>String</code> with the route number.
+	 * @return a <code>int</code> with the maximum display of vehicles.
 	 */
 	public int setCurrentDisplayMinMax ( final int min, final int max, final String routeNumber ) {
 		int returnMax = max;
