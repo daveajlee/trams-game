@@ -1,21 +1,17 @@
 package de.davelee.trams.gui.panels;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Font;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.text.ParseException;
 import java.util.Calendar;
 import java.util.List;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
+import javax.swing.table.DefaultTableColumnModel;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
 
-import de.davelee.trams.gui.util.ScrollableTable;
 import de.davelee.trams.model.TimetableModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,8 +26,6 @@ import de.davelee.trams.gui.ControlScreen;
 import de.davelee.trams.model.GameModel;
 import de.davelee.trams.model.JourneyModel;
 import de.davelee.trams.model.RouteModel;
-import de.davelee.trams.util.DateFormats;
-import de.davelee.trams.util.TramsConstants;
 
 public class ViewTimetablePanel {
 	
@@ -49,6 +43,9 @@ public class ViewTimetablePanel {
 	
 	@Autowired
 	private JourneyController journeyController;
+
+    private JTable myTable = new JTable();
+	private JComboBox directionSelectionBox;
 	
 	private static final Logger logger = LoggerFactory.getLogger(ViewTimetablePanel.class);
 	
@@ -103,6 +100,13 @@ public class ViewTimetablePanel {
         }
         final JComboBox stopSelectionBox = new JComboBox(stopSelectionModel);
         stopSelectionBox.setFont(new Font("Arial", Font.PLAIN, 15));
+        stopSelectionBox.addActionListener ( new ActionListener()  {
+        public void actionPerformed ( ActionEvent e ) {
+            logger.debug("You chose stop " + stopSelectionBox.getSelectedItem().toString());
+            myTable.setModel(createTableModel(routeModel.getRouteNumber(), stopSelectionBox.getSelectedItem().toString(), directionSelectionBox.getSelectedIndex()));
+            autoResizeColWidth(myTable, (DefaultTableModel) myTable.getModel());
+            }
+        });
         selectionPanel.add(stopSelectionBox);
         //Choose direction.
         JLabel directionSelectionLabel = new JLabel("Direction:");
@@ -111,8 +115,15 @@ public class ViewTimetablePanel {
         final DefaultComboBoxModel directionSelectionModel = new DefaultComboBoxModel();
         directionSelectionModel.addElement(routeStopNames.get(routeStopNames.size()-1));
         directionSelectionModel.addElement(routeStopNames.get(0));
-        final JComboBox directionSelectionBox = new JComboBox(directionSelectionModel);
+        directionSelectionBox = new JComboBox(directionSelectionModel);
         directionSelectionBox.setFont(new Font("Arial", Font.PLAIN, 15));
+        directionSelectionBox.addActionListener(new ActionListener() {
+        public void actionPerformed ( ActionEvent e ) {
+            logger.debug("You chose direction " + directionSelectionBox.getSelectedIndex());
+            myTable.setModel(createTableModel(routeModel.getRouteNumber(), stopSelectionBox.getSelectedItem().toString(), directionSelectionBox.getSelectedIndex()));
+            autoResizeColWidth(myTable, (DefaultTableModel) myTable.getModel());
+            }
+        });
         selectionPanel.add(directionSelectionBox);
         //Choose timetable.
         JLabel timetableSelectionLabel = new JLabel("Timetable:");
@@ -145,43 +156,12 @@ public class ViewTimetablePanel {
         //Process data...
         JPanel tablePanel = new JPanel();
         tablePanel.setBackground(Color.WHITE);
-        String[] columnNames = new String[] { "", "Monday - Friday", "Saturday", "Sunday" };
-        String[][] data = new String[24][4];
-        //TODO: Preprocessing necessary?
-        //Calendar cal = Calendar.getInstance();
-        /*try {
-        	cal.setTime(DateFormats.FULL_FORMAT.getFormat().parse(datesComboBox.getSelectedItem().toString()));
-        } catch ( ParseException parseEx ) {
-        	//TODO: exception handling.
-        }*/
-        JourneyModel[] journeyModels = journeyController.getJourneysByRouteScheduleNumberAndRouteNumber(0, routeModel.getRouteNumber());
-        for ( int i = 0; i < journeyModels.length; i++ ) {
-            Calendar cal = journeyController.getStopTime(journeyModels[i], stopSelectionBox.getSelectedItem().toString());
-            if ( cal != null ) {
-                int hour = cal.get(Calendar.HOUR_OF_DAY); int minute = cal.get(Calendar.MINUTE); String minuteStr = "";
-                if ( minute < 10 ) { minuteStr = "0" + minute; } else { minuteStr = "" + minute; }
-                //TODO: Add Saturday/Sunday.
-                 if ( data[hour][1] == null ) {
-                    data[hour][1] = "" + minuteStr;
-                 } else {
-                    data[hour][1] = data[hour][1] + " " + minuteStr;
-                 }
-            }
-        }
-        //LinkedList<Service> services = theSelectedRoute.getAllOutgoingServices(theDatesComboBox.getSelectedItem().toString());
-        for ( int i = 0; i < 24; i++) {
-            data[i][0] = "" + i;
-            for ( int j = 1; j < 4; j++ ) {
-                //Check for nulls and sort them.
-                if ( data[i][j] == null ) {
-                    data[i][j] = "";
-                }
-            }
-        }
+
         //Display it!
-        ScrollableTable scrollableTable = new ScrollableTable(data, columnNames);
-        scrollableTable.setFont(new Font("Arial", Font.PLAIN, 10));
-        tablePanel.add(scrollableTable, BorderLayout.CENTER);
+        myTable.setModel(createTableModel(routeModel.getRouteNumber(), stopSelectionBox.getSelectedItem().toString(), 0));
+        myTable.setFont(new Font("Arial", Font.PLAIN, 12));
+        JScrollPane tableScrollPane = new JScrollPane(autoResizeColWidth(myTable, (DefaultTableModel) myTable.getModel()));
+        tablePanel.add(tableScrollPane, BorderLayout.CENTER);
 
         routeScreenPanel.add(tablePanel);
             
@@ -213,5 +193,88 @@ public class ViewTimetablePanel {
             
         return overallScreenPanel;
 	}
+
+
+	private DefaultTableModel createTableModel ( final String routeNumber, final String stopName, final int direction ) {
+        String[] columnNames = new String[] { "", "Monday - Friday", "Saturday", "Sunday" };
+        String[][] data = new String[24][4];
+        //TODO: Preprocessing necessary?
+        //Calendar cal = Calendar.getInstance();
+        /*try {
+        	cal.setTime(DateFormats.FULL_FORMAT.getFormat().parse(datesComboBox.getSelectedItem().toString()));
+        } catch ( ParseException parseEx ) {
+        }*/
+        JourneyModel[] journeyModels = journeyController.getJourneysByRouteScheduleNumberAndRouteNumber(direction, routeNumber);
+        for ( int i = 0; i < journeyModels.length; i++ ) {
+            Calendar cal = journeyController.getStopTime(journeyModels[i], stopName);
+            if ( cal != null ) {
+                int hour = cal.get(Calendar.HOUR_OF_DAY); int minute = cal.get(Calendar.MINUTE); String minuteStr = "";
+                if ( minute < 10 ) { minuteStr = "0" + minute; } else { minuteStr = "" + minute; }
+                //TODO: Add Saturday/Sunday.
+                if ( data[hour][1] == null ) {
+                    data[hour][1] = "" + minuteStr;
+                } else {
+                    data[hour][1] = data[hour][1] + " " + minuteStr;
+                }
+            }
+        }
+        //Null check.
+        for ( int i = 0; i < 24; i++) {
+            data[i][0] = "" + i;
+            for ( int j = 1; j < 4; j++ ) {
+                //Check for nulls and sort them.
+                if ( data[i][j] == null ) {
+                    data[i][j] = "";
+                }
+            }
+        }
+        return new DefaultTableModel(data, columnNames);
+    }
+
+    /**
+ 	 * http://ieatbinary.com/2008/08/13/auto-resize-jtable-column-width/
+ 	 * @param table
+ 	 * @param model
+ 	 * @return
+ 	 */
+     private JTable autoResizeColWidth(JTable table, DefaultTableModel model) {
+        table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        table.setModel(model);
+        int margin = 5;
+
+        for (int i = 0; i < table.getColumnCount(); i++) {
+            int vColIndex = i;
+            DefaultTableColumnModel colModel = (DefaultTableColumnModel) table.getColumnModel();
+            TableColumn col = colModel.getColumn(vColIndex);
+            int width = 0;
+
+            // Get width of column header
+            TableCellRenderer renderer = col.getHeaderRenderer();
+
+            if (renderer == null) {
+                renderer = table.getTableHeader().getDefaultRenderer();
+            }
+
+            Component comp = renderer.getTableCellRendererComponent(table, col.getHeaderValue(), false, false, 0, 0);
+            width = comp.getPreferredSize().width;
+
+            // Get maximum width of column data
+            for (int r = 0; r < table.getRowCount(); r++) {
+                renderer = table.getCellRenderer(r, vColIndex);
+                comp = renderer.getTableCellRendererComponent(table, table.getValueAt(r, vColIndex), false, false,
+                        r, vColIndex);
+                width = Math.max(width, comp.getPreferredSize().width);
+            }
+
+            // Add margin
+            width += 2 * margin;
+
+            // Set the width
+            col.setPreferredWidth(width);
+        }
+
+        table.getTableHeader().setReorderingAllowed(false);
+        return table;
+     }
 
 }

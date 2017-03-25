@@ -521,16 +521,16 @@ public class JourneyService {
             }
         }
         else if ( direction == TramsConstants.RETURN_DIRECTION ) {
-            boolean foundEndStop = false;
+            boolean foundStartStop = false;
             for ( int i = stops.size()-1; i > -1; i-- ) {
-                if ( !foundEndStop & stops.get(i).contentEquals(endStop) ) {
-                    foundEndStop = true;
+                if ( !foundStartStop & stops.get(i).contentEquals(startStop) ) {
+                    foundStartStop = true;
                     relevantStops.add(stops.get(i));
                 }
-                else if ( foundEndStop & !stops.get(i).contentEquals(startStop)) {
+                else if ( foundStartStop & !stops.get(i).contentEquals(endStop)) {
                     relevantStops.add(stops.get(i));
                 }
-                else if ( foundEndStop & stops.get(i).contentEquals(startStop)) {
+                else if ( foundStartStop & stops.get(i).contentEquals(endStop)) {
                     relevantStops.add(stops.get(i));
                     break;
                 }
