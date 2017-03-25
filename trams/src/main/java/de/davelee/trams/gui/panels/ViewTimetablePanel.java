@@ -148,32 +148,34 @@ public class ViewTimetablePanel {
         String[] columnNames = new String[] { "", "Monday - Friday", "Saturday", "Sunday" };
         String[][] data = new String[24][4];
         //TODO: Preprocessing necessary?
-        Calendar cal = Calendar.getInstance();
+        //Calendar cal = Calendar.getInstance();
         /*try {
         	cal.setTime(DateFormats.FULL_FORMAT.getFormat().parse(datesComboBox.getSelectedItem().toString()));
         } catch ( ParseException parseEx ) {
         	//TODO: exception handling.
         }*/
         JourneyModel[] journeyModels = journeyController.getJourneysByRouteScheduleNumberAndRouteNumber(0, routeModel.getRouteNumber());
+        for ( int i = 0; i < journeyModels.length; i++ ) {
+            Calendar cal = journeyController.getStopTime(journeyModels[i], stopSelectionBox.getSelectedItem().toString());
+            if ( cal != null ) {
+                int hour = cal.get(Calendar.HOUR_OF_DAY); int minute = cal.get(Calendar.MINUTE); String minuteStr = "";
+                if ( minute < 10 ) { minuteStr = "0" + minute; } else { minuteStr = "" + minute; }
+                //TODO: Add Saturday/Sunday.
+                 if ( data[hour][1] == null ) {
+                    data[hour][1] = "" + minuteStr;
+                 } else {
+                    data[hour][1] = data[hour][1] + " " + minuteStr;
+                 }
+            }
+        }
         //LinkedList<Service> services = theSelectedRoute.getAllOutgoingServices(theDatesComboBox.getSelectedItem().toString());
         for ( int i = 0; i < 24; i++) {
             data[i][0] = "" + i;
             for ( int j = 1; j < 4; j++ ) {
-                data[i][j] = "";
-                //TODO: get timetable data.
-                /*int pos = (min+j);
-                logger.debug("This is #" + pos + " of the loop...");
-                if ( journeyModels.size() <= (min+j) ) {
-                    logger.debug("No more services!");
-                    outgoingData[i][j+1] = "";
+                //Check for nulls and sort them.
+                if ( data[i][j] == null ) {
+                    data[i][j] = "";
                 }
-                else if ( journeyController.getStopTime(journeyModels.get(min+j), routeStops.get(i)) == null ) {
-                    logger.debug("Blank data!");
-                    outgoingData[i][j+1] = "";
-                }
-                else {
-                    outgoingData[i][j+1] = journeyController.getDisplayStopTime(journeyModels.get(min+j), routeStops.get(i));
-                }*/
             }
         }
         //Display it!

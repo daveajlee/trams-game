@@ -11,6 +11,6 @@ public interface StopTimeRepository extends JpaRepository<StopTime, Long> {
 
 	public List<StopTime> findByJourneyNumber(@Param("journeyNumber") int journeyNumber);
 
-	public StopTime findByJourneyNumberAndStopName(@Param("journeyNumber") int journeyNumber, @Param("routeNumber") String routeNumber);
+	public StopTime findByJourneyNumberAndRouteNumberAndRouteScheduleNumberAndStopName(@Param("journeyNumber") int journeyNumber, @Param("routeNumber") String routeNumber, @Param("routeScheduleNumber") int routeScheduleNumber, @Param("stopName") String stopName);
 	
 }

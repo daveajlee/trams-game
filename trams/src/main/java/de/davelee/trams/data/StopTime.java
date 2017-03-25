@@ -8,7 +8,7 @@ import javax.persistence.*;
  * @author Dave Lee
  */
 @Entity
-@Table(name="STOP_TIME", uniqueConstraints=@UniqueConstraint(columnNames = {"journeyNumber", "stopName", "time"}))
+@Table(name="STOP_TIME", uniqueConstraints=@UniqueConstraint(columnNames = {"routeNumber", "routeScheduleNumber", "journeyNumber", "stopName"}))
 public class StopTime {
 
     @Id
@@ -20,9 +20,15 @@ public class StopTime {
 	private int journeyNumber;
 
     @Column
+	private int routeScheduleNumber;
+
+    @Column
+	private String routeNumber;
+
+    @Column
 	private String stopName;
 
-    @Column()
+    @Column
 	private Calendar time;
 
     public long getId() {
@@ -39,6 +45,22 @@ public class StopTime {
 
     public void setJourneyNumber(final int journeyNumber) {
         this.journeyNumber = journeyNumber;
+    }
+
+    public int getRouteScheduleNumber() {
+        return routeScheduleNumber;
+    }
+
+	public void setRouteScheduleNumber(final int routeScheduleNumber) {
+        this.routeScheduleNumber = routeScheduleNumber;
+    }
+
+    public String getRouteNumber() {
+        return routeNumber;
+    }
+
+    public void setRouteNumber(final String routeNumber) {
+        this.routeNumber = routeNumber;
     }
 
     public String getStopName() {
