@@ -39,7 +39,9 @@ public class RouteScheduleController {
 
 	/**
 	 * Get the current stop name which this route schedule is on based on the current date.
+	 * @param routeScheduleModel a <code>RouteScheduleModel</code> object representing the route schedules.
 	 * @param currentDate a <code>Calendar</code> object.
+	 * @param difficultyLevel a <code>DifficultyLevel</code> object representing the difficulty level.
 	 * @return a <code>String</code> array with the stop details.
 	 */
 	public String getCurrentStopName ( final RouteScheduleModel routeScheduleModel, Calendar currentDate, DifficultyLevel difficultyLevel ) {
@@ -76,6 +78,7 @@ public class RouteScheduleController {
 
 	/**
 	 * Shorten schedule to the specific stop stated and reduce the delay accordingly.
+	 * @param routeScheduleModel a <code>RouteSchedule</code> representing the route schedules.
 	 * @param stop a <code>String</code> with the stop to terminate at.
 	 * @param currentTime a <code>Calendar</code> with the current time.
 	 */
@@ -95,6 +98,7 @@ public class RouteScheduleController {
 
 	/**
 	 * Put this vehicle out of service from the current stop until the new stop.
+	 * @param routeScheduleModel a <code>RouteSchedule</code> representing the route schedules.
 	 * @param currentStop a <code>String</code> with the stop to go out of service from.
 	 * @param newStop a <code>String</code> with the stop to resume service from.
 	 * @param currentTime a <code>Calendar</code> object with the current time.

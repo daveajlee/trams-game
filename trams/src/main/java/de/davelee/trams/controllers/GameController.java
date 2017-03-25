@@ -76,6 +76,7 @@ public class GameController {
 
 	/**
 	 * Pause the simulation!
+	 * @return a <code>boolean</code> which is true iff the simulation was successfully paused.
 	 */
 	public boolean pauseSimulation ( ) {
 		if ( simulationRunning ) {

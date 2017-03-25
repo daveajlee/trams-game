@@ -47,6 +47,7 @@ public class TimetableController {
 	
 	/**
      * Format timetable date.
+	 * @param myCalendar a <code>Calendar</code> representing the calendar object to format.
      * @return a <code>String</code> object.
      */
     public String getDateInfo ( final Calendar myCalendar ) {

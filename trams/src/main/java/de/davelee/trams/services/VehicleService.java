@@ -26,6 +26,7 @@ public class VehicleService {
 
 	/**
      * Check if the vehicle has been delivered yet!
+     * @param deliveryDate a <code>Calendar</code> object with the deliveryDate.
      * @param currentDate a <code>Calendar</code> object with the currentDate.
      * @return a <code>boolean</code> which is true iff the vehicle has been delivered.
      */
@@ -38,6 +39,9 @@ public class VehicleService {
     
     /**
      * Get the vehicle's value after taking depreciation into account.
+     * @param purchasePrice a <code>double</code> representing the purchase price.
+     * @param depreciationFactor a <code>double</code> representing the depreciatonFactor as percentage.
+     * @param deliveryDate a <code>Calendar</code> object with the deliveryDate.
      * @param currentDate a <code>Calendar</code> object with the currentDate.
      * @return a <code>double</code> with the value.
      */
@@ -47,6 +51,7 @@ public class VehicleService {
     
     /**
      * Get the vehicle age based on the difference between deliveryDate and currentDate in months.
+     * @param deliveryDate a <code>Calendar</code> object with the deliveryDate.
      * @param currentDate a <code>Calendar</code> object with the currentDate.
      * @return a <code>int</code> with the vehicle age.
      */
@@ -125,6 +130,7 @@ public class VehicleService {
     /**
      * Helper method to generate random vehicle registration.
      * @param year a <code>String</code> with the current simulation year.
+     * @return a <code>String</code> with the generated vehicle registration.
      */
     public String generateRandomReg ( final int year ) {
         //Generate random registration - in form 2 digit year - then 5 random letters.

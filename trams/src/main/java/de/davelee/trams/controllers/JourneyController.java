@@ -71,6 +71,8 @@ public class JourneyController {
 
 	/**
 	 * Get the stop time as hh:mm.
+	 * @param journeyModel a <code>JourneyModel</code> object with details of the journey.
+	 * @param name a <code>String</code> with the name of the stop to return the time for.
 	 * @return a <code>String</code> with the time as hh:mm.
 	 */
     public String getDisplayStopTime( final JourneyModel journeyModel, String name ) {
@@ -117,7 +119,11 @@ public class JourneyController {
 
 	/**
 	 * This method generates the route timetables for a particular day - it is a very important method.
+	 * @param routeModel a <code>RouteModel</code> object containing the details of the route to generate timetables for.
 	 * @param today a <code>Calendar</code> object with today's date.
+	 * @param scenarioName a <code>String</code> object with the name of the scenario to generate timeables for.
+	 * @param direction a <code>int</code> which determines the direction to generate timetables for.
+	 * @return a <code>JourneyModel</code> list of objects representing the timetables generated.
 	 */
 	public List<JourneyModel> generateJourneyTimetables ( final RouteModel routeModel, final Calendar today, final String scenarioName, final int direction ) {
 		logger.debug("I'm generating timetable for route number " + routeModel.getRouteNumber() + " for " + DateFormats.DAY_MONTH_YEAR_FORMAT.getFormat().format(today.getTime()));

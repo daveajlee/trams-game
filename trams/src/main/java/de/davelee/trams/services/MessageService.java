@@ -23,6 +23,7 @@ public class MessageService {
 	
 	/**
      * Save a new message.
+     * @param messageModel a <code>MessageModel</code> object representing the message to save.
      */
     public void saveMessage ( final MessageModel messageModel ) {
         Message message = new Message();
@@ -44,6 +45,13 @@ public class MessageService {
         return messageModel;
     }
 
+    /**
+     * Get a linked list of messages which are relevant for the specified folder, date and sender.
+     * @param folder a <code>MessageFolder</code> with the name of the folder.
+     * @param date a <code>Calendar</code> with the date.
+     * @param sender a <code>String</code> with the sender.
+     * @return a <code>LinkedList</code> with messages.
+     */
     public MessageModel[] getMessagesByFolderSenderDate ( final MessageFolder folder, final Calendar date, final String sender ) {
         List<Message> messages = messageRepository.findByFolderAndSenderAndDate(folder, sender, date);
         MessageModel[] messageModels = new MessageModel[messages.size()];

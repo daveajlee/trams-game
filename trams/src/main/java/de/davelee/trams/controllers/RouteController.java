@@ -37,7 +37,8 @@ public class RouteController {
 
 	/**
 	 * Add a new route.
-	 * @param r a <code>Route</code> object.
+	 * @param routeNumber a <code>String</code> with the number for this route.
+	 * @param stopNames a <code>String</code> list with the stops served by this route.
 	 */
 	public void addNewRoute ( final String routeNumber, final List<String> stopNames ) {
 		RouteModel routeModel = new RouteModel();
@@ -48,7 +49,7 @@ public class RouteController {
 
 	/**
 	 * Delete route.
-	 * @param r a <code>Route</code> object to delete.
+	 * @param routeModel a <code>RouteModel</code> object representing the route to delete.
 	 */
 	public void deleteRoute ( final RouteModel routeModel ) {
 		routeService.removeRoute(routeModel);
@@ -56,8 +57,9 @@ public class RouteController {
 
 	/**
 	 * Edit route - replace the two routes.
-	 * @param oldRoute a <code>RouteModel</code> object with the old route.
-	 * @param newRoute a <code>RouteModel</code> object with the new route.
+	 * @param oldRouteModel a <code>RouteModel</code> object with the old route.
+	 * @param routeNumber a <code>String</code> with the string representation of the route.
+	 * @return a <code>RouteModel</code> object matching the string representation.
 	 */
 	public void editRoute ( final RouteModel oldRouteModel, final String routeNumber, final List<String> stopNames ) {
 		//Delete old route.

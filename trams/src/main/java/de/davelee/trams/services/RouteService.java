@@ -26,6 +26,7 @@ public class RouteService {
     
     /**
      * Move stops in the ordering list for a route.
+     * @param routeModel a <code>RouteModel</code> representing the route to move stops for.
      * @param stopName a <code>String</code> with the name of the stop. 
      * @param moveup a <code>boolean</code> which is true iff the stop should be moved up.
      * @return a <code>boolean</code> which is true iff the stop was moved successfully.
@@ -74,6 +75,7 @@ public class RouteService {
     
     /**
      * Delete stop.
+     * @param routeModel a <code>RouteModel</code> representing the route to delete stop for.
      * @param stopName a <code>String</code> with the stop name.
      * @return a <code>boolean</code> which is true iff the stop was deleted successfully.
      */
@@ -94,6 +96,7 @@ public class RouteService {
     
     /**
      * Add stop.
+     * @param routeModel a <code>RouteModel</code> representing the route to add stop for.
      * @param stopName a <code>String</code> with the stop name.
      * @return a <code>boolean</code> which is true iff the stop was added successfully.
      */
@@ -111,6 +114,7 @@ public class RouteService {
 
     /**
      * This method returns the stops between two supplied stops in the route including the two stops.
+     * @param routeModel a <code>RouteModel</code> representing the route to get the stops between.
      * @param startStop a <code>String</code> with the start stop name.
      * @param endStop a <code>String</code> with the end stop name.
      * @param direction a <code>int</code> with the direction.
@@ -172,7 +176,7 @@ public class RouteService {
     /**
      * Get the route object based on the route number,
      * @param routeNumber a <code>String</code> with the route number,
-     * @return a <code>Route</code> object.
+     * @return a <code>RouteModel</code> object.
      */
     public RouteModel getRoute ( String routeNumber ) {
         Route route = routeRepository.findRouteByNumber(routeNumber);

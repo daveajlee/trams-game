@@ -73,6 +73,7 @@ public class TimetableService {
     /**
      * This method gets the current timetable which is valid for day.
      * It is specifically used for getting the days which this timetable is valid for.
+     * @param routeNumber a <code>String</code> with the route number to get the current timetable for.
      * @param today a <code>Calendar</code> object with today's date.
      * @return a <code>Timetable</code> object.
      */

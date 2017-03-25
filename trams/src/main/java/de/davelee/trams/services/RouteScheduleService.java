@@ -20,6 +20,8 @@ public class RouteScheduleService {
 
     /**
      * Calculate a new random delay for this route schedule.
+     * @param scheduleModel a <code>RouteScheduleModel</code> object representing the route schedule to calculate the delay for.
+     * @param difficultyLevel a <code>DifficultyLevel</code> object representing the difficulty level.
      */
     public void calculateNewDelay (final RouteScheduleModel scheduleModel, final DifficultyLevel difficultyLevel ) {
 
@@ -64,6 +66,7 @@ public class RouteScheduleService {
 
     /**
      * Reduces the current delay by a certain number of minutes.
+     * @param scheduleModel a <code>RouteScheduleModel</code> with the route schedule to determine delay for.
      * @param mins a <code>int</code> with the number of minutes.
      */
     public void reduceDelay(final RouteScheduleModel scheduleModel, final int mins) {
@@ -83,6 +86,7 @@ public class RouteScheduleService {
 
     /**
      * Increases the vehicles current delay by a certain number of minutes.
+     * @param scheduleModel a <code>RouteScheduleModel</code> with the route schedule to determine delay for.
      * @param mins a <code>int</code> with the number of minutes.
      */
     public void increaseDelay(final RouteScheduleModel scheduleModel, final int mins) {

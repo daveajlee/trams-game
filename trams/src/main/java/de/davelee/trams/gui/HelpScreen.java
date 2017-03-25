@@ -33,7 +33,6 @@ public class HelpScreen extends JFrame {
     
     /**
      * Default constructor for HelpScreen which creates the help screen interface and displays it to the user.
-     * @param ui a <code>UserInterface</code> object.
      */
     public HelpScreen ( ) {
         

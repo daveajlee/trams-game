@@ -40,6 +40,7 @@ public class JourneyService {
 	
 	/**
      * Get the status of the journey based on the current time - either not yet run, running or finished.
+     * @param journeyModel a <code>JourneyModel</code> object with the journey details.
      * @param currentTime a <code>Calendar</code> object.
      * @return a <code>JourneyStatus</code> which has the current status of the journey.
      */
@@ -57,6 +58,7 @@ public class JourneyService {
     
     /**
      * Get the current stop name based on the current time.
+     * @param journeyModels a <code>JourneyModel</code> array with all available journeys.
      * @param currentTime a <code>Calendar</code> object. 
      * @return a <code>String</code> array with the current stop.
      */
@@ -83,6 +85,7 @@ public class JourneyService {
     
     /**
      * Get the start terminus of this journey.
+     * @param journeyModel a <code>JourneyModel</code> with the journey details.
      * @return a <code>String</code> with the start terminus.
      */
     public String getStartTerminus ( final JourneyModel journeyModel ) {
@@ -91,6 +94,7 @@ public class JourneyService {
     
     /**
      * Get stop object based on stop name.
+     * @param journeyModel a <code>JourneyModel</code> with the journey details.
      * @param name a <code>String</code> with the stop name.
      * @return a <code>Stop</code> object.
      */
@@ -114,6 +118,8 @@ public class JourneyService {
 
     /**
      * Get the last stop.
+     * @param journeyModels a <code>JourneyModel</code> array with all available journeys.
+     * @param currentTime a <code>Calendar</code> representing the current time.
      * @return a <code>Stop</code> object representing the last stop in this journey.
      */
     public String getLastStopName ( final JourneyModel[] journeyModels, final Calendar currentTime ) {
@@ -134,6 +140,7 @@ public class JourneyService {
 
     /**
      * Get the current journey running on this schedule based on the current date.
+     * @param journeyModels a <code>JourneyModel</code> array with all available journeys.
      * @param currentTime a <code>Calendar</code> object with current time.
      * @return a <code>Service</code> object.
      */
@@ -165,6 +172,7 @@ public class JourneyService {
     
     /**
      * Get the number of stops belonging to this journey.
+     * @param journeyModel a <code>JourneyModel</code> with the journey details.
      * @return a <code>int</code> with the number of stops.
      */
     public int getNumStops ( final JourneyModel journeyModel ) {
@@ -173,6 +181,7 @@ public class JourneyService {
     
     /**
      * Remove stops between two stops.
+     * @param journeyModel a <code>JourneyModel</code> with the journey details.
      * @param firstStop a <code>String</code> with the first stop.
      * @param secondStop a <code>String</code> with the second stop.
      * @param includeFirst a <code>boolean</code> which is true iff the first stop should be deleted.
@@ -203,6 +212,7 @@ public class JourneyService {
     
     /**
      * Get the time difference between two stops.
+     * @param journeyModel a <code>JourneyModel</code> with the journey details.
      * @param firstStop a <code>String</code> with the first stop.
      * @param secondStop a <code>String</code> with the second stop.
      * @return a <code>long</code> with the time difference.
@@ -213,6 +223,7 @@ public class JourneyService {
     
     /**
      * Check if this is an outward journey.
+     * @param journeyModel a <code>JourneyModel</code> with the journey details.
      * @param outwardStops a <code>LinkedList</code> with list of outward stops.
      * @return a <code>boolean</code> which is true iff this is an outward journey.
      */
@@ -251,7 +262,8 @@ public class JourneyService {
     }
     
     /**
-     * Get the maximum time difference between two stops. 
+     * Get the maximum time difference between two stops.
+     * @param journeyModel a <code>JourneyModel</code> with the journey details.
      * @param prevStopName a <code>String</code> with first stop.
      * @param thisStopName a <code>String</code> with second stop.
      * @return a <code>long</code> with the time difference.
@@ -291,6 +303,9 @@ public class JourneyService {
 
     /**
      * Return all outgoing journeys for a particular day.
+     * @param routeScheduleModels a <code>RouteScheduleModel</code> array with all available route schedules.
+     * @param stops a <code>String</code> list with the stops to be served.
+     * @param day a <code>String</code> with the day to get the outgoing journeys for.
      */
     public JourneyModel[] getAllOutgoingJourneys (final RouteScheduleModel[] routeScheduleModels, final List<String> stops, final String day ) {
         //Initialise list to store the journeys.
@@ -315,6 +330,9 @@ public class JourneyService {
 
     /**
      * This method checks using two stops if the service is an outward or inward service.
+     * @param stops a <code>String</code> list with the stops to be served.
+     * @param stop1 a <code>String</code> containing the name of a stop.
+     * @param stop2 a <code>String</code> containing the name of another stop.
      * @return a <code>boolean</code> which is true iff the service is an outward service.
      */
     public boolean isOutwardJourney ( final List<String> stops, final String stop1, final String stop2 ) {
@@ -333,6 +351,9 @@ public class JourneyService {
 
     /**
      * Return all return services for a particular day.
+     * @param scheduleModels a <code>RouteScheduleModel</code> array with all available route schedules.
+     * @param stops a <code>String</code> list with the stops to be served.
+     * @param day a <code>String</code> with the day to get the outgoing journeys for.
      */
     public JourneyModel[] getAllReturnJourneys ( final RouteScheduleModel[] scheduleModels, final List<String> stops, final String day ) {
         //Initialise list to store the journeys.
@@ -541,6 +562,7 @@ public class JourneyService {
 
     /**
      * Get the distance between two stops.
+     * @param scenarioName a <code>String</code> with the name of the scenario.
      * @param stop1 a <code>String</code> with the name of the first stop.
      * @param stop2 a <code>String</code> with the name of the second stop.
      * @return a <code>int</code> with the distance between two stops.

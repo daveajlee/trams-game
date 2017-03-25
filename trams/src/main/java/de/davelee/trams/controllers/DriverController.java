@@ -26,10 +26,7 @@ public class DriverController {
 	
 	/**
      * Employ a new driver.
-     * @param name a <code>String</code> with the driver's name.
-     * @param hours a <code>int</code> with the contracted hours.
-     * @param startDate a <code>Calendar</code> with the start date.
-     * @return a <code>boolean</code> which is true iff the driver has been successfully employed.
+     * @param driverModel a <code>DriverModel</code> object including name, contracted hours and start date.
      */
     public void employDriver ( final DriverModel driverModel ) {
     	//TODO: Employing drivers should cost money.

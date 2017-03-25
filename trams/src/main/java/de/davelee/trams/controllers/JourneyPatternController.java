@@ -54,6 +54,7 @@ public class JourneyPatternController {
 
 	/**
 	 * Return a formatted String array of schedule dates from today.
+	 * @param routeModel a <code>RouteModel</code> representing details of the route.
 	 * @param today a <code>Calendar</code> object with the current date.
 	 * @return a <code>String</code> array of possible schedule dates.
 	 */

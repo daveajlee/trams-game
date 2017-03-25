@@ -336,6 +336,7 @@ public class ControlScreen extends ButtonBar {
     /**
      * Draw the vehicle positions.
      * @param isRedraw a <code>boolean</code> which is true iff this is a redraw rather than first draw.
+     * @param gameModel a <code>GameModel</code> representing the game currently modeled.
      */
     public void drawVehicles ( final boolean isRedraw, final GameModel gameModel ) {
         //Now check if it is past midnight! If it is dispose, and create Allocation Screen.
@@ -627,6 +628,8 @@ public class ControlScreen extends ButtonBar {
     
     /**
      * Redraw the management panel to be replaced as requested.
+     * @param newManagePanel a <code>JPanel</code> containing the new management panel.
+     * @param gameModel a <code>GameModel</code> object representing the game currently being modelled.
      */
     public void redrawManagement ( JPanel newManagePanel, final GameModel gameModel ) {
         //Disable the live situation tab if appropriate.
@@ -646,6 +649,7 @@ public class ControlScreen extends ButtonBar {
 
     /**
      * Redraw the vehicle panel as appropriate.
+     * @param newVehiclePanel a <code>JPanel</code> containing the new vehicle panel.
      */
     public void redrawVehicles ( JPanel newVehiclePanel ) {
         tabbedPane.setComponentAt(0, newVehiclePanel);
@@ -654,6 +658,7 @@ public class ControlScreen extends ButtonBar {
     
     /**
      * Generate a new vehicle panel to display the vehicles.
+     * @param newVehiclePanel a <code>JPanel</code> containing the new vehicle panel.
      * @return a <code>JPanel</code> object.
      */
     public JPanel generateNewVehiclePanel ( final GameModel gameModel ) {
@@ -806,6 +811,7 @@ public class ControlScreen extends ButtonBar {
     /**
      * Check if the current time is the first past midnight.
      * @param currentTime a <code>Calendar</code> object which represents the current time.
+     * @param previousTime a <code>Calendar</code> object which represents the previous time.
      * @return a <code>boolean</code> which is true iff this is the first time past midnight.
      */
     private boolean isPastMidnight ( Calendar currentTime, Calendar previousTime ) {
@@ -1026,6 +1032,7 @@ public class ControlScreen extends ButtonBar {
 
     /**
      * Run simulation!
+     * @param currentFrame a <code>JFrame</code> with the current frame.
      */
     public void runSimulation ( final JFrame currentFrame ) {
         currentFrame.dispose();
@@ -1055,6 +1062,7 @@ public class ControlScreen extends ButtonBar {
      * @param min a <code>int</code> with the new min vehicle id.
      * @param max a <code>int</code> with the new max vehicle id.
      * @param allocations a <code>boolean</code> which is true iff allocations have been performed.
+     * @param currentFrame a <code>JFrame</code> with the current frame.
      */
     public void changeDisplay ( String routeNumber, int min, int max, boolean allocations, final JFrame currentFrame ) {
         //Now create new control screen.

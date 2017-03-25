@@ -38,7 +38,11 @@ public class MessageController {
     
     /**
      * Add a message to the message queue.
-     * @param msg a <code>Message</code> object!
+     * @param subject a <code>String</code> with the subject of the message.
+     * @param text a <code>String</code> with the text of the message.
+     * @param sender a <code>String</code> with the name of the sender.
+     * @param folder a <code>String</code> with the name of the folder to save the message to.
+     * @param date a <code>Calendar</code> object representing the date the message was sent.
      */
     public void addMessage ( final String subject, final String text, final String sender, final String folder, final Calendar date) {
         MessageModel messageModel = new MessageModel();

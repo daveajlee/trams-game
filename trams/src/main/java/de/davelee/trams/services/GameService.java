@@ -64,6 +64,7 @@ public class GameService {
     /**
      * Deduct money from the balance.
      * @param amount a <code>double</code> with the amount to deduct from the balance.
+     * @param playerName a <code>String</code> with the player name.
      */
     public void withdrawBalance ( final double amount, final String playerName ) {
         GameModel gameModel = getGameByPlayerName(playerName);
@@ -73,6 +74,7 @@ public class GameService {
     /**
      * Add money to the balance.
      * @param amount a <code>double</code> with the amount to credit the balance.
+     * @param playerName a <code>String</code> with the player name.
      */
     public void creditBalance ( final double amount, final String playerName ) {
         GameModel gameModel = getGameByPlayerName(playerName);
@@ -81,8 +83,10 @@ public class GameService {
 
     /**
      * Compute passenger satisfaction for the current time.
-     * @param currentTime a <code>Calendar</code> object with the current time.
-     * @param difficultyLevel a <code>String</code> with the difficulty level.
+     * @param playerName a <code>String</code> with the player name.
+     * @param numSmallLateSchedules a <code>int</code> with the number of route schedules running marginally late.
+     * @param numMediumLateSchedules a <code>int</code> with the number of route schedules running substantially late.
+     * @param numLargeLateSchedules a <code>int</code> with the number of route schedules running very late.
      */
     public int computeAndReturnPassengerSatisfaction ( final String playerName, final int numSmallLateSchedules, final int numMediumLateSchedules, final int numLargeLateSchedules ) {
         int totalSubtract = 0;
@@ -111,6 +115,7 @@ public class GameService {
 
     /**
      * Increment the current time.
+     * @param playerName a <code>String</code> with the player name.
      */
     public void incrementTime ( final String playerName ) {
         GameModel gameModel = getGameByPlayerName(playerName);
@@ -127,6 +132,7 @@ public class GameService {
     /**
      * Return the supplied calendar object as a formatted string.
      * @param calDate a <code>Calendar</code> object to format.
+     * @param dateFormat a <code>DateFormats</code> with the formats.
      * @return a <code>String</code> with the formatted string.
      */
      public String formatDateString ( final Calendar calDate, final DateFormats dateFormat ) {

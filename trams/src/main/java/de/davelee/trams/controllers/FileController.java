@@ -42,7 +42,8 @@ public class FileController {
 	private VehicleController vehicleController;
 	
 	/**
-     * Load file. 
+     * Load file.
+	 * @param selectedFile a <code>File</code> object with the path to load the file from.
      * @return a <code>boolean</code> which is true iff the file was loaded successfully.
      */
     public boolean loadFile ( final File selectedFile ) {
@@ -61,6 +62,7 @@ public class FileController {
     
     /**
      * Save file.
+	 * @param selectedFile a <code>File</code> object with the path to save the file to.
      * @return a <code>boolean</code> which is true iff the file was saved successfully.
      */
     public boolean saveFile ( final File selectedFile ) {

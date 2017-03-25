@@ -49,8 +49,7 @@ public class MakeContactScreen extends JFrame {
 
     /**
      * Create a new make contact screen.
-     * @param ui a <code>UserInterface</code> object.
-     * @param rd a <code>RouteSchedule</code> object.
+     * @param routeScheduleModel a <code>RouteScheduleModel</code> object.
      */
     public MakeContactScreen ( final RouteScheduleModel routeScheduleModel ) {
         
@@ -189,6 +188,7 @@ public class MakeContactScreen extends JFrame {
     
     /**
      * Get the current destination of the vehicle.
+     * @param gameModel a <code>GameModel</code> representing the game currently being modelled.
      * @return a <code>String</code> with the current destination.
      */
     public String getCurrentDestination ( final GameModel gameModel ) {
@@ -197,6 +197,7 @@ public class MakeContactScreen extends JFrame {
     
     /**
      * Get the list of stops of the vehicle.
+     * @param gameModel a <code>GameModel</code> representing the game currently being modelled.
      * @return a <code>String</code> array of stops.
      */
     public String[] getListOfStops(final GameModel gameModel) {

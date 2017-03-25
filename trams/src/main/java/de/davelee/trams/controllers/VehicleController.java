@@ -57,7 +57,7 @@ public class VehicleController {
 
 	/**
 	 * Get a vehicle based on its registration number.
-	 * @param id a <code>String</code> with the registration number.
+	 * @param registrationNumber a <code>String</code> with the registration number.
 	 * @return a <code>VehicleModel</code> object.
 	 */
 	public VehicleModel getVehicleByRegistrationNumber ( final String registrationNumber ) {
@@ -75,7 +75,7 @@ public class VehicleController {
 
 	/**
 	 * Sell a vehicle.
-	 * @param v a <code>Vehicle</code> to sell.
+	 * @param vehicleModel a <code>VehicleModel</code> object representing the vehicle to sell.
 	 * @return a <code>boolean</code> which is true iff the vehicle was sold.
 	 */
 	public void sellVehicle ( final VehicleModel vehicleModel ) {
