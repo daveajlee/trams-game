@@ -489,7 +489,7 @@ public class JourneyService {
                 }
                 journeyNumber++;
             }
-            routeScheduleNumber++;
+            routeScheduleNumber+=2;
         }
         return allJourneys;
     }

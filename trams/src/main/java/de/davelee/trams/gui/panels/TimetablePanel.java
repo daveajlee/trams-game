@@ -12,7 +12,6 @@ import java.awt.event.KeyListener;
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -115,7 +114,7 @@ public class TimetablePanel {
         //Valid From Day.
         final int fromStartDay = currTime.get(Calendar.DAY_OF_MONTH);
         final DefaultComboBoxModel validFromDayModel = new DefaultComboBoxModel();
-        for ( int i = currTime.get(Calendar.DAY_OF_MONTH); i <= currTime.getActualMaximum(Calendar.MONTH); i++ ) {
+        for ( int i = currTime.get(Calendar.DAY_OF_MONTH); i <= currTime.getActualMaximum(Calendar.DAY_OF_MONTH); i++ ) {
             validFromDayModel.addElement(i);
         }
         JComboBox validFromDayBox = new JComboBox(validFromDayModel);

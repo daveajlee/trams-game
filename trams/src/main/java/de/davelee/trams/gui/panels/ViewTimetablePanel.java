@@ -204,17 +204,20 @@ public class ViewTimetablePanel {
         	cal.setTime(DateFormats.FULL_FORMAT.getFormat().parse(datesComboBox.getSelectedItem().toString()));
         } catch ( ParseException parseEx ) {
         }*/
+        //TODO: Add multiple route schedules.
         JourneyModel[] journeyModels = journeyController.getJourneysByRouteScheduleNumberAndRouteNumber(direction, routeNumber);
         for ( int i = 0; i < journeyModels.length; i++ ) {
             Calendar cal = journeyController.getStopTime(journeyModels[i], stopName);
             if ( cal != null ) {
                 int hour = cal.get(Calendar.HOUR_OF_DAY); int minute = cal.get(Calendar.MINUTE); String minuteStr = "";
                 if ( minute < 10 ) { minuteStr = "0" + minute; } else { minuteStr = "" + minute; }
-                //TODO: Add Saturday/Sunday.
-                if ( data[hour][1] == null ) {
-                    data[hour][1] = "" + minuteStr;
+                int displayPos = 1;
+                if ( cal.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY ) { displayPos = 2; }
+                else if ( cal.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) { displayPos = 3; }
+                if ( data[hour][displayPos] == null ) {
+                    data[hour][displayPos] = "" + minuteStr;
                 } else {
-                    data[hour][1] = data[hour][1] + " " + minuteStr;
+                    data[hour][displayPos] = data[hour][displayPos] + " " + minuteStr;
                 }
             }
         }
