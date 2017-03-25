@@ -415,14 +415,17 @@ public class JourneyService {
 
     public List<JourneyModel> generateJourneyTimetables ( final JourneyPatternModel[] journeyPatternModels,
                                                           final Calendar today, final int direction, final List<String> stops, final String scenarioName ) {
+        int routeScheduleNumber = 0;
+        if ( direction == TramsConstants.RETURN_DIRECTION ) { routeScheduleNumber = 1; }
         //Create a list to store journeys.
         List<JourneyModel> allJourneys = new ArrayList<JourneyModel>();
         //Now we need to go through the journey patterns.
         for ( JourneyPatternModel myJourneyPattern : journeyPatternModels ) {
+            int journeyNumber = 0;
             //Clone the time so that we can add to it but keep it the same for next iteration.
             Calendar myTime = (Calendar) today.clone();
             //If this service pattern is not valid for this date then don't bother.
-            if ( myJourneyPattern.getDaysOfOperation().contains(myTime.get(Calendar.DAY_OF_WEEK))) { continue; }
+            if ( !myJourneyPattern.getDaysOfOperation().contains(myTime.get(Calendar.DAY_OF_WEEK))) { continue; }
             //Set myTime hour and minute to the start time of the service pattern.
             myTime.set(Calendar.HOUR_OF_DAY, myJourneyPattern.getStartTime().get(Calendar.HOUR_OF_DAY));
             myTime.set(Calendar.MINUTE, myJourneyPattern.getStartTime().get(Calendar.MINUTE));
@@ -443,10 +446,10 @@ public class JourneyService {
                     Calendar journeyTime = (Calendar) myTime.clone();
                     List<String> journeyStops = new ArrayList<String>();
                     if ( direction == TramsConstants.OUTWARD_DIRECTION ) {
-                        journeyStops = getStopsBetween(stops, myJourneyPattern.getReturnTerminus(), myJourneyPattern.getOutgoingTerminus(), direction);
+                        journeyStops = getStopsBetween(stops, myJourneyPattern.getOutgoingTerminus(), myJourneyPattern.getReturnTerminus(), direction);
                     }
                     else {
-                        journeyStops = getStopsBetween(stops, myJourneyPattern.getOutgoingTerminus(), myJourneyPattern.getReturnTerminus(), direction);
+                        journeyStops = getStopsBetween(stops, myJourneyPattern.getReturnTerminus(), myJourneyPattern.getOutgoingTerminus(), direction);
                     }
                     StopTime newStopTime = new StopTime();
                     newStopTime.setJourneyNumber(newJourney.getJourneyNumber());
@@ -464,12 +467,18 @@ public class JourneyService {
                         stopTimeRepository.saveAndFlush(newStopTime2);
                     }
                     //logger.debug("Service #" + serviceId + ": " + newService.getAllDisplayStops());{
+                    newJourney.setRouteNumber(myJourneyPattern.getRouteNumber());
+                    newJourney.setRouteScheduleNumber(routeScheduleNumber);
+                    newJourney.setJourneyNumber(journeyNumber);
+                    newJourney.getJourneyNumber();
                     journeyRepository.saveAndFlush(newJourney);
                     allJourneys.add(convertToJourneyModel(newJourney));
                     //Increment calendar.
                     myTime.add(Calendar.MINUTE, myJourneyPattern.getFrequency());
                 }
+                journeyNumber++;
             }
+            routeScheduleNumber++;
         }
         return allJourneys;
     }

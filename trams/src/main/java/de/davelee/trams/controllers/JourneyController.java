@@ -103,6 +103,10 @@ public class JourneyController {
         return journeyService.getAllJourneys();
     }
 
+	public JourneyModel[] getJourneysByRouteScheduleNumberAndRouteNumber ( final int routeScheduleNumber, final String routeNumber ) {
+		return journeyService.getJourneysByRouteScheduleNumberAndRouteNumber(routeScheduleNumber, routeNumber);
+	}
+
 	public String[] getAllStops ( ) {
         return journeyService.getAllStops();
     }

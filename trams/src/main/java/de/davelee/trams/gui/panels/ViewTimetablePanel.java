@@ -148,13 +148,13 @@ public class ViewTimetablePanel {
         String[] columnNames = new String[] { "", "Monday - Friday", "Saturday", "Sunday" };
         String[][] data = new String[24][4];
         //TODO: Preprocessing necessary?
-        /*Calendar cal = Calendar.getInstance();
-        try {
+        Calendar cal = Calendar.getInstance();
+        /*try {
         	cal.setTime(DateFormats.FULL_FORMAT.getFormat().parse(datesComboBox.getSelectedItem().toString()));
         } catch ( ParseException parseEx ) {
         	//TODO: exception handling.
-        }
-        List<JourneyModel> journeyModels = journeyController.generateJourneyTimetables(routeModel, cal, gameModel.getScenarioName(), TramsConstants.OUTWARD_DIRECTION);*/
+        }*/
+        JourneyModel[] journeyModels = journeyController.getJourneysByRouteScheduleNumberAndRouteNumber(0, routeModel.getRouteNumber());
         //LinkedList<Service> services = theSelectedRoute.getAllOutgoingServices(theDatesComboBox.getSelectedItem().toString());
         for ( int i = 0; i < 24; i++) {
             data[i][0] = "" + i;
