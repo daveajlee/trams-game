@@ -203,7 +203,7 @@ public class FileServiceTest {
 		//assertEquals(tramsFile2.getDrivers()[0].getName(), "Dave Lee");
 		//assertEquals(tramsFile2.getVehicles().size(), 1);
 		assertEquals(tramsFile2.getRouteScheduleModels().length, 2);
-		assertEquals(tramsFile2.getGameModel().length, 1);
+		assertEquals(tramsFile2.getGameModel().length, 2);
 	}
 
 }

@@ -16,9 +16,6 @@ public class DriverController {
 	
 	@Autowired
 	private GameController gameController;
-	
-	@Autowired
-	private FileController fileController;
 
     public DriverModel[] getAllDrivers () {
 		return driverService.getAllDrivers();

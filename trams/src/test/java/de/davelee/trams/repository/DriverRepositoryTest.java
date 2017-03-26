@@ -36,10 +36,10 @@ public class DriverRepositoryTest {
 		assertNotNull(driver2);
 		assertEquals(driver2.getName(), "Dave Lee");
 		assertEquals(driver2.getContractedHours(), 40);
-		assertEquals(driverRepository.findAll().size(), 1);
+		assertEquals(driverRepository.findAll().size(), 3);
 		//Test remove
 		driverRepository.delete(driver2);
-		assertEquals(driverRepository.findAll().size(), 0);
+		assertEquals(driverRepository.findAll().size(), 2);
 	}
 
 }
