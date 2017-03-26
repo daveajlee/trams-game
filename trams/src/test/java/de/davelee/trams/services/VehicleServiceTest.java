@@ -136,7 +136,7 @@ public class VehicleServiceTest {
 	
 	@Test
 	public void testGetAllVehicles ( ) {
-		assertEquals(vehicleService.getVehicleModels().length, 1);
+		assertEquals(vehicleService.getVehicleModels().length, 3);
 	}
 
 	@Test
