@@ -3,6 +3,7 @@ package de.davelee.trams.gui;
 import javax.swing.*;
 import java.awt.event.*;
 
+import de.davelee.trams.controllers.ControllerHandler;
 import de.davelee.trams.controllers.FileController;
 import de.davelee.trams.controllers.GameController;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,15 +32,14 @@ public class ButtonBar extends JFrame {
     protected JMenuItem aboutItem;
 
     @Autowired
-    private GameController gameController;
-
-    @Autowired
-    private FileController fileController;
+    private ControllerHandler controllerHandler;
     
     /**
      * Create a new button bar.
      */
-    public ButtonBar ( ) {
+    public ButtonBar ( final ControllerHandler controllerHandler ) {
+
+        this.controllerHandler = controllerHandler;
         
         menuBar = new JMenuBar();
         
@@ -49,7 +49,7 @@ public class ButtonBar extends JFrame {
         newGameItem = new JMenuItem("New Game");
         newGameItem.addActionListener( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
-                new NewGameScreen();
+                new NewGameScreen(controllerHandler);
                 dispose();
             }
         });
@@ -58,7 +58,7 @@ public class ButtonBar extends JFrame {
         loadGameItem = new JMenuItem("Load Game");
         loadGameItem.addActionListener ( new ActionListener () {
             public void actionPerformed ( ActionEvent e ) {
-                gameController.pauseSimulation();
+                controllerHandler.getGameController().pauseSimulation();
                 FileDialog fileDialog = new FileDialog();
                 fileDialog.createLoadFileDialog(ButtonBar.this);
             }
@@ -70,10 +70,10 @@ public class ButtonBar extends JFrame {
         saveGameItem = new JMenuItem("Save Game");
         saveGameItem.addActionListener ( new ActionListener () {
             public void actionPerformed ( ActionEvent e ) {
-                gameController.pauseSimulation();
+                controllerHandler.getGameController().pauseSimulation();
                 FileDialog fileDialog = new FileDialog();
                 fileDialog.createSaveFileDialog(ButtonBar.this);
-                gameController.resumeSimulation();
+                controllerHandler.getGameController().resumeSimulation();
             }
         });
         fileMenu.add(saveGameItem);
@@ -95,7 +95,7 @@ public class ButtonBar extends JFrame {
         optionsItem = new JMenuItem("Options");
         optionsItem.addActionListener ( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
-                gameController.pauseSimulation();
+                controllerHandler.getGameController().pauseSimulation();
                 new OptionsScreen();
             }
         });
@@ -113,5 +113,9 @@ public class ButtonBar extends JFrame {
         helpMenu.add(aboutItem);
         
     }
-    
+
+    public ControllerHandler getControllerHandler() {
+        return controllerHandler;
+    }
+
 }

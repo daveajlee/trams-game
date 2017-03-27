@@ -1,8 +1,7 @@
 package de.davelee.trams.gui;
 
-import de.davelee.trams.controllers.GameController;
+import de.davelee.trams.controllers.ControllerHandler;
 import de.davelee.trams.model.ScenarioModel;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -23,19 +22,13 @@ public class ScenarioDescriptionScreen extends JFrame {
     private JTextArea scenarioDescriptionArea;
     private JButton continueButton;
 
-    @Autowired
-    private GameController gameController;
-
-    @Autowired
-    private ExitDialog exitDialog;
-
-    @Autowired
-    private ControlScreen controlScreen;
+    private ControllerHandler controllerHandler;
     
     /**
      * Create a new scenario description screen.
      */
-    public ScenarioDescriptionScreen ( ) {
+    public ScenarioDescriptionScreen (final ControllerHandler controllerHandler ) {
+        this.controllerHandler = controllerHandler;
     }
 
     public void displayScreen (  final ScenarioModel scenarioModel ) {
@@ -52,7 +45,10 @@ public class ScenarioDescriptionScreen extends JFrame {
         //Call the Exit method in the UserInterface class if the user hits exit.
         this.addWindowListener ( new WindowAdapter() {
             public void windowClosing ( WindowEvent e ) {
+                boolean wasSimulationRunning = controllerHandler.getGameController().pauseSimulation();
+                ExitDialog exitDialog = new ExitDialog();
                 exitDialog.createExitDialog(ScenarioDescriptionScreen.this);
+                if (wasSimulationRunning) { controllerHandler.getGameController().resumeSimulation(); }
             }
         });
         
@@ -84,7 +80,7 @@ public class ScenarioDescriptionScreen extends JFrame {
         //Create the MDLabelPanel first of all.
         JPanel MDLabelPanel = new JPanel();
         MDLabelPanel.setBackground(Color.WHITE);
-        mDLabel = new JLabel(gameController.getCurrentPlayerName() + " appointed Managing Director of " + scenarioModel.getName());
+        mDLabel = new JLabel(controllerHandler.getGameController().getCurrentPlayerName() + " appointed Managing Director of " + scenarioModel.getName());
         mDLabel.setFont(new Font("Arial", Font.BOLD, 18));
         MDLabelPanel.add(mDLabel);
         screenPanel.add(MDLabelPanel);
@@ -92,7 +88,7 @@ public class ScenarioDescriptionScreen extends JFrame {
         //Create the descriptionPanel.
         JPanel descriptionPanel = new JPanel();
         descriptionPanel.setBackground(Color.WHITE);
-        scenarioDescriptionArea = new JTextArea(gameController.getCurrentPlayerName() + " " + scenarioModel.getDescription());
+        scenarioDescriptionArea = new JTextArea(controllerHandler.getGameController().getCurrentPlayerName() + " " + scenarioModel.getDescription());
         scenarioDescriptionArea.setFont(new Font("Arial", Font.PLAIN, 16));
         scenarioDescriptionArea.setLineWrap(true);
         scenarioDescriptionArea.setWrapStyleWord(true);
@@ -106,6 +102,7 @@ public class ScenarioDescriptionScreen extends JFrame {
         continueButton = new JButton("Continue");
         continueButton.addActionListener(new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
+                ControlScreen controlScreen = new ControlScreen(controllerHandler);
                 controlScreen.displayScreen("", 0, 4, false);
                 controlScreen.setVisible(true);
                 dispose();

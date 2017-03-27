@@ -2,6 +2,7 @@ package de.davelee.trams.app;
 
 import javax.swing.UIManager;
 
+import de.davelee.trams.controllers.ControllerHandler;
 import de.davelee.trams.gui.SplashScreen;
 import de.davelee.trams.gui.WelcomeScreen;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -14,9 +15,10 @@ public class Application {
         }
         catch ( Exception e ) { }
         //Display splash screen to the user.
-        SplashScreen ss = new SplashScreen();
-        ss.displayScreen(false);
         ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("de/davelee/trams/spring/trams-context.xml");
+        ControllerHandler controllerHandler = context.getBean(ControllerHandler.class);
+		SplashScreen ss = new SplashScreen(controllerHandler);
+        ss.displayScreen(false);
         for ( int i = 12; i > -5; i-- ) {
             try {
                 Thread.sleep(200);
@@ -25,7 +27,7 @@ public class Application {
             catch ( InterruptedException ie ) { }
         }
         ss.dispose();
-        WelcomeScreen welcomeScreen = context.getBean(WelcomeScreen.class);
+        WelcomeScreen welcomeScreen = new WelcomeScreen(controllerHandler);
         welcomeScreen.displayScreen();
 	}
 	

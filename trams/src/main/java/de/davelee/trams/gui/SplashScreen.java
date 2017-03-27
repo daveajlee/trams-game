@@ -5,6 +5,7 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
+import de.davelee.trams.controllers.ControllerHandler;
 import de.davelee.trams.controllers.GameController;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -24,20 +25,10 @@ public class SplashScreen extends JFrame {
     private JLabel loadingLabel;
     private JLabel copyrightLabel;
 
-    @Autowired
-    private GameController gameController;
+    private ControllerHandler controllerHandler;
 
-    private String version;
-
-    public SplashScreen ( ) {
-    }
-
-    public String getVersion() {
-        return version;
-    }
-
-	public void setVersion(String version) {
-        this.version = version;
+    public SplashScreen (final ControllerHandler controllerHandler ) {
+        this.controllerHandler = controllerHandler;
     }
     
     /**
@@ -112,7 +103,7 @@ public class SplashScreen extends JFrame {
         //Construct loading panel to add to the centre panel.
         JPanel loadingPanel = new JPanel();
         loadingPanel.setBackground(Color.WHITE);
-        if ( isAboutScreen ) { loadingLabel = new JLabel("Version: " + version); }
+        if ( isAboutScreen ) { loadingLabel = new JLabel("Version: " + controllerHandler.getVersion()); }
         else { loadingLabel = new JLabel("Loading... Please Wait!"); }
         loadingLabel.setFont(new Font("Arial", Font.ITALIC, 15));
         loadingPanel.add(loadingLabel);
@@ -133,7 +124,7 @@ public class SplashScreen extends JFrame {
             this.getContentPane().addMouseListener ( new MouseListener () {
                 public void mouseClicked(MouseEvent e) {
                     dispose();
-                    gameController.resumeSimulation();
+                    controllerHandler.getGameController().resumeSimulation();
                 }
                 public void mousePressed(MouseEvent e) {}
                 public void mouseReleased(MouseEvent e) {}
@@ -143,7 +134,7 @@ public class SplashScreen extends JFrame {
             imageDisplay.addMouseListener ( new MouseListener () {
                 public void mouseClicked(MouseEvent e) {
                     dispose();
-                    gameController.resumeSimulation();
+                    controllerHandler.getGameController().resumeSimulation();
                 }
                 public void mousePressed(MouseEvent e) {}
                 public void mouseReleased(MouseEvent e) {}
@@ -153,7 +144,7 @@ public class SplashScreen extends JFrame {
             busDisplay.addMouseListener ( new MouseListener () {
                 public void mouseClicked(MouseEvent e) {
                     dispose();
-                    gameController.resumeSimulation();
+                    controllerHandler.getGameController().resumeSimulation();
                 }
                 public void mousePressed(MouseEvent e) {}
                 public void mouseReleased(MouseEvent e) {}
