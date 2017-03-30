@@ -5,11 +5,16 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
        		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
+       <context:property-placeholder location="classpath:gui.properties"/>
+
        <context:component-scan base-package="de.davelee.trams.controllers, de.davelee.trams.factory, de.davelee.trams.services"/>
 
        <import resource="scenario-context.xml"/>
        <import resource="vehicle-context.xml"/>
        <import resource="database-context.xml"/>
-       <import resource="gui-context.xml"/>
+
+       <bean name="gui:controllerHandler" class="de.davelee.trams.controllers.ControllerHandler">
+              <property name="version" value="${trams.version}"/>
+       </bean>
 
 </beans>

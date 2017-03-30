@@ -21,10 +21,7 @@ import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
-import de.davelee.trams.controllers.GameController;
-import de.davelee.trams.controllers.VehicleController;
+import de.davelee.trams.controllers.ControllerHandler;
 import de.davelee.trams.gui.ControlScreen;
 import de.davelee.trams.gui.ImageDisplay;
 import de.davelee.trams.model.GameModel;
@@ -32,11 +29,11 @@ import de.davelee.trams.model.VehicleModel;
 
 public class VehicleDepotPanel {
 	
-	@Autowired
-	private GameController gameController;
-	
-	@Autowired
-	private VehicleController vehicleController;
+	private ControllerHandler controllerHandler;
+
+	public VehicleDepotPanel (final ControllerHandler controllerHandler ) {
+        this.controllerHandler = controllerHandler;
+    }
 	
 	public JPanel createPanel ( final String vehicleType, final ControlScreen controlScreen, final DisplayPanel displayPanel ) {
         
@@ -63,13 +60,13 @@ public class VehicleDepotPanel {
         centrePanel.setLayout ( new BoxLayout ( centrePanel, BoxLayout.PAGE_AXIS ) );
         centrePanel.setBackground(Color.WHITE);
         
-        final GameModel gameModel = gameController.getGameModel();
+        final GameModel gameModel = controllerHandler.getGameController().getGameModel();
         
         //Get vehicle data now so that we can used to compile first!
         DefaultListModel vehiclesModel = new DefaultListModel();
-        VehicleModel[] vehicleModels = vehicleController.getAllCreatedVehicles(); 
+        VehicleModel[] vehicleModels = controllerHandler.getVehicleController().getAllCreatedVehicles();
         for ( int i = 0; i < vehicleModels.length; i++ ) {
-            if ( vehicleController.hasVehicleBeenDelivered(vehicleModels[i].getDeliveryDate(), gameModel.getCurrentTime()) ) {
+            if ( controllerHandler.getVehicleController().hasVehicleBeenDelivered(vehicleModels[i].getDeliveryDate(), gameModel.getCurrentTime()) ) {
                 vehiclesModel.addElement(vehicleModels[i].getRegistrationNumber());
             }
         }
@@ -77,9 +74,9 @@ public class VehicleDepotPanel {
         //Create vehicle object so that we can pull information from it.
         final VehicleModel vehicleModel;
         if ( !vehicleType.equalsIgnoreCase("") ) {
-            vehicleModel = vehicleController.getVehicleByModel(vehicleType);
+            vehicleModel = controllerHandler.getVehicleController().getVehicleByModel(vehicleType);
         } else {
-        	vehicleModel = vehicleController.getVehicleByRegistrationNumber(vehiclesModel.get(0).toString());
+        	vehicleModel = controllerHandler.getVehicleController().getVehicleByRegistrationNumber(vehiclesModel.get(0).toString());
         }
         
         //Create picture panel.
@@ -121,7 +118,7 @@ public class VehicleDepotPanel {
         ageLabel.setFont(new Font("Arial", Font.ITALIC, 14));
         ageLabelPanel.add(ageLabel);
         gridPanel.add(ageLabel);
-        JLabel ageField = new JLabel(vehicleController.getAge(vehicleModel.getDeliveryDate(),
+        JLabel ageField = new JLabel(controllerHandler.getVehicleController().getAge(vehicleModel.getDeliveryDate(),
         		gameModel.getCurrentTime()) + " months");
         ageField.setFont(new Font("Arial", Font.PLAIN, 12));
         gridPanel.add(ageField);
@@ -163,7 +160,7 @@ public class VehicleDepotPanel {
         valueLabelPanel.add(valueLabel);
         gridPanel.add(valueLabel);
         DecimalFormat format = new DecimalFormat("0.00");
-        JLabel valueField = new JLabel("£" + format.format(vehicleController.getValue(vehicleModel, gameModel.getCurrentTime())));
+        JLabel valueField = new JLabel("£" + format.format(controllerHandler.getVehicleController().getValue(vehicleModel, gameModel.getCurrentTime())));
         valueField.setFont(new Font("Arial", Font.PLAIN, 12));
         gridPanel.add(valueField);
         
@@ -178,7 +175,7 @@ public class VehicleDepotPanel {
         JButton sellVehicleButton = new JButton("Sell Vehicle");
         sellVehicleButton.addActionListener ( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
-                vehicleController.sellVehicle(vehicleModel);
+                controllerHandler.getVehicleController().sellVehicle(vehicleModel);
                 controlScreen.redrawManagement(createPanel("", controlScreen, displayPanel), gameModel);
             }
         });
@@ -188,7 +185,7 @@ public class VehicleDepotPanel {
         JButton managementScreenButton = new JButton("Return to Management Screen");
         managementScreenButton.addActionListener ( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
-                controlScreen.redrawManagement(new DisplayPanel().createPanel(controlScreen), gameModel); 
+                controlScreen.redrawManagement(new DisplayPanel(controllerHandler).createPanel(controlScreen), gameModel);
             }
         });
         bottomButtonPanel.add(managementScreenButton);

@@ -1,5 +1,6 @@
 package de.davelee.trams.controllers;
 
+import de.davelee.trams.data.Driver;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -31,6 +32,18 @@ public class ControllerHandler {
     @Autowired
     private RouteScheduleController routeScheduleController;
 
+    @Autowired
+    private JourneyPatternController journeyPatternController;
+
+    @Autowired
+    private TimetableController timetableController;
+
+    @Autowired
+    private DriverController driverController;
+
+    @Autowired
+    private TipController tipController;
+
     private String version;
 
     public GameController getGameController() {
@@ -59,6 +72,38 @@ public class ControllerHandler {
 
     public RouteScheduleController getRouteScheduleController() {
         return routeScheduleController;
+    }
+
+    public JourneyPatternController getJourneyPatternController() {
+        return journeyPatternController;
+    }
+
+    public void setJourneyPatternController(JourneyPatternController journeyPatternController) {
+        this.journeyPatternController = journeyPatternController;
+    }
+
+    public TimetableController getTimetableController() {
+        return timetableController;
+    }
+
+    public void setTimetableController(TimetableController timetableController) {
+        this.timetableController = timetableController;
+    }
+
+    public DriverController getDriverController() {
+        return driverController;
+    }
+
+    public void setDriverController(DriverController driverController) {
+        this.driverController = driverController;
+    }
+
+    public TipController getTipController() {
+        return tipController;
+    }
+
+    public void setTipController(TipController tipController) {
+        this.tipController = tipController;
     }
 
     public String getVersion() {

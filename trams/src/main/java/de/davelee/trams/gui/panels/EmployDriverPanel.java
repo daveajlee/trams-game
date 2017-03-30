@@ -17,22 +17,19 @@ import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
-import de.davelee.trams.controllers.DriverController;
-import de.davelee.trams.controllers.GameController;
+import de.davelee.trams.controllers.ControllerHandler;
 import de.davelee.trams.gui.ControlScreen;
 import de.davelee.trams.model.DriverModel;
 import de.davelee.trams.model.GameModel;
 import de.davelee.trams.util.DateFormats;
 
 public class EmployDriverPanel {
+
+    private ControllerHandler controllerHandler;
 	
-	@Autowired
-	private GameController gameController;
-	
-	@Autowired
-	private DriverController driverController;
+	public EmployDriverPanel (final ControllerHandler controllerHandler ) {
+        this.controllerHandler = controllerHandler;
+    }
 	
 	public JPanel createPanel ( final ControlScreen controlScreen, final DisplayPanel displayPanel ) {
 		//Create screen panel to add things to.
@@ -77,7 +74,7 @@ public class EmployDriverPanel {
 
         gridPanel.add(contractedHoursPanel);
         
-        final GameModel gameModel = gameController.getGameModel();
+        final GameModel gameModel = controllerHandler.getGameController().getGameModel();
 
         //Create label and field for start date and add it to the start panel.
         JPanel startLabelPanel = new JPanel();
@@ -87,7 +84,7 @@ public class EmployDriverPanel {
         startLabelPanel.add(startLabel);
         final Calendar startDate = (Calendar) gameModel.getCurrentTime().clone();
         startDate.add(Calendar.HOUR, 72);
-        JLabel startField = new JLabel("" + gameController.formatDateString(startDate, DateFormats.FULL_FORMAT));
+        JLabel startField = new JLabel("" + controllerHandler.getGameController().formatDateString(startDate, DateFormats.FULL_FORMAT));
         startField.setFont(new Font("Arial", Font.ITALIC, 14));
         startLabelPanel.add(startField);
         gridPanel.add(startLabelPanel);
@@ -103,7 +100,7 @@ public class EmployDriverPanel {
             	driverModel.setName(driverNameField.getText());
             	driverModel.setContractedHours((Integer) contractedHoursSpinner.getValue());
             	driverModel.setStartDate(startDate);
-                driverController.employDriver(driverModel);
+                controllerHandler.getDriverController().employDriver(driverModel);
                 controlScreen.redrawManagement(displayPanel.createPanel(controlScreen), gameModel);
             }
         });

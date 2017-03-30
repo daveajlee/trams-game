@@ -27,11 +27,8 @@ import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import de.davelee.trams.controllers.ControllerHandler;
 
-import de.davelee.trams.controllers.GameController;
-import de.davelee.trams.controllers.JourneyPatternController;
-import de.davelee.trams.controllers.TimetableController;
 import de.davelee.trams.gui.ControlScreen;
 import de.davelee.trams.model.GameModel;
 import de.davelee.trams.model.JourneyPatternModel;
@@ -40,24 +37,18 @@ import de.davelee.trams.model.TimetableModel;
 import de.davelee.trams.util.DateFormats;
 
 public class TimetablePanel {
-	
-	@Autowired
-	private GameController gameController;
-	
-	@Autowired
-	private TimetableController timetableController;
-	
-	@Autowired
-	private JourneyPatternController journeyPatternController;
 
-    @Autowired
-	private JourneyPatternPanel journeyPatternPanel;
+    private ControllerHandler controllerHandler;
+
+    public TimetablePanel (final ControllerHandler controllerHandler) {
+        this.controllerHandler = controllerHandler;
+    }
 	
 	private JButton createJourneyPatternButton;
 	private JButton deleteJourneyPatternButton;
 	
 	public JPanel createPanel ( final TimetableModel timetableModel, final RouteModel routeModel, final ControlScreen controlScreen, final RoutePanel routePanel, final DisplayPanel displayPanel ) {
-		final GameModel gameModel = gameController.getGameModel();
+		final GameModel gameModel = controllerHandler.getGameController().getGameModel();
         
         //Create timetableScreen panel to add things to.
         JPanel timetableScreenPanel = new JPanel();
@@ -228,9 +219,9 @@ public class TimetablePanel {
         centreJourneyPatternListPanel.setBackground(Color.WHITE);
         DefaultListModel journeyPatternModel = new DefaultListModel();
         //Now get all the journey pattern which we have at the moment.
-        TimetableModel journeyTimetableModel = timetableController.getRouteTimetable(routeModel, timetableNameField.getText());
+        TimetableModel journeyTimetableModel = controllerHandler.getTimetableController().getRouteTimetable(routeModel, timetableNameField.getText());
         if ( journeyTimetableModel != null ) {
-            JourneyPatternModel[] journeyPatternModels = journeyPatternController.getJourneyPatternModels(journeyTimetableModel, routeModel.getRouteNumber());
+            JourneyPatternModel[] journeyPatternModels = controllerHandler.getJourneyPatternController().getJourneyPatternModels(journeyTimetableModel, routeModel.getRouteNumber());
             for ( int i = 0; i < journeyPatternModels.length; i++ ) {
                 journeyPatternModel.addElement(journeyPatternModels[i].getName());
             }
@@ -250,7 +241,7 @@ public class TimetablePanel {
         if (timetableNameField.getText().equalsIgnoreCase("")) { createJourneyPatternButton.setEnabled(false); }
         createJourneyPatternButton.addActionListener(new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
-            	TimetableModel selectedTimetableModel = timetableController.getRouteTimetable(routeModel, timetableNameField.getText());
+            	TimetableModel selectedTimetableModel = controllerHandler.getTimetableController().getRouteTimetable(routeModel, timetableNameField.getText());
                 //Create relevant calendar object.
                 if ( selectedTimetableModel == null) {
                     try {
@@ -263,14 +254,15 @@ public class TimetablePanel {
                         validTo.setTime(dateTo);
                         validTo.set(Calendar.DAY_OF_MONTH, Integer.parseInt(validToDayModel.getSelectedItem().toString()));
                         //Save this timetable with valid dates first.
-                        timetableController.createTimetable(timetableNameField.getText(), validFrom, validTo, routeModel);
-                        selectedTimetableModel = timetableController.getRouteTimetable(routeModel, timetableNameField.getText());
+                        controllerHandler.getTimetableController().createTimetable(timetableNameField.getText(), validFrom, validTo, routeModel);
+                        selectedTimetableModel = controllerHandler.getTimetableController().getRouteTimetable(routeModel, timetableNameField.getText());
                         //logger.debug("Adding timetable with name " + theTimetableNameField.getText() + " to route " + theSelectedRoute.getRouteNumber());
                     } catch ( ParseException pe ) {
                         pe.printStackTrace();
                     }
                 }
                 //Show the actual screen!
+                JourneyPatternPanel journeyPatternPanel = new JourneyPatternPanel(controllerHandler);
                 controlScreen.redrawManagement(journeyPatternPanel.createPanel(routeModel.getStopNames(), selectedTimetableModel, null, routeModel, controlScreen, displayPanel), gameModel);
             }
         });

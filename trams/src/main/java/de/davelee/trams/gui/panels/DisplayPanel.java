@@ -18,62 +18,20 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 
+import de.davelee.trams.controllers.ControllerHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
-import de.davelee.trams.controllers.DriverController;
-import de.davelee.trams.controllers.GameController;
-import de.davelee.trams.controllers.RouteController;
-import de.davelee.trams.controllers.RouteScheduleController;
-import de.davelee.trams.controllers.TipController;
-import de.davelee.trams.controllers.VehicleController;
 import de.davelee.trams.gui.ControlScreen;
 import de.davelee.trams.gui.ImageDisplay;
 
 public class DisplayPanel {
-	
-	@Autowired
-	private DriverController driverController;
-	
-	@Autowired
-	private GameController gameController;
-	
-	@Autowired
-	private RouteController routeController;
-	
-	@Autowired 
-	private RouteScheduleController routeScheduleController;
-	
-	@Autowired
-	private VehicleController vehicleController;
-	
-	@Autowired
-	private TipController tipController;
 
-	@Autowired
-	private ScenarioPanel myScenarioPanel;
+    private ControllerHandler controllerHandler;
 
-	@Autowired
-	private LocationMapPanel myLocationMapPanel;
-
-    @Autowired
-	private RoutePanel myRoutePanel;
-
-    @Autowired
-	private ViewTimetablePanel myViewTimetablePanel;
-
-    @Autowired
-	private PurchaseVehiclePanel myPurchaseVehiclePanel;
-
-    @Autowired
-	private VehicleDepotPanel vehicleDepotPanel;
-
-    @Autowired
-	private EmployDriverPanel employDriverPanel;
-
-    @Autowired
-	private AllocationPanel myAllocationPanel;
+    public DisplayPanel (final ControllerHandler controllerHandler) {
+        this.controllerHandler = controllerHandler;
+    }
 
 	private static final Logger logger = LoggerFactory.getLogger(DisplayPanel.class);
 	
@@ -86,7 +44,7 @@ public class DisplayPanel {
         JPanel informationPanel = new JPanel();
         informationPanel.setBackground(Color.WHITE);
         ImageDisplay infoDisplay = null;
-        if ( routeController.getNumberRoutes() == 0 || (vehicleController.getAllCreatedVehicles() != null && vehicleController.getAllCreatedVehicles().length == 0) || (vehicleController.getAllocations() != null && vehicleController.getAllocations().size() == 0 )) {
+        if ( controllerHandler.getRouteController().getNumberRoutes() == 0 || (controllerHandler.getVehicleController().getAllCreatedVehicles() != null && controllerHandler.getVehicleController().getAllCreatedVehicles().length == 0) || (controllerHandler.getVehicleController().getAllocations() != null && controllerHandler.getVehicleController().getAllocations().size() == 0 )) {
             infoDisplay = new ImageDisplay("xpic.png",0,0);
         }
         else {
@@ -97,18 +55,18 @@ public class DisplayPanel {
         informationPanel.add(infoDisplay, BorderLayout.WEST);
         JTextArea informationArea = new JTextArea();
         informationArea.setFont(new Font("Arial", Font.PLAIN, 14));
-        if ( routeController.getNumberRoutes() == 0 ) {
+        if ( controllerHandler.getRouteController().getNumberRoutes() == 0 ) {
             informationArea.setText("WARNING: No routes have been devised yet. Click 'Create Route' to define a route.");
         }
-        else if ( vehicleController.getAllCreatedVehicles().length == 0 ) {
+        else if ( controllerHandler.getVehicleController().getAllCreatedVehicles().length == 0 ) {
             informationArea.setText("WARNING: You can't run routes without vehicles. Click 'Purchase Vehicle' to buy a vehicle");
         }
-        else if ( vehicleController.getAllocations().size() == 0 ) {
+        else if ( controllerHandler.getVehicleController().getAllocations().size() == 0 ) {
             informationArea.setText("WARNING: To successfully run journeys, you must assign vehicles to route schedules. Click 'Allocations' to match vehicles to route schedules");
         }
         else {
-            logger.debug("The allocations size was " + vehicleController.getAllocations().size() + " which is " + vehicleController.getAllocations().toString());
-            informationArea.setText(tipController.getRandomTipMessage());
+            logger.debug("The allocations size was " + controllerHandler.getVehicleController().getAllocations().size() + " which is " + controllerHandler.getVehicleController().getAllocations().toString());
+            informationArea.setText(controllerHandler.getTipController().getRandomTipMessage());
         }
         informationArea.setRows(4);
         informationArea.setColumns(50);
@@ -150,7 +108,8 @@ public class DisplayPanel {
         viewScenarioButton.addActionListener( new ActionListener() {
             public void actionPerformed (ActionEvent e) {
                 //Show the actual screen!
-                    controlScreen.redrawManagement(myScenarioPanel.createPanel(controlScreen, DisplayPanel.this), gameController.getGameModel());
+                ScenarioPanel myScenarioPanel = new ScenarioPanel(controllerHandler);
+                controlScreen.redrawManagement(myScenarioPanel.createPanel(controlScreen, DisplayPanel.this), controllerHandler.getGameController().getGameModel());
             }
         });
         viewScenarioButtonPanel.add(viewScenarioButton);
@@ -162,7 +121,8 @@ public class DisplayPanel {
         locationMapButton.addActionListener( new ActionListener() {
             public void actionPerformed (ActionEvent e) {
                 //Show the actual screen!
-                    controlScreen.redrawManagement(myLocationMapPanel.createPanel(controlScreen, DisplayPanel.this), gameController.getGameModel());
+                LocationMapPanel myLocationMapPanel = new LocationMapPanel(controllerHandler);
+                controlScreen.redrawManagement(myLocationMapPanel.createPanel(controlScreen, DisplayPanel.this), controllerHandler.getGameController().getGameModel());
             }
         });
         locationMapButtonPanel.add(locationMapButton);
@@ -200,7 +160,8 @@ public class DisplayPanel {
         addRouteButton.addActionListener( new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 //Show the actual screen!
-                    controlScreen.redrawManagement(myRoutePanel.createPanel(null, controlScreen, DisplayPanel.this), gameController.getGameModel());
+                RoutePanel myRoutePanel = new RoutePanel(controllerHandler);
+                controlScreen.redrawManagement(myRoutePanel.createPanel(null, controlScreen, DisplayPanel.this), controllerHandler.getGameController().getGameModel());
             }
         });
         createRouteButtonPanel.add(addRouteButton);
@@ -209,11 +170,13 @@ public class DisplayPanel {
         JPanel timetableButtonPanel = new JPanel(new GridBagLayout());
         timetableButtonPanel.setBackground(Color.WHITE);
         final JButton routeTimetableButton = new JButton("View Route Info");
-        if ( routeController.getNumberRoutes() == 0 ) { routeTimetableButton.setEnabled(false); }
+        if ( controllerHandler.getRouteController().getNumberRoutes() == 0 ) { routeTimetableButton.setEnabled(false); }
         routeTimetableButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                RoutePanel myRoutePanel = new RoutePanel(controllerHandler);
+                ViewTimetablePanel myViewTimetablePanel = new ViewTimetablePanel(controllerHandler);
                 //Show the actual screen!
-                    controlScreen.redrawManagement(myViewTimetablePanel.createPanel(routeController.getRouteModels()[0].getRouteNumber(), 0, 0, controlScreen, myRoutePanel, DisplayPanel.this), gameController.getGameModel());
+                controlScreen.redrawManagement(myViewTimetablePanel.createPanel(controllerHandler.getRouteController().getRouteModels()[0].getRouteNumber(), 0, 0, controlScreen, myRoutePanel, DisplayPanel.this), controllerHandler.getGameController().getGameModel());
             }
         });
         timetableButtonPanel.add(routeTimetableButton);
@@ -251,8 +214,9 @@ public class DisplayPanel {
         final JButton purchaseVehicleScreenButton = new JButton("Purchase");
         purchaseVehicleScreenButton.addActionListener( new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                PurchaseVehiclePanel myPurchaseVehiclePanel = new PurchaseVehiclePanel(controllerHandler);
                 //Show the actual screen!
-                    controlScreen.redrawManagement(myPurchaseVehiclePanel.createPanel(vehicleController.getFirstVehicleModel(), controlScreen, DisplayPanel.this), gameController.getGameModel());
+                controlScreen.redrawManagement(myPurchaseVehiclePanel.createPanel(controllerHandler.getVehicleController().getFirstVehicleModel(), controlScreen, DisplayPanel.this), controllerHandler.getGameController().getGameModel());
             }
         });
         purchaseVehicleButtonPanel.add(purchaseVehicleScreenButton);
@@ -261,11 +225,12 @@ public class DisplayPanel {
         JPanel viewDepotButtonPanel = new JPanel(new GridBagLayout());
         viewDepotButtonPanel.setBackground(Color.WHITE);
         final JButton viewDepotButton = new JButton("View Depot");
-        if ( !vehicleController.hasSomeVehiclesBeenDelivered() ) { viewDepotButton.setEnabled(false); }
+        if ( !controllerHandler.getVehicleController().hasSomeVehiclesBeenDelivered() ) { viewDepotButton.setEnabled(false); }
         viewDepotButton.addActionListener( new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                VehicleDepotPanel vehicleDepotPanel = new VehicleDepotPanel(controllerHandler);
                 //Show the actual screen!
-                    controlScreen.redrawManagement(vehicleDepotPanel.createPanel("", controlScreen, DisplayPanel.this), gameController.getGameModel());
+                controlScreen.redrawManagement(vehicleDepotPanel.createPanel("", controlScreen, DisplayPanel.this), controllerHandler.getGameController().getGameModel());
             }
         });
         viewDepotButtonPanel.add(viewDepotButton);
@@ -303,8 +268,9 @@ public class DisplayPanel {
         final JButton employDriversButton = new JButton("Employ");
         employDriversButton.addActionListener( new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                EmployDriverPanel employDriverPanel = new EmployDriverPanel(controllerHandler);
                 //Show the actual screen!
-                    controlScreen.redrawManagement(employDriverPanel.createPanel(controlScreen, DisplayPanel.this), gameController.getGameModel());
+                controlScreen.redrawManagement(employDriverPanel.createPanel(controlScreen, DisplayPanel.this), controllerHandler.getGameController().getGameModel());
             }
         });
         employDriverButtonPanel.add(employDriversButton);
@@ -313,11 +279,11 @@ public class DisplayPanel {
         JPanel viewDriversButtonPanel = new JPanel(new GridBagLayout());
         viewDriversButtonPanel.setBackground(Color.WHITE);
         final JButton viewDriversButton = new JButton("View Drivers");
-        if ( !driverController.hasSomeDriversBeenEmployed() ) { viewDriversButton.setEnabled(false); }
+        if ( !controllerHandler.getDriverController().hasSomeDriversBeenEmployed() ) { viewDriversButton.setEnabled(false); }
         viewDriversButton.addActionListener( new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 //Show the actual screen!
-                controlScreen.redrawManagement(new ViewDriverPanel().createPanel(controlScreen), gameController.getGameModel());
+                controlScreen.redrawManagement(new ViewDriverPanel(controllerHandler).createPanel(controlScreen), controllerHandler.getGameController().getGameModel());
             }
         });
         viewDriversButtonPanel.add(viewDriversButton);
@@ -351,8 +317,9 @@ public class DisplayPanel {
         final JButton changeAllocationButton = new JButton("Change");
         changeAllocationButton.addActionListener( new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                AllocationPanel myAllocationPanel = new AllocationPanel(controllerHandler);
                 //Show the actual screen!
-                    controlScreen.redrawManagement(myAllocationPanel.createPanel(controlScreen, DisplayPanel.this), gameController.getGameModel());
+                controlScreen.redrawManagement(myAllocationPanel.createPanel(controlScreen, DisplayPanel.this), controllerHandler.getGameController().getGameModel());
             }
         });
         allocationButtonPanel.add(changeAllocationButton);

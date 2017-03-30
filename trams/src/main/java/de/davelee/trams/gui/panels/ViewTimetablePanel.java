@@ -12,37 +12,23 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
+import de.davelee.trams.controllers.*;
 import de.davelee.trams.model.TimetableModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
-import de.davelee.trams.controllers.GameController;
-import de.davelee.trams.controllers.JourneyController;
-import de.davelee.trams.controllers.JourneyPatternController;
-import de.davelee.trams.controllers.RouteController;
-import de.davelee.trams.controllers.TimetableController;
 import de.davelee.trams.gui.ControlScreen;
 import de.davelee.trams.model.GameModel;
 import de.davelee.trams.model.JourneyModel;
 import de.davelee.trams.model.RouteModel;
 
 public class ViewTimetablePanel {
-	
-	@Autowired
-	private RouteController routeController;
-	
-	@Autowired
-	private TimetableController timetableController;
-	
-	@Autowired
-	private GameController gameController;
-	
-	@Autowired
-	private JourneyPatternController journeyPatternController;
-	
-	@Autowired
-	private JourneyController journeyController;
+
+    private ControllerHandler controllerHandler;
+
+    public ViewTimetablePanel ( final ControllerHandler controllerHandler ) {
+        this.controllerHandler = controllerHandler;
+    }
 
     private JTable myTable = new JTable();
 	private JComboBox directionSelectionBox;
@@ -56,8 +42,8 @@ public class ViewTimetablePanel {
         routeScreenPanel.setLayout( new BoxLayout(routeScreenPanel, BoxLayout.PAGE_AXIS));
         routeScreenPanel.setBackground(Color.WHITE);
      
-        final RouteModel routeModel = routeController.getRoute(route);
-        final GameModel gameModel = gameController.getGameModel();
+        final RouteModel routeModel = controllerHandler.getRouteController().getRoute(route);
+        final GameModel gameModel = controllerHandler.getGameController().getGameModel();
             
         //Create an overall screen panel.
         JPanel overallScreenPanel = new JPanel(new BorderLayout());
@@ -77,7 +63,7 @@ public class ViewTimetablePanel {
         routeSelectionLabel.setFont(new Font("Arial", Font.BOLD, 16));
         selectionPanel.add(routeSelectionLabel);
         final DefaultComboBoxModel routeSelectionModel = new DefaultComboBoxModel();
-        RouteModel[] routeModels = routeController.getRouteModels();
+        RouteModel[] routeModels = controllerHandler.getRouteController().getRouteModels();
         for ( int i = 0; i < routeModels.length; i++ ) {
             routeSelectionModel.addElement(routeModels[i].getRouteNumber());
         }
@@ -130,7 +116,7 @@ public class ViewTimetablePanel {
         timetableSelectionLabel.setFont(new Font("Arial", Font.BOLD, 16));
         selectionPanel.add(timetableSelectionLabel);
         final DefaultComboBoxModel timetableSelectionModel = new DefaultComboBoxModel();
-        TimetableModel[] timetableModels = timetableController.getRouteTimetables(routeModel);
+        TimetableModel[] timetableModels = controllerHandler.getTimetableController().getRouteTimetables(routeModel);
         for ( int i = 0; i < timetableModels.length; i++ ) {
             timetableSelectionModel.addElement(timetableModels[i].getName());
         }
@@ -142,10 +128,10 @@ public class ViewTimetablePanel {
         //Show valid information.
         JPanel validityPanel = new JPanel(new BorderLayout());
         validityPanel.setBackground(Color.WHITE);
-        JLabel validFromDateLabel = new JLabel("Valid From: " + timetableController.getDateInfo(timetableController.getCurrentTimetable(routeModel, gameModel.getCurrentTime()).getValidFromDate()));
+        JLabel validFromDateLabel = new JLabel("Valid From: " + controllerHandler.getTimetableController().getDateInfo(controllerHandler.getTimetableController().getCurrentTimetable(routeModel, gameModel.getCurrentTime()).getValidFromDate()));
         validFromDateLabel.setFont(new Font("Arial", Font.ITALIC, 14));
         validityPanel.add(validFromDateLabel, BorderLayout.NORTH);
-        JLabel validToDateLabel = new JLabel("Valid To: " + timetableController.getDateInfo(timetableController.getCurrentTimetable(routeModel, gameModel.getCurrentTime()).getValidToDate()));
+        JLabel validToDateLabel = new JLabel("Valid To: " + controllerHandler.getTimetableController().getDateInfo(controllerHandler.getTimetableController().getCurrentTimetable(routeModel, gameModel.getCurrentTime()).getValidToDate()));
         validToDateLabel.setFont(new Font("Arial", Font.ITALIC, 14));
         validityPanel.add(validToDateLabel, BorderLayout.SOUTH);
         topPanel.add(validityPanel, BorderLayout.SOUTH);
@@ -205,9 +191,9 @@ public class ViewTimetablePanel {
         } catch ( ParseException parseEx ) {
         }*/
         //TODO: Add multiple route schedules.
-        JourneyModel[] journeyModels = journeyController.getJourneysByRouteScheduleNumberAndRouteNumber(direction, routeNumber);
+        JourneyModel[] journeyModels = controllerHandler.getJourneyController().getJourneysByRouteScheduleNumberAndRouteNumber(direction, routeNumber);
         for ( int i = 0; i < journeyModels.length; i++ ) {
-            Calendar cal = journeyController.getStopTime(journeyModels[i], stopName);
+            Calendar cal = controllerHandler.getJourneyController().getStopTime(journeyModels[i], stopName);
             if ( cal != null ) {
                 int hour = cal.get(Calendar.HOUR_OF_DAY); int minute = cal.get(Calendar.MINUTE); String minuteStr = "";
                 if ( minute < 10 ) { minuteStr = "0" + minute; } else { minuteStr = "" + minute; }

@@ -23,12 +23,8 @@ import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import de.davelee.trams.controllers.ControllerHandler;
 
-import de.davelee.trams.controllers.GameController;
-import de.davelee.trams.controllers.RouteController;
-import de.davelee.trams.controllers.RouteScheduleController;
-import de.davelee.trams.controllers.VehicleController;
 import de.davelee.trams.gui.ControlScreen;
 import de.davelee.trams.model.GameModel;
 import de.davelee.trams.model.RouteModel;
@@ -38,17 +34,11 @@ import de.davelee.trams.util.DateFormats;
 
 public class AllocationPanel {
 	
-	@Autowired
-	private GameController gameController;
-	
-	@Autowired
-	private RouteController routeController;
-	
-	@Autowired
-	private RouteScheduleController routeScheduleController;
-	
-	@Autowired
-	private VehicleController vehicleController;
+	private ControllerHandler controllerHandler;
+
+	public AllocationPanel ( final ControllerHandler controllerHandler ) {
+	    this.controllerHandler = controllerHandler;
+    }
 	
 	private DefaultListModel allocationsModel;
 	private JList allocationsList;
@@ -59,7 +49,7 @@ public class AllocationPanel {
         allocationScreenPanel.setLayout ( new BoxLayout ( allocationScreenPanel, BoxLayout.PAGE_AXIS ) );
         allocationScreenPanel.setBackground(Color.WHITE);
         
-        final GameModel gameModel = gameController.getGameModel();
+        final GameModel gameModel = controllerHandler.getGameController().getGameModel();
 
         //Create label at top of screen in topLabelPanel and add it to screenPanel.
         JPanel topLabelPanel = new JPanel(new BorderLayout());
@@ -72,7 +62,7 @@ public class AllocationPanel {
         topRightPanel.add(topLabel);
         JPanel dayPanel = new JPanel();
         dayPanel.setBackground(Color.WHITE);
-        JLabel dayLabel = new JLabel(gameController.formatDateString(gameModel.getCurrentTime(), DateFormats.FULL_FORMAT), SwingConstants.CENTER);
+        JLabel dayLabel = new JLabel(controllerHandler.getGameController().formatDateString(gameModel.getCurrentTime(), DateFormats.FULL_FORMAT), SwingConstants.CENTER);
         dayLabel.setFont(new Font("Arial", Font.BOLD + Font.ITALIC, 20));
         dayPanel.add(dayLabel);
         topRightPanel.add(dayPanel);
@@ -119,9 +109,9 @@ public class AllocationPanel {
         final JList routesList = new JList(routesModel);
         routesList.setFixedCellWidth(270);
         routesList.setFont(new Font("Arial", Font.PLAIN, 15));
-        RouteModel[] routeModels = routeController.getRouteModels();
+        RouteModel[] routeModels = controllerHandler.getRouteController().getRouteModels();
         for ( int i = 0; i < routeModels.length; i++ ) {
-        	RouteScheduleModel[] routeScheduleModels = routeScheduleController.getRouteSchedulesByRouteNumber(routeModels[i].getRouteNumber());
+        	RouteScheduleModel[] routeScheduleModels = controllerHandler.getRouteScheduleController().getRouteSchedulesByRouteNumber(routeModels[i].getRouteNumber());
             for ( int j = 0; j < routeScheduleModels.length; j++ ) {
                 routesModel.addElement(routeScheduleModels[j].getScheduleNumber());
             }
@@ -135,7 +125,7 @@ public class AllocationPanel {
         JPanel modelPanel = new JPanel();
         modelPanel.setBackground(Color.WHITE);
         final DefaultListModel vehiclesModel = new DefaultListModel();
-        VehicleModel[] vehicleModels = vehicleController.getAllCreatedVehicles();
+        VehicleModel[] vehicleModels = controllerHandler.getVehicleController().getAllCreatedVehicles();
         for ( int i = 0; i < vehicleModels.length; i++ ) {
             if ( vehicleModels[i].getRouteScheduleNumber() != 0 ) {
                 vehiclesModel.addElement(vehicleModels[i].getRegistrationNumber() + "(" + vehicleModels[i].getModel() + ")");
@@ -184,7 +174,7 @@ public class AllocationPanel {
                     allocationsModel.removeElement(allocationsList.getSelectedValue());
                     String[] textParts = text.split("&");
                     routesModel.addElement(textParts[0].trim());
-                    VehicleModel vehicleModel = vehicleController.getVehicleByRegistrationNumber(textParts[1].trim());
+                    VehicleModel vehicleModel = controllerHandler.getVehicleController().getVehicleByRegistrationNumber(textParts[1].trim());
                     vehiclesModel.addElement(vehicleModel.getRegistrationNumber() +
                     		" (" + vehicleModel.getModel() + ")");
                     //Remove this from the interface as well.
@@ -196,14 +186,14 @@ public class AllocationPanel {
                     }*/
                     //Find vehicle object position.
                     int vehiclePos = -1;
-                    VehicleModel[] vehicleModels = vehicleController.getAllCreatedVehicles();
+                    VehicleModel[] vehicleModels = controllerHandler.getVehicleController().getAllCreatedVehicles();
                     for ( int j = 0; j < vehicleModels.length; j++ ) {
                         if ( vehicleModels[j].getRegistrationNumber().equalsIgnoreCase(textParts[1].trim())) {
                             vehiclePos = j;
                         }
                     }
                     //TODO: Set route and route schedule number.
-                    vehicleController.assignVehicleToRouteSchedule(vehicleModels[vehiclePos].getRegistrationNumber(), "0", "0");
+                    controllerHandler.getVehicleController().assignVehicleToRouteSchedule(vehicleModels[vehiclePos].getRegistrationNumber(), "0", "0");
                 }
             }
         });
@@ -228,7 +218,7 @@ public class AllocationPanel {
         allocationsModel = new DefaultListModel();
         List<String> allocations;
         String currentDate = gameModel.getCurrentTime().get(Calendar.YEAR) + "-" + gameModel.getCurrentTime().get(Calendar.MONTH) + "-" + gameModel.getCurrentTime().get(Calendar.DATE);
-        allocations = routeScheduleController.getTodayAllocations(currentDate);
+        allocations = controllerHandler.getRouteScheduleController().getTodayAllocations(currentDate);
         for ( int i = 0; i < allocations.size(); i++ ) {
             allocationsModel.addElement(allocations.get(i).toString());
             //For each allocation, remove route and vehicle from list.
@@ -273,7 +263,7 @@ public class AllocationPanel {
                         String[] allocationSplit = allocationsModel.get(i).toString().split("&");
                         //Store route detail object.
                         String routeNumber = allocationSplit[0].split("/")[0]; int routeDetailPos = -1;
-                        RouteScheduleModel[] scheduleModels = routeScheduleController.getRouteSchedulesByRouteNumber(routeController.getRoute(routeNumber).getRouteNumber());
+                        RouteScheduleModel[] scheduleModels = controllerHandler.getRouteScheduleController().getRouteSchedulesByRouteNumber(controllerHandler.getRouteController().getRoute(routeNumber).getRouteNumber());
                         for ( int k = 0; k < scheduleModels.length; k++ ) {
                             if ( scheduleModels[k].getScheduleNumber() == Integer.parseInt(allocationSplit[0].trim()) ) {
                                 routeDetailPos = k;
@@ -281,7 +271,7 @@ public class AllocationPanel {
                         }
                         //Find vehicle object position.
                         int vehiclePos = -1;
-                        VehicleModel[] vehicleModels = vehicleController.getAllCreatedVehicles();
+                        VehicleModel[] vehicleModels = controllerHandler.getVehicleController().getAllCreatedVehicles();
                         for ( int j = 0; j < vehicleModels.length; j++ ) {
                             if ( vehicleModels[j].getRegistrationNumber().equalsIgnoreCase(allocationSplit[1].trim())) {
                                 vehiclePos = j;
@@ -290,13 +280,13 @@ public class AllocationPanel {
                         }
                         //Now assign route detail to vehicle.
                         //TODO: Set route and route schedule number.
-                        vehicleController.assignVehicleToRouteSchedule(vehicleModels[vehiclePos].getRegistrationNumber(), vehicleModels[vehiclePos].getRouteNumber(), "" + scheduleModels[routeDetailPos].getScheduleNumber());
+                        controllerHandler.getVehicleController().assignVehicleToRouteSchedule(vehicleModels[vehiclePos].getRegistrationNumber(), vehicleModels[vehiclePos].getRouteNumber(), "" + scheduleModels[routeDetailPos].getScheduleNumber());
                     }
-                    VehicleModel[] vehicleModels = vehicleController.getAllCreatedVehicles();
+                    VehicleModel[] vehicleModels = controllerHandler.getVehicleController().getAllCreatedVehicles();
                     for ( int i = 0; i < vehicleModels.length; i++ ) {
                         if ( !vehiclePoses.contains(i) ) {
                         	//TODO: Set route and route schedule number.
-                        	vehicleController.assignVehicleToRouteSchedule(vehicleModels[i].getRegistrationNumber(), "0", "0");
+                        	controllerHandler.getVehicleController().assignVehicleToRouteSchedule(vehicleModels[i].getRegistrationNumber(), "0", "0");
                         }
                     }
                     //Now return to previous screen.

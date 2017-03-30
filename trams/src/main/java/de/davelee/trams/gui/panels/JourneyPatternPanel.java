@@ -28,6 +28,7 @@ import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import de.davelee.trams.controllers.ControllerHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,21 +43,12 @@ import de.davelee.trams.model.RouteModel;
 import de.davelee.trams.model.TimetableModel;
 
 public class JourneyPatternPanel {
-	
-	@Autowired
-	private GameController gameController;
-	
-	@Autowired
-	private JourneyPatternController journeyPatternController;
-	
-	@Autowired
-	private JourneyController journeyController;
 
-    @Autowired
-	private RoutePanel myRoutePanel;
+    private ControllerHandler controllerHandler;
 
-    @Autowired
-	private TimetablePanel myTimetablePanel;
+    public JourneyPatternPanel ( final ControllerHandler controllerHandler ) {
+        this.controllerHandler = controllerHandler;
+    }
 	
 	private JCheckBox[] daysBox;
 	private JButton createJourneyPatternButton;
@@ -262,7 +254,7 @@ public class JourneyPatternPanel {
         JPanel bottomButtonPanel = new JPanel();
         bottomButtonPanel.setBackground(Color.WHITE);
         
-        final GameModel gameModel = gameController.getGameModel();
+        final GameModel gameModel = controllerHandler.getGameController().getGameModel();
         
         //Create new journey pattern button and add it to screen panel.
         createJourneyPatternButton = new JButton("Create Journey Pattern");
@@ -289,13 +281,15 @@ public class JourneyPatternPanel {
                 }
                 else {
                     logger.debug("I am calling add method with timetable name " + timetableModel.getName() + "!");
-                    journeyPatternController.createJourneyPattern(journeyPatternNameField.getText(), operatingDays, 
+                    controllerHandler.getJourneyPatternController().createJourneyPattern(journeyPatternNameField.getText(), operatingDays,
             				terminus1Box.getSelectedItem().toString(), terminus2Box.getSelectedItem().toString(), timeFrom,
             				timeTo, Integer.parseInt(everyMinuteSpinner.getValue().toString()), 
             				getCurrentRouteDuration(Integer.parseInt(everyMinuteSpinner.getValue().toString())), 
             				timetableModel, routeModel.getRouteNumber());
                     }
                 //Now return to the timetable screen.
+                TimetablePanel myTimetablePanel = new TimetablePanel(controllerHandler);
+                RoutePanel myRoutePanel = new RoutePanel(controllerHandler);
                 controlScreen.redrawManagement(myTimetablePanel.createPanel(timetableModel, routeModel, controlScreen, myRoutePanel, displayPanel), gameModel);
             }
         });
@@ -304,6 +298,8 @@ public class JourneyPatternPanel {
         previousScreenButton.addActionListener ( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
                 //Return to the timetable screen.
+                TimetablePanel myTimetablePanel = new TimetablePanel(controllerHandler);
+                RoutePanel myRoutePanel = new RoutePanel(controllerHandler);
                 controlScreen.redrawManagement(myTimetablePanel.createPanel(timetableModel, routeModel, controlScreen, myRoutePanel, displayPanel), gameModel);
             }
         });
@@ -318,12 +314,12 @@ public class JourneyPatternPanel {
 	
 private int getCurrentRouteDuration ( int frequency ) {
         
-    	final GameModel gameModel = gameController.getGameModel();
+    	final GameModel gameModel = controllerHandler.getGameController().getGameModel();
     	//So duration is the distance between selected one in terminus1 and then distance between all ones in terminus2 up to selected item.
         //Note cumulative total.
         int cumDistance = 0;
         //Add distance of terminus1 and first item of terminus2 first of all - this is guaranteed.
-        cumDistance += journeyController.getDistance(gameModel.getScenarioName(), terminus1Box.getSelectedItem().toString(), terminus2Box.getItemAt(0).toString());
+        cumDistance += controllerHandler.getJourneyController().getDistance(gameModel.getScenarioName(), terminus1Box.getSelectedItem().toString(), terminus2Box.getItemAt(0).toString());
         //Now from 0 up until the selected index - add distances for terminus 2.
         int selectIndex = terminus2Box.getSelectedIndex();
         if ( selectIndex == 0 ) {
@@ -337,7 +333,7 @@ private int getCurrentRouteDuration ( int frequency ) {
             return myCumFreq;
         }
         for ( int i = 1; i <= selectIndex; i++ ) {
-            cumDistance += journeyController.getDistance(gameModel.getScenarioName(), terminus2Box.getItemAt(i-1).toString(), terminus2Box.getItemAt(i).toString());
+            cumDistance += controllerHandler.getJourneyController().getDistance(gameModel.getScenarioName(), terminus2Box.getItemAt(i-1).toString(), terminus2Box.getItemAt(i).toString());
         }
         //Return distance * 2.
         int myDistance = (cumDistance*2);
@@ -355,19 +351,19 @@ private int getCurrentRouteDuration ( int frequency ) {
 	}
 
 	private int getMaxRouteDuration ( ) {
-    	final GameModel gameModel = gameController.getGameModel();
+    	final GameModel gameModel = controllerHandler.getGameController().getGameModel();
         //So duration is the distance between selected one in terminus1 and then distance between all ones in terminus2 up to selected item.
         //Note cumulative total.
         int cumDistance = 0;
         //Add distance of terminus1 and first item of terminus2 first of all - this is guaranteed.
-        cumDistance += journeyController.getDistance(gameModel.getScenarioName(), terminus1Box.getSelectedItem().toString(), terminus2Box.getItemAt(0).toString());
+        cumDistance += controllerHandler.getJourneyController().getDistance(gameModel.getScenarioName(), terminus1Box.getSelectedItem().toString(), terminus2Box.getItemAt(0).toString());
         //Now from 0 up until the selected index - add distances for terminus 2.
         int selectIndex = terminus2Box.getSelectedIndex();
         if ( selectIndex == 0 ) {
             return cumDistance*2;
         }
         for ( int i = 1; i <= selectIndex; i++ ) {
-            cumDistance += journeyController.getDistance(gameModel.getScenarioName(), terminus2Box.getItemAt(i-1).toString(), terminus2Box.getItemAt(i).toString());
+            cumDistance += controllerHandler.getJourneyController().getDistance(gameModel.getScenarioName(), terminus2Box.getItemAt(i-1).toString(), terminus2Box.getItemAt(i).toString());
         }
         //Return distance * 2.
         return cumDistance*2;

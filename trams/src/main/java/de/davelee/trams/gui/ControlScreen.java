@@ -388,7 +388,7 @@ public class ControlScreen extends ButtonBar {
             drawMessages();
             tabbedPane.addTab("Messages", messagesPanel);
             //Create manage tab.
-            tabbedPane.addTab("Management", new DisplayPanel().createPanel(this));
+            tabbedPane.addTab("Management", new DisplayPanel(getControllerHandler()).createPanel(this));
             /*if ( userInterface.getMessageScreen() ) {
                 tabbedPane.setSelectedIndex(1);
             }

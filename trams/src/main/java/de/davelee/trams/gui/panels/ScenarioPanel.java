@@ -16,6 +16,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 
+import de.davelee.trams.controllers.ControllerHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import de.davelee.trams.controllers.GameController;
@@ -25,12 +26,12 @@ import de.davelee.trams.model.GameModel;
 import de.davelee.trams.model.ScenarioModel;
 
 public class ScenarioPanel {
+
+    private ControllerHandler controllerHandler;
 	
-	@Autowired
-	private GameController gameController;
-	
-	@Autowired
-	private ScenarioController scenarioController;
+	public ScenarioPanel (final ControllerHandler controllerHandler) {
+        this.controllerHandler = controllerHandler;
+    }
 	
 	public JPanel createPanel ( final ControlScreen controlScreen, final DisplayPanel displayPanel ) {
 		//Create screen panel to add things to.
@@ -51,7 +52,7 @@ public class ScenarioPanel {
         /*JPanel infoPanel = new JPanel(new BorderLayout());
         infoPanel.setBackground(Color.WHITE);*/
         
-        final GameModel gameModel = gameController.getGameModel();
+        final GameModel gameModel = controllerHandler.getGameController().getGameModel();
 
         //Create panel for scenario name field.
         JPanel scenarioNamePanel = new JPanel(new GridLayout(1,2,5,5));
@@ -68,7 +69,7 @@ public class ScenarioPanel {
         scenarioScreenPanel.add(scenarioNamePanel);
         scenarioScreenPanel.add(Box.createRigidArea(new Dimension(0,15)));
         
-        ScenarioModel scenarioModel = scenarioController.getScenario(gameModel.getScenarioName());
+        ScenarioModel scenarioModel = controllerHandler.getScenarioController().getScenario(gameModel.getScenarioName());
 
         //Create panel for target field.
         JPanel targetPanel = new JPanel(new GridLayout(1,2,5,5));

@@ -25,37 +25,21 @@ import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 
+import de.davelee.trams.controllers.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import de.davelee.trams.controllers.GameController;
-import de.davelee.trams.controllers.RouteController;
-import de.davelee.trams.controllers.RouteScheduleController;
-import de.davelee.trams.controllers.ScenarioController;
-import de.davelee.trams.controllers.TimetableController;
 import de.davelee.trams.gui.ControlScreen;
 import de.davelee.trams.model.GameModel;
 import de.davelee.trams.model.RouteModel;
 import de.davelee.trams.model.TimetableModel;
 
 public class RoutePanel {
-	
-	@Autowired
-	private GameController gameController;
-	
-	@Autowired
-	private ScenarioController scenarioController;
-	
-	@Autowired
-	private TimetableController timetableController;
-	
-	@Autowired
-	private RouteController routeController;
-	
-	@Autowired
-	private RouteScheduleController routeScheduleController;
 
-    @Autowired
-	private TimetablePanel myTimetablePanel;
+    private ControllerHandler controllerHandler;
+
+    public RoutePanel ( final ControllerHandler controllerHandler ) {
+        this.controllerHandler = controllerHandler;
+    }
 
     private DefaultListModel availableStopModel;
 	private DefaultListModel routeStopModel;
@@ -115,7 +99,7 @@ public class RoutePanel {
                 routeStopModel.addElement(currentStopNames.get(i));
             }
         }
-        String[] stopNames = scenarioController.getScenario(gameController.getGameModel().getScenarioName()).getStopNames();
+        String[] stopNames = controllerHandler.getScenarioController().getScenario(controllerHandler.getGameController().getGameModel().getScenarioName()).getStopNames();
         availableStopModel = new DefaultListModel();
         for ( int i = 0; i < stopNames.length; i++ ) {
             availableStopModel.addElement(stopNames[i]);
@@ -190,7 +174,7 @@ public class RoutePanel {
         timetableModel = new DefaultListModel();
         //Now get all the timetables which we have at the moment.
         try {
-            TimetableModel[] timetables = timetableController.getRouteTimetables(routeModel);
+            TimetableModel[] timetables = controllerHandler.getTimetableController().getRouteTimetables(routeModel);
             for ( TimetableModel timetable : timetables) {
                 timetableModel.addElement(timetable.getName());
             }
@@ -214,6 +198,7 @@ public class RoutePanel {
         createTimetableButton.addActionListener(new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
                 //First of all, set the selected route.
+                RouteModel displayRouteModel = routeModel;
                 if ( routeModel == null && timetableModel.getSize() == 0 ) {
                     List<String> selectedOutwardStops = new ArrayList<String>();
                     for ( int i = 0; i < routeStopModel.size(); i++ ) {
@@ -222,13 +207,14 @@ public class RoutePanel {
                     RouteModel routeModel2 = new RouteModel();
                     routeModel2.setRouteNumber(routeNumberField.getText());
                     routeModel2.setStopNames(selectedOutwardStops);
+                    displayRouteModel = routeModel2;
                     //Show the actual screen!
-                    controlScreen.redrawManagement(myTimetablePanel.createPanel(null, routeModel2, controlScreen, RoutePanel.this, displayPanel), gameController.getGameModel());
+
+
                 }
-                else {
-                    //Show the actual screen!
-                    controlScreen.redrawManagement(myTimetablePanel.createPanel(null, routeModel, controlScreen, RoutePanel.this, displayPanel), gameController.getGameModel());
-                }
+                //Show the actual screen!
+                TimetablePanel myTimetablePanel = new TimetablePanel(controllerHandler);
+                controlScreen.redrawManagement(myTimetablePanel.createPanel(null, displayRouteModel, controlScreen, RoutePanel.this, displayPanel), controllerHandler.getGameController().getGameModel());
             }
         });
         timetableButtonPanel.add(createTimetableButton);
@@ -236,7 +222,8 @@ public class RoutePanel {
         if ( timetableModel.getSize() == 0 ) { modifyTimetableButton.setEnabled(false); }
         modifyTimetableButton.addActionListener ( new ActionListener() {
             public void actionPerformed (ActionEvent e ) {
-                controlScreen.redrawManagement(myTimetablePanel.createPanel(timetableController.getRouteTimetable(routeModel, timetableList.getSelectedValue().toString()), routeModel, controlScreen, RoutePanel.this, displayPanel), gameController.getGameModel());
+                TimetablePanel myTimetablePanel = new TimetablePanel(controllerHandler);
+                controlScreen.redrawManagement(myTimetablePanel.createPanel(controllerHandler.getTimetableController().getRouteTimetable(routeModel, timetableList.getSelectedValue().toString()), routeModel, controlScreen, RoutePanel.this, displayPanel), controllerHandler.getGameController().getGameModel());
             }
         });
         timetableButtonPanel.add(modifyTimetableButton);
@@ -244,7 +231,7 @@ public class RoutePanel {
         if ( timetableModel.getSize() == 0 ) { deleteTimetableButton.setEnabled(false); }
         deleteTimetableButton.addActionListener( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
-            	timetableController.deleteTimetable(routeModel, timetableList.getSelectedValue().toString());
+            	controllerHandler.getTimetableController().deleteTimetable(routeModel, timetableList.getSelectedValue().toString());
                 timetableModel.removeElement(timetableList.getSelectedValue());
                 if ( timetableModel.getSize() == 0 ) {
                     deleteTimetableButton.setEnabled(false);
@@ -271,13 +258,13 @@ public class RoutePanel {
         createRouteButton.setEnabled(false);
         createRouteButton.addActionListener ( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
-               final GameModel gameModel = gameController.getGameModel();
-               routeScheduleController.generateRouteSchedules(routeModel, gameModel.getCurrentTime(), gameModel.getScenarioName()); 
+               final GameModel gameModel = controllerHandler.getGameController().getGameModel();
+               controllerHandler.getRouteScheduleController().generateRouteSchedules(routeModel, gameModel.getCurrentTime(), gameModel.getScenarioName());
                List<String> selectedOutwardStops = new ArrayList<String>();
                for ( int i = 0; i < routeStopModel.size(); i++ ) {
                     selectedOutwardStops.add(routeStopModel.getElementAt(i).toString());
                }
-               routeController.addNewRoute(routeNumberField.getText(), selectedOutwardStops);
+               controllerHandler.getRouteController().addNewRoute(routeNumberField.getText(), selectedOutwardStops);
                //Now return to previous screen.
                 controlScreen.redrawManagement(displayPanel.createPanel(controlScreen), gameModel);
             }
@@ -288,7 +275,7 @@ public class RoutePanel {
         JButton previousScreenButton = new JButton("Return to Previous Screen");
         previousScreenButton.addActionListener ( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
-                controlScreen.redrawManagement(displayPanel.createPanel(controlScreen), gameController.getGameModel());
+                controlScreen.redrawManagement(displayPanel.createPanel(controlScreen), controllerHandler.getGameController().getGameModel());
             }
         });
         bottomButtonPanel.add(previousScreenButton);

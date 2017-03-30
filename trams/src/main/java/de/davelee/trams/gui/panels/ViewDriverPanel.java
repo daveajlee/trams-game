@@ -9,19 +9,20 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
-import de.davelee.trams.controllers.GameController;
+import de.davelee.trams.controllers.ControllerHandler;
 import de.davelee.trams.gui.ControlScreen;
 import de.davelee.trams.model.GameModel;
 
 public class ViewDriverPanel {
 	
-	@Autowired
-	private GameController gameController;
+	private ControllerHandler controllerHandler;
+
+	public ViewDriverPanel ( final ControllerHandler controllerHandler ) {
+	    this.controllerHandler = controllerHandler;
+    }
 	
 	public JPanel createPanel ( final ControlScreen controlScreen ) {
-		final GameModel gameModel = gameController.getGameModel();
+		final GameModel gameModel = controllerHandler.getGameController().getGameModel();
     	
         //Create screen panel to add things to.
         JPanel driverScreenPanel = new JPanel();
@@ -36,7 +37,7 @@ public class ViewDriverPanel {
         JButton managementScreenButton = new JButton("Return to Management Screen");
         managementScreenButton.addActionListener ( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
-                controlScreen.redrawManagement(new DisplayPanel().createPanel(controlScreen), gameModel);
+                controlScreen.redrawManagement(new DisplayPanel(controllerHandler).createPanel(controlScreen), gameModel);
             }
         });
         driverScreenPanel.add(managementScreenButton);
