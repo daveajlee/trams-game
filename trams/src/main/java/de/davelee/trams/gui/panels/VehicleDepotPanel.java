@@ -176,7 +176,7 @@ public class VehicleDepotPanel {
         sellVehicleButton.addActionListener ( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
                 controllerHandler.getVehicleController().sellVehicle(vehicleModel);
-                controlScreen.redrawManagement(createPanel("", controlScreen, displayPanel), gameModel);
+                controlScreen.redrawManagement(createPanel("", controlScreen, displayPanel), controllerHandler.getGameController().getGameModel());
             }
         });
         bottomButtonPanel.add(sellVehicleButton);

@@ -78,7 +78,9 @@ public class GameService {
      */
     public void creditBalance ( final double amount, final String playerName ) {
         GameModel gameModel = getGameByPlayerName(playerName);
-        gameRepository.findByPlayerName(playerName).setBalance(gameModel.getBalance()+amount);
+        Game game = gameRepository.findByPlayerName(playerName);
+        game.setBalance(gameModel.getBalance()+amount);
+        gameRepository.save(game);
     }
 
     /**
