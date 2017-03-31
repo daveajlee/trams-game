@@ -35,7 +35,7 @@ public class RouteScheduleController {
 	 @Autowired
 	 private GameController gameController;
 
-	 private List<Integer> routeDetailPos;
+	 private List<Integer> routeDetailPos = new ArrayList<Integer>();
 
 	/**
 	 * Get the current stop name which this route schedule is on based on the current date.

@@ -50,6 +50,7 @@ public class GameController {
 		gameModel.setScenarioName(scenarioName);
 		gameModel.setPreviousTime(Calendar.getInstance());
 		gameModel.setTimeIncrement(15);
+		gameModel.setPassengerSatisfaction(100);
 		gameService.saveGame(gameModel);
 		return getGameModel();
 	}

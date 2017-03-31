@@ -69,9 +69,6 @@ public class ControlScreen extends ButtonBar {
 
     private boolean redrawOnRouteChange = true;
 
-    @Autowired
-    private DisplayPanel displayPanel;
-
     private int simulationSpeed = 2000;
 
     /**
@@ -193,6 +190,7 @@ public class ControlScreen extends ButtonBar {
             }
         });
         //Create manage tab.
+        DisplayPanel displayPanel = new DisplayPanel(getControllerHandler());
         tabbedPane.addTab("Management", displayPanel.createPanel(this));
         /*if ( userInterface.getManagementScreen() ) {
             topPanel.getComponent(1).setVisible(false);
