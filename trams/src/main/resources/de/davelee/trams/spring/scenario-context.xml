@@ -21,6 +21,7 @@
 		    <property name="targets" value="1. Serve all bus stops in Landuff. 2. Ensure a frequent service on all routes. 3. Ensure that passenger satisfaction remains above 70% at all times. The contract to run public transport services in Landuff will be terminated if these targets are not met. Good Luck!"/>
 		    <property name="minimumSatisfaction" value="70"/>
        		<property name="suppliedVehicles" ref="suppliedVehiclesMap1"/>
+		    <property name="suppliedDrivers" ref="landuffSuppliedDriversList"/>
        		<property name="locationMapFileName" value="landuffmappic.jpg"/>
        </bean>
        
@@ -75,7 +76,14 @@
        		<value>T Junction:17,21,16,10,11,16,9,12,12,5,3,15,13,7,8,16,5,6,11,19,8,12,13,11,7,14,15,12,5,4,16,7,3,8,2,20,18,16,18,15,8,5,1,6,7,0</value>
        		<value>Tourist Info:10,13,8,4,5,18,7,13,13,5,6,13,8,2,3,11,9,10,12,15,5,8,9,8,6,13,15,12,8,4,15,6,3,6,8,18,16,14,16,13,7,3,7,6,4,0</value>
        		<value>Mile Inn:11,8,7,7,6,17,11,14,19,18,19,3,8,6,7,10,20,19,15,12,3,8,9,1,11,3,15,13,11,10,6,8,9,8,13,15,13,11,13,10,7,6,8,7,4,0</value>
-       </util:list>	
+       </util:list>
+
+	   <util:list id="landuffSuppliedDriversList" value-type="java.lang.String">
+		   <value>Max Mustermann</value>
+		   <value>Robert Mustermann</value>
+		   <value>Daniela Mustermann</value>
+		   <value>Daniel Mustermann</value>
+	   </util:list>
        
        <bean id="longtsScenario" class="de.davelee.trams.beans.Scenario">
        		<property name="scenarioName" value="Longts Transport Company"/>
@@ -87,6 +95,7 @@
        		<property name="targets" value="1. Serve all bus stops in Longts. \n\n2. Ensure a very frequent service on all routes. \n\n3. Ensure that passenger satisfaction remains above 50% at all times. \n\n\n The contract to run public transport services in Longts will be terminated if these targets are not met. Good Luck!"/>
        		<property name="locationMapFileName" value="longtsmappic.jpg"/>
        		<property name="suppliedVehicles" ref="suppliedVehiclesMap2"/>
+		    <property name="suppliedDrivers" ref="longtsSuppliedDriversList"/>
        </bean>
        
        <util:map id="suppliedVehiclesMap2" value-type="java.lang.Integer">
@@ -145,6 +154,11 @@
        		<value>South Avenue:5,7,9,11,13,15,17,13,14,14,15,16,18,19,17,21,19,17,14,12,14,16,10,8,9,8,10,12,11,10,7,15,17,21,15,17,19,21,21,17,6,8,6,7,15,6,6,5,15,0</value>
        		<value>Park South:7,9,11,13,15,14,16,12,10,10,11,13,16,14,16,17,18,16,12,13,15,17,11,9,10,10,11,13,14,13,9,17,18,23,17,19,21,23,20,19,8,9,7,8,17,8,15,14,15,0</value>
        </util:list>
+
+	   <util:list id="longtsSuppliedDriversList" value-type="java.lang.String">
+		   	<value>Max Mustermann</value>
+		    <value>Robert Mustermann</value>
+	   </util:list>
        
        <bean id="mDorfScenario" class="de.davelee.trams.beans.Scenario">
        		<property name="scenarioName" value="MDorf Transport Company"/>
@@ -156,6 +170,7 @@
        		<property name="targets" value="1. Serve all bus stops in MDorf. \n\n2. Ensure a frequent service on all routes. \n\n3. Ensure that passenger satisfaction remains above 35% at all times. \n\n\n The contract to run public transport services in MDorf will be terminated if these targets are not met. Good Luck!"/>
        		<property name="locationMapFileName" value="mdorfcitymappic.jpg"/>
        		<property name="suppliedVehicles" ref="suppliedVehiclesMap3"/>
+		    <property name="suppliedDrivers" ref="mDorfSuppliedDriversList"/>
        </bean>
        
        <util:map id="suppliedVehiclesMap3" value-type="java.lang.Integer">
@@ -214,5 +229,11 @@
        		<value>Y Junction:5,7,9,11,13,15,17,13,14,14,15,16,18,19,17,21,19,17,14,12,14,16,10,8,9,8,10,12,11,10,7,15,17,21,15,17,19,21,21,17,6,8,6,7,15,6,6,5,15,0</value>
 			<value>City Park:7,9,11,13,15,14,16,12,10,10,11,13,16,14,16,17,18,16,12,13,15,17,11,9,10,10,11,13,14,13,9,17,18,23,17,19,21,23,20,19,8,9,7,8,17,8,15,14,15,0</value>      
        </util:list>
+
+	   <util:list id="mDorfSuppliedDriversList" value-type="java.lang.String">
+			<value>Max Mustermann</value>
+			<value>Robert Mustermann</value>
+			<value>Daniela Mustermann</value>
+	   </util:list>
        
 </beans>

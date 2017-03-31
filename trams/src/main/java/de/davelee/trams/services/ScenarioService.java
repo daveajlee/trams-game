@@ -53,6 +53,7 @@ public class ScenarioService {
 		scenarioModel.setCityDescription(scenario.getCityDescription());
 		scenarioModel.setName(scenario.getScenarioName());
 		scenarioModel.setSuppliedVehicles(scenario.getSuppliedVehicles());
+		scenarioModel.setSuppliedDrivers(scenario.getSuppliedDrivers());
 		scenarioModel.setTargets(scenario.getTargets());
 		scenarioModel.setDescription(scenario.getDescription());
 		scenarioModel.setStopNames(getStopNames(scenario.getStopDistances()));

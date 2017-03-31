@@ -1,12 +1,14 @@
 package de.davelee.trams.model;
 
 import java.util.HashMap;
+import java.util.List;
 
 public class ScenarioModel {
 
 	private String name;
 	private String cityDescription;
 	private HashMap<String, Integer> suppliedVehicles;
+	private List<String> suppliedDrivers;
 	private String targets;
 	private String description;
 	private String[] stopNames;
@@ -35,6 +37,14 @@ public class ScenarioModel {
 
 	public void setSuppliedVehicles(final HashMap<String, Integer> suppliedVehicles) {
 		this.suppliedVehicles = suppliedVehicles;
+	}
+
+	public List<String> getSuppliedDrivers() {
+		return suppliedDrivers;
+	}
+
+	public void setSuppliedDrivers(final List<String> suppliedDrivers) {
+		this.suppliedDrivers = suppliedDrivers;
 	}
 
 	public String getTargets() {

@@ -2,11 +2,13 @@ package de.davelee.trams.controllers;
 
 import de.davelee.trams.model.DriverModel;
 import de.davelee.trams.model.GameModel;
+import de.davelee.trams.model.ScenarioModel;
 import org.springframework.beans.factory.annotation.Autowired;
-import de.davelee.trams.data.Driver;
 
 import de.davelee.trams.services.DriverService;
 import org.springframework.stereotype.Controller;
+
+import java.util.Calendar;
 
 @Controller
 public class DriverController {
@@ -29,6 +31,16 @@ public class DriverController {
     	//TODO: Employing drivers should cost money.
         gameController.withdrawBalance(0, gameController.getCurrentPlayerName());
         driverService.saveDriver(driverModel);
+    }
+
+    public void createSuppliedDrivers(final ScenarioModel scenarioModel, Calendar currentTime) {
+        for ( String suppliedDriver : scenarioModel.getSuppliedDrivers()) {
+            DriverModel driverModel = new DriverModel();
+            driverModel.setContractedHours(35);
+            driverModel.setName(suppliedDriver);
+            driverModel.setStartDate(currentTime);
+            driverService.saveDriver(driverModel);
+        }
     }
     
     public int getNumberDrivers ( ) {

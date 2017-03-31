@@ -101,7 +101,7 @@ public class EmployDriverPanel {
             	driverModel.setContractedHours((Integer) contractedHoursSpinner.getValue());
             	driverModel.setStartDate(startDate);
                 controllerHandler.getDriverController().employDriver(driverModel);
-                controlScreen.redrawManagement(displayPanel.createPanel(controlScreen), gameModel);
+                controlScreen.redrawManagement(displayPanel.createPanel(controlScreen), controllerHandler.getGameController().getGameModel());
             }
         });
         buttonPanel.add(employDriverButton);

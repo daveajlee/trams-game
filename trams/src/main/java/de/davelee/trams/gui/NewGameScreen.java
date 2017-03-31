@@ -164,6 +164,8 @@ public class NewGameScreen extends JFrame {
                 GameModel gameModel = controllerHandler.getGameController().createGameModel(playerNameField.getText(), scenarioModels[selectedPosition].getName());
                 //Create supplied vehicles.
                 controllerHandler.getVehicleController().createSuppliedVehicles(scenarioModels[selectedPosition], gameModel.getCurrentTime());
+                //Create supplied drivers.
+                controllerHandler.getDriverController().createSuppliedDrivers(scenarioModels[selectedPosition], gameModel.getCurrentTime());
                 //Create welcome message.
                 controllerHandler.getMessageController().addMessage("Welcome Message", "Congratulations on your appointment as Managing Director of the " +
                         scenarioModels[selectedPosition].getName() + "! \n\n Your targets for the coming days and months are: " +

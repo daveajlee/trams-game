@@ -28,6 +28,8 @@ public class Scenario {
 
     private HashMap<String, Integer> suppliedVehicles;
 
+    private List<String> suppliedDrivers;
+
     private List<String> stopDistances;
     
     public Scenario ( ) {
@@ -40,6 +42,14 @@ public class Scenario {
 
 	public void setSuppliedVehicles(HashMap<String, Integer> suppliedVehicles) {
 		this.suppliedVehicles = suppliedVehicles;
+	}
+
+	public List<String> getSuppliedDrivers() {
+		return suppliedDrivers;
+	}
+
+	public void setSuppliedDrivers(final List<String> suppliedDrivers) {
+		this.suppliedDrivers = suppliedDrivers;
 	}
 
 	public String getLocationMapFileName() {
@@ -114,6 +124,7 @@ public class Scenario {
     	scenario.setMinimumBalance(this.minimumBalance);
     	scenario.setMinimumSatisfaction(this.minimumSatisfaction);
     	scenario.setSuppliedVehicles(this.suppliedVehicles);
+    	scenario.setSuppliedDrivers(this.suppliedDrivers);
     	scenario.setScenarioName(this.scenarioName);
     	scenario.setStopDistances(this.stopDistances);
     	scenario.setTargets(this.targets);
