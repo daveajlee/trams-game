@@ -3,6 +3,7 @@ package de.davelee.trams.controllers;
 import de.davelee.trams.model.DriverModel;
 import de.davelee.trams.model.GameModel;
 import de.davelee.trams.model.ScenarioModel;
+import de.davelee.trams.model.VehicleModel;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import de.davelee.trams.services.DriverService;
@@ -59,6 +60,24 @@ public class DriverController {
             if ( driverService.hasStartedWork(driverModels[i].getStartDate(), gameModel.getCurrentTime()) ) { return true; }
         }
         return false;
+    }
+
+    /**
+     * Get a driver based on its name.
+     * @param name a <code>String</code> with the name.
+     * @return a <code>DriverModel</code> object.
+     */
+    public DriverModel getDriverByName (final String name ) {
+        return driverService.getDriverByName(name);
+    }
+
+    /**
+     * Sack a driver.
+     * @param driverModel a <code>DriverModel</code> object representing the driver to sack.
+     */
+    public void sackDriver ( final DriverModel driverModel ) {
+        GameModel gameModel = gameController.getGameModel();
+        driverService.removeDriver(driverModel);
     }
 
 }

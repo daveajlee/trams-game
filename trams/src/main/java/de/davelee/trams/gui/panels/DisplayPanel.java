@@ -283,7 +283,7 @@ public class DisplayPanel {
         viewDriversButton.addActionListener( new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 //Show the actual screen!
-                controlScreen.redrawManagement(new ViewDriverPanel(controllerHandler).createPanel(controlScreen), controllerHandler.getGameController().getGameModel());
+                controlScreen.redrawManagement(new ViewDriverPanel(controllerHandler).createPanel("", controlScreen, DisplayPanel.this), controllerHandler.getGameController().getGameModel());
             }
         });
         viewDriversButtonPanel.add(viewDriversButton);
