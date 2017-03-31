@@ -149,7 +149,7 @@ public class VehicleDepotPanel {
         assignedLabel.setFont(new Font("Arial", Font.ITALIC, 14));
         assignedLabelPanel.add(assignedLabel);
         gridPanel.add(assignedLabel);
-        JLabel assignedField = new JLabel("" + vehicleModel.getRouteNumber() + "/" + vehicleModel.getRouteScheduleNumber());
+        JLabel assignedField = new JLabel(displayAssignedRoute(vehicleModel));
         assignedField.setFont(new Font("Arial", Font.PLAIN, 12));
         gridPanel.add(assignedField);
         //Create label and field for value and add it to the value panel.
@@ -226,5 +226,13 @@ public class VehicleDepotPanel {
         
         return vehicleScreenPanel;
 	}
+
+	private String displayAssignedRoute ( final VehicleModel vehicleModel ) {
+	    if ( vehicleModel.getRouteNumber() != null ) {
+            return "" + vehicleModel.getRouteNumber() + "/" + vehicleModel.getRouteScheduleNumber();
+        } else {
+	        return "Not Assigned";
+        }
+    }
 
 }
