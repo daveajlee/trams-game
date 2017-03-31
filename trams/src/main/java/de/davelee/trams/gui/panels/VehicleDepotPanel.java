@@ -35,7 +35,7 @@ public class VehicleDepotPanel {
         this.controllerHandler = controllerHandler;
     }
 	
-	public JPanel createPanel ( final String vehicleType, final ControlScreen controlScreen, final DisplayPanel displayPanel ) {
+	public JPanel createPanel ( final String registrationNumber, final ControlScreen controlScreen, final DisplayPanel displayPanel ) {
         
         //Create screen panel to add things to.
         JPanel vehicleScreenPanel = new JPanel();
@@ -73,8 +73,8 @@ public class VehicleDepotPanel {
         
         //Create vehicle object so that we can pull information from it.
         final VehicleModel vehicleModel;
-        if ( !vehicleType.equalsIgnoreCase("") ) {
-            vehicleModel = controllerHandler.getVehicleController().getVehicleByModel(vehicleType);
+        if ( !registrationNumber.equalsIgnoreCase("") ) {
+            vehicleModel = controllerHandler.getVehicleController().getVehicleByRegistrationNumber(registrationNumber);
         } else {
         	vehicleModel = controllerHandler.getVehicleController().getVehicleByRegistrationNumber(vehiclesModel.get(0).toString());
         }
