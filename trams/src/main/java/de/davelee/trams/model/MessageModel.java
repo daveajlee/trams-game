@@ -9,7 +9,7 @@ public class MessageModel {
 	private String subject;
 	private String text;
 	private String sender;
-	private Calendar date;
+	private String date;
 	private MessageFolder messageFolder;
 	
 	public String getSubject() {
@@ -36,11 +36,11 @@ public class MessageModel {
 		this.sender = sender;
 	}
 	
-	public Calendar getDate() {
+	public String getDate() {
 		return date;
 	}
 	
-	public void setDate(final Calendar date) {
+	public void setDate(final String date) {
 		this.date = date;
 	}
 	

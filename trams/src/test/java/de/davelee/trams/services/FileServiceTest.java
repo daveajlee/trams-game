@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -128,7 +129,9 @@ public class FileServiceTest {
 		messageModel.setSender("Dave Lee");
 		messageModel.setMessageFolder(MessageFolder.INBOX);
 		messageModel.setText("This is a test message");
-		messageModel.setDate(Calendar.getInstance());
+		SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+		String date = dateFormat.format(Calendar.getInstance().getTime());
+		messageModel.setDate(date);
 		messageService.saveMessage(messageModel);
 		journeyService.saveStop("Danziger Strasse");
 		List<Integer> daysOfOperation = new ArrayList<Integer>(); daysOfOperation.add(Calendar.MONDAY);

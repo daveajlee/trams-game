@@ -30,7 +30,7 @@ public class Message {
     private String sender;
 	
 	@Column
-    private Calendar date;
+    private String date;
 	
 	@Column
 	private MessageFolder folder;
@@ -87,13 +87,13 @@ public class Message {
     
     /**
      * Get the date of this message.
-     * @return a <code>Calendar</code> with the date.
+     * @return a <code>String</code> with the date.
      */
-    public Calendar getDate ( ) {
+    public String getDate ( ) {
         return date;
     }
     
-    public void setDate(final Calendar date) {
+    public void setDate(final String date) {
     	this.date = date;
     }
 

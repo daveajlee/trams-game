@@ -24,8 +24,17 @@ public class MessageController {
      */
     public MessageModel[] getMessagesByFolderDateSender ( final String folder, final String date, final String sender ) {
         //Return a message list.
-        //TODO: Implement date conversion - string to calendar.
-        return messageService.getMessagesByFolderSenderDate(MessageFolder.valueOf(folder), Calendar.getInstance(), sender);
+        return messageService.getMessagesByFolderSenderDate(MessageFolder.valueOf(folder), date, sender);
+    }
+
+    /**
+     * Get a linked list of messages which are relevant for the specified folder.
+     * @param folder a <code>String</code> with the name of the folder.
+     * @return a <code>LinkedList</code> with messages.
+     */
+    public MessageModel[] getMessagesByFolder ( final String folder ) {
+        //Return a message list.
+        return messageService.getMessagesByFolder(MessageFolder.valueOf(folder));
     }
     
     /**
@@ -44,7 +53,7 @@ public class MessageController {
      * @param folder a <code>String</code> with the name of the folder to save the message to.
      * @param date a <code>Calendar</code> object representing the date the message was sent.
      */
-    public void addMessage ( final String subject, final String text, final String sender, final String folder, final Calendar date) {
+    public void addMessage ( final String subject, final String text, final String sender, final String folder, final String date) {
         MessageModel messageModel = new MessageModel();
         messageModel.setSubject(subject);
         messageModel.setText(text);

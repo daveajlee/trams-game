@@ -11,8 +11,8 @@ import java.util.List;
 
 public interface MessageRepository extends JpaRepository<Message, Long> {
 
-    public Message findBySenderAndSubjectAndDate ( @Param("sender") String sender, @Param("subject") String subject, @Param("date") Calendar date);
+	public List<Message> findByFolderAndSenderAndDate (@Param("folder") MessageFolder folder, @Param("sender") String sender, @Param("date") String date);
 
-	public List<Message> findByFolderAndSenderAndDate (@Param("folder") MessageFolder folder, @Param("sender") String sender, @Param("date") Calendar date);
+	public List<Message> findByFolder (@Param("folder") MessageFolder folder);
 
 }

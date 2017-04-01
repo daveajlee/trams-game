@@ -324,7 +324,9 @@ public class ControlScreen extends ButtonBar {
         //Now check if it is past midnight! If it is dispose, and create Allocation Screen.
         if ( isPastMidnight(gameModel.getCurrentTime(), gameModel.getPreviousTime()) && !doneAllocations ) {
             //Now add a message to summarise days events!!!
-            super.getControllerHandler().getMessageController().addMessage("Passenger Satisfaction for " + super.getControllerHandler().getGameController().formatDateString(gameModel.getPreviousTime(), DateFormats.FULL_FORMAT), "Congratulations you have successfully completed transport operations for " + gameModel.getScenarioName() + " on " + super.getControllerHandler().getGameController().formatDateString(gameModel.getPreviousTime(), DateFormats.FULL_FORMAT) + " with a passenger satisfaction of " + super.getControllerHandler().getGameController().computeAndReturnPassengerSatisfaction(gameModel.getPlayerName()) + "%.\n\nNow you need to allocate vehicles to routes for " + super.getControllerHandler().getGameController().formatDateString(gameModel.getCurrentTime(), DateFormats.FULL_FORMAT) + " and keep the passenger satisfaction up! Click on the Management tab and then choose Allocations. Good luck!", "Council", "INBOX", gameModel.getCurrentTime());
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+            String date = dateFormat.format(gameModel.getCurrentTime().getTime());
+            super.getControllerHandler().getMessageController().addMessage("Passenger Satisfaction for " + super.getControllerHandler().getGameController().formatDateString(gameModel.getPreviousTime(), DateFormats.FULL_FORMAT), "Congratulations you have successfully completed transport operations for " + gameModel.getScenarioName() + " on " + super.getControllerHandler().getGameController().formatDateString(gameModel.getPreviousTime(), DateFormats.FULL_FORMAT) + " with a passenger satisfaction of " + super.getControllerHandler().getGameController().computeAndReturnPassengerSatisfaction(gameModel.getPlayerName()) + "%.\n\nNow you need to allocate vehicles to routes for " + super.getControllerHandler().getGameController().formatDateString(gameModel.getCurrentTime(), DateFormats.FULL_FORMAT) + " and keep the passenger satisfaction up! Click on the Management tab and then choose Allocations. Good luck!", "Council", "INBOX", date);
             //Refresh messages.
             MessageModel[] messageModels = super.getControllerHandler().getMessageController().getMessagesByFolderDateSender(foldersBox.getSelectedItem().toString(),dateBox.getSelectedItem().toString(),"Council");
             messagesModel.removeAllElements();
@@ -481,7 +483,7 @@ public class ControlScreen extends ButtonBar {
         }
         dateBox = new JComboBox(dateModel);
         final MessageModel[] messageModels;
-        if ( foldersBox.getSelectedItem() != null  && dateBox.getSelectedItem() != null ) {
+        if ( foldersBox.getSelectedItem() != null  && (dateBox.getSelectedItem() != null && !dateBox.getSelectedItem().toString().equalsIgnoreCase("All Dates")  ) ) {
             System.out.println("Selected items: " + foldersBox.getSelectedItem().toString() + " and " + dateBox.getSelectedItem().toString());
             messageModels = super.getControllerHandler().getMessageController().getMessagesByFolderDateSender(foldersBox.getSelectedItem().toString(),dateBox.getSelectedItem().toString(),"Council");
         }
@@ -573,7 +575,7 @@ public class ControlScreen extends ButtonBar {
         //Add west panel to messages panel.
         messagesPanel.add(westPanel, BorderLayout.WEST);
         //Initialise the messages list now.
-        MessageModel[] myMessageModels = super.getControllerHandler().getMessageController().getMessagesByFolderDateSender(foldersBox.getSelectedItem().toString(),dateBox.getSelectedItem().toString(), "Council");
+        MessageModel[] myMessageModels = super.getControllerHandler().getMessageController().getMessagesByFolder(foldersBox.getSelectedItem().toString());
         for ( int i = 0; i < myMessageModels.length; i++ ) {
             messagesModel.addElement(myMessageModels[i].getSubject());
         }

@@ -48,12 +48,26 @@ public class MessageService {
     /**
      * Get a linked list of messages which are relevant for the specified folder, date and sender.
      * @param folder a <code>MessageFolder</code> with the name of the folder.
-     * @param date a <code>Calendar</code> with the date.
+     * @param date a <code>String</code> with the date.
      * @param sender a <code>String</code> with the sender.
      * @return a <code>LinkedList</code> with messages.
      */
-    public MessageModel[] getMessagesByFolderSenderDate ( final MessageFolder folder, final Calendar date, final String sender ) {
+    public MessageModel[] getMessagesByFolderSenderDate ( final MessageFolder folder, final String date, final String sender ) {
         List<Message> messages = messageRepository.findByFolderAndSenderAndDate(folder, sender, date);
+        MessageModel[] messageModels = new MessageModel[messages.size()];
+        for ( int i = 0; i < messageModels.length; i++ ) {
+            messageModels[i] = convertToMessageModel(messages.get(i));
+        }
+        return messageModels;
+    }
+
+    /**
+     * Get a linked list of messages which are relevant for the specified folder.
+     * @param folder a <code>MessageFolder</code> with the name of the folder.
+     * @return a <code>LinkedList</code> with messages.
+     */
+    public MessageModel[] getMessagesByFolder ( final MessageFolder folder ) {
+        List<Message> messages = messageRepository.findByFolder(folder);
         MessageModel[] messageModels = new MessageModel[messages.size()];
         for ( int i = 0; i < messageModels.length; i++ ) {
             messageModels[i] = convertToMessageModel(messages.get(i));
