@@ -127,8 +127,8 @@ public class AllocationPanel {
         final DefaultListModel vehiclesModel = new DefaultListModel();
         VehicleModel[] vehicleModels = controllerHandler.getVehicleController().getAllCreatedVehicles();
         for ( int i = 0; i < vehicleModels.length; i++ ) {
-            if ( vehicleModels[i].getRouteScheduleNumber() != 0 ) {
-                vehiclesModel.addElement(vehicleModels[i].getRegistrationNumber() + "(" + vehicleModels[i].getModel() + ")");
+            if ( vehicleModels[i].getRouteScheduleNumber() == 0 ) {
+                vehiclesModel.addElement(vehicleModels[i].getRegistrationNumber() + " (" + vehicleModels[i].getModel() + ")");
             }
         }
         final JList vehiclesList = new JList(vehiclesModel);
