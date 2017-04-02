@@ -5,6 +5,7 @@ import java.awt.event.*;
 
 import javax.swing.*;
 
+import de.davelee.trams.controllers.ControllerHandler;
 import de.davelee.trams.controllers.GameController;
 import de.davelee.trams.model.GameModel;
 import de.davelee.trams.util.DifficultyLevel;
@@ -26,13 +27,15 @@ public class OptionsScreen extends JFrame {
     private JButton okButton;
     private JButton closeButton;
 
-    @Autowired
-    private GameController gameController;
+    private ControllerHandler controllerHandler;
 
     /**
      * Create a new options screen.
+     * @param controllerHandler a <code>ControllerHandler</code> object containing the actual controllers from spring.
      */
-    public OptionsScreen ( ) {
+    public OptionsScreen ( final ControllerHandler controllerHandler ) {
+
+        this.controllerHandler = controllerHandler;
         
         //Set image icon.
         Image img = Toolkit.getDefaultToolkit().getImage(OptionsScreen.class.getResource("/TraMSlogo.png"));
@@ -47,7 +50,7 @@ public class OptionsScreen extends JFrame {
         //Call dispose method if the user hits exit.
         this.addWindowListener ( new WindowAdapter() {
             public void windowClosing ( WindowEvent e ) {
-                gameController.resumeSimulation();
+                controllerHandler.getGameController().resumeSimulation();
                 dispose();
             }
         });
@@ -71,7 +74,7 @@ public class OptionsScreen extends JFrame {
         optionsLabelPanel.add(optionsLabel);
         northPanel.add(optionsLabelPanel, BorderLayout.NORTH);
 
-        final GameModel gameModel = gameController.getGameModel();
+        final GameModel gameModel = controllerHandler.getGameController().getGameModel();
         
         //Create panel for centre - options in grid layout.
         optionsTabbedPane = new JTabbedPane();
@@ -139,7 +142,7 @@ public class OptionsScreen extends JFrame {
                 else if ( difficultButtons[3].isSelected() ) {
                     gameModel.setDifficultyLevel(DifficultyLevel.HARD);
                 }
-                gameController.resumeSimulation();
+                controllerHandler.getGameController().resumeSimulation();
                 dispose();
             }
         });
@@ -148,7 +151,7 @@ public class OptionsScreen extends JFrame {
         closeButton = new JButton("Close Window");
         closeButton.addActionListener( new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                gameController.resumeSimulation();
+                controllerHandler.getGameController().resumeSimulation();
                 dispose();
             }
         });

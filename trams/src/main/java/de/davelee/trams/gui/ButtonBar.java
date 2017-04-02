@@ -4,9 +4,6 @@ import javax.swing.*;
 import java.awt.event.*;
 
 import de.davelee.trams.controllers.ControllerHandler;
-import de.davelee.trams.controllers.FileController;
-import de.davelee.trams.controllers.GameController;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * ButtonBar class represents the menu system in the TraMS program.
@@ -31,7 +28,6 @@ public class ButtonBar extends JFrame {
     protected JMenuItem updateItem;
     protected JMenuItem aboutItem;
 
-    @Autowired
     private ControllerHandler controllerHandler;
     
     /**
@@ -96,7 +92,7 @@ public class ButtonBar extends JFrame {
         optionsItem.addActionListener ( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
                 controllerHandler.getGameController().pauseSimulation();
-                new OptionsScreen();
+                new OptionsScreen(controllerHandler);
             }
         });
         toolsMenu.add(optionsItem);
