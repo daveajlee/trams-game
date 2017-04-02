@@ -203,7 +203,7 @@ public class RouteScheduleController {
 		List<JourneyModel> outgoingJourneyModels = journeyController.generateJourneyTimetables(routeModel, currentTime, scenarioName, TramsConstants.OUTWARD_DIRECTION);
 		List<JourneyModel> returnJourneyModels = journeyController.generateJourneyTimetables(routeModel, currentTime, scenarioName, TramsConstants.RETURN_DIRECTION);
 		//We need to repeat this loop until both outgoingJourneys and returnJourneys are empty!
-		/*int counter = 1;
+		int counter = 1;
 		while ( outgoingJourneyModels.size() > 0 || returnJourneyModels.size() > 0 ) {
 			//Control what journey we want - initially we don't care.
 			boolean wantOutgoing = true; boolean wantReturn = true;
@@ -287,7 +287,7 @@ public class RouteScheduleController {
 			routeScheduleService.saveRouteSchedule(mySchedule);
 			//Increment counter.
 			counter++;
-		}*/
+		}
 	}
 
 	/**

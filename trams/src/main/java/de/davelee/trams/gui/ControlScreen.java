@@ -20,7 +20,6 @@ import org.slf4j.LoggerFactory;
 import java.text.*;
 
 import de.davelee.trams.util.DateFormats;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * This class represents the control screen display for the TraMS program.
@@ -292,7 +291,7 @@ public class ControlScreen extends ButtonBar {
                 ControlScreen.super.getControllerHandler().getGameController().pauseSimulation();
                 Thread contentsThread = new Thread() {
                     public void run () {
-                        new HelpScreen();
+                        new HelpScreen(ControlScreen.super.getControllerHandler());
                     }
                 };
                 contentsThread.start();
