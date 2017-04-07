@@ -15,11 +15,10 @@ public class FileService {
     public boolean saveFile ( File file, TramsFile tramsFile ) {
         try {
             file.createNewFile();
-            OutputStream os = new FileOutputStream(file.getName());
             // Save tramsfile to XML
             JAXBContext jc = JAXBContext.newInstance(TramsFile.class);
             Marshaller marshaller = jc.createMarshaller();
-            marshaller.marshal(tramsFile, os);
+            marshaller.marshal(tramsFile, file);
             return true;
         } catch ( Exception exception ) {
             exception.printStackTrace();

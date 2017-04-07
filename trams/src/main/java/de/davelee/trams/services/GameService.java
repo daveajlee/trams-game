@@ -24,6 +24,7 @@ public class GameService {
     public void saveGame ( final GameModel gameModel ) {
         Game game = convertToGame(gameModel);
         game.getBalance();
+        gameRepository.deleteAll(); //Only one game at a time.
         gameRepository.saveAndFlush(game);
     }
 

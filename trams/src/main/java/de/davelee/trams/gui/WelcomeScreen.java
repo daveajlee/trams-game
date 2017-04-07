@@ -5,9 +5,6 @@ import java.awt.event.*;
 import javax.swing.*;
 
 import de.davelee.trams.controllers.ControllerHandler;
-import de.davelee.trams.controllers.FileController;
-import de.davelee.trams.controllers.GameController;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Class to display the welcome screen to the TraMS program.
@@ -111,7 +108,7 @@ public class WelcomeScreen extends JFrame {
         loadBusDisplay.addMouseListener ( new MouseListener () {
             public void mouseClicked(MouseEvent e) {
                 FileDialog fileDialog = new FileDialog();
-                if ( fileDialog.createLoadFileDialog(WelcomeScreen.this) ) {
+                if ( fileDialog.createLoadFileDialog(WelcomeScreen.this, controllerHandler, new ControlScreen(controllerHandler)) ) {
                     dispose();
                 }
             }
@@ -203,7 +200,7 @@ public class WelcomeScreen extends JFrame {
         panel.addMouseListener ( new MouseListener () {
             public void mouseClicked(MouseEvent e) {
                 FileDialog fileDialog = new FileDialog();
-                if ( fileDialog.createLoadFileDialog(WelcomeScreen.this) ) {
+                if ( fileDialog.createLoadFileDialog(WelcomeScreen.this, controllerHandler, new ControlScreen(controllerHandler)) ) {
                     dispose();
                 }
                 else {

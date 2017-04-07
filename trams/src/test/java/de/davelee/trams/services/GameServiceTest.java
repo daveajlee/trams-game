@@ -30,7 +30,6 @@ public class GameServiceTest {
 	
 	@Test
 	public void testIncrement() {
-		assertEquals(gameService.getCurrentPlayerName(), "John Smith");
 		GameModel gameModel = new GameModel();
 		gameModel.setPlayerName("Dave A J Lee");
 		gameModel.setScenarioName("Landuff Transport Company");
@@ -43,7 +42,6 @@ public class GameServiceTest {
 		gameService.saveGame(gameModel);
 		assertNotNull(gameService.getGameByPlayerName("Dave A J Lee"));
 		assertNull(gameService.getGameByPlayerName("My First Name"));
-		assertEquals(gameService.getCurrentPlayerName(), "John Smith");
 		GameModel gameModel2 = gameService.getGameByPlayerName("Dave A J Lee");
 		assertEquals(DateFormats.HOUR_MINUTE_FORMAT.getFormat().format(gameModel2.getCurrentTime().getTime()), "05:00");
 		gameService.incrementTime("Dave A J Lee");

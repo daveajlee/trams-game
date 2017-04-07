@@ -1,5 +1,6 @@
 package de.davelee.trams.controllers;
 
+import de.davelee.trams.model.GameModel;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import de.davelee.trams.beans.TramsFile;
@@ -57,7 +58,21 @@ public class FileController {
     }
     
     public void reloadDatabaseWithFile ( TramsFile myFile ) {
-    	//TODO: Load file into database!
+    	//Load game.
+    	for ( GameModel gameModel : myFile.getGameModel() ) {
+    		gameController.loadGameModel(gameModel);
+		}
+		//TODO: load other parts of the file.
+		myFile.getDriverModels();
+    	myFile.getJourneyModels();
+    	myFile.getJourneyPatternModels();
+    	myFile.getMessageModels();
+    	myFile.getRouteModels();
+    	myFile.getRouteScheduleModels();
+    	myFile.getStops();
+    	myFile.getStopTimeModels();
+    	myFile.getTimetableModels();
+    	myFile.getVehicleModels();
     }
     
     /**

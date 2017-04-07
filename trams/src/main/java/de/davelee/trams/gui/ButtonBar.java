@@ -56,7 +56,7 @@ public class ButtonBar extends JFrame {
             public void actionPerformed ( ActionEvent e ) {
                 controllerHandler.getGameController().pauseSimulation();
                 FileDialog fileDialog = new FileDialog();
-                fileDialog.createLoadFileDialog(ButtonBar.this);
+                fileDialog.createLoadFileDialog(ButtonBar.this, controllerHandler, new ControlScreen(controllerHandler));
             }
         });
         fileMenu.add(loadGameItem);
@@ -68,7 +68,7 @@ public class ButtonBar extends JFrame {
             public void actionPerformed ( ActionEvent e ) {
                 controllerHandler.getGameController().pauseSimulation();
                 FileDialog fileDialog = new FileDialog();
-                fileDialog.createSaveFileDialog(ButtonBar.this);
+                fileDialog.createSaveFileDialog(ButtonBar.this, controllerHandler);
                 controllerHandler.getGameController().resumeSimulation();
             }
         });

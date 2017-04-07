@@ -3,7 +3,6 @@ package de.davelee.trams.controllers;
 import de.davelee.trams.model.DriverModel;
 import de.davelee.trams.model.GameModel;
 import de.davelee.trams.model.ScenarioModel;
-import de.davelee.trams.model.VehicleModel;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import de.davelee.trams.services.DriverService;

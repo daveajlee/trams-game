@@ -180,9 +180,9 @@ public class FileServiceTest {
 				routeScheduleService.getAllRouteSchedules(), journeyService.getAllStops(), journeyService.getAllStopTimes(),
 				timetableService.getAllTimetableModels(), vehicleService.getVehicleModels());
 		
-		assertNotNull(tramsFile.getDrivers());
+		assertNotNull(tramsFile.getDriverModels());
 		assertNotNull(tramsFile.getVehicleModels());
-		assertNotNull(tramsFile.getRoutes());
+		assertNotNull(tramsFile.getRouteModels());
 		assertNotNull(tramsFile.getMessageModels());
 		assertNotNull(tramsFile.getStops());
 		assertNotNull(tramsFile.getJourneyPatternModels());
@@ -205,8 +205,8 @@ public class FileServiceTest {
 		//assertEquals(tramsFile2.getDrivers().size(), 1);
 		//assertEquals(tramsFile2.getDrivers()[0].getName(), "Dave Lee");
 		//assertEquals(tramsFile2.getVehicles().size(), 1);
-		assertEquals(tramsFile2.getRouteScheduleModels().length, 2);
-		assertEquals(tramsFile2.getGameModel().length, 2);
+		assertEquals(tramsFile2.getRouteScheduleModels().length, 1);
+		assertEquals(tramsFile2.getGameModel().length, 1);
 	}
 
 }

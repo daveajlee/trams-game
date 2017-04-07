@@ -37,11 +37,11 @@ public class TramsFile {
                 this.vehicleModels = vehicleModels;
     }
 
-    public DriverModel[] getDrivers() {
+    public DriverModel[] getDriverModels() {
         return driverModels;
     }
 
-    public void setDrivers(final DriverModel[] driverModels) {
+    public void setDriverModels(final DriverModel[] driverModels) {
         this.driverModels = driverModels;
     }
 
@@ -77,11 +77,11 @@ public class TramsFile {
         this.messageModels = messageModels;
     }
 
-    public RouteModel[] getRoutes() {
+    public RouteModel[] getRouteModels() {
         return routeModels;
     }
 
-    public void setRoutes(final RouteModel[] routeModels) {
+    public void setRouteModels(final RouteModel[] routeModels) {
         this.routeModels = routeModels;
     }
 

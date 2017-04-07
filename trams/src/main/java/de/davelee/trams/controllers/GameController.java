@@ -55,6 +55,14 @@ public class GameController {
 		return getGameModel();
 	}
 
+	/**
+	 * This method loads a game model from a saved file. It overwrites an existing game models in the database!
+	 * @param gameModel a <code>GameModel</code> containing the game to load.
+	 */
+	public void loadGameModel ( final GameModel gameModel ) {
+		gameService.saveGame(gameModel);
+	}
+
 	public GameModel getGameModelByPlayerName ( final String playerName ) {
 		return gameService.getGameByPlayerName(playerName);
 	}

@@ -1,6 +1,5 @@
 package de.davelee.trams.controllers;
 
-import de.davelee.trams.data.Driver;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -10,6 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
  * Created by davelee on 27.03.17.
  */
 public class ControllerHandler {
+
+    @Autowired
+    private FileController fileController;
 
     @Autowired
     private GameController gameController;
@@ -45,6 +47,14 @@ public class ControllerHandler {
     private TipController tipController;
 
     private String version;
+
+    public FileController getFileController() {
+        return fileController;
+    }
+
+    public void setFileController(FileController fileController) {
+        this.fileController = fileController;
+    }
 
     public GameController getGameController() {
         return gameController;

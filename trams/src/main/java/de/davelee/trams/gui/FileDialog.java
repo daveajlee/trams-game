@@ -5,19 +5,15 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import de.davelee.trams.controllers.ControllerHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import de.davelee.trams.controllers.FileController;
 
 public class FileDialog {
 	
-	@Autowired
-	private FileController fileController;
-
-    @Autowired
-	private ControlScreen controlScreen;
-	
-	public boolean createLoadFileDialog ( final JFrame currentFrame ) {
+	public boolean createLoadFileDialog (final JFrame currentFrame, final ControllerHandler controllerHandler,
+                                         final ControlScreen controlScreen) {
 		JFileChooser fileDialog = new JFileChooser();
         fileDialog.setDialogTitle("Load Game");
         //Only display files with tra extension.
@@ -28,7 +24,7 @@ public class FileDialog {
         //Check if user submitted file and print coming soon.
         boolean validFile = true;
         if ( returnVal == JFileChooser.APPROVE_OPTION) {
-        	if ( fileController.loadFile(fileDialog.getSelectedFile()) ) {
+        	if ( controllerHandler.getFileController().loadFile(fileDialog.getSelectedFile()) ) {
         		JFrame oldFrame = currentFrame;
                 controlScreen.displayScreen("", 0, 4, false);
                 //cs.drawVehicles(false);
@@ -53,7 +49,7 @@ public class FileDialog {
         return false;
 	}
 	
-	public boolean createSaveFileDialog ( final JFrame currentFrame ) {
+	public boolean createSaveFileDialog ( final JFrame currentFrame, final ControllerHandler controllerHandler ) {
 		//Create file dialog box.
         JFileChooser fileDialog = new JFileChooser();
         fileDialog.setDialogTitle("Save Game");
@@ -64,7 +60,7 @@ public class FileDialog {
         int returnVal = fileDialog.showSaveDialog(currentFrame);
         //Check if user submitted file.
         if ( returnVal == JFileChooser.APPROVE_OPTION ) {
-            if ( fileController.saveFile(fileDialog.getSelectedFile()) ) {
+            if ( controllerHandler.getFileController().saveFile(fileDialog.getSelectedFile()) ) {
                 String fileName = fileDialog.getSelectedFile().getPath();
                 if ( !fileName.endsWith(".tms") ) { fileName += ".tms"; }
                 JOptionPane.showMessageDialog(currentFrame, "The current simulation has been successfully saved to " + fileName, "File Saved Successfully", JOptionPane.INFORMATION_MESSAGE);
