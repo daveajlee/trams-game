@@ -143,4 +143,15 @@ public class VehicleController {
 		return vehicleService.getNextVehicleModel(model);
 	}
 
+	/**
+	 * Load Vehicles.
+	 * @param vehicleModels an array of <code>VehicleModel</code> objects with vehicles to store and delete all other vehicles.
+	 */
+	public void loadVehicles ( final VehicleModel[] vehicleModels ) {
+		vehicleService.deleteAllVehicles();
+		for ( VehicleModel vehicleModel : vehicleModels ) {
+			vehicleService.saveVehicle(vehicleModel);
+		}
+	}
+
 }

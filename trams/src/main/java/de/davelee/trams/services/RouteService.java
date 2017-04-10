@@ -144,7 +144,7 @@ public class RouteService {
         return myStops;
     }
 
-    public void createAndSaveRoute ( final RouteModel routeModel ) {
+    public void saveRoute ( final RouteModel routeModel ) {
         routeRepository.saveAndFlush(convertToRoute(routeModel));
     }
 
@@ -197,6 +197,13 @@ public class RouteService {
 
     public void removeRoute ( final RouteModel routeModel ) {
         routeRepository.delete(routeRepository.findRouteByNumber(routeModel.getRouteNumber()));
+    }
+
+    /**
+     * Delete all routes (only used as part of load function)
+     */
+    public void deleteAllRoutes() {
+        routeRepository.deleteAll();
     }
 
 }

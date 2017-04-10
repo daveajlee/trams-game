@@ -29,7 +29,7 @@ public class FileService {
     //TODO: Log exceptions.
 	public TramsFile loadFile ( File file ) {
         try {
-            InputStream is = new FileInputStream(file.getName());
+            InputStream is = new FileInputStream(file.getAbsolutePath());
             JAXBContext jaxbContext = JAXBContext.newInstance(TramsFile.class);
             Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
             return (TramsFile) jaxbUnmarshaller.unmarshal(is);

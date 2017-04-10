@@ -42,6 +42,17 @@ public class DriverController {
             driverService.saveDriver(driverModel);
         }
     }
+
+    /**
+     * This method loads the supplied drivers list and deletes all previous drivers.
+     * @param driverModels a <code>DriverModel</code> array containing the drivers to load.
+     */
+    public void loadDrivers ( final DriverModel[] driverModels ) {
+        driverService.removeAllDrivers();
+        for ( DriverModel driverModel : driverModels ) {
+            driverService.saveDriver(driverModel);
+        }
+    }
     
     public int getNumberDrivers ( ) {
         return driverService.getAllDrivers().length;

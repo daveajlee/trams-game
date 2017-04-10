@@ -57,5 +57,16 @@ public class TimetableController {
 	public TimetableModel[] getAllTimetableModels ( ) {
 		return timetableService.getAllTimetableModels();
 	}
+
+	/**
+	 * Load Timetables.
+	 * @param timetableModels an array of <code>TimetableModel</code> objects with timetables to store and delete all other timetables.
+	 */
+	public void loadTimetables ( final TimetableModel[] timetableModels ) {
+		timetableService.deleteAllTimetables();
+		for ( TimetableModel timetableModel : timetableModels ) {
+			timetableService.saveTimetable(timetableModel);
+		}
+	}
  
 }

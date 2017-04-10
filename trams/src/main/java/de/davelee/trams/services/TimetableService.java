@@ -96,4 +96,11 @@ public class TimetableService {
             && cal1.get(Calendar.YEAR)==cal2.get(Calendar.YEAR);
     }
 
+    /**
+     * Delete all timetables (only used as part of load function)
+     */
+    public void deleteAllTimetables() {
+        timetableRepository.deleteAll();
+    }
+
 }

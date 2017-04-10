@@ -36,7 +36,7 @@ public class RouteRepositoryTest {
 		RouteModel routeModel = new RouteModel();
 		routeModel.setRouteNumber("155");
 		routeModel.setStopNames(outwardStopNames);
-		routeService.createAndSaveRoute(routeModel);
+		routeService.saveRoute(routeModel);
 		Route route2 = routeRepository.findRouteByNumber("155");
 		assertNotNull(route2);
 		assertEquals(route2.getNumber(), "155");

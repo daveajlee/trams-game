@@ -137,4 +137,11 @@ public class RouteScheduleService {
         return routeScheduleModels;
     }
 
+    /**
+     * Delete all route schedules (only used as part of load function)
+     */
+    public void deleteAllRouteSchedules() {
+        routeScheduleRepository.deleteAll();
+    }
+
 }

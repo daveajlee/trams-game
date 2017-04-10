@@ -320,5 +320,16 @@ public class RouteScheduleController {
 		logger.debug("Running Ids are: " + runningIds.toString());
 		return allAllocations;
 	}
+
+	/**
+	 * Load Route Schedules.
+	 * @param routeScheduleModels an array of <code>RouteScheduleModel</code> objects with route schedules to store and delete all other route schedules.
+	 */
+	public void loadRouteSchedules ( final RouteScheduleModel[] routeScheduleModels ) {
+		routeScheduleService.deleteAllRouteSchedules();
+		for ( RouteScheduleModel routeScheduleModel : routeScheduleModels ) {
+			routeScheduleService.saveRouteSchedule(routeScheduleModel);
+		}
+	}
 	 
 }

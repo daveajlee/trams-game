@@ -66,4 +66,15 @@ public class MessageController {
     public MessageModel[] getAllMessages ( ) { return messageService.getAllMessages();
     }
 
+    /**
+     * Load Messages.
+     * @param messageModels an array of <code>MessageModel</code> objects with messages to store and delete all other messages.
+     */
+    public void loadMessages ( final MessageModel[] messageModels ) {
+        messageService.deleteAllMessages();
+        for ( MessageModel messageModel : messageModels ) {
+            messageService.saveMessage(messageModel);
+        }
+    }
+
 }

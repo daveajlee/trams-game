@@ -84,4 +84,11 @@ public class MessageService {
         return messageModels;
     }
 
+    /**
+     * Delete all messages (only used as part of load function)
+     */
+    public void deleteAllMessages() {
+        messageRepository.deleteAll();
+    }
+
 }

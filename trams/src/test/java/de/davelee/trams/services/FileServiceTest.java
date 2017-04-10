@@ -111,6 +111,18 @@ public class FileServiceTest {
 	
 	@Test
 	public void testSaveFile ( ) {
+		//Delete temporary content.
+		driverService.removeAllDrivers();
+		routeService.deleteAllRoutes();
+		messageService.deleteAllMessages();
+		vehicleRepository.deleteAll();
+		journeyService.deleteAllJourneys();
+		journeyService.deleteAllStops();
+		journeyService.deleteAllStopTimes();
+		journeyPatternService.deleteAllJourneyPatterns();
+		timetableService.deleteAllTimetables();
+		routeScheduleService.deleteAllRouteSchedules();
+		//Now create and save file.
 		Calendar startDate = Calendar.getInstance(); startDate.set(2014, 4, 20);
 		DriverModel driver = new DriverModel();
 		driver.setName("Chris Lee");
@@ -123,7 +135,7 @@ public class FileServiceTest {
 		List<String> stops = new ArrayList<String>();
 		stops.add("Heinersdorf"); stops.add("Am Steinberg"); stops.add("Alexanderplatz");
 		routeModel.setStopNames(stops);
-		routeService.createAndSaveRoute(routeModel);
+		routeService.saveRoute(routeModel);
 		MessageModel messageModel = new MessageModel();
 		messageModel.setSubject("Test Message");
 		messageModel.setSender("Dave Lee");
@@ -198,13 +210,12 @@ public class FileServiceTest {
 	}
 	
 	@Test
-	//TODO: Recomment lines in after database is emptied in user interface.
 	public void testLoadFile ( ) {
 		TramsFile tramsFile2 = fileService.loadFile(new File("test-trams.xml"));
 		assertNotNull(tramsFile2);
-		//assertEquals(tramsFile2.getDrivers().size(), 1);
-		//assertEquals(tramsFile2.getDrivers()[0].getName(), "Dave Lee");
-		//assertEquals(tramsFile2.getVehicles().size(), 1);
+		assertEquals(tramsFile2.getDriverModels().length, 1);
+		assertEquals(tramsFile2.getDriverModels()[0].getName(), "Chris Lee");
+		assertEquals(tramsFile2.getVehicleModels().length, 1);
 		assertEquals(tramsFile2.getRouteScheduleModels().length, 1);
 		assertEquals(tramsFile2.getGameModel().length, 1);
 	}

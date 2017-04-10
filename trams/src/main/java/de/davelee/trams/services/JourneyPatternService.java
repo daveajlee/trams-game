@@ -70,4 +70,11 @@ public class JourneyPatternService {
         return journeyPatternModels;
     }
 
+    /**
+     * Delete all journey patterns (only used for load function)
+     */
+    public void deleteAllJourneyPatterns() {
+        journeyPatternRepository.deleteAll();
+    }
+
 }

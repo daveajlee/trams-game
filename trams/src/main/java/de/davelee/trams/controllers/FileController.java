@@ -62,17 +62,46 @@ public class FileController {
     	for ( GameModel gameModel : myFile.getGameModel() ) {
     		gameController.loadGameModel(gameModel);
 		}
-		//TODO: load other parts of the file.
-		myFile.getDriverModels();
-    	myFile.getJourneyModels();
-    	myFile.getJourneyPatternModels();
-    	myFile.getMessageModels();
-    	myFile.getRouteModels();
-    	myFile.getRouteScheduleModels();
-    	myFile.getStops();
-    	myFile.getStopTimeModels();
-    	myFile.getTimetableModels();
-    	myFile.getVehicleModels();
+		//Load drivers.
+		if ( myFile.getDriverModels() != null ) {
+			driverController.loadDrivers(myFile.getDriverModels());
+		}
+    	//Load journeys.
+		if ( myFile.getJourneyModels() != null ) {
+			journeyController.loadJourneys(myFile.getJourneyModels());
+		}
+		//Load journey patterns.
+		if ( myFile.getJourneyPatternModels() != null ) {
+			journeyPatternController.loadJourneyPatterns(myFile.getJourneyPatternModels());
+		}
+    	//Load messages.
+		if ( myFile.getMessageModels() != null ) {
+			messageController.loadMessages(myFile.getMessageModels());
+		}
+    	//Load routes.
+		if ( myFile.getRouteModels() != null ) {
+			routeController.loadRoutes(myFile.getRouteModels());
+		}
+    	//Load route schedules.
+		if ( myFile.getRouteScheduleModels() != null ) {
+			routeScheduleController.loadRouteSchedules(myFile.getRouteScheduleModels());
+		}
+    	//Load stops.
+		if ( myFile.getStops() != null ) {
+			journeyController.loadStops(myFile.getStops());
+		}
+    	//Load stop times.
+		if ( myFile.getStopTimeModels() != null ) {
+			journeyController.loadStopTimes(myFile.getStopTimeModels());
+		}
+    	//Load timetables.
+		if ( myFile.getTimetableModels() != null ) {
+			timetableController.loadTimetables(myFile.getTimetableModels());
+		}
+    	//Load vehicles.
+		if ( myFile.getVehicleModels() != null ) {
+			vehicleController.loadVehicles(myFile.getVehicleModels());
+		}
     }
     
     /**

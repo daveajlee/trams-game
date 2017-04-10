@@ -219,5 +219,12 @@ public class VehicleService {
         vehicle.setRouteNumber(routeNumber);
         vehicle.setRouteScheduleNumber(Long.parseLong(scheduleNumber));
     }
+
+    /**
+     * Delete all vehicles (only used as part of load function)
+     */
+    public void deleteAllVehicles() {
+        vehicleRepository.deleteAll();
+    }
     
 }

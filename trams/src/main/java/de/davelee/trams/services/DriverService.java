@@ -68,5 +68,12 @@ public class DriverService {
 	public void removeDriver ( final DriverModel driverModel ) {
 		driverRepository.delete(driverRepository.findByName(driverModel.getName()));
 	}
+
+	/**
+	 * Delete all stored drivers (primarily used for loading a game)
+	 */
+	public void removeAllDrivers ( ) {
+    	driverRepository.deleteAll();
+	}
     
 }

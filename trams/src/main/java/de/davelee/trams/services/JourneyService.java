@@ -589,4 +589,25 @@ public class JourneyService {
         journeyRepository.saveAndFlush(journey);
     }
 
+    /**
+     * Remove all existing journeys (used only for the load function)
+     */
+    public void deleteAllJourneys ( ) {
+        journeyRepository.deleteAll();
+    }
+
+    /**
+     * Remove all existing stops (used only for the load function)
+     */
+    public void deleteAllStops ( ) {
+        stopRepository.deleteAll();
+    }
+
+    /**
+     * Remove all existing stop times (used only for the load function)
+     */
+    public void deleteAllStopTimes ( ) {
+        stopTimeRepository.deleteAll();
+    }
+
 }

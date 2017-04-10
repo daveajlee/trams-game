@@ -141,5 +141,38 @@ public class JourneyController {
 	public int getDistance ( final String scenarioName, final String stop1, final String stop2 ) {
 		return journeyService.getDistance(scenarioName, stop1, stop2);
 	}
+
+	/**
+	 * Load Journeys.
+	 * @param journeyModels an array of <code>JourneyModel</code> objects to store and delete all other journeys.
+	 */
+	public void loadJourneys ( final JourneyModel[] journeyModels ) {
+		journeyService.deleteAllJourneys();
+		for ( JourneyModel journeyModel : journeyModels ) {
+			journeyService.saveJourney(journeyModel);
+		}
+	}
+
+	/**
+	 * Load Stops.
+	 * @param stopModels an array of <code>String</code> objects with stops to store and delete all other stops.
+	 */
+	public void loadStops ( final String[] stopModels ) {
+		journeyService.deleteAllStops();
+		for ( String stopModel : stopModels ) {
+			journeyService.saveStop(stopModel);
+		}
+	}
+
+	/**
+	 * Load Stop Times.
+	 * @param stopTimeModels an array of <code>StopTimeModel</code> objects to store and delete all other stop times.
+	 */
+	public void loadStopTimes ( final StopTimeModel[] stopTimeModels ) {
+		journeyService.deleteAllStopTimes();
+		for ( StopTimeModel stopTimeModel : stopTimeModels ) {
+			journeyService.saveStopTime(stopTimeModel);
+		}
+	}
 	
 }

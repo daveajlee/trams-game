@@ -44,7 +44,7 @@ public class RouteController {
 		RouteModel routeModel = new RouteModel();
 		routeModel.setRouteNumber(routeNumber);
 		routeModel.setStopNames(stopNames);
-		routeService.createAndSaveRoute(routeModel);
+		routeService.saveRoute(routeModel);
 	}
 
 	/**
@@ -66,6 +66,17 @@ public class RouteController {
 		deleteRoute(oldRouteModel);
 		//Add new route.
 		addNewRoute(routeNumber, stopNames);
+	}
+
+	/**
+	 * Load Routes.
+	 * @param routeModels an array of <code>RouteModel</code> objects with routes to store and delete all other routes.
+	 */
+	public void loadRoutes ( final RouteModel[] routeModels ) {
+		routeService.deleteAllRoutes();
+		for ( RouteModel routeModel : routeModels ) {
+			routeService.saveRoute(routeModel);
+		}
 	}
 
 }

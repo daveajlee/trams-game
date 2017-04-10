@@ -92,4 +92,15 @@ public class JourneyPatternController {
 		return myCalDates;
 	}
 
+	/**
+	 * Load Journey Patterns.
+	 * @param journeyPatternModels an array of <code>JourneyPatternModel</code> objects with journey patterns to store and delete all other journey patterns.
+	 */
+	public void loadJourneyPatterns ( final JourneyPatternModel[] journeyPatternModels ) {
+		journeyPatternService.deleteAllJourneyPatterns();
+		for ( JourneyPatternModel journeyPatternModel : journeyPatternModels ) {
+			journeyPatternService.saveJourneyPattern(journeyPatternModel);
+		}
+	}
+
 }
