@@ -132,7 +132,7 @@ public class ControlScreen extends ButtonBar {
         routeModel = new DefaultListModel();
         routeList = new JList(routeModel);
 
-        topPanel.add(makeOptionsPanel(gameModel), BorderLayout.CENTER);
+        //topPanel.add(makeOptionsPanel(gameModel), BorderLayout.CENTER);
         dialogPanel.add(topPanel, BorderLayout.NORTH);
         
         //Create two tabbed panes here.
@@ -648,7 +648,7 @@ public class ControlScreen extends ButtonBar {
         //populateRouteList();
         //Now create panel.
         JPanel allVehicleDisplayPanel = new JPanel(new BorderLayout());
-        //allVehicleDisplayPanel.add(makeOptionsPanel(), BorderLayout.NORTH);
+        allVehicleDisplayPanel.add(makeOptionsPanel(gameModel), BorderLayout.NORTH);
         JPanel vehiclePanel;
         //Call set display method first.
         if ( routeModel.getSize() > 0) {
