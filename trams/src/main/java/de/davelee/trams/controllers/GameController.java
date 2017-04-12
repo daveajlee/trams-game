@@ -44,7 +44,13 @@ public class GameController {
 	public GameModel createGameModel ( final String playerName, final String scenarioName ) {
 		GameModel gameModel = new GameModel();
 		gameModel.setBalance(80000.00);
-		gameModel.setCurrentTime(Calendar.getInstance());
+		Calendar calendar = Calendar.getInstance();
+		calendar.set(Calendar.DAY_OF_MONTH, 1);
+		calendar.set(Calendar.MONTH, 3);
+		calendar.set(Calendar.YEAR, 2017);
+		calendar.set(Calendar.HOUR_OF_DAY, 4);
+		calendar.set(Calendar.MINUTE, 0);
+		gameModel.setCurrentTime(calendar);
 		gameModel.setDifficultyLevel(DifficultyLevel.EASY);
 		gameModel.setPlayerName(playerName);
 		gameModel.setScenarioName(scenarioName);

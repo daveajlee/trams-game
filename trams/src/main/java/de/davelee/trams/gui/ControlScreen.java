@@ -483,7 +483,6 @@ public class ControlScreen extends ButtonBar {
         dateBox = new JComboBox(dateModel);
         final MessageModel[] messageModels;
         if ( foldersBox.getSelectedItem() != null  && (dateBox.getSelectedItem() != null && !dateBox.getSelectedItem().toString().equalsIgnoreCase("All Dates")  ) ) {
-            System.out.println("Selected items: " + foldersBox.getSelectedItem().toString() + " and " + dateBox.getSelectedItem().toString());
             messageModels = super.getControllerHandler().getMessageController().getMessagesByFolderDateSender(foldersBox.getSelectedItem().toString(),dateBox.getSelectedItem().toString(),"Council");
         }
         else {

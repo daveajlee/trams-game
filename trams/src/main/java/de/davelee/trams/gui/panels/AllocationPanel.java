@@ -113,7 +113,7 @@ public class AllocationPanel {
         for ( int i = 0; i < routeModels.length; i++ ) {
         	RouteScheduleModel[] routeScheduleModels = controllerHandler.getRouteScheduleController().getRouteSchedulesByRouteNumber(routeModels[i].getRouteNumber());
             for ( int j = 0; j < routeScheduleModels.length; j++ ) {
-                routesModel.addElement(routeScheduleModels[j].getScheduleNumber());
+                routesModel.addElement(routeModels[i].getRouteNumber() + "/" + routeScheduleModels[j].getScheduleNumber());
             }
         }
         routesList.setVisibleRowCount(4);
@@ -265,7 +265,7 @@ public class AllocationPanel {
                         String routeNumber = allocationSplit[0].split("/")[0]; int routeDetailPos = -1;
                         RouteScheduleModel[] scheduleModels = controllerHandler.getRouteScheduleController().getRouteSchedulesByRouteNumber(controllerHandler.getRouteController().getRoute(routeNumber).getRouteNumber());
                         for ( int k = 0; k < scheduleModels.length; k++ ) {
-                            if ( scheduleModels[k].getScheduleNumber() == Integer.parseInt(allocationSplit[0].trim()) ) {
+                            if ( scheduleModels[k].getScheduleNumber() == Integer.parseInt(allocationSplit[0].split("/")[1].trim()) ) {
                                 routeDetailPos = k;
                             }
                         }

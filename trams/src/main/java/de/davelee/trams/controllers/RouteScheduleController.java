@@ -198,10 +198,12 @@ public class RouteScheduleController {
 	}
 
 
-	public void generateRouteSchedules ( final RouteModel routeModel, final Calendar currentTime, final String scenarioName ) {
+	public List<RouteScheduleModel> generateRouteSchedules ( final RouteModel routeModel, final Calendar currentTime, final String scenarioName ) {
+		//Initialise list.
+		List<RouteScheduleModel> routeScheduleModels = new ArrayList<RouteScheduleModel>();
 		//Initialise parameters.
-		List<JourneyModel> outgoingJourneyModels = journeyController.generateJourneyTimetables(routeModel, currentTime, scenarioName, TramsConstants.OUTWARD_DIRECTION);
-		List<JourneyModel> returnJourneyModels = journeyController.generateJourneyTimetables(routeModel, currentTime, scenarioName, TramsConstants.RETURN_DIRECTION);
+		List<JourneyModel> outgoingJourneyModels = journeyController.generateJourneyTimetables(routeModel, currentTime, scenarioName, TramsConstants.OUTWARD_DIRECTION, 0);
+		List<JourneyModel> returnJourneyModels = journeyController.generateJourneyTimetables(routeModel, currentTime, scenarioName, TramsConstants.RETURN_DIRECTION, (outgoingJourneyModels.get(outgoingJourneyModels.size()-1).getJourneyNumber()+1));
 		//We need to repeat this loop until both outgoingJourneys and returnJourneys are empty!
 		int counter = 1;
 		while ( outgoingJourneyModels.size() > 0 || returnJourneyModels.size() > 0 ) {
@@ -210,6 +212,7 @@ public class RouteScheduleController {
 			//Create a new route schedule.
 			RouteScheduleModel mySchedule = new RouteScheduleModel ( );
 			mySchedule.setScheduleNumber(counter);
+			mySchedule.setRouteNumber(routeModel.getRouteNumber());
 			//Create our calendar object and set it to midnight.
 			Calendar myCal = new GregorianCalendar(2009,7,7,0,0);
 			//Find whether the first outgoing journey time is before the first return journey time.
@@ -234,7 +237,7 @@ public class RouteScheduleController {
 						break;
 					}
 				} else if ( returnJourneyModels.size() > 0 ) {
-					if ( myCal.after(journeyController.getFirstStopTime(returnJourneyModels.get(outgoingJourneyModels.size()-1))) ) {
+					if ( myCal.after(journeyController.getFirstStopTime(returnJourneyModels.get(returnJourneyModels.size()-1))) ) {
 						break;
 					}
 				} else {
@@ -285,9 +288,11 @@ public class RouteScheduleController {
 			}
 			//Add route schedule to database.
 			routeScheduleService.saveRouteSchedule(mySchedule);
+			routeScheduleModels.add(mySchedule);
 			//Increment counter.
 			counter++;
 		}
+		return routeScheduleModels;
 	}
 
 	/**

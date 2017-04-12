@@ -290,7 +290,7 @@ public class JourneyService {
     }
 
     public void saveJourney ( final JourneyModel journeyModel ) {
-        journeyRepository.saveAndFlush(convertToJourney(journeyModel));
+        journeyRepository.save(convertToJourney(journeyModel));
     }
 
     private Journey convertToJourney ( final JourneyModel journeyModel ) {
@@ -445,14 +445,14 @@ public class JourneyService {
 
 
     public List<JourneyModel> generateJourneyTimetables ( final JourneyPatternModel[] journeyPatternModels,
-                                                          final Calendar today, final int direction, final List<String> stops, final String scenarioName ) {
+                                                          final Calendar today, final int direction, final List<String> stops, final String scenarioName, final int journeyNumberToStart ) {
         int routeScheduleNumber = 0;
         if ( direction == TramsConstants.RETURN_DIRECTION ) { routeScheduleNumber = 1; }
         //Create a list to store journeys.
         List<JourneyModel> allJourneys = new ArrayList<JourneyModel>();
         //Now we need to go through the journey patterns.
         for ( JourneyPatternModel myJourneyPattern : journeyPatternModels ) {
-            int journeyNumber = 0;
+            int journeyNumber = journeyNumberToStart;
             //Clone the time so that we can add to it but keep it the same for next iteration.
             Calendar myTime = (Calendar) today.clone();
             //If this service pattern is not valid for this date then don't bother.
@@ -472,7 +472,7 @@ public class JourneyService {
                 else {
                     //logger.debug("I want a journey starting from both terminuses at " + myTime.get(Calendar.HOUR_OF_DAY) + ":" + myTime.get(Calendar.MINUTE));
                     //Create an outgoing service.
-                    Journey newJourney = new Journey();
+                    JourneyModel newJourney = new JourneyModel();
                     newJourney.setRouteNumber(myJourneyPattern.getRouteNumber());
                     newJourney.setRouteScheduleNumber(routeScheduleNumber);
                     newJourney.setJourneyNumber(journeyNumber);
@@ -505,8 +505,8 @@ public class JourneyService {
                         stopTimeRepository.saveAndFlush(newStopTime2);
                     }
                     //logger.debug("Service #" + serviceId + ": " + newService.getAllDisplayStops());{
-                    journeyRepository.saveAndFlush(newJourney);
-                    allJourneys.add(convertToJourneyModel(newJourney));
+                    saveJourney(newJourney);
+                    allJourneys.add(newJourney);
                     //Increment calendar.
                     myTime.add(Calendar.MINUTE, myJourneyPattern.getFrequency());
                 }
@@ -582,11 +582,12 @@ public class JourneyService {
     }
 
     public void assignRouteAndRouteSchedule ( final JourneyModel journeyModel, final RouteScheduleModel routeScheduleModel ) {
-        Journey journey = new Journey();
-        journey.setJourneyNumber(journeyModel.getJourneyNumber());
-        journey.setRouteNumber(routeScheduleModel.getRouteNumber());
-        journey.setRouteScheduleNumber(routeScheduleModel.getScheduleNumber());
-        journeyRepository.saveAndFlush(journey);
+        if ( journeyRepository.findByJourneyNumberAndRouteScheduleNumberAndRouteNumber(journeyModel.getJourneyNumber(),
+                routeScheduleModel.getScheduleNumber(), routeScheduleModel.getRouteNumber()) == null) {
+            journeyModel.setRouteNumber(routeScheduleModel.getRouteNumber());
+            journeyModel.setRouteScheduleNumber(routeScheduleModel.getScheduleNumber());
+            saveJourney(journeyModel);
+        }
     }
 
     /**

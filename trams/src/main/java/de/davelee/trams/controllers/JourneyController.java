@@ -123,15 +123,16 @@ public class JourneyController {
 	 * @param today a <code>Calendar</code> object with today's date.
 	 * @param scenarioName a <code>String</code> object with the name of the scenario to generate timeables for.
 	 * @param direction a <code>int</code> which determines the direction to generate timetables for.
+	 * @param journeyNumberToStart a <code>int</code> which contains the start number for journeys to avoid duplicates.
 	 * @return a <code>JourneyModel</code> list of objects representing the timetables generated.
 	 */
-	public List<JourneyModel> generateJourneyTimetables ( final RouteModel routeModel, final Calendar today, final String scenarioName, final int direction ) {
+	public List<JourneyModel> generateJourneyTimetables ( final RouteModel routeModel, final Calendar today, final String scenarioName, final int direction, final int journeyNumberToStart ) {
 		logger.debug("I'm generating timetable for route number " + routeModel.getRouteNumber() + " for " + DateFormats.DAY_MONTH_YEAR_FORMAT.getFormat().format(today.getTime()));
 		//First of all, get the current timetable.
 		TimetableModel currentTimetableModel = timetableController.getCurrentTimetable(routeModel, today);
 		JourneyPatternModel[] journeyPatternModels = journeyPatternController.getJourneyPatternModels(currentTimetableModel, routeModel.getRouteNumber());
 		//Generate journeys.
-		List<JourneyModel> journeyModels = journeyService.generateJourneyTimetables(journeyPatternModels, today, direction, routeModel.getStopNames(), scenarioName);
+		List<JourneyModel> journeyModels = journeyService.generateJourneyTimetables(journeyPatternModels, today, direction, routeModel.getStopNames(), scenarioName, journeyNumberToStart);
 		//Sort all journeys.
 		Collections.sort(journeyModels, new SortedJourneyModels());
 		//Return the journeys.
