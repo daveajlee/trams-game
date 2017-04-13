@@ -274,20 +274,13 @@ public class AllocationPanel {
                         VehicleModel[] vehicleModels = controllerHandler.getVehicleController().getAllCreatedVehicles();
                         for ( int j = 0; j < vehicleModels.length; j++ ) {
                             if ( vehicleModels[j].getRegistrationNumber().equalsIgnoreCase(allocationSplit[1].trim())) {
+
                                 vehiclePos = j;
                                 vehiclePoses.add(vehiclePos);
                             }
                         }
                         //Now assign route detail to vehicle.
-                        //TODO: Set route and route schedule number.
                         controllerHandler.getVehicleController().assignVehicleToRouteSchedule(vehicleModels[vehiclePos].getRegistrationNumber(), vehicleModels[vehiclePos].getRouteNumber(), "" + scheduleModels[routeDetailPos].getScheduleNumber());
-                    }
-                    VehicleModel[] vehicleModels = controllerHandler.getVehicleController().getAllCreatedVehicles();
-                    for ( int i = 0; i < vehicleModels.length; i++ ) {
-                        if ( !vehiclePoses.contains(i) ) {
-                        	//TODO: Set route and route schedule number.
-                        	controllerHandler.getVehicleController().assignVehicleToRouteSchedule(vehicleModels[i].getRegistrationNumber(), "0", "0");
-                        }
                     }
                     //Now return to previous screen.
                     controlScreen.redrawManagement(displayPanel.createPanel(controlScreen), gameModel);

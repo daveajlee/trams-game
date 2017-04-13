@@ -2,6 +2,7 @@ package de.davelee.trams.services;
 
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.util.Random;
 
 @Service
@@ -10,6 +11,7 @@ public class TipService {
 	//This is where we keep the tip messages.
     String[] tipMessages;
 
+    @PostConstruct
     public void init() {
     	tipMessages = new String[3];
     	//Add tip messages here.

@@ -218,6 +218,7 @@ public class VehicleService {
         Vehicle vehicle = vehicleRepository.findByRegistrationNumber(vehicleModel.getRegistrationNumber());
         vehicle.setRouteNumber(routeNumber);
         vehicle.setRouteScheduleNumber(Long.parseLong(scheduleNumber));
+        vehicleRepository.save(vehicle);
     }
 
     /**
