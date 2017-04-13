@@ -14,6 +14,7 @@ import javax.swing.event.*;
 import de.davelee.trams.controllers.*;
 import de.davelee.trams.gui.panels.DisplayPanel;
 import de.davelee.trams.model.*;
+import de.davelee.trams.util.MessageFolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -469,7 +470,12 @@ public class ControlScreen extends ButtonBar {
         messagesList = new JList(messagesModel);
         messagesList.setVisibleRowCount(5);
         messagesArea = new JTextArea();
-        foldersBox = new JComboBox(new String[] { "INBOX", "Sent Items" });
+        MessageFolder[] messageFolders = MessageFolder.values();
+        String[] messageFolderNames = new String[messageFolders.length];
+        for ( int i = 0; i < messageFolders.length; i++ ) {
+            messageFolderNames[i] = messageFolders[i].getDisplayName();
+        }
+        foldersBox = new JComboBox(messageFolderNames);
         //Create combo box with date.
         dateModel = new DefaultComboBoxModel();
         dateModel.addElement("All Dates");
@@ -481,21 +487,7 @@ public class ControlScreen extends ButtonBar {
             }
         }
         dateBox = new JComboBox(dateModel);
-        final MessageModel[] messageModels;
-        if ( foldersBox.getSelectedItem() != null  && (dateBox.getSelectedItem() != null && !dateBox.getSelectedItem().toString().equalsIgnoreCase("All Dates")  ) ) {
-            messageModels = super.getControllerHandler().getMessageController().getMessagesByFolderDateSender(foldersBox.getSelectedItem().toString(),dateBox.getSelectedItem().toString(),"Council");
-        }
-        else {
-            messageModels = super.getControllerHandler().getMessageController().getAllMessages();
-        }
-        messagesList.addListSelectionListener( new ListSelectionListener() {
-            public void valueChanged ( ListSelectionEvent lse ) {
-                if ( messagesList.getSelectedIndex() != -1 ) {
-                    messagesArea.setText(messageModels[messagesList.getSelectedIndex()].getText());
-                }
-            }
-        });
-        messagesPanel.add(messagesList, BorderLayout.NORTH);
+
         //Create a west panel - it is a box layout.
         JPanel westPanel = new JPanel(new BorderLayout());
         westPanel.setBackground(Color.WHITE);
@@ -530,15 +522,6 @@ public class ControlScreen extends ButtonBar {
         datePanel.add(dateBox);
         //Add datePanel to westPanel.
         westPanel.add(datePanel, BorderLayout.NORTH);
-        //Messages type panel.
-        JPanel messageTypePanel = new JPanel(new GridBagLayout());
-        messageTypePanel.setBackground(Color.WHITE);
-        //Create message type heading.
-        JLabel messageTypeLabel = new JLabel("Message Type:");
-        messageTypeLabel.setFont(new Font("Arial", Font.BOLD, 14));
-        messageTypePanel.add(messageTypeLabel);
-        //Add messageType panel to west panel.
-        westPanel.add(messageTypePanel, BorderLayout.CENTER);
         //Folders panel.
         JPanel foldersPanel = new JPanel(new GridBagLayout());
         foldersPanel.setBackground(Color.WHITE);
@@ -553,7 +536,7 @@ public class ControlScreen extends ButtonBar {
                 MessageModel[] messageModels = ControlScreen.super.getControllerHandler().getMessageController().getMessagesByFolderDateSender(foldersBox.getSelectedItem().toString(),dateBox.getSelectedItem().toString(), "Council");
                 messagesModel.removeAllElements();
                 for ( int i = 0; i < messageModels.length; i++ ) {
-                    messagesModel.addElement(messageModels[i]);
+                    messagesModel.addElement(messageModels[i].getSubject());
                 }
                 messagesList.setSelectedIndex(0);
                 if ( messageModels.length == 0 && dateBox.getSelectedItem().toString().equalsIgnoreCase("All Dates") ) {
@@ -586,6 +569,23 @@ public class ControlScreen extends ButtonBar {
         logger.debug("I'm drawing messages....");
         JPanel messageAndButtonPanel = new JPanel(new BorderLayout());
         messageAndButtonPanel.setBackground(Color.WHITE);
+        //Message subject.
+        final MessageModel[] messageModels;
+        if ( foldersBox.getSelectedItem() != null  && (dateBox.getSelectedItem() != null ) ) {
+            messageModels = super.getControllerHandler().getMessageController().getMessagesByFolderDateSender(foldersBox.getSelectedItem().toString(),dateBox.getSelectedItem().toString(),"Council");
+        }
+        else {
+            messageModels = super.getControllerHandler().getMessageController().getAllMessages();
+        }
+        messagesList.addListSelectionListener( new ListSelectionListener() {
+            public void valueChanged ( ListSelectionEvent lse ) {
+                if ( messagesList.getSelectedIndex() != -1 ) {
+                    messagesArea.setText(messageModels[messagesList.getSelectedIndex()].getText());
+                }
+            }
+        });
+        messageAndButtonPanel.add(messagesList, BorderLayout.NORTH);
+
         JScrollPane messagesPane = new JScrollPane();
         if ( myMessageModels.length == 0 && dateBox.getSelectedItem().toString().equalsIgnoreCase("All Dates") ) {
             messagesArea.setText("There are no messages in the " + foldersBox.getSelectedItem().toString() + " folder.");

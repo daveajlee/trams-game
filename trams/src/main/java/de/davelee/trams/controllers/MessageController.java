@@ -23,8 +23,11 @@ public class MessageController {
      * @return a <code>LinkedList</code> with messages.
      */
     public MessageModel[] getMessagesByFolderDateSender ( final String folder, final String date, final String sender ) {
+        if ( date.equalsIgnoreCase("All Dates")) {
+            return getMessagesByFolder(folder);
+        }
         //Return a message list.
-        return messageService.getMessagesByFolderSenderDate(MessageFolder.valueOf(folder), date, sender);
+        return messageService.getMessagesByFolderSenderDate(MessageFolder.getFolderEnum(folder), date, sender);
     }
 
     /**
@@ -34,7 +37,7 @@ public class MessageController {
      */
     public MessageModel[] getMessagesByFolder ( final String folder ) {
         //Return a message list.
-        return messageService.getMessagesByFolder(MessageFolder.valueOf(folder));
+        return messageService.getMessagesByFolder(MessageFolder.getFolderEnum(folder));
     }
     
     /**
