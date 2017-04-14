@@ -152,7 +152,7 @@ public class RouteScheduleController {
 				//logger.debug("Route Detail " + routeDetails.get(i).getId() + " was null - maxVehicles is now " + max);
 			}
 		}
-		for ( int i = min; i < max; i++ ) { //Changed from i = 0; i < routeDetails.size().
+		for ( int i = 0; i < routeScheduleModels.length; i++ ) { //Changed from i = 0; i < routeDetails.size().
 			if ( vehicleController.getVehicleByRouteNumberAndRouteScheduleNumber(routeNumber, "" + routeScheduleModels[i].getScheduleNumber()) == null ) {
 				logger.debug("A schedule was null");
 			}
@@ -301,7 +301,8 @@ public class RouteScheduleController {
 	 * @return a <code>LinkedList</code> of allocations.
 	 */
 	public List<String> getTodayAllocations ( final String currentDate ) {
-		List<String> allAllocations = vehicleController.getAllocations();
+		return vehicleController.getAllocations();
+		/*List<String> allAllocations = vehicleController.getAllocations();
 		List<String> runningIds = new ArrayList<String>();
 		RouteModel[] routeModels = routeController.getRouteModels();
 		for ( int h = 0; h < routeModels.length; h++ ) {
@@ -323,7 +324,7 @@ public class RouteScheduleController {
 		}
 		logger.debug("All allocations are: " + allAllocations.toString());
 		logger.debug("Running Ids are: " + runningIds.toString());
-		return allAllocations;
+		return allAllocations;*/
 	}
 
 	/**

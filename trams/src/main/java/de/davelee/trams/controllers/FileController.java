@@ -86,10 +86,6 @@ public class FileController {
 		if ( myFile.getRouteScheduleModels() != null ) {
 			routeScheduleController.loadRouteSchedules(myFile.getRouteScheduleModels());
 		}
-    	//Load stops.
-		if ( myFile.getStops() != null ) {
-			journeyController.loadStops(myFile.getStops());
-		}
     	//Load stop times.
 		if ( myFile.getStopTimeModels() != null ) {
 			journeyController.loadStopTimes(myFile.getStopTimeModels());

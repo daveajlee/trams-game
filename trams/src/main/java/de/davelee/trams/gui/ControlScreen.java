@@ -198,7 +198,7 @@ public class ControlScreen extends ButtonBar {
         }*/
         //Disable the live situation tab if appropriate.
         if ( super.getControllerHandler().getRouteController().getNumberRoutes() > 0 ) {
-            tabbedPane.setEnabledAt(0, false);
+            tabbedPane.setEnabledAt(0, true);
         } else {
             tabbedPane.setSelectedIndex(2);
         }
@@ -671,7 +671,7 @@ public class ControlScreen extends ButtonBar {
         }
         JPanel stopRowPanel;
         if (routeModel.getSize() > 0 ) {
-            RouteModel routeModel = super.getControllerHandler().getRouteController().getRoute(routeList.getSelectedValue().toString());
+            RouteModel routeModel = super.getControllerHandler().getRouteController().getRoute(routeList.getSelectedValue().toString().split(":")[0]);
             stopRowPanel = new JPanel(new GridLayout(1, routeModel.getStopNames().size()));
             //First of all, create a first row of panels which is equal to the number of stops!
             stopPanels = new ArrayList<JPanel>();
@@ -815,10 +815,8 @@ public class ControlScreen extends ButtonBar {
     public void populateRouteList ( ) {
         routeModel.clear();
         RouteModel[] routeModels = super.getControllerHandler().getRouteController().getRouteModels();
-        //String[] allRouteStr = new String[theSimulator.getScenario().getNumberRoutes()];
         for ( int i = 0; i < routeModels.length; i++ ) {
-            routeModel.addElement(routeModels[i]);
-            //allRouteStr[i] = theSimulator.getScenario().getRoutes().get(i).toString();
+            routeModel.addElement(routeModels[i].getRouteNumber() + ":" + routeModels[i].getStopNames().get(0) + " - " + routeModels[i].getStopNames().get(routeModels[i].getStopNames().size()-1));
         }
         //theRouteList = new JList(allRouteStr);
         logger.debug("Route number in control screen is " + routeNumber);

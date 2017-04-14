@@ -11,6 +11,7 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
@@ -112,8 +113,12 @@ public class AllocationPanel {
         RouteModel[] routeModels = controllerHandler.getRouteController().getRouteModels();
         for ( int i = 0; i < routeModels.length; i++ ) {
         	RouteScheduleModel[] routeScheduleModels = controllerHandler.getRouteScheduleController().getRouteSchedulesByRouteNumber(routeModels[i].getRouteNumber());
-            for ( int j = 0; j < routeScheduleModels.length; j++ ) {
-                routesModel.addElement(routeModels[i].getRouteNumber() + "/" + routeScheduleModels[j].getScheduleNumber());
+        	for ( int j = 0; j < routeScheduleModels.length; j++ ) {
+        	    try {
+        	        controllerHandler.getVehicleController().getVehicleByRouteNumberAndRouteScheduleNumber(routeModels[i].getRouteNumber(), "" + routeScheduleModels[j].getScheduleNumber());
+                } catch ( NoSuchElementException ex ) {
+                    routesModel.addElement(routeModels[i].getRouteNumber() + "/" + routeScheduleModels[j].getScheduleNumber());
+                }
             }
         }
         routesList.setVisibleRowCount(4);
@@ -280,7 +285,7 @@ public class AllocationPanel {
                             }
                         }
                         //Now assign route detail to vehicle.
-                        controllerHandler.getVehicleController().assignVehicleToRouteSchedule(vehicleModels[vehiclePos].getRegistrationNumber(), vehicleModels[vehiclePos].getRouteNumber(), "" + scheduleModels[routeDetailPos].getScheduleNumber());
+                        controllerHandler.getVehicleController().assignVehicleToRouteSchedule(vehicleModels[vehiclePos].getRegistrationNumber(), scheduleModels[routeDetailPos].getRouteNumber(), "" + scheduleModels[routeDetailPos].getScheduleNumber());
                     }
                     //Now return to previous screen.
                     controlScreen.redrawManagement(displayPanel.createPanel(controlScreen), gameModel);
