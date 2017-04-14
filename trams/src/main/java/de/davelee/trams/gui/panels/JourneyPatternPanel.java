@@ -114,6 +114,9 @@ public class JourneyPatternPanel {
         String[] dayStr = new String[] { "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" };
         for ( int i = 0; i < daysBox.length; i++ ) {
             daysBox[i] = new JCheckBox(dayStr[i]);
+            if ( journeyPatternModel != null && journeyPatternModel.getDaysOfOperation().contains((i+1))) {
+                daysBox[i].setSelected(true);
+            }
             daysBox[i].setFont(new Font("Arial", Font.PLAIN, 14));
             daysBox[i].addActionListener(new ActionListener() {
                 public void actionPerformed ( ActionEvent e ) {
@@ -224,6 +227,9 @@ public class JourneyPatternPanel {
         everyLabel.setFont(new Font("Arial", Font.ITALIC, 16));
         timesPanel.add(everyLabel);
         int min = 10;
+        if ( journeyPatternModel != null ) {
+            min = journeyPatternModel.getFrequency();
+        }
         if ( min > getCurrentRouteDuration(1) ) { min = getCurrentRouteDuration(1); }
         everyMinuteModel = new SpinnerNumberModel(min,1,getMaxRouteDuration(),1);
         everyMinuteSpinner = new JSpinner(everyMinuteModel);

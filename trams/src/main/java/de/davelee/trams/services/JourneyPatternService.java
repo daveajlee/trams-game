@@ -82,6 +82,17 @@ public class JourneyPatternService {
     }
 
     /**
+     * Retrieve a single journey pattern based on its name, timetable name and route number.
+     * @param name a <code>String</code> containing the name of the journey pattern.
+     * @param timetableName a <code>String</code> containing the timetable name that this journey pattern has.
+     * @param routeNumber a <code>String</code> containing the route number that this journey pattern has.
+     * @return a <code>JourneyPatternModel</code> containing the matching journey pattern.
+     */
+    public JourneyPatternModel getJourneyPattern ( final String name, final String timetableName, final String routeNumber ) {
+        return convertToJourneyPatternModel(journeyPatternRepository.findByNameAndTimetableNameAndRouteNumber(name, timetableName, routeNumber));
+    }
+
+    /**
      * Delete all journey patterns (only used for load function)
      */
     public void deleteAllJourneyPatterns() {

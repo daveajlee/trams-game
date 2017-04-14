@@ -270,22 +270,16 @@ public class TimetablePanel {
         });
         journeyPatternButtonPanel.add(createJourneyPatternButton);
         modifyJourneyPatternButton = new JButton("Modify");
-        //TODO: reimplement modify!
-        /*modifyJourneyPatternButton.addActionListener( new ActionListener() {
+        modifyJourneyPatternButton.addActionListener( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
-                long journeyPatternId = routeService.getRouteById(selectedRouteId).
-                		getTimetable(timetableNameField.getText()).getJourneyPattern(journeyPatternList.
-                				getSelectedValue().toString()).getId();
-                //Process the stops.
-                ArrayList<String> stops = new ArrayList<String>();
-                for ( int i = 0; i < stopBoxes.length; i++ ) {
-                    if ( !stopBoxes[i].getSelectedItem().toString().equalsIgnoreCase("-") ) {
-                        stops.add(stopBoxes[i].getSelectedItem().toString());
-                    }
-                }
-                controlScreen.redrawManagement(ManagePanel.this.makeJourneyPatternPanel(stops, timetableNameField.getText(), journeyPatternId));
+                //Retrieve journey pattern.
+                TimetableModel selectedTimetableModel = controllerHandler.getTimetableController().getRouteTimetable(routeModel, timetableNameField.getText());
+                JourneyPatternModel journeyPatternModel = controllerHandler.getJourneyPatternController().getJourneyPattern(journeyPatternList.getSelectedValue().toString(), timetableModel.getName(), timetableModel.getRouteNumber());
+                //Show the actual screen!
+                JourneyPatternPanel journeyPatternPanel = new JourneyPatternPanel(controllerHandler);
+                controlScreen.redrawManagement(journeyPatternPanel.createPanel(routeModel.getStopNames(), selectedTimetableModel, journeyPatternModel, routeModel, controlScreen, displayPanel), gameModel);
             }
-        });*/
+        });
         if ( journeyPatternModel.getSize() == 0 ) { modifyJourneyPatternButton.setEnabled(false); }
         journeyPatternButtonPanel.add(modifyJourneyPatternButton);
         deleteJourneyPatternButton = new JButton("Delete");
