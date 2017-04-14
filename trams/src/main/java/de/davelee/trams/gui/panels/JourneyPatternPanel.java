@@ -263,7 +263,6 @@ public class JourneyPatternPanel {
         createJourneyPatternButton.addActionListener ( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
                 //Create a linked list of days selected.
-            	//TODO: Improve - use Calendar instead of for loop!
                 List<Integer> operatingDays = new ArrayList<Integer>();
                 for ( int i = 0; i < daysBox.length; i++ ) {
                     if ( daysBox[i].isSelected() ) {
@@ -276,17 +275,15 @@ public class JourneyPatternPanel {
                 GregorianCalendar timeTo = new GregorianCalendar(2009,7,3,Integer.parseInt(toHourSpinner.getValue().toString()), Integer.parseInt(toMinuteSpinner.getValue().toString()));
                 //Create + add journey pattern.
                 if ( journeyPatternModel != null ) {
-                    //TODO: reimplement edit method.
-                	//theSelectedRoute.getTimetable(theSelectedTimetableName).getJourneyPattern(theSelectedJourneyPattern.getName()).editJourneyPattern(theJourneyPatternNameField.getText(), operatingDays, theTerminus1Box.getSelectedItem().toString(), theTerminus2Box.getSelectedItem().toString(), timeFrom, timeTo, Integer.parseInt(theEveryMinuteSpinner.getValue().toString()), getCurrentRouteDuration(Integer.parseInt(theEveryMinuteSpinner.getValue().toString())));
+                    //If editing, delete old journey pattern model before readding it.
+                    controllerHandler.getJourneyPatternController().deleteJourneyPattern(journeyPatternModel.getName(), journeyPatternModel.getTimetableName(), journeyPatternModel.getRouteNumber());
                 }
-                else {
-                    logger.debug("I am calling add method with timetable name " + timetableModel.getName() + "!");
-                    controllerHandler.getJourneyPatternController().createJourneyPattern(journeyPatternNameField.getText(), operatingDays,
-            				terminus1Box.getSelectedItem().toString(), terminus2Box.getSelectedItem().toString(), timeFrom,
-            				timeTo, Integer.parseInt(everyMinuteSpinner.getValue().toString()), 
-            				getCurrentRouteDuration(Integer.parseInt(everyMinuteSpinner.getValue().toString())), 
-            				timetableModel, routeModel.getRouteNumber());
-                    }
+                logger.debug("I am calling add method with timetable name " + timetableModel.getName() + "!");
+                controllerHandler.getJourneyPatternController().createJourneyPattern(journeyPatternNameField.getText(), operatingDays,
+            			terminus1Box.getSelectedItem().toString(), terminus2Box.getSelectedItem().toString(), timeFrom,
+            			timeTo, Integer.parseInt(everyMinuteSpinner.getValue().toString()),
+            			getCurrentRouteDuration(Integer.parseInt(everyMinuteSpinner.getValue().toString())),
+            			timetableModel, routeModel.getRouteNumber());
                 //Now return to the timetable screen.
                 TimetablePanel myTimetablePanel = new TimetablePanel(controllerHandler);
                 RoutePanel myRoutePanel = new RoutePanel(controllerHandler);

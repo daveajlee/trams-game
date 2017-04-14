@@ -45,7 +45,9 @@ public class TimetablePanel {
     }
 	
 	private JButton createJourneyPatternButton;
+    private JButton modifyJourneyPatternButton;
 	private JButton deleteJourneyPatternButton;
+	private DefaultListModel journeyPatternModel;
 	
 	public JPanel createPanel ( final TimetableModel timetableModel, final RouteModel routeModel, final ControlScreen controlScreen, final RoutePanel routePanel, final DisplayPanel displayPanel ) {
 		final GameModel gameModel = controllerHandler.getGameController().getGameModel();
@@ -101,7 +103,7 @@ public class TimetablePanel {
         validityPanel.add(validFromLabel);
         //Get the calendar object with current time.
         Calendar currTime = (Calendar) gameModel.getCurrentTime().clone();
-        currTime.add(Calendar.HOUR, 0); //TODO: Change this to 48!!!!
+        currTime.add(Calendar.HOUR, 0);
         //Valid From Day.
         final int fromStartDay = currTime.get(Calendar.DAY_OF_MONTH);
         final DefaultComboBoxModel validFromDayModel = new DefaultComboBoxModel();
@@ -217,7 +219,7 @@ public class TimetablePanel {
         //Here is the actual service pattern list.
         JPanel centreJourneyPatternListPanel = new JPanel(new GridBagLayout());
         centreJourneyPatternListPanel.setBackground(Color.WHITE);
-        DefaultListModel journeyPatternModel = new DefaultListModel();
+        journeyPatternModel = new DefaultListModel();
         //Now get all the journey pattern which we have at the moment.
         TimetableModel journeyTimetableModel = controllerHandler.getTimetableController().getRouteTimetable(routeModel, timetableNameField.getText());
         if ( journeyTimetableModel != null ) {
@@ -226,7 +228,7 @@ public class TimetablePanel {
                 journeyPatternModel.addElement(journeyPatternModels[i].getName());
             }
         }
-        JList journeyPatternList = new JList(journeyPatternModel);
+        final JList journeyPatternList = new JList(journeyPatternModel);
         if ( journeyPatternModel.getSize() > 0 ) { journeyPatternList.setSelectedIndex(0); } 
         journeyPatternList.setVisibleRowCount(3);
         journeyPatternList.setFixedCellWidth(450);
@@ -267,7 +269,7 @@ public class TimetablePanel {
             }
         });
         journeyPatternButtonPanel.add(createJourneyPatternButton);
-        JButton modifyJourneyPatternButton = new JButton("Modify");
+        modifyJourneyPatternButton = new JButton("Modify");
         //TODO: reimplement modify!
         /*modifyJourneyPatternButton.addActionListener( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
@@ -286,12 +288,10 @@ public class TimetablePanel {
         });*/
         if ( journeyPatternModel.getSize() == 0 ) { modifyJourneyPatternButton.setEnabled(false); }
         journeyPatternButtonPanel.add(modifyJourneyPatternButton);
-        //TODO: reimplement delete.
         deleteJourneyPatternButton = new JButton("Delete");
-        /*deleteJourneyPatternButton.addActionListener( new ActionListener() {
+        deleteJourneyPatternButton.addActionListener( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
-                routeService.getRouteById(selectedRouteId).getTimetable(timetableNameField.getText()).
-                	deleteJourneyPattern(journeyPatternList.getSelectedValue().toString());
+                controllerHandler.getJourneyPatternController().deleteJourneyPattern(journeyPatternList.getSelectedValue().toString(), timetableModel.getName(), timetableModel.getRouteNumber());
                 journeyPatternModel.removeElement(journeyPatternList.getSelectedValue());
                 if ( journeyPatternModel.getSize() == 0 ) {
                     deleteJourneyPatternButton.setEnabled(false);
@@ -301,7 +301,7 @@ public class TimetablePanel {
                     journeyPatternList.setSelectedIndex(0);
                 }
             }
-        });*/
+        });
         if ( journeyPatternModel.getSize() == 0 ) { deleteJourneyPatternButton.setEnabled(false); }
         journeyPatternButtonPanel.add(deleteJourneyPatternButton);
         journeyPatternListPanel.add(journeyPatternButtonPanel, BorderLayout.SOUTH);
