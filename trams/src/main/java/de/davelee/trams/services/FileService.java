@@ -1,6 +1,8 @@
 package de.davelee.trams.services;
 
 import de.davelee.trams.beans.TramsFile;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.xml.bind.JAXBContext;
@@ -11,7 +13,8 @@ import java.io.*;
 @Service
 public class FileService {
 
-    //TODO: Log exceptions.
+    private static final Logger logger = LoggerFactory.getLogger(FileService.class);
+
     public boolean saveFile ( File file, TramsFile tramsFile ) {
         try {
             file.createNewFile();
@@ -21,12 +24,11 @@ public class FileService {
             marshaller.marshal(tramsFile, file);
             return true;
         } catch ( Exception exception ) {
-            exception.printStackTrace();
+            logger.error("exception whilst saving file", exception);
             return false;
         }
     }
 
-    //TODO: Log exceptions.
 	public TramsFile loadFile ( File file ) {
         try {
             InputStream is = new FileInputStream(file.getAbsolutePath());
@@ -34,7 +36,7 @@ public class FileService {
             Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
             return (TramsFile) jaxbUnmarshaller.unmarshal(is);
         } catch ( Exception exception ) {
-            exception.printStackTrace();
+            logger.error("exception whilst loading file", exception);
             return null;
         }
     }

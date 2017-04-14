@@ -1,9 +1,6 @@
 package de.davelee.trams.services;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 import de.davelee.trams.data.Vehicle;
 import de.davelee.trams.factory.VehicleFactory;
@@ -160,10 +157,20 @@ public class VehicleService {
         } while ( !isUniqueReg );
         return randomReg;
     }
-    
-    //TODO: Exception when null?
+
+    /**
+     * This method retrieves a vehicle running on a particular route and with a particular route schedule number.
+     * Method throws an exception if no vehicle is currently running this route and route schedule number.
+     * @param routeNumber a <code>String</code> with the route number that the vehicle should be running.
+     * @param routeScheduleNumber a <code>String</code> with the route schedule number that the vehicle should be running.
+     * @return a <code>VehicleModel</code> which contains information about the vehicle found.
+     */
     public VehicleModel getVehicleByRouteNumberAndRouteScheduleNumber ( final String routeNumber, final long routeScheduleNumber ) {
-        return convertToVehicleModel(vehicleRepository.findByRouteNumberAndRouteScheduleNumber(routeNumber, routeScheduleNumber));
+        Vehicle vehicle = vehicleRepository.findByRouteNumberAndRouteScheduleNumber(routeNumber, routeScheduleNumber);
+        if ( vehicle == null ) {
+            throw new NoSuchElementException();
+        }
+        return convertToVehicleModel(vehicle);
     }
 
     public VehicleModel createVehicleObject ( final String model, final String registrationNumber, final Calendar deliveryDate ) {

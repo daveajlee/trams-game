@@ -147,7 +147,6 @@ public class JourneyService {
     public JourneyModel getCurrentJourney ( final JourneyModel[] journeyModels, final Calendar currentTime ) {
         for ( int i = 0; i < journeyModels.length; i++ ) {
             if ( checkJourneyStatus(journeyModels[i], currentTime) == JourneyStatus.RUNNING) {
-                //TODO: Clean up for loop.
                 if (  i != (journeyModels.length-1) && checkJourneyStatus(journeyModels[i+1], currentTime) == JourneyStatus.YET_TO_RUN )  {
                     return journeyModels[i];
                 }

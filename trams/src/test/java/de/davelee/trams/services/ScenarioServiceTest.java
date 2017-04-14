@@ -13,6 +13,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import de.davelee.trams.beans.Scenario;
 
+import java.util.NoSuchElementException;
+
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("/de/davelee/trams/spring/test-context.xml")
 public class ScenarioServiceTest {
@@ -44,10 +46,10 @@ public class ScenarioServiceTest {
 		assertNull(scenarioService.retrieveScenarioObject("Berlin Transport Company"));
 	}
 
-	@Test
+	@Test(expected=NoSuchElementException.class)
 	public void testCreateScenario() {
 		assertNotNull(scenarioService.retrieveScenarioObject("Landuff Transport Company"));
-		assertNull(scenarioService.retrieveScenarioObject("Londuff Transport Company"));
+		scenarioService.retrieveScenarioObject("Londuff Transport Company");
 	}
 
 	@Test

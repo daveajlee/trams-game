@@ -12,6 +12,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import de.davelee.trams.data.Vehicle;
 
+import java.util.NoSuchElementException;
+
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("/de/davelee/trams/spring/test-context.xml")
 public class VehicleFactoryTest {
@@ -56,11 +58,10 @@ public class VehicleFactoryTest {
 		assertEquals(vehicle.getSeatingCapacity(), 104);
 		assertEquals(vehicle.getStandingCapacity(), 83);
 	}
-	
-	@Test
+
+	@Test(expected=NoSuchElementException.class)
 	public void testNull() {
 		Vehicle vehicle = vehicleFactory.createVehicleByModel("MyTrain");
-		assertNull(vehicle);
 	}
 	
 }

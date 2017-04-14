@@ -7,6 +7,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import java.util.Calendar;
+import java.util.NoSuchElementException;
 
 import de.davelee.trams.model.VehicleModel;
 import org.junit.Test;
@@ -139,10 +140,10 @@ public class VehicleServiceTest {
 		assertEquals(vehicleService.getVehicleModels().length, 2);
 	}
 
-	@Test
+	@Test(expected=NoSuchElementException.class)
 	public void testCreateVehicleObject() {
 		assertNotNull(vehicleService.createVehicleObject("MyBus Single Decker", "CV58 2DD", Calendar.getInstance()));
-		assertNull(vehicleService.createVehicleObject("MyTrain", "123", Calendar.getInstance()));
+		vehicleService.createVehicleObject("MyTrain", "123", Calendar.getInstance());
 	}
 
 	@Test

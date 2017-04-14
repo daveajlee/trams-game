@@ -5,6 +5,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Calendar;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableColumnModel;
@@ -193,8 +194,8 @@ public class ViewTimetablePanel {
         //TODO: Add multiple route schedules.
         JourneyModel[] journeyModels = controllerHandler.getJourneyController().getJourneysByRouteScheduleNumberAndRouteNumber(direction, routeNumber);
         for ( int i = 0; i < journeyModels.length; i++ ) {
-            Calendar cal = controllerHandler.getJourneyController().getStopTime(journeyModels[i], stopName);
-            if ( cal != null ) {
+            try {
+                Calendar cal = controllerHandler.getJourneyController().getStopTime(journeyModels[i], stopName);
                 int hour = cal.get(Calendar.HOUR_OF_DAY); int minute = cal.get(Calendar.MINUTE); String minuteStr = "";
                 if ( minute < 10 ) { minuteStr = "0" + minute; } else { minuteStr = "" + minute; }
                 int displayPos = 1;
@@ -205,6 +206,8 @@ public class ViewTimetablePanel {
                 } else {
                     data[hour][displayPos] = data[hour][displayPos] + " " + minuteStr;
                 }
+            } catch (NoSuchElementException ex) {
+                logger.debug("No stop time found for " + journeyModels[i] + " and stop name " + stopName);
             }
         }
         //Null check.

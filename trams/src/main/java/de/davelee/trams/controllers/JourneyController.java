@@ -3,6 +3,7 @@ package de.davelee.trams.controllers;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import de.davelee.trams.model.*;
 import de.davelee.trams.util.DateFormats;
@@ -76,16 +77,19 @@ public class JourneyController {
 	 * @return a <code>String</code> with the time as hh:mm.
 	 */
     public String getDisplayStopTime( final JourneyModel journeyModel, String name ) {
-		return DateFormats.HOUR_MINUTE_FORMAT.getFormat().format(getStopTime(journeyModel, name));
+    	try {
+			return DateFormats.HOUR_MINUTE_FORMAT.getFormat().format(getStopTime(journeyModel, name));
+		} catch ( NoSuchElementException ex ) {
+    		return "--:--";
+		}
 	}
 
-	//TODO: Null or exception?
 	public Calendar getStopTime ( final JourneyModel journeyModel, String name ) {
 		StopTimeModel stopTime = journeyService.getStopTime(journeyModel, name);
 		if ( stopTime != null ) {
 			return stopTime.getTime();
 		}
-		return null;
+		throw new NoSuchElementException();
 	}
 
 	public Calendar getFirstStopTime ( final JourneyModel journeyModel ) {

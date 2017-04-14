@@ -12,6 +12,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import de.davelee.trams.beans.Scenario;
 
+import java.util.NoSuchElementException;
+
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("/de/davelee/trams/spring/test-context.xml")
 public class ScenarioFactoryTest {
@@ -48,11 +50,10 @@ public class ScenarioFactoryTest {
 		assertEquals(scenario.getScenarioName(), "MDorf Transport Company");
 		assertEquals(scenario.getMinimumSatisfaction(), 35);
 	}
-	
-	@Test
+
+	@Test(expected=NoSuchElementException.class)
 	public void testNullScenario() {
 		Scenario scenario = scenarioFactory.createScenarioByName("Londuff Transport Company");
-		assertNull(scenario);
 	}
 	
 }

@@ -1,6 +1,7 @@
 package de.davelee.trams.factory;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import de.davelee.trams.beans.Scenario;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,15 +27,20 @@ public class ScenarioFactory {
 	public void setAvailableScenarios(List<Scenario> availableScenarios) {
 		this.availableScenarios = availableScenarios;
 	}
-	
-	public Scenario createScenarioByName(String name) {
+
+	/**
+	 * Find the scenario matching the specified name and return the scenario information.
+	 * Throws an exception if the scenario is not found.
+	 * @param name a <code>String</code> with the scenario to find.
+	 * @return a <code>Scenario</code> object containing the scenario information.
+	 */
+	public Scenario createScenarioByName(final String name) {
 		for ( Scenario availableScenario : availableScenarios ) {
 			if ( availableScenario.getScenarioName().equalsIgnoreCase(name) ) {
 				return (Scenario) availableScenario.clone();
 			}
 		}
-		//TODO: throw exception
-		return null;
+		throw new NoSuchElementException();
 	}
 
 }
