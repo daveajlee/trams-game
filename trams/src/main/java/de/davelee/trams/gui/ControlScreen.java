@@ -125,7 +125,7 @@ public class ControlScreen extends ButtonBar {
         topPanel = new JPanel();
         topPanel.setLayout ( new BorderLayout () );
         topPanel.setBackground(Color.WHITE);
-        timeLabel = new JLabel(super.getControllerHandler().getGameController().formatDateString(gameModel.getCurrentTime(), DateFormats.CONTROL_SCREEN_FORMAT).replace("AM", "am").replace("PM","pm"), SwingConstants.CENTER);
+        timeLabel = new JLabel(DateFormats.CONTROL_SCREEN_FORMAT.getFormat().format(gameModel.getCurrentTime().getTime()).replace("AM", "am").replace("PM","pm"), SwingConstants.CENTER);
         timeLabel.setFont(new Font("Arial", Font.ITALIC, 20));
         topPanel.add(timeLabel, BorderLayout.NORTH);
 
@@ -233,7 +233,7 @@ public class ControlScreen extends ButtonBar {
         JPanel passengerSatisfactionPanel = new JPanel();
         passengerSatisfactionPanel.setBackground(Color.WHITE);
         passengerSatisfactionBar = new JProgressBar(0, 100);
-        passengerSatisfactionBar.setValue(super.getControllerHandler().getGameController().computeAndReturnPassengerSatisfaction(gameModel.getPlayerName()));
+        passengerSatisfactionBar.setValue(super.getControllerHandler().getGameController().computeAndReturnPassengerSatisfaction());
         passengerSatisfactionBar.setString("Passenger Satisfaction Rating - " + passengerSatisfactionBar.getValue() + "%");
         passengerSatisfactionBar.setFont(new Font("Arial", Font.ITALIC, 20));
         passengerSatisfactionBar.setStringPainted(true);
@@ -331,7 +331,7 @@ public class ControlScreen extends ButtonBar {
             //Now add a message to summarise days events!!!
             SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
             String date = dateFormat.format(gameModel.getCurrentTime().getTime());
-            super.getControllerHandler().getMessageController().addMessage("Passenger Satisfaction for " + super.getControllerHandler().getGameController().formatDateString(getPreviousDay(gameModel.getCurrentTime(), gameModel.getTimeIncrement()), DateFormats.FULL_FORMAT), "Congratulations you have successfully completed transport operations for " + gameModel.getScenarioName() + " on " + super.getControllerHandler().getGameController().formatDateString(getPreviousDay(gameModel.getCurrentTime(), gameModel.getTimeIncrement()), DateFormats.FULL_FORMAT) + " with a passenger satisfaction of " + super.getControllerHandler().getGameController().computeAndReturnPassengerSatisfaction(gameModel.getPlayerName()) + "%.\n\nNow you need to allocate vehicles to routes for " + super.getControllerHandler().getGameController().formatDateString(gameModel.getCurrentTime(), DateFormats.FULL_FORMAT) + " and keep the passenger satisfaction up! Click on the Management tab and then choose Allocations. Good luck!", "Council", "INBOX", date);
+            super.getControllerHandler().getMessageController().addMessage("Passenger Satisfaction for " + DateFormats.FULL_FORMAT.getFormat().format(getPreviousDay(gameModel.getCurrentTime(), gameModel.getTimeIncrement()).getTime()), "Congratulations you have successfully completed transport operations for " + gameModel.getScenarioName() + " on " + DateFormats.FULL_FORMAT.getFormat().format(getPreviousDay(gameModel.getCurrentTime(), gameModel.getTimeIncrement()).getTime()) + " with a passenger satisfaction of " + super.getControllerHandler().getGameController().computeAndReturnPassengerSatisfaction() + "%.\n\nNow you need to allocate vehicles to routes for " + DateFormats.FULL_FORMAT.getFormat().format(gameModel.getCurrentTime().getTime()) + " and keep the passenger satisfaction up! Click on the Management tab and then choose Allocations. Good luck!", "Council", "INBOX", date);
             //Refresh messages.
             MessageModel[] messageModels = super.getControllerHandler().getMessageController().getMessagesByFolderDateSender(foldersBox.getSelectedItem().toString(),dateBox.getSelectedItem().toString(),"Council");
             messagesModel.removeAllElements();
@@ -348,15 +348,16 @@ public class ControlScreen extends ButtonBar {
             else {
                 messagesArea.setText(messageModels[messagesList.getSelectedIndex()].getText());
             }
-            dateModel.addElement(super.getControllerHandler().getGameController().formatDateString(gameModel.getCurrentTime(), DateFormats.FULL_TIME_FORMAT).split("-")[0]);
+
+            dateModel.addElement(DateFormats.FULL_TIME_FORMAT.getFormat().format(gameModel.getCurrentTime().getTime()).split("-")[0]);
             //Then display it to the user.
             doneAllocations = true;
             super.getControllerHandler().getGameController().pauseSimulation();
             topPanel.getComponent(1).setVisible(false);
             tabbedPane.setSelectedIndex(1);
             //Now here we need to update satisfaction bar.
-            timeLabel.setText(super.getControllerHandler().getGameController().formatDateString(gameModel.getCurrentTime(), DateFormats.FULL_TIME_FORMAT));
-            int satValue = super.getControllerHandler().getGameController().computeAndReturnPassengerSatisfaction(gameModel.getPlayerName());
+            timeLabel.setText(DateFormats.FULL_TIME_FORMAT.getFormat().format(gameModel.getCurrentTime().getTime()));
+            int satValue = super.getControllerHandler().getGameController().computeAndReturnPassengerSatisfaction();
             ScenarioModel scenarioModel = super.getControllerHandler().getScenarioController().getScenario(gameModel.getScenarioName());
             if ( satValue < scenarioModel.getMinimumSatisfaction() ) {
                 super.getControllerHandler().getGameController().pauseSimulation();
@@ -442,9 +443,9 @@ public class ControlScreen extends ButtonBar {
                     theDialogPanel.add(theGraphicsPanel, i);
                 }
             }*/
-            timeLabel.setText(super.getControllerHandler().getGameController().formatDateString(gameModel.getCurrentTime(), DateFormats.FULL_TIME_FORMAT));
+            timeLabel.setText(DateFormats.FULL_TIME_FORMAT.getFormat().format(gameModel.getCurrentTime().getTime()));
             //Now here we need to update satisfaction bar.
-            int satValue = super.getControllerHandler().getGameController().computeAndReturnPassengerSatisfaction(gameModel.getPlayerName());
+            int satValue = super.getControllerHandler().getGameController().computeAndReturnPassengerSatisfaction();
             ScenarioModel scenarioModel = super.getControllerHandler().getScenarioController().getScenario(gameModel.getScenarioName());
             if ( satValue < scenarioModel.getMinimumSatisfaction() ) {
                 super.getControllerHandler().getGameController().pauseSimulation();

@@ -149,5 +149,9 @@ public class GameService {
         }
         return gameModels;
     }
+
+    public void deleteAllGames ( ) {
+        gameRepository.deleteAll();
+    }
     
 }

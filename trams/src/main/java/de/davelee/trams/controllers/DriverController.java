@@ -29,7 +29,7 @@ public class DriverController {
      */
     public void employDriver ( final DriverModel driverModel ) {
     	//TODO: Employing drivers should cost money.
-        gameController.withdrawBalance(0, gameController.getCurrentPlayerName());
+        gameController.withdrawBalance(0);
         driverService.saveDriver(driverModel);
     }
 

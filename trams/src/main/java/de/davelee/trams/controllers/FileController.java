@@ -110,7 +110,7 @@ public class FileController {
     }
     
     public TramsFile prepareTramsFile ( ) {
-    	return new TramsFile(driverController.getAllDrivers(), gameController.getAllGames(), journeyController.getAllJourneys(),
+    	return new TramsFile(driverController.getAllDrivers(), new GameModel[] { gameController.getGameModel() }, journeyController.getAllJourneys(),
 				journeyPatternController.getAllJourneyPatterns(), messageController.getAllMessages(), routeController.getRouteModels(),
 				routeScheduleController.getAllRouteSchedules(), journeyController.getAllStops(), journeyController.getAllStopTimes(),
 				timetableController.getAllTimetableModels(), vehicleController.getVehicleModels());

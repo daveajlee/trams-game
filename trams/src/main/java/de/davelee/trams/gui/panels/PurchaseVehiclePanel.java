@@ -139,7 +139,7 @@ public class PurchaseVehiclePanel {
         gridPanel.add(deliveryLabel);
         final Calendar deliveryDate = (Calendar) gameModel.getCurrentTime().clone();
         deliveryDate.add(Calendar.HOUR, 72);
-        JLabel deliveryField = new JLabel("" + controllerHandler.getGameController().formatDateString(deliveryDate, DateFormats.FULL_FORMAT));
+        JLabel deliveryField = new JLabel("" + DateFormats.FULL_FORMAT.getFormat().format(deliveryDate.getTime()));
         deliveryField.setFont(new Font("Arial", Font.PLAIN, 12));
         gridPanel.add(deliveryField);
         //Create label and field for purchase price and add it to the price panel.

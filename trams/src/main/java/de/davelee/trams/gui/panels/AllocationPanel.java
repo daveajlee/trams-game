@@ -63,7 +63,7 @@ public class AllocationPanel {
         topRightPanel.add(topLabel);
         JPanel dayPanel = new JPanel();
         dayPanel.setBackground(Color.WHITE);
-        JLabel dayLabel = new JLabel(controllerHandler.getGameController().formatDateString(gameModel.getCurrentTime(), DateFormats.FULL_FORMAT), SwingConstants.CENTER);
+        JLabel dayLabel = new JLabel(DateFormats.FULL_FORMAT.getFormat().format(gameModel.getCurrentTime().getTime()), SwingConstants.CENTER);
         dayLabel.setFont(new Font("Arial", Font.BOLD + Font.ITALIC, 20));
         dayPanel.add(dayLabel);
         topRightPanel.add(dayPanel);

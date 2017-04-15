@@ -6,7 +6,6 @@ import de.davelee.trams.gui.ControlScreen;
 import de.davelee.trams.model.GameModel;
 import de.davelee.trams.model.RouteModel;
 import de.davelee.trams.model.RouteScheduleModel;
-import de.davelee.trams.util.DateFormats;
 import de.davelee.trams.util.DifficultyLevel;
 import de.davelee.trams.util.GameThread;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,19 +29,46 @@ public class GameController {
     private Thread runningThread;
     private boolean simulationRunning = false;
 
-	public void withdrawBalance ( final double amount, final String playerName ) {
-		gameService.withdrawBalance(amount, playerName);
+    //Cache game model to improve performance.
+	private GameModel cachedGameModel;
+
+	/**
+	 * Withdraw the specified amount from the balance of the current game.
+	 * @param amount a <code>double</code> with the amount to withdraw from the balance.
+	 */
+	public void withdrawBalance ( final double amount ) {
+		gameService.withdrawBalance(amount, cachedGameModel.getPlayerName());
+		//Update cache.
+		updateCache();
 	}
 
-	public void creditBalance ( final double amount, final String playerName ) {
-		gameService.creditBalance(amount, playerName);
+	/**
+	 * Credit the specified amount to the balance of the current game.
+	 * @param amount a <code>double</code> with the amount to credit to the balance
+	 */
+	public void creditBalance ( final double amount ) {
+		gameService.creditBalance(amount, cachedGameModel.getPlayerName());
+		//Update cache.
+		updateCache();
 	}
 
-	public GameModel getGameModel() {
-		return getGameModelByPlayerName(getCurrentPlayerName());
+	/**
+	 * This method updates the cache by retrieving the current game model from the database after changes.
+	 */
+	private void updateCache() {
+		cachedGameModel = gameService.getGameByPlayerName(cachedGameModel.getPlayerName());
 	}
 
+	/**
+	 * Create a new game for the specified player running the specified scenario.
+	 * @param playerName a <code>String</code> with the player name for this new game.
+	 * @param scenarioName a <code>String</code> with the scenario to use for this new game.
+	 * @return a <code>GameModel</code> representing the new game which was created.
+	 */
 	public GameModel createGameModel ( final String playerName, final String scenarioName ) {
+		//There can only be one game!
+		gameService.deleteAllGames();
+		//Create game.
 		GameModel gameModel = new GameModel();
 		gameModel.setBalance(80000.00);
 		Calendar calendar = Calendar.getInstance();
@@ -57,33 +83,48 @@ public class GameController {
 		gameModel.setScenarioName(scenarioName);
 		gameModel.setTimeIncrement(15);
 		gameModel.setPassengerSatisfaction(100);
+		//Save game to db, update cache and return it.
 		gameService.saveGame(gameModel);
-		return getGameModel();
+		cachedGameModel = gameModel;
+		return gameModel;
 	}
 
 	/**
-	 * This method loads a game model from a saved file. It overwrites an existing game models in the database!
+	 * This method loads a game model from a saved file. It overwrites any existing game models in the database!
 	 * @param gameModel a <code>GameModel</code> containing the game to load.
 	 */
 	public void loadGameModel ( final GameModel gameModel ) {
+		//There can only be one game!
+		gameService.deleteAllGames();
+		//Save game to db and update cache.
 		gameService.saveGame(gameModel);
+		cachedGameModel = gameModel;
 	}
 
-	public GameModel getGameModelByPlayerName ( final String playerName ) {
-		return gameService.getGameByPlayerName(playerName);
+	/**
+	 * This method returns the current game model from the cache.
+	 * @return a <code>GameModel</code> representing the current game being played.
+	 */
+	public GameModel getGameModel ( ) {
+		return cachedGameModel;
 	}
 
+	/**
+	 * This method returns the name of the player playing the current game.
+	 * @return a <code>String</code> with the player name.
+	 */
 	public String getCurrentPlayerName ( ) {
-		return gameService.getCurrentPlayerName();
+		return cachedGameModel.getPlayerName();
 	}
 
 	/**
 	 * Resume the simulation!
+	 * @param controlScreen a <code>ControlScreen</code> to update whilst running the simulation.
 	 */
     public void resumeSimulation ( final ControlScreen controlScreen ) {
 		simulationRunning = true;
 		end = false;
-		runningThread = new GameThread("SimThread", this, 2000, getCurrentPlayerName(), controlScreen);
+		runningThread = new GameThread("SimThread", this, 2000, controlScreen);
 		runningThread.start();
 	}
 
@@ -101,32 +142,40 @@ public class GameController {
 		return false;
 	}
 
+	/**
+	 * This method checks if the simulation is currently running.
+	 * @return a <code>boolean</code> which is true iff the simulation is still running.
+	 */
 	public boolean stillRunning ( ) {
 		return end;
 	}
 
-	public Calendar incrementTime ( final String playerName ) {
-		return gameService.incrementTime(playerName);
+	/**
+	 * Increment the time for the currently running simulation.
+	 * @return a <code>Calendar</code> with the new time after incrementing it.
+	 */
+	public Calendar incrementTime ( ) {
+		Calendar newTime = gameService.incrementTime(cachedGameModel.getPlayerName());
+		updateCache();
+		return newTime;
 	}
 
+	/**
+	 * This method starts running the simulation.
+	 * @param controlScreen a <code>ControlScreen</code> to update whilst running the simulation.
+	 */
 	public void runSimulation ( final ControlScreen controlScreen ) {
 		//Finally, run simulation
 		end = false;
-		runningThread = new GameThread("simThread", this, 2000, getCurrentPlayerName(), controlScreen);
+		runningThread = new GameThread("simThread", this, 2000, controlScreen);
 		runningThread.start();
 	}
 
 	/**
-	 * Return the supplied calendar object as a formatted string.
-	 * @param currentTime a <code>Calendar</code> object to format.
-	 * @param dateFormat a <code>DateFormats</code> with the formats.
-	 * @return a <code>String</code> with the formatted string.
+	 * Compute and return the passenger satisfaction for the current game.
+	 * @return a <code>int</code> with the current level of passenger satisfaction between 0 and 100.
 	 */
-	public String formatDateString ( final Calendar currentTime, final DateFormats dateFormat ) {
-		return dateFormat.getFormat().format(currentTime.getTime());
-	}
-
-	public int computeAndReturnPassengerSatisfaction ( final String playerName ) {
+	public int computeAndReturnPassengerSatisfaction ( ) {
 		//Essentially satisfaction is determined by the route schedules that are running on time.
 		//Now count number of route schedules into three groups: 1 - 5 minutes late, 6 - 15 minutes late, 16+ minutes late.
 		int numSmallLateSchedules = 0; int numMediumLateSchedules = 0; int numLargeLateSchedules = 0;
@@ -147,11 +196,7 @@ public class GameController {
 				}
 			}
 		}
-		return gameService.computeAndReturnPassengerSatisfaction(playerName, numSmallLateSchedules, numMediumLateSchedules, numLargeLateSchedules);
-	}
-
-	public GameModel[] getAllGames () {
-		return gameService.getAllGames();
+		return gameService.computeAndReturnPassengerSatisfaction(cachedGameModel.getPlayerName(), numSmallLateSchedules, numMediumLateSchedules, numLargeLateSchedules);
 	}
 
 }

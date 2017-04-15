@@ -79,7 +79,7 @@ public class VehicleController {
 	 */
 	public void sellVehicle ( final VehicleModel vehicleModel ) {
 		GameModel gameModel = gameController.getGameModel();
-		gameController.creditBalance(vehicleService.getValue(vehicleModel.getPurchasePrice(), vehicleModel.getDepreciationFactor(), vehicleModel.getDeliveryDate(), gameModel.getCurrentTime()), gameModel.getPlayerName());
+		gameController.creditBalance(vehicleService.getValue(vehicleModel.getPurchasePrice(), vehicleModel.getDepreciationFactor(), vehicleModel.getDeliveryDate(), gameModel.getCurrentTime()));
 		vehicleService.removeVehicle(vehicleModel);
 	}
 
@@ -92,7 +92,7 @@ public class VehicleController {
 		GameModel gameModel = gameController.getGameModel();
 		VehicleModel vehicle = vehicleService.createVehicleObject(type, vehicleService.generateRandomReg(
 		gameModel.getCurrentTime().get(Calendar.YEAR)), deliveryDate);
-		gameController.withdrawBalance(vehicle.getPurchasePrice(), gameModel.getPlayerName());
+		gameController.withdrawBalance(vehicle.getPurchasePrice());
 		vehicleService.saveVehicle(vehicle);
 	}
 

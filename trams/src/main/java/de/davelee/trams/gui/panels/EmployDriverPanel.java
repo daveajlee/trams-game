@@ -84,7 +84,7 @@ public class EmployDriverPanel {
         startLabelPanel.add(startLabel);
         final Calendar startDate = (Calendar) gameModel.getCurrentTime().clone();
         startDate.add(Calendar.HOUR, 72);
-        JLabel startField = new JLabel("" + controllerHandler.getGameController().formatDateString(startDate, DateFormats.FULL_FORMAT));
+        JLabel startField = new JLabel("" + DateFormats.FULL_FORMAT.getFormat().format(startDate.getTime()));
         startField.setFont(new Font("Arial", Font.ITALIC, 14));
         startLabelPanel.add(startField);
         gridPanel.add(startLabelPanel);
