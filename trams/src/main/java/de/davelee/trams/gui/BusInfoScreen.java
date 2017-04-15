@@ -66,7 +66,6 @@ public class BusInfoScreen extends JFrame {
         //Call dispose method if the user hits exit.
         this.addWindowListener ( new WindowAdapter() {
             public void windowClosing ( WindowEvent e ) {
-                gameController.resumeSimulation();
                 dispose();
             }
         });
@@ -134,7 +133,6 @@ public class BusInfoScreen extends JFrame {
         closeButton = new JButton("Close Window");
         closeButton.addActionListener( new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                gameController.resumeSimulation();
                 dispose();
             }
         });

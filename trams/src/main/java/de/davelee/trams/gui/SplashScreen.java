@@ -105,7 +105,6 @@ public class SplashScreen extends JFrame {
             this.getContentPane().addMouseListener ( new MouseListener () {
                 public void mouseClicked(MouseEvent e) {
                     dispose();
-                    controllerHandler.getGameController().resumeSimulation();
                 }
                 public void mousePressed(MouseEvent e) {}
                 public void mouseReleased(MouseEvent e) {}
@@ -115,7 +114,6 @@ public class SplashScreen extends JFrame {
             busDisplay.addMouseListener ( new MouseListener () {
                 public void mouseClicked(MouseEvent e) {
                     dispose();
-                    controllerHandler.getGameController().resumeSimulation();
                 }
                 public void mousePressed(MouseEvent e) {}
                 public void mouseReleased(MouseEvent e) {}

@@ -50,7 +50,6 @@ public class OptionsScreen extends JFrame {
         //Call dispose method if the user hits exit.
         this.addWindowListener ( new WindowAdapter() {
             public void windowClosing ( WindowEvent e ) {
-                controllerHandler.getGameController().resumeSimulation();
                 dispose();
             }
         });
@@ -142,7 +141,6 @@ public class OptionsScreen extends JFrame {
                 else if ( difficultButtons[3].isSelected() ) {
                     gameModel.setDifficultyLevel(DifficultyLevel.HARD);
                 }
-                controllerHandler.getGameController().resumeSimulation();
                 dispose();
             }
         });
@@ -151,7 +149,6 @@ public class OptionsScreen extends JFrame {
         closeButton = new JButton("Close Window");
         closeButton.addActionListener( new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                controllerHandler.getGameController().resumeSimulation();
                 dispose();
             }
         });

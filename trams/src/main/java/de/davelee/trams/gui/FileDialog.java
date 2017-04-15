@@ -6,9 +6,6 @@ import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import de.davelee.trams.controllers.ControllerHandler;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import de.davelee.trams.controllers.FileController;
 
 public class FileDialog {
 	
@@ -27,19 +24,13 @@ public class FileDialog {
         	if ( controllerHandler.getFileController().loadFile(fileDialog.getSelectedFile()) ) {
         		JFrame oldFrame = currentFrame;
                 controlScreen.displayScreen("", 0, 4, false);
-                //cs.drawVehicles(false);
-                //WelcomeScreen ws = new WelcomeScreen(this);
-                //cs.setVisible(true);
                 currentFrame.setVisible(true);
                 oldFrame.dispose();
                 //Set control screen.
                 controlScreen.setVisible(true);
                 //Finally, run simulation
-                /*isEnd = false;
-                theRunningThread = new Thread(this, "simThread");
-                theRunningThread.start();*/
-                
-                //runSimulation(cs, theOperations.getSimulator());
+                controllerHandler.getGameController().resumeSimulation(controlScreen);
+
                 return true;
         	}
         }

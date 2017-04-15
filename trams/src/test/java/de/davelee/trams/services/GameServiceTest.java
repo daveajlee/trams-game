@@ -38,7 +38,6 @@ public class GameServiceTest {
 		gameModel.setTimeIncrement(15);
 		gameModel.setDifficultyLevel(DifficultyLevel.EASY);
 		gameModel.setPassengerSatisfaction(100);
-		gameModel.setPreviousTime((Calendar) gameModel.getCurrentTime().clone());
 		gameService.saveGame(gameModel);
 		assertNotNull(gameService.getGameByPlayerName("Dave A J Lee"));
 		assertNull(gameService.getGameByPlayerName("My First Name"));
@@ -50,12 +49,6 @@ public class GameServiceTest {
 		gameService.withdrawBalance(100.0, "Dave A J Lee");
 		gameService.creditBalance(10.0, "Dave A J Lee");
 		assertEquals(gameService.computeAndReturnPassengerSatisfaction("Dave A J Lee", 4, 3, 2), 100);
-	}
-	
-	@Test
-	public void testFormat() {
-		Calendar calendar = Calendar.getInstance(); calendar.set(2014,4,20,22,57);
-		assertEquals(gameService.formatDateString(calendar, DateFormats.FULL_FORMAT), "Tuesday, 20 May 2014");
 	}
 
 }

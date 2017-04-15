@@ -72,7 +72,6 @@ public class MakeContactScreen extends JFrame {
         //Call dispose method if the user hits exit.
         this.addWindowListener ( new WindowAdapter() {
             public void windowClosing ( WindowEvent e ) {
-                gameController.resumeSimulation();
                 dispose();
             }
         });
@@ -161,7 +160,6 @@ public class MakeContactScreen extends JFrame {
         closeButton = new JButton("End Contact");
         closeButton.addActionListener( new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                gameController.resumeSimulation();
                 dispose();
             }
         });

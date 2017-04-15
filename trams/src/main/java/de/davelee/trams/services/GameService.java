@@ -37,7 +37,6 @@ public class GameService {
         game.setDifficultyLevel(gameModel.getDifficultyLevel());
         game.setCurrentTime(gameModel.getCurrentTime());
         game.setTimeIncrement(gameModel.getTimeIncrement());
-        game.setPreviousTime(gameModel.getPreviousTime());
         return game;
     }
 
@@ -58,7 +57,6 @@ public class GameService {
         gameModel.setDifficultyLevel(game.getDifficultyLevel());
         gameModel.setCurrentTime(game.getCurrentTime());
         gameModel.setTimeIncrement(game.getTimeIncrement());
-        gameModel.setPreviousTime(game.getPreviousTime());
         return gameModel;
     }
     
@@ -120,28 +118,19 @@ public class GameService {
     /**
      * Increment the current time.
      * @param playerName a <code>String</code> with the player name.
+     * @return a <code>Calendar</code> containing the new time.
      */
-    public void incrementTime ( final String playerName ) {
-        GameModel gameModel = getGameByPlayerName(playerName);
-        //Copy previous time first.
-        gameRepository.findByPlayerName(playerName).setPreviousTime(gameModel.getCurrentTime());
-        //Increment time.
-        Calendar newCurrentTime = gameModel.getCurrentTime();
-        newCurrentTime.add(Calendar.MINUTE, gameModel.getTimeIncrement());
+    public Calendar incrementTime ( final String playerName ) {
+        //Retrieve the game.
         Game game = gameRepository.findByPlayerName(playerName);
+        //Increment time.
+        Calendar newCurrentTime = game.getCurrentTime();
+        newCurrentTime.add(Calendar.MINUTE, game.getTimeIncrement());
         game.setCurrentTime(newCurrentTime);
+        //Save game and return the new time.
         gameRepository.save(game);
+        return newCurrentTime;
     }
-
-    /**
-     * Return the supplied calendar object as a formatted string.
-     * @param calDate a <code>Calendar</code> object to format.
-     * @param dateFormat a <code>DateFormats</code> with the formats.
-     * @return a <code>String</code> with the formatted string.
-     */
-     public String formatDateString ( final Calendar calDate, final DateFormats dateFormat ) {
-        return dateFormat.getFormat().format(calDate.getTime());
-     }
 
     public String getCurrentPlayerName ( ) {
         GameModel[] gameModels = getAllGames();

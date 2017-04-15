@@ -43,9 +43,6 @@ public class Game {
 
     @Column
     private int timeIncrement;
-
-    @Column
-    private Calendar previousTime;
     
     public Game() {
     }
@@ -157,18 +154,6 @@ public class Game {
 
     public void setCurrentTime(Calendar currentTime) {
         this.currentTime = currentTime;
-    }
-
-    /**
-     * Get the previous time.
-     * @return a <code>Calendar</code> representing the previous time.
-     */
-    public Calendar getPreviousTime ( ) {
-        return previousTime;
-    }
-
-    public void setPreviousTime(Calendar previousTime) {
-        this.previousTime = currentTime;
     }
 
 }

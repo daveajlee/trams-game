@@ -1,19 +1,22 @@
 package de.davelee.trams.util;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 import de.davelee.trams.controllers.GameController;
+import de.davelee.trams.gui.ControlScreen;
 
 public class GameThread extends Thread implements Runnable {
-	
-	@Autowired
+
 	private GameController gameController;
-	
-	@Autowired
+	private ControlScreen controlScreen;
+
 	private int simulationSpeed;
+	private String playerName;
 	
-	public GameThread ( final String name ) {
+	public GameThread ( final String name, final GameController gameController, final int simulationSpeed, final String playerName, final ControlScreen controlScreen ) {
 		super(name);
+		this.gameController = gameController;
+		this.simulationSpeed = simulationSpeed;
+		this.playerName = playerName;
+		this.controlScreen = controlScreen;
 	}
 	
 	/**
@@ -26,8 +29,7 @@ public class GameThread extends Thread implements Runnable {
         //Keep running this until pause.
         while ( !gameController.stillRunning() ) {
             //Increment time.
-			gameController.incrementTime(gameController.getCurrentPlayerName());
-            //controlScreen.drawVehicles(true);
+			controlScreen.updateTime(gameController.incrementTime(playerName));
             //Now sleep!
             try { this.sleep(simulationSpeed); } catch (InterruptedException ie) {}
         }

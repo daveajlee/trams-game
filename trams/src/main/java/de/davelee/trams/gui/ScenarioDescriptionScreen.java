@@ -45,10 +45,8 @@ public class ScenarioDescriptionScreen extends JFrame {
         //Call the Exit method in the UserInterface class if the user hits exit.
         this.addWindowListener ( new WindowAdapter() {
             public void windowClosing ( WindowEvent e ) {
-                boolean wasSimulationRunning = controllerHandler.getGameController().pauseSimulation();
                 ExitDialog exitDialog = new ExitDialog();
                 exitDialog.createExitDialog(ScenarioDescriptionScreen.this);
-                if (wasSimulationRunning) { controllerHandler.getGameController().resumeSimulation(); }
             }
         });
         

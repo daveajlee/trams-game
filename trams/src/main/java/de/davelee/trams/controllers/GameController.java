@@ -2,6 +2,7 @@ package de.davelee.trams.controllers;
 
 import java.util.Calendar;
 
+import de.davelee.trams.gui.ControlScreen;
 import de.davelee.trams.model.GameModel;
 import de.davelee.trams.model.RouteModel;
 import de.davelee.trams.model.RouteScheduleModel;
@@ -54,7 +55,6 @@ public class GameController {
 		gameModel.setDifficultyLevel(DifficultyLevel.EASY);
 		gameModel.setPlayerName(playerName);
 		gameModel.setScenarioName(scenarioName);
-		gameModel.setPreviousTime(Calendar.getInstance());
 		gameModel.setTimeIncrement(15);
 		gameModel.setPassengerSatisfaction(100);
 		gameService.saveGame(gameModel);
@@ -80,13 +80,11 @@ public class GameController {
 	/**
 	 * Resume the simulation!
 	 */
-    public void resumeSimulation ( ) {
+    public void resumeSimulation ( final ControlScreen controlScreen ) {
 		simulationRunning = true;
-		//logger.debug("Resuming - Setting isEnd to false");
 		end = false;
-		runningThread = new Thread("SimThread");
+		runningThread = new GameThread("SimThread", this, 2000, getCurrentPlayerName(), controlScreen);
 		runningThread.start();
-		//runSimulation(theControlScreen, theOperations.getSimulator());
 	}
 
 	/**
@@ -107,19 +105,25 @@ public class GameController {
 		return end;
 	}
 
-	public void incrementTime ( final String playerName ) {
-		gameService.incrementTime(playerName);
+	public Calendar incrementTime ( final String playerName ) {
+		return gameService.incrementTime(playerName);
 	}
 
-	public void runSimulation ( ) {
+	public void runSimulation ( final ControlScreen controlScreen ) {
 		//Finally, run simulation
 		end = false;
-		runningThread = new GameThread("simThread");
+		runningThread = new GameThread("simThread", this, 2000, getCurrentPlayerName(), controlScreen);
 		runningThread.start();
 	}
 
+	/**
+	 * Return the supplied calendar object as a formatted string.
+	 * @param currentTime a <code>Calendar</code> object to format.
+	 * @param dateFormat a <code>DateFormats</code> with the formats.
+	 * @return a <code>String</code> with the formatted string.
+	 */
 	public String formatDateString ( final Calendar currentTime, final DateFormats dateFormat ) {
-		return gameService.formatDateString(currentTime, dateFormat);
+		return dateFormat.getFormat().format(currentTime.getTime());
 	}
 
 	public int computeAndReturnPassengerSatisfaction ( final String playerName ) {

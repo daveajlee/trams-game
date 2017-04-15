@@ -114,7 +114,7 @@ public class ControlScreen extends ButtonBar {
                 boolean wasSimulationRunning = ControlScreen.super.getControllerHandler().getGameController().pauseSimulation();
                 ExitDialog exitDialog = new ExitDialog();
                 exitDialog.createExitDialog(ControlScreen.this);
-                if (wasSimulationRunning) { ControlScreen.super.getControllerHandler().getGameController().resumeSimulation(); }
+                if (wasSimulationRunning) { ControlScreen.super.getControllerHandler().getGameController().resumeSimulation(ControlScreen.this); }
             }
         });
         
@@ -185,7 +185,7 @@ public class ControlScreen extends ButtonBar {
                     topPanel.getComponent(1).setVisible(true);
                     //userInterface.setMessageScreen(false);
                     //userInterface.setManagementScreen(false);
-                    ControlScreen.super.getControllerHandler().getGameController().resumeSimulation(); //Resume simulation for live screen.
+                    ControlScreen.super.getControllerHandler().getGameController().resumeSimulation(ControlScreen.this); //Resume simulation for live screen.
                 }
             }
         });
@@ -261,7 +261,7 @@ public class ControlScreen extends ButtonBar {
                 boolean wasSimulationRunning = ControlScreen.super.getControllerHandler().getGameController().pauseSimulation();
                 ExitDialog exitDialog = new ExitDialog();
                 exitDialog.createExitDialog(ControlScreen.this);
-                if (wasSimulationRunning) { ControlScreen.super.getControllerHandler().getGameController().resumeSimulation(); }
+                if (wasSimulationRunning) { ControlScreen.super.getControllerHandler().getGameController().resumeSimulation(ControlScreen.this); }
             }
         });
         bottomInfoPanel.add(exitButton);
@@ -314,6 +314,11 @@ public class ControlScreen extends ButtonBar {
         });
         
     }
+
+    public void updateTime ( final Calendar currentTime ) {
+        String time = DateFormats.CONTROL_SCREEN_FORMAT.getFormat().format(currentTime.getTime());
+        timeLabel.setText(time.replace("AM", "am").replace("PM","pm"));
+    }
     
     /**
      * Draw the vehicle positions.
@@ -322,11 +327,11 @@ public class ControlScreen extends ButtonBar {
      */
     public void drawVehicles ( final boolean isRedraw, final GameModel gameModel ) {
         //Now check if it is past midnight! If it is dispose, and create Allocation Screen.
-        if ( isPastMidnight(gameModel.getCurrentTime(), gameModel.getPreviousTime()) && !doneAllocations ) {
+        if ( isPastMidnight(gameModel.getCurrentTime(), gameModel.getTimeIncrement()) && !doneAllocations ) {
             //Now add a message to summarise days events!!!
             SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
             String date = dateFormat.format(gameModel.getCurrentTime().getTime());
-            super.getControllerHandler().getMessageController().addMessage("Passenger Satisfaction for " + super.getControllerHandler().getGameController().formatDateString(gameModel.getPreviousTime(), DateFormats.FULL_FORMAT), "Congratulations you have successfully completed transport operations for " + gameModel.getScenarioName() + " on " + super.getControllerHandler().getGameController().formatDateString(gameModel.getPreviousTime(), DateFormats.FULL_FORMAT) + " with a passenger satisfaction of " + super.getControllerHandler().getGameController().computeAndReturnPassengerSatisfaction(gameModel.getPlayerName()) + "%.\n\nNow you need to allocate vehicles to routes for " + super.getControllerHandler().getGameController().formatDateString(gameModel.getCurrentTime(), DateFormats.FULL_FORMAT) + " and keep the passenger satisfaction up! Click on the Management tab and then choose Allocations. Good luck!", "Council", "INBOX", date);
+            super.getControllerHandler().getMessageController().addMessage("Passenger Satisfaction for " + super.getControllerHandler().getGameController().formatDateString(getPreviousDay(gameModel.getCurrentTime(), gameModel.getTimeIncrement()), DateFormats.FULL_FORMAT), "Congratulations you have successfully completed transport operations for " + gameModel.getScenarioName() + " on " + super.getControllerHandler().getGameController().formatDateString(getPreviousDay(gameModel.getCurrentTime(), gameModel.getTimeIncrement()), DateFormats.FULL_FORMAT) + " with a passenger satisfaction of " + super.getControllerHandler().getGameController().computeAndReturnPassengerSatisfaction(gameModel.getPlayerName()) + "%.\n\nNow you need to allocate vehicles to routes for " + super.getControllerHandler().getGameController().formatDateString(gameModel.getCurrentTime(), DateFormats.FULL_FORMAT) + " and keep the passenger satisfaction up! Click on the Management tab and then choose Allocations. Good luck!", "Council", "INBOX", date);
             //Refresh messages.
             MessageModel[] messageModels = super.getControllerHandler().getMessageController().getMessagesByFolderDateSender(foldersBox.getSelectedItem().toString(),dateBox.getSelectedItem().toString(),"Council");
             messagesModel.removeAllElements();
@@ -418,7 +423,7 @@ public class ControlScreen extends ButtonBar {
                         topPanel.getComponent(1).setVisible(true);
                         //userInterface.setMessageScreen(false);
                         //userInterface.setManagementScreen(false);
-                        ControlScreen.super.getControllerHandler().getGameController().resumeSimulation(); //Resume simulation for live screen.
+                        ControlScreen.super.getControllerHandler().getGameController().resumeSimulation(ControlScreen.this); //Resume simulation for live screen.
                     }
                 }
             });
@@ -768,17 +773,28 @@ public class ControlScreen extends ButtonBar {
     /**
      * Check if the current time is the first past midnight.
      * @param currentTime a <code>Calendar</code> object which represents the current time.
-     * @param previousTime a <code>Calendar</code> object which represents the previous time.
+     * @param timeIncrement a <code>int</code> with the time increment in order to calculate previous time.
      * @return a <code>boolean</code> which is true iff this is the first time past midnight.
      */
-    private boolean isPastMidnight ( Calendar currentTime, Calendar previousTime ) {
+    private boolean isPastMidnight ( final Calendar currentTime, final int timeIncrement ) {
+        Calendar previousTime = (Calendar) currentTime.clone();
+        previousTime.add(Calendar.MINUTE, -timeIncrement);
         if ( previousTime.get(Calendar.DAY_OF_WEEK) != currentTime.get(Calendar.DAY_OF_WEEK) ) {
             return true;
         }
-        /*if ( currentTime.get(Calendar.HOUR)==0 && currentTime.get(Calendar.MINUTE)==0 && currentTime.get(Calendar.AM_PM)==Calendar.AM ) {
-            return true;
-        }*/
         return false;
+    }
+
+    /**
+     * Get the previous day by calculating the current day and subtracting the time increment.
+     * @param currentTime a <code>Calendar</code> object which represents the current time.
+     * @param timeIncrement a <code>int</code> with the time increment in order to calculate previous time.
+     * @return a <code>Calendar</code> with the previous day.
+     */
+    private Calendar getPreviousDay ( final Calendar currentTime, final int timeIncrement ) {
+        Calendar previousTime = (Calendar) currentTime.clone();
+        previousTime.add(Calendar.MINUTE, -timeIncrement);
+        return previousTime;
     }
     
     /**
@@ -825,7 +841,7 @@ public class ControlScreen extends ButtonBar {
                 if ( redrawOnRouteChange ) {
                     ControlScreen.super.getControllerHandler().getGameController().pauseSimulation();
                     ControlScreen.this.redrawVehicles(generateNewVehiclePanel(gameModel));
-                    ControlScreen.super.getControllerHandler().getGameController().resumeSimulation();
+                    ControlScreen.super.getControllerHandler().getGameController().resumeSimulation(ControlScreen.this);
                 }
                 //logger.debug("Moving to route " + theRouteList.getSelectedValue().toString().split(":")[0]);
                 //theInterface.setSimulator(theSimulator);
@@ -864,7 +880,7 @@ public class ControlScreen extends ButtonBar {
                 }
                 else if ( pauseSimulationButton.getText().equalsIgnoreCase("|>") ) {
                     pauseSimulationButton.setText("||");
-                    ControlScreen.super.getControllerHandler().getGameController().resumeSimulation();
+                    ControlScreen.super.getControllerHandler().getGameController().resumeSimulation(ControlScreen.this);
                 }
             }
         });
@@ -933,7 +949,7 @@ public class ControlScreen extends ButtonBar {
                 }
                 ControlScreen.super.getControllerHandler().getGameController().pauseSimulation();
                 ControlScreen.this.redrawVehicles(generateNewVehiclePanel(gameModel));
-                ControlScreen.super.getControllerHandler().getGameController().resumeSimulation();
+                ControlScreen.super.getControllerHandler().getGameController().resumeSimulation(ControlScreen.this);
                 //theInterface.changeDisplay(theRouteList.getSelectedValue().toString(), theMinVehicle, theMaxVehicle, false);
                 //dispose();
             }
@@ -954,7 +970,7 @@ public class ControlScreen extends ButtonBar {
                 }
                 ControlScreen.super.getControllerHandler().getGameController().pauseSimulation();
                 ControlScreen.this.redrawVehicles(generateNewVehiclePanel(gameModel));
-                ControlScreen.super.getControllerHandler().getGameController().resumeSimulation();
+                ControlScreen.super.getControllerHandler().getGameController().resumeSimulation(ControlScreen.this);
                 //theInterface.changeDisplay(theRouteNumber, theMinVehicle, theMaxVehicle, false);
                 //dispose();
             }
@@ -1009,7 +1025,7 @@ public class ControlScreen extends ButtonBar {
         //Set control screen.
         setVisible(true);
         //Resume simulation.
-        super.getControllerHandler().getGameController().resumeSimulation();
+        super.getControllerHandler().getGameController().resumeSimulation(ControlScreen.this);
     }
 
     /**
@@ -1028,7 +1044,7 @@ public class ControlScreen extends ButtonBar {
         //Set control screen.
         setVisible(true);
         //Resume simulation.
-        super.getControllerHandler().getGameController().resumeSimulation();
+        super.getControllerHandler().getGameController().resumeSimulation(ControlScreen.this);
     }
 
 }

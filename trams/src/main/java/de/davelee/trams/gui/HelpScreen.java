@@ -42,7 +42,6 @@ public class HelpScreen extends JFrame {
         this.addWindowListener ( new WindowAdapter() {
             public void windowClosing ( WindowEvent e ) {
                 dispose();
-                controllerHandler.getGameController().resumeSimulation();
             }
         });
         

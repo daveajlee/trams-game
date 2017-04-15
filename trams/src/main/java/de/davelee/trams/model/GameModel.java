@@ -13,7 +13,6 @@ public class GameModel {
 	private String scenarioName;
 	private Calendar currentTime;
 	private int timeIncrement;
-	private Calendar previousTime;
 	
 	public String getPlayerName() {
 		return playerName;
@@ -69,14 +68,6 @@ public class GameModel {
 	
 	public void setTimeIncrement(final int timeIncrement) {
 		this.timeIncrement = timeIncrement;
-	}
-	
-	public Calendar getPreviousTime() {
-		return previousTime;
-	}
-	
-	public void setPreviousTime(final Calendar previousTime) {
-		this.previousTime = previousTime;
 	}
 
 }
