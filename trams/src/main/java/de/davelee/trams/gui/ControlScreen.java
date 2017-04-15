@@ -649,25 +649,19 @@ public class ControlScreen extends ButtonBar {
         //Now create panel.
         JPanel allVehicleDisplayPanel = new JPanel(new BorderLayout());
         allVehicleDisplayPanel.add(makeOptionsPanel(gameModel), BorderLayout.NORTH);
-        JPanel vehiclePanel;
+        JPanel vehiclePanel = new JPanel(new GridLayout(2, 1));
+        //Initialise numCurrentDisplaySchedules but set it later once we have data!
+        int numCurrentDisplaySchedules = 0;
+
         //Call set display method first.
         if ( routeModel.getSize() > 0) {
             super.getControllerHandler().getRouteScheduleController().setCurrentDisplayMinMax(minVehicle, maxVehicle,routeNumber.split(":")[0]);
+            numCurrentDisplaySchedules = super.getControllerHandler().getRouteScheduleController().getNumCurrentDisplaySchedules();
             //Create vehicle Panel as a JPanel!
-            if ( super.getControllerHandler().getRouteScheduleController().getNumCurrentDisplaySchedules() == 0 ) {
-                vehiclePanel = new JPanel(new GridLayout(2, 1));
-            }
-            else {
-                vehiclePanel = new JPanel(new GridLayout(super.getControllerHandler().getRouteScheduleController().getNumCurrentDisplaySchedules()+1, 1));
+            if ( numCurrentDisplaySchedules != 0 ) {
+                vehiclePanel = new JPanel(new GridLayout(numCurrentDisplaySchedules+1, 1));
                 logger.debug("Route number in vehicle panel is " + routeList.getSelectedValue().toString().split(":")[0]);
             }
-        }
-        //Create vehicle Panel as a JPanel!
-        if ( super.getControllerHandler().getRouteScheduleController().getNumCurrentDisplaySchedules() == 0 ) {
-            vehiclePanel = new JPanel(new GridLayout(2, 1));
-        }
-        else {
-            vehiclePanel = new JPanel(new GridLayout(2, 1));
         }
         JPanel stopRowPanel;
         if (routeModel.getSize() > 0 ) {
@@ -694,98 +688,80 @@ public class ControlScreen extends ButtonBar {
         }
         vehiclePanel.add(stopRowPanel);
         //If there are no current display vehicles then print a message!
-        if ( routeModel.getSize() == 0 || super.getControllerHandler().getRouteScheduleController().getNumCurrentDisplaySchedules() == 0 ) {
+        if ( routeModel.getSize() == 0 || numCurrentDisplaySchedules == 0 ) {
             JLabel noVehiclesLabel = new JLabel("This route currently has no vehicles!");
             noVehiclesLabel.setFont(new Font("Arial", Font.BOLD, 20));
             vehiclePanel.add(noVehiclesLabel);
-            allVehicleDisplayPanel.add(vehiclePanel, BorderLayout.CENTER);
-            allVehicleDisplayPanel.add(makeVehicleInfoPanel(gameModel), BorderLayout.SOUTH);
-            return allVehicleDisplayPanel;
-        }
-        //Otherwise add a label with the route schedule number for each potential vehicle.
-        RouteScheduleModel[] routeScheduleModels = super.getControllerHandler().getRouteScheduleController().getRouteSchedulesByRouteNumber(routeList.getSelectedValue().toString());
-        for ( int i = 0; i < routeScheduleModels.length; i++ ) {
-            String vehiclePos =  super.getControllerHandler().getRouteScheduleController().getCurrentStopName(routeScheduleModels[i], gameModel.getCurrentTime(), gameModel.getDifficultyLevel());
-            logger.debug(routeScheduleModels[i].getScheduleNumber() + " is at " + vehiclePos + " seconds with delay " + routeScheduleModels[i].getDelay() + " minutes.");
+        } else {
+            //Otherwise add a label with the route schedule number for each potential vehicle.
+            RouteScheduleModel[] routeScheduleModels = super.getControllerHandler().getRouteScheduleController().getRouteSchedulesByRouteNumber(routeList.getSelectedValue().toString().split(":")[0]);
+            for (int i = 0; i < routeScheduleModels.length; i++) {
+                String vehiclePos = super.getControllerHandler().getRouteScheduleController().getCurrentStopName(routeScheduleModels[i], gameModel.getCurrentTime(), gameModel.getDifficultyLevel());
+                logger.debug(routeScheduleModels[i].getScheduleNumber() + " is at " + vehiclePos + " seconds with delay " + routeScheduleModels[i].getDelay() + " minutes.");
             /*if ( rs.hasDelay() ) {
                 theInterface.addMessage(theSimulator.getMessageDisplaySimTime() + ": Vehicle " + schedId + " is running " + rs.getDelay() + " minutes late.");
             }*/
-            //Get direction first of all we are travelling in!
-            List<String> outwardStops = new ArrayList<String>();
-            for ( int j = 0; j < stopPanels.size(); j++ ) {
-                outwardStops.add(((JLabel) stopPanels.get(j).getComponent(0)).getText());
-            }
-            int direction = DrawingPanel.RIGHT_TO_LEFT;
-            if ( super.getControllerHandler().getJourneyController().getCurrentJourney(routeScheduleModels[i], gameModel.getCurrentTime()) == null ) {
-                continue; //Don't print if the vehicle is at a terminus.
-            }
-            if ( super.getControllerHandler().getJourneyController().isOutwardJourney(routeScheduleModels[i], gameModel.getCurrentTime(), outwardStops) ) {
-                direction = DrawingPanel.LEFT_TO_RIGHT; 
-            }
-            //Now we want to find the position where we draw the triangle i.e. position of JLabel.
-            int xPos = 0;
-            String previousStop = "N/A";
-            for ( int j = 0; j < stopPanels.size(); j++ ) {
-                //Each stopPanel has one component which is JLabel.
-                JLabel myLabel = (JLabel) stopPanels.get(j).getComponent(0);
-                //Now check where this stop is and get its position.
-                //logger.debug("Comparing " + myLabel.getText() + " against " + thisVehiclePos);
-                if ( myLabel.getText().equalsIgnoreCase(vehiclePos) ) {
-                    int panelSize = 800 / stopPanels.size();
-                    int startPos = 0 + ( panelSize * j);
-                    int endPos = (panelSize * (j+1))-1;
-                    if ( j == (stopPanels.size()-1) ) {
-                        endPos = (panelSize * (j+1))-(panelSize/2);
-                    }
-                    //Debug.
-                    logger.debug("This is stop " + myLabel.getText() + " - range is from " + startPos + " to " + endPos);
-                    //xPos = startPos + (panelSize/2 - (panelSize/4));
-                    if ( previousStop.equalsIgnoreCase("N/A") ) {
-                        xPos = startPos;
-                    }
-                    else {
-                        long maxTimeDiff = Math.abs(super.getControllerHandler().getJourneyController().getStopMaxTimeDiff(routeScheduleModels[i], gameModel.getCurrentTime(), previousStop, myLabel.getText()));
-                        if ( maxTimeDiff == Integer.MAX_VALUE ) {
-                            xPos = startPos;
-                        } 
-                        //If inward, then low percentage means close, high means far away.
-                        if ( direction == DrawingPanel.RIGHT_TO_LEFT ) {
-                            xPos = (int) Math.round((1.0 * (endPos - startPos))) + startPos;
-                            logger.debug("Recommeding xPos of " + xPos);
+                //Get direction first of all we are travelling in!
+                List<String> outwardStops = new ArrayList<String>();
+                for (int j = 0; j < stopPanels.size(); j++) {
+                    outwardStops.add(((JLabel) stopPanels.get(j).getComponent(0)).getText());
+                }
+                int direction = DrawingPanel.RIGHT_TO_LEFT;
+                if (super.getControllerHandler().getJourneyController().getCurrentJourney(routeScheduleModels[i], gameModel.getCurrentTime()) == null) {
+                    continue; //Don't print if the vehicle is at a terminus.
+                }
+                if (super.getControllerHandler().getJourneyController().isOutwardJourney(routeScheduleModels[i], gameModel.getCurrentTime(), outwardStops)) {
+                    direction = DrawingPanel.LEFT_TO_RIGHT;
+                }
+                //Now we want to find the position where we draw the triangle i.e. position of JLabel.
+                int xPos = 0;
+                String previousStop = "N/A";
+                for (int j = 0; j < stopPanels.size(); j++) {
+                    //Each stopPanel has one component which is JLabel.
+                    JLabel myLabel = (JLabel) stopPanels.get(j).getComponent(0);
+                    //Now check where this stop is and get its position.
+                    //logger.debug("Comparing " + myLabel.getText() + " against " + thisVehiclePos);
+                    if (myLabel.getText().equalsIgnoreCase(vehiclePos)) {
+                        int panelSize = 800 / stopPanels.size();
+                        int startPos = 0 + (panelSize * j);
+                        int endPos = (panelSize * (j + 1)) - 1;
+                        if (j == (stopPanels.size() - 1)) {
+                            endPos = (panelSize * (j + 1)) - (panelSize / 2);
                         }
-                        //If outward, reverse is true i.e. high means close, low means far away.
-                        else {
-                            xPos = (int) Math.round((0.0 * (endPos - startPos))) + startPos;
-                            logger.debug("Recommeding xPos of " + xPos);
-                        }
+                        //Debug.
+                        logger.debug("This is stop " + myLabel.getText() + " - range is from " + startPos + " to " + endPos);
                         //xPos = startPos + (panelSize/2 - (panelSize/4));
+                        if (previousStop.equalsIgnoreCase("N/A")) {
+                            xPos = startPos;
+                        } else {
+                            long maxTimeDiff = Math.abs(super.getControllerHandler().getJourneyController().getStopMaxTimeDiff(routeScheduleModels[i], gameModel.getCurrentTime(), previousStop, myLabel.getText()));
+                            if (maxTimeDiff == Integer.MAX_VALUE) {
+                                xPos = startPos;
+                            }
+                            //If inward, then low percentage means close, high means far away.
+                            if (direction == DrawingPanel.RIGHT_TO_LEFT) {
+                                xPos = (int) Math.round((1.0 * (endPos - startPos))) + startPos;
+                                logger.debug("Recommeding xPos of " + xPos);
+                            }
+                            //If outward, reverse is true i.e. high means close, low means far away.
+                            else {
+                                xPos = (int) Math.round((0.0 * (endPos - startPos))) + startPos;
+                                logger.debug("Recommeding xPos of " + xPos);
+                            }
+                            //xPos = startPos + (panelSize/2 - (panelSize/4));
+                        }
+                    } else {
+                        previousStop = myLabel.getText();
                     }
                 }
-                else {
-                    previousStop = myLabel.getText();
-                }
+                logger.debug("I'm drawing route schedule " + routeScheduleModels[i].getScheduleNumber());
+                JPanel drawPanel = new DrawingPanel(xPos, direction, routeScheduleModels[i].getDelay() > 0);
+                drawPanel.addMouseListener(new BusMouseListener(routeScheduleModels[i]));
+                vehiclePanel.add(drawPanel);
             }
-            logger.debug("I'm drawing route schedule " + routeScheduleModels[i].getScheduleNumber());
-            JPanel drawPanel = new DrawingPanel(xPos, direction, routeScheduleModels[i].getDelay() > 0 );
-            drawPanel.addMouseListener(new BusMouseListener(routeScheduleModels[i]));
-            vehiclePanel.add(drawPanel);
-            allVehicleDisplayPanel.add(vehiclePanel, BorderLayout.CENTER);
-            allVehicleDisplayPanel.add(makeVehicleInfoPanel(gameModel), BorderLayout.SOUTH);
-            /*JPanel busPanel = new JPanel();
-            Random randNumGen = new Random();
-            ImageDisplay busDisplay = new ImageDisplay("doubledeckertrans.png",randNumGen.nextInt(200)-100,0);
-            busDisplay.setSize(600,150);
-            busPanel.add(busDisplay);
-            vehiclePanel.add(busPanel);*/
-            /*JPanel routeLabelPanel = new JPanel(new GridBagLayout());
-            String routeIdAndStop = theInterface.getDisplaySchedule(theRouteBox.getSelectedItem().toString().split(":")[0], i).toString();
-            JLabel routeLabel = new JLabel(routeIdAndStop);
-            routeLabel.setFont(new Font("Arial", Font.BOLD, 20));
-            //routeLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-            routeLabel.setLocation(40, 0);
-            routeLabelPanel.add(routeLabel);
-            vehiclePanel.add(routeLabelPanel);*/
         }
+        allVehicleDisplayPanel.add(vehiclePanel, BorderLayout.CENTER);
+        allVehicleDisplayPanel.add(makeVehicleInfoPanel(gameModel), BorderLayout.SOUTH);
         return allVehicleDisplayPanel;
     }
     
