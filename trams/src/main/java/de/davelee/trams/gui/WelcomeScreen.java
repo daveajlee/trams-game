@@ -66,7 +66,7 @@ public class WelcomeScreen extends JFrame {
         JPanel logoPanel = new JPanel();
         logoPanel.setBackground(Color.WHITE);
         logoDisplay = new ImageDisplay("TraMSlogo.png", 0, 0);
-        logoDisplay.setSize(157,92);
+        logoDisplay.setSize(157,96);
         logoDisplay.setBackground(Color.WHITE);
         logoPanel.add(logoDisplay);
         welcomePanel.add(logoPanel);

@@ -16,11 +16,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class SplashScreen extends JFrame {
     
 	private static final long serialVersionUID = 1L;
-	
-	private ImageDisplay imageDisplay;
+
     private ImageDisplay logoDisplay;
     private ImageDisplay busDisplay;
-    private JLabel presentsLabel;
     private JLabel titleLabel;
     private JLabel loadingLabel;
     private JLabel copyrightLabel;
@@ -56,28 +54,11 @@ public class SplashScreen extends JFrame {
         centrePanel.add(Box.createRigidArea(new Dimension(0,10))); //Spacer.
         centrePanel.setBackground(Color.WHITE);
         
-        //Construct graphics panel to add to the centre panel.
-        JPanel graphicsPanel = new JPanel();
-        graphicsPanel.setBackground(Color.WHITE);
-        imageDisplay = new ImageDisplay("dajllogo.png", 0, 0);
-        imageDisplay.setSize(274,70);
-        imageDisplay.setBackground(Color.WHITE);
-        graphicsPanel.add(imageDisplay);
-        centrePanel.add(graphicsPanel);
-        
-        //Construct presents panel to add to the centre panel.
-        JPanel presentsPanel = new JPanel();
-        presentsPanel.setBackground(Color.WHITE);
-        presentsLabel = new JLabel("Presents");
-        presentsLabel.setFont(new Font("Arial", Font.ITALIC, 16));
-        presentsPanel.add(presentsLabel);
-        centrePanel.add(presentsPanel);
-        
         //Construct logo panel to add to the centre panel.
         JPanel logoPanel = new JPanel();
         logoPanel.setBackground(Color.WHITE);
         logoDisplay = new ImageDisplay("TraMSlogo.png", 0, 0);
-        logoDisplay.setSize(157,92);
+        logoDisplay.setSize(157,96);
         logoDisplay.setBackground(Color.WHITE);
         logoPanel.add(logoDisplay);
         centrePanel.add(logoPanel);
@@ -112,7 +93,7 @@ public class SplashScreen extends JFrame {
         //Construct copyright panel to add to the centre panel.
         JPanel copyrightPanel = new JPanel();
         copyrightPanel.setBackground(Color.WHITE);
-        copyrightLabel = new JLabel("Copyright 2010 Dr. David A J Lee. All rights reserved.");
+        copyrightLabel = new JLabel("Copyright 2014 Dr. David A J Lee. All rights reserved.");
         copyrightLabel.setFont(new Font("Arial", Font.PLAIN, 10));
         copyrightPanel.add(copyrightLabel);
         centrePanel.add(copyrightPanel);
@@ -122,16 +103,6 @@ public class SplashScreen extends JFrame {
         //Mouse listeners if this is the about screen.
         if ( isAboutScreen ) {
             this.getContentPane().addMouseListener ( new MouseListener () {
-                public void mouseClicked(MouseEvent e) {
-                    dispose();
-                    controllerHandler.getGameController().resumeSimulation();
-                }
-                public void mousePressed(MouseEvent e) {}
-                public void mouseReleased(MouseEvent e) {}
-                public void mouseEntered(MouseEvent e) {}
-                public void mouseExited(MouseEvent e) {}
-            });
-            imageDisplay.addMouseListener ( new MouseListener () {
                 public void mouseClicked(MouseEvent e) {
                     dispose();
                     controllerHandler.getGameController().resumeSimulation();
