@@ -45,6 +45,11 @@ public enum DateFormats {
 		public DateFormat getFormat() {
 			return new SimpleDateFormat("MMMM yyyy");
 		}
+	},
+	CONTROL_SCREEN_FORMAT {
+		public DateFormat getFormat() {
+			return new SimpleDateFormat("EEEE d MMMM yyyy '" + "at" + "' h.mma", Locale.UK);
+		}
 	};
 	
 	public abstract DateFormat getFormat();

@@ -125,7 +125,7 @@ public class ControlScreen extends ButtonBar {
         topPanel = new JPanel();
         topPanel.setLayout ( new BorderLayout () );
         topPanel.setBackground(Color.WHITE);
-        timeLabel = new JLabel(super.getControllerHandler().getGameController().formatDateString(gameModel.getCurrentTime(), DateFormats.FULL_TIME_FORMAT), SwingConstants.CENTER);
+        timeLabel = new JLabel(super.getControllerHandler().getGameController().formatDateString(gameModel.getCurrentTime(), DateFormats.CONTROL_SCREEN_FORMAT).replace("AM", "am").replace("PM","pm"), SwingConstants.CENTER);
         timeLabel.setFont(new Font("Arial", Font.ITALIC, 20));
         topPanel.add(timeLabel, BorderLayout.NORTH);
 
