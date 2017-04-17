@@ -70,6 +70,7 @@ public class ControlScreen extends ButtonBar {
 
     /**
      * Create a new control screen.
+     * @param controllerHandler a <code>ControllerHandler</code> obtaining the currently used controllers from Spring.
      */
     public ControlScreen ( final ControllerHandler controllerHandler ) {
         super(controllerHandler);

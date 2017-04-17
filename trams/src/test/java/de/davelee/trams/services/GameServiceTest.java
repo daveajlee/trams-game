@@ -48,7 +48,7 @@ public class GameServiceTest {
 		assertEquals(DateFormats.HOUR_MINUTE_FORMAT.getFormat().format(gameModel2.getCurrentTime().getTime()), "05:15");
 		gameService.withdrawBalance(100.0, "Dave A J Lee");
 		gameService.creditBalance(10.0, "Dave A J Lee");
-		assertEquals(gameService.computeAndReturnPassengerSatisfaction("Dave A J Lee", 4, 3, 2), 100);
+		assertEquals(gameService.computeAndReturnPassengerSatisfaction("Dave A J Lee", 4, 3, 2), 91);
 	}
 
 }

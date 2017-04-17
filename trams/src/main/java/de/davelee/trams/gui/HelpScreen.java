@@ -31,6 +31,7 @@ public class HelpScreen extends JFrame {
 
     /**
      * Default constructor for HelpScreen which creates the help screen interface and displays it to the user.
+     * @param controllerHandler a <code>ControllerHandler</code> obtaining the currently used controllers from Spring.
      */
     public HelpScreen ( final ControllerHandler controllerHandler ) {
         

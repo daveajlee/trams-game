@@ -32,6 +32,7 @@ public class ButtonBar extends JFrame {
     
     /**
      * Create a new button bar.
+     * @param controllerHandler a <code>ControllerHandler</code> obtaining the currently used controllers from Spring.
      */
     public ButtonBar ( final ControllerHandler controllerHandler ) {
 
