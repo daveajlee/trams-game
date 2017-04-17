@@ -1,6 +1,10 @@
 package de.davelee.trams.data;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
 import javax.persistence.*;
+import java.util.List;
 
 /**
  * Class to represent a journey (i.e. one run of a route from terminus to terminus) in the TraMS program.
@@ -26,6 +30,11 @@ public class Journey {
 
     @Column
 	private String routeNumber;
+
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @Fetch(value = FetchMode.SUBSELECT)
+    @Column(name="JOURNEY_STOPTIMES")
+    private List<StopTime> stopTimes;
     
     /**
      * Create a new journey.
@@ -68,5 +77,17 @@ public class Journey {
     public void setRouteNumber(final String routeNumber) {
         this.routeNumber = routeNumber;
     }
-    
+
+    public List<StopTime> getStopTimes() {
+        return stopTimes;
+    }
+
+    public void setStopTimes(List<StopTime> stopTimes) {
+        this.stopTimes = stopTimes;
+    }
+
+    public void addStopTimeToList ( StopTime stopTime ) {
+        stopTimes.add(stopTime);
+    }
+
 }

@@ -12,7 +12,6 @@ import de.davelee.trams.model.RouteScheduleModel;
 import de.davelee.trams.model.StopTimeModel;
 import de.davelee.trams.repository.JourneyRepository;
 import de.davelee.trams.repository.StopRepository;
-import de.davelee.trams.repository.StopTimeRepository;
 import de.davelee.trams.util.DateFormats;
 import de.davelee.trams.util.JourneyStatus;
 import de.davelee.trams.util.TramsConstants;
@@ -29,9 +28,6 @@ public class JourneyService {
 	private StopRepository stopRepository;
 
     @Autowired
-	private StopTimeRepository stopTimeRepository;
-
-    @Autowired
 	private ScenarioFactory scenarioFactory;
 	
 	public JourneyService() {
@@ -46,9 +42,9 @@ public class JourneyService {
      */
     private JourneyStatus checkJourneyStatus(final JourneyModel journeyModel, final Calendar currentTime) {
     	//Did the journey start?
-        if ( checkTimeDiff(currentTime, getStopTimesByJourneyNumber(journeyModel.getJourneyNumber())[0].getTime() ) > -1 ) {
+        if ( checkTimeDiff(currentTime, journeyModel.getStopTimeModelList().get(0).getTime() ) > -1 ) {
         	//Has the journey already ended?
-            if ( checkTimeDiff(currentTime, getStopTimesByJourneyNumber(journeyModel.getJourneyNumber())[getStopTimesByJourneyNumber(journeyModel.getJourneyNumber()).length-1].getTime() ) > 0 ) {
+            if ( checkTimeDiff(currentTime, journeyModel.getStopTimeModelList().get(journeyModel.getStopTimeModelList().size()-1).getTime() ) > 0 ) {
                 return JourneyStatus.FINISHED;
             }
             return JourneyStatus.RUNNING;
@@ -65,7 +61,7 @@ public class JourneyService {
     public String getCurrentStopName(final JourneyModel[] journeyModels, final Calendar currentTime) {
         for (int i = 0; i < journeyModels.length; i++) {
             if (checkJourneyStatus(journeyModels[i], currentTime) == JourneyStatus.RUNNING) {
-                for ( StopTimeModel myJourneyStop : getStopTimesByJourneyNumber(journeyModels[i].getJourneyNumber()) ) {
+                for ( StopTimeModel myJourneyStop : journeyModels[i].getStopTimeModelList() ) {
                     if ( checkTimeDiff(myJourneyStop.getTime(), currentTime) >= 0 ) {
                         //logger.debug("I will be at " + myServiceStop.getStopName() + " in " + checkTimeDiff(myServiceStop.getStopTime(), currentTime) + " seconds.");
                         return myJourneyStop.getStopName();
@@ -89,7 +85,7 @@ public class JourneyService {
      * @return a <code>String</code> with the start terminus.
      */
     public String getStartTerminus ( final JourneyModel journeyModel ) {
-        return getStopTimesByJourneyNumber(journeyModel.getJourneyNumber())[0].getStopName();
+        return journeyModel.getStopTimeModelList().get(0).getStopName();
     }
     
     /**
@@ -99,9 +95,10 @@ public class JourneyService {
      * @return a <code>Stop</code> object.
      */
     public StopTimeModel getStopTime ( final JourneyModel journeyModel, final String name ) {
-        StopTime stopTime = stopTimeRepository.findByJourneyNumberAndRouteNumberAndRouteScheduleNumberAndStopName(journeyModel.getJourneyNumber(), journeyModel.getRouteNumber(), journeyModel.getRouteScheduleNumber(), name);
-        if ( stopTime != null ) {
-            return convertToStopTimeModel(stopTime);
+        for ( StopTimeModel stopTimeModel : journeyModel.getStopTimeModelList()) {
+            if ( stopTimeModel.getStopName().equalsIgnoreCase(name) ) {
+                return stopTimeModel;
+            }
         }
         return null;
     }
@@ -116,6 +113,16 @@ public class JourneyService {
         return stopTimeModel;
     }
 
+    private StopTime convertToStopTime ( final StopTimeModel stopTimeModel ) {
+        StopTime stopTime = new StopTime();
+        stopTime.setJourneyNumber(stopTimeModel.getJourneyNumber());
+        stopTime.setStopName(stopTimeModel.getStopName());
+        stopTime.setTime(stopTimeModel.getTime());
+        stopTime.setRouteNumber(stopTimeModel.getRouteNumber());
+        stopTime.setRouteScheduleNumber(stopTimeModel.getRouteScheduleNumber());
+        return stopTime;
+    }
+
     /**
      * Get the last stop.
      * @param journeyModels a <code>JourneyModel</code> array with all available journeys.
@@ -125,12 +132,12 @@ public class JourneyService {
     public String getLastStopName ( final JourneyModel[] journeyModels, final Calendar currentTime ) {
         for (int i = 0; i < journeyModels.length; i++) {
             if (checkJourneyStatus(journeyModels[i], currentTime) == JourneyStatus.RUNNING) {
-                StopTimeModel stopTime = getStopTimesByJourneyNumber(journeyModels[i].getJourneyNumber())[getStopTimesByJourneyNumber(journeyModels[i].getJourneyNumber()).length-1];
+                StopTimeModel stopTime = journeyModels[i].getStopTimeModelList().get(journeyModels[i].getStopTimeModelList().size()-1);
                 return stopTime.getStopName();
             }
             else if (checkJourneyStatus(journeyModels[i], currentTime) == JourneyStatus.YET_TO_RUN) {
                 if ( journeyModels[i].getJourneyNumber() != 1 ) {
-                    StopTimeModel stopTime = getStopTimesByJourneyNumber(journeyModels[i].getJourneyNumber())[getStopTimesByJourneyNumber(journeyModels[i].getJourneyNumber()).length-1];
+                    StopTimeModel stopTime = journeyModels[i].getStopTimeModelList().get(journeyModels[i].getStopTimeModelList().size()-1);
                     return stopTime.getStopName();
                 }
             }
@@ -175,7 +182,7 @@ public class JourneyService {
      * @return a <code>int</code> with the number of stops.
      */
     public int getNumStops ( final JourneyModel journeyModel ) {
-        return getStopTimesByJourneyNumber(journeyModel.getJourneyNumber()).length;
+        return journeyModel.getStopTimeModelList().size();
     }
     
     /**
@@ -192,16 +199,16 @@ public class JourneyService {
         long timeDiff = checkTimeDiff(getStopTime(journeyModel, firstStop).getTime(), getStopTime(journeyModel, secondStop).getTime());
         //Now remove stops between the two and possibly first and last as appropriate.
         boolean removeFlag = false;
-        for ( StopTimeModel myStop : getStopTimesByJourneyNumber(journeyModel.getJourneyNumber()) ) {
+        for ( StopTimeModel myStop : journeyModel.getStopTimeModelList() ) {
             if ( myStop.getStopName().equalsIgnoreCase(secondStop) ) {
-                if ( includeLast ) { stopTimeRepository.delete(stopTimeRepository.findByJourneyNumberAndRouteNumberAndRouteScheduleNumberAndStopName(journeyModel.getJourneyNumber(), journeyModel.getRouteNumber(), journeyModel.getRouteScheduleNumber(), secondStop)); }
+                if ( includeLast ) { journeyModel.removeStopTimeInList(secondStop); }
                 removeFlag = false;
             }
             if ( removeFlag ) {
-                stopTimeRepository.delete(stopTimeRepository.findByJourneyNumberAndRouteNumberAndRouteScheduleNumberAndStopName(journeyModel.getJourneyNumber(), journeyModel.getRouteNumber(), journeyModel.getRouteScheduleNumber(), secondStop));
+                journeyModel.removeStopTimeInList(secondStop);
             }
             if ( myStop.getStopName().equalsIgnoreCase(firstStop) ) {
-                if ( includeFirst ) { stopTimeRepository.delete(stopTimeRepository.findByJourneyNumberAndRouteNumberAndRouteScheduleNumberAndStopName(journeyModel.getJourneyNumber(), journeyModel.getRouteNumber(), journeyModel.getRouteScheduleNumber(), secondStop)); }
+                if ( includeFirst ) { journeyModel.removeStopTimeInList(secondStop); }
                 removeFlag = true;
             }
         }
@@ -228,9 +235,9 @@ public class JourneyService {
      */
     public boolean isOutwardJourney ( final JourneyModel journeyModel, final List<String> outwardStops ) {
         //First of all get the index of the first stop of this journey in outwardStops.
-        int firstIndex = outwardStops.indexOf(getStopTimesByJourneyNumber(journeyModel.getJourneyNumber())[0].getStopName());
+        int firstIndex = outwardStops.indexOf(journeyModel.getStopTimeModelList().get(0).getStopName());
         //Now get the index of the second stop.
-        int secondIndex = outwardStops.indexOf(getStopTimesByJourneyNumber(journeyModel.getJourneyNumber())[1].getStopName());
+        int secondIndex = outwardStops.indexOf(journeyModel.getStopTimeModelList().get(1).getStopName());
         //If the indexes are consecutive i.e. difference of 1 then it is an outward journey.
         if ( secondIndex - firstIndex == 1 ) { return true; }
         //Otherwise it is not.
@@ -297,6 +304,12 @@ public class JourneyService {
         journey.setJourneyNumber(journeyModel.getJourneyNumber());
         journey.setRouteNumber(journeyModel.getRouteNumber());
         journey.setRouteScheduleNumber(journeyModel.getRouteScheduleNumber());
+        List<StopTimeModel> stopTimeModelList = journeyModel.getStopTimeModelList();
+        List<StopTime> stopTimes = new ArrayList<StopTime>();
+        for ( StopTimeModel stopTimeModel : stopTimeModelList ) {
+            stopTimes.add(convertToStopTime(stopTimeModel));
+        }
+        journey.setStopTimes(stopTimes);
     	return journey;
     }
 
@@ -315,8 +328,8 @@ public class JourneyService {
             for ( int i = 0; i < journeyRepository.findByRouteScheduleNumberAndRouteNumber(routeScheduleModels[h].getScheduleNumber(), routeScheduleModels[h].getRouteNumber()).size(); i++ ) {
                 Journey myJourney = journeyRepository.findByRouteScheduleNumberAndRouteNumber(routeScheduleModels[h].getScheduleNumber(), routeScheduleModels[h].getRouteNumber()).get(i);
                 if ( isOutwardJourney(stops,
-                        getStopTimesByJourneyNumber(myJourney.getJourneyNumber())[0].getStopName(),
-                        getStopTimesByJourneyNumber(myJourney.getJourneyNumber())[1].getStopName()) ) {
+                        myJourney.getStopTimes().get(0).getStopName(),
+                        myJourney.getStopTimes().get(1).getStopName()) ) {
                     outgoingJourneys.add(myJourney);
                 }
             }
@@ -364,8 +377,8 @@ public class JourneyService {
             for ( int i = 0; i < journeyRepository.findByRouteScheduleNumberAndRouteNumber(scheduleModels[h].getScheduleNumber(), scheduleModels[h].getRouteNumber()).size(); i++ ) {
                 Journey myJourney = journeyRepository.findByRouteScheduleNumberAndRouteNumber(scheduleModels[h].getScheduleNumber(), scheduleModels[h].getRouteNumber()).get(i);
                 if ( !isOutwardJourney(stops,
-                        getStopTimesByJourneyNumber(myJourney.getJourneyNumber())[0].getStopName(),
-                        getStopTimesByJourneyNumber(myJourney.getJourneyNumber())[1].getStopName()) ) {
+                        myJourney.getStopTimes().get(0).getStopName(),
+                        myJourney.getStopTimes().get(1).getStopName()) ) {
                     returnServices.add(myJourney);
                 }
             }
@@ -386,29 +399,22 @@ public class JourneyService {
         return journeyModels;
     }
 
-    public void saveStopTime ( final StopTimeModel stopTimeModel) {
+    public void saveStopTime ( final StopTimeModel stopTimeModel, final JourneyModel journeyModel) {
         StopTime stopTime = new StopTime();
         stopTime.setJourneyNumber(stopTimeModel.getJourneyNumber());
         stopTime.setStopName(stopTimeModel.getStopName());
         stopTime.setTime(stopTimeModel.getTime());
         stopTime.setRouteNumber(stopTimeModel.getRouteNumber());
         stopTime.setRouteScheduleNumber(stopTimeModel.getRouteScheduleNumber());
-        stopTimeRepository.saveAndFlush(stopTime);
+        Journey journey = journeyRepository.findByJourneyNumberAndRouteScheduleNumberAndRouteNumber(journeyModel.getJourneyNumber(), journeyModel.getRouteScheduleNumber(), journeyModel.getRouteNumber());
+        journey.addStopTimeToList(stopTime);
+        journeyRepository.save(journey);
     }
 
     public void saveStop ( final String stopName ) {
         Stop stop = new Stop();
         stop.setStopName(stopName);
         stopRepository.saveAndFlush(stop);
-    }
-
-    public StopTimeModel[] getStopTimesByJourneyNumber ( final int journeyNumber ) {
-        List<StopTime> stopTimes = stopTimeRepository.findByJourneyNumber(journeyNumber);
-        StopTimeModel[] stopTimeModels = new StopTimeModel[stopTimes.size()];
-        for ( int i = 0; i < stopTimeModels.length; i++ ) {
-            stopTimeModels[i] = convertToStopTimeModel(stopTimes.get(i));
-        }
-        return stopTimeModels;
     }
 
     public Stop getStopByStopName ( final String stopName ) {
@@ -432,16 +438,6 @@ public class JourneyService {
         }
         return stopNames;
     }
-
-    public StopTimeModel[] getAllStopTimes() {
-        List<StopTime> stopTimes = stopTimeRepository.findAll();
-        StopTimeModel[] stopTimeModels = new StopTimeModel[stopTimes.size()];
-        for ( int i = 0; i < stopTimeModels.length; i++ ) {
-            stopTimeModels[i] = convertToStopTimeModel(stopTimes.get(i));
-        }
-        return stopTimeModels;
-    }
-
 
     public List<JourneyModel> generateJourneyTimetables ( final JourneyPatternModel[] journeyPatternModels,
                                                           final Calendar today, final int direction, final List<String> stops, final String scenarioName, final int journeyNumberToStart ) {
@@ -484,24 +480,24 @@ public class JourneyService {
                     else {
                         journeyStops = getStopsBetween(stops, myJourneyPattern.getReturnTerminus(), myJourneyPattern.getOutgoingTerminus(), direction);
                     }
-                    StopTime newStopTime = new StopTime();
+                    StopTimeModel newStopTime = new StopTimeModel();
                     newStopTime.setJourneyNumber(newJourney.getJourneyNumber());
                     newStopTime.setStopName(journeyStops.get(0));
                     newStopTime.setTime( (Calendar) journeyTime.clone());
                     newStopTime.setRouteNumber(myJourneyPattern.getRouteNumber());
                     newStopTime.setRouteScheduleNumber(routeScheduleNumber);
-                    stopTimeRepository.saveAndFlush(newStopTime);
+                    newJourney.addStopTimeToList(newStopTime);
                     for ( int i = 1; i < journeyStops.size(); i++ ) {
                         //Now add to journey time the difference between the two stops.
                         journeyTime.add(Calendar.MINUTE, getDistance(scenarioName, journeyStops.get(i-1), journeyStops.get(i)));
                         //Create stop.
-                        StopTime newStopTime2 = new StopTime();
+                        StopTimeModel newStopTime2 = new StopTimeModel();
                         newStopTime2.setJourneyNumber(newJourney.getJourneyNumber());
                         newStopTime2.setStopName(journeyStops.get(i));
                         newStopTime2.setTime( (Calendar) journeyTime.clone());
                         newStopTime2.setRouteNumber(myJourneyPattern.getRouteNumber());
                         newStopTime2.setRouteScheduleNumber(routeScheduleNumber);
-                        stopTimeRepository.saveAndFlush(newStopTime2);
+                        newJourney.addStopTimeToList(newStopTime2);
                     }
                     //logger.debug("Service #" + serviceId + ": " + newService.getAllDisplayStops());{
                     saveJourney(newJourney);
@@ -521,6 +517,12 @@ public class JourneyService {
         journeyModel.setJourneyNumber(journey.getJourneyNumber());
         journeyModel.setRouteNumber(journey.getRouteNumber());
         journeyModel.setRouteScheduleNumber(journey.getRouteScheduleNumber());
+        List<StopTime> stopTimes = journey.getStopTimes();
+        List<StopTimeModel> stopTimeModels = new ArrayList<StopTimeModel>();
+        for ( StopTime stopTime : stopTimes ) {
+            stopTimeModels.add(convertToStopTimeModel(stopTime));
+        }
+        journeyModel.setStopTimeModelList(stopTimeModels);
         return journeyModel;
     }
 
@@ -601,13 +603,6 @@ public class JourneyService {
      */
     public void deleteAllStops ( ) {
         stopRepository.deleteAll();
-    }
-
-    /**
-     * Remove all existing stop times (used only for the load function)
-     */
-    public void deleteAllStopTimes ( ) {
-        stopTimeRepository.deleteAll();
     }
 
 }

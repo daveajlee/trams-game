@@ -2,7 +2,6 @@ package de.davelee.trams.controllers;
 
 import de.davelee.trams.model.RouteModel;
 import de.davelee.trams.model.RouteScheduleModel;
-import de.davelee.trams.model.TimetableModel;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

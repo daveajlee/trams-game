@@ -32,17 +32,8 @@ import de.davelee.trams.repository.MessageRepository;
 import de.davelee.trams.repository.RouteRepository;
 import de.davelee.trams.repository.RouteScheduleRepository;
 import de.davelee.trams.repository.StopRepository;
-import de.davelee.trams.repository.StopTimeRepository;
 import de.davelee.trams.repository.TimetableRepository;
 import de.davelee.trams.repository.VehicleRepository;
-import de.davelee.trams.services.DriverService;
-import de.davelee.trams.services.GameService;
-import de.davelee.trams.services.JourneyPatternService;
-import de.davelee.trams.services.JourneyService;
-import de.davelee.trams.services.MessageService;
-import de.davelee.trams.services.RouteService;
-import de.davelee.trams.services.RouteScheduleService;
-import de.davelee.trams.services.TimetableService;
 import de.davelee.trams.util.MessageFolder;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -69,9 +60,6 @@ public class FileServiceTest {
 	
 	@Autowired
 	private JourneyRepository journeyRepository;
-	
-	@Autowired
-	private StopTimeRepository stopTimeRepository;
 	
 	@Autowired
 	private GameRepository gameRepository;
@@ -118,7 +106,6 @@ public class FileServiceTest {
 		vehicleRepository.deleteAll();
 		journeyService.deleteAllJourneys();
 		journeyService.deleteAllStops();
-		journeyService.deleteAllStopTimes();
 		journeyPatternService.deleteAllJourneyPatterns();
 		timetableService.deleteAllTimetables();
 		routeScheduleService.deleteAllRouteSchedules();
@@ -176,12 +163,12 @@ public class FileServiceTest {
 		journeyModel.setJourneyNumber(1);
 		journeyModel.setRouteNumber("M2");
 		journeyModel.setRouteScheduleNumber(1);
-		journeyService.saveJourney(journeyModel);
 		StopTimeModel stopTimeModel = new StopTimeModel();
 		stopTimeModel.setJourneyNumber(1);
 		stopTimeModel.setStopName("Heinersdorf");
 		stopTimeModel.setTime(Calendar.getInstance());
-		journeyService.saveStopTime(stopTimeModel);
+		journeyModel.addStopTimeToList(stopTimeModel);
+		journeyService.saveJourney(journeyModel);
 		GameModel gameModel = new GameModel();
 		gameModel.setPlayerName("Dave Lee");
 		gameModel.setScenarioName("Landuff Transport Company");
@@ -189,7 +176,7 @@ public class FileServiceTest {
 		
 		TramsFile tramsFile = new TramsFile(driverService.getAllDrivers(), gameService.getAllGames(), journeyService.getAllJourneys(), 
 				journeyPatternService.getAllJourneyPatterns(), messageService.getAllMessages(), routeService.getAllRoutes(), 
-				routeScheduleService.getAllRouteSchedules(), journeyService.getAllStops(), journeyService.getAllStopTimes(),
+				routeScheduleService.getAllRouteSchedules(), journeyService.getAllStops(),
 				timetableService.getAllTimetableModels(), vehicleService.getVehicleModels());
 		
 		assertNotNull(tramsFile.getDriverModels());
@@ -201,7 +188,6 @@ public class FileServiceTest {
 		assertNotNull(tramsFile.getTimetableModels());
 		assertNotNull(tramsFile.getRouteScheduleModels());
 		assertNotNull(tramsFile.getJourneyModels());
-		assertNotNull(tramsFile.getStopTimeModels());
 		assertNotNull(tramsFile.getGameModel());
 		
 		fileService.saveFile(new File("test-trams.xml"), tramsFile);

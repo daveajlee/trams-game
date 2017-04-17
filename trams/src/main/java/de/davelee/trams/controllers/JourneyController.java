@@ -47,11 +47,11 @@ public class JourneyController {
 	}
 
 	public int getNumStopTimes ( final RouteScheduleModel routeScheduleModel, final Calendar currentTime ) {
-		return journeyService.getStopTimesByJourneyNumber(getCurrentJourney(routeScheduleModel, currentTime).getJourneyNumber()).length;
+		return getCurrentJourney(routeScheduleModel, currentTime).getStopTimeModelList().size();
 	}
 
 	public String getStopName ( final RouteScheduleModel routeScheduleModel, final Calendar currentTime, final int pos ) {
-		return journeyService.getStopTimesByJourneyNumber(getCurrentJourney(routeScheduleModel, currentTime).getJourneyNumber())[pos].getStopName();
+		return getCurrentJourney(routeScheduleModel, currentTime).getStopTimeModelList().get(pos).getStopName();
 	}
 
 	public String getStopName ( final RouteScheduleModel routeScheduleModel, final Calendar currentTime ) {
@@ -93,12 +93,12 @@ public class JourneyController {
 	}
 
 	public Calendar getFirstStopTime ( final JourneyModel journeyModel ) {
-		return journeyService.getStopTimesByJourneyNumber(journeyModel.getJourneyNumber())[0].getTime();
+    	return journeyModel.getStopTimeModelList().get(0).getTime();
 	}
 
 	public Calendar getLastStopTime ( final JourneyModel journeyModel ) {
-		int position = journeyService.getStopTimesByJourneyNumber(journeyModel.getJourneyNumber()).length -1;
-		return journeyService.getStopTimesByJourneyNumber(journeyModel.getJourneyNumber())[position].getTime();
+		int position = journeyModel.getStopTimeModelList().size()-1;
+		return journeyModel.getStopTimeModelList().get(position).getTime();
 	}
 
 	public void assignRouteSchedule ( final JourneyModel journeyModel, final RouteScheduleModel routeScheduleModel ) {
@@ -115,10 +115,6 @@ public class JourneyController {
 
 	public String[] getAllStops ( ) {
         return journeyService.getAllStops();
-    }
-
-	public StopTimeModel[] getAllStopTimes ( ) {
-        return journeyService.getAllStopTimes();
     }
 
 	/**
@@ -166,17 +162,6 @@ public class JourneyController {
 		journeyService.deleteAllStops();
 		for ( String stopModel : stopModels ) {
 			journeyService.saveStop(stopModel);
-		}
-	}
-
-	/**
-	 * Load Stop Times.
-	 * @param stopTimeModels an array of <code>StopTimeModel</code> objects to store and delete all other stop times.
-	 */
-	public void loadStopTimes ( final StopTimeModel[] stopTimeModels ) {
-		journeyService.deleteAllStopTimes();
-		for ( StopTimeModel stopTimeModel : stopTimeModels ) {
-			journeyService.saveStopTime(stopTimeModel);
 		}
 	}
 	

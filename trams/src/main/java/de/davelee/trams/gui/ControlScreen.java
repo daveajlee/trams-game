@@ -96,7 +96,7 @@ public class ControlScreen extends ButtonBar {
         //Initialise dialog panel.
         dialogPanel = new JPanel(new BorderLayout());
 
-        GameModel gameModel = super.getControllerHandler().getGameController().getGameModel();
+        final GameModel gameModel = super.getControllerHandler().getGameController().getGameModel();
         
         //Initialise GUI with title and close attributes.
         this.setTitle ("TraMS - Player: " + gameModel.getPlayerName() + " (" + gameModel.getScenarioName() + ")");
@@ -182,7 +182,7 @@ public class ControlScreen extends ButtonBar {
                     populateRouteList();
                     redrawOnRouteChange = true;
                     logger.debug("Route list has been re-populated!");
-                    topPanel.getComponent(1).setVisible(true);
+                    //topPanel.getComponent(1).setVisible(true);
                     //userInterface.setMessageScreen(false);
                     //userInterface.setManagementScreen(false);
                     ControlScreen.super.getControllerHandler().getGameController().resumeSimulation(ControlScreen.this); //Resume simulation for live screen.

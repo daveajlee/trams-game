@@ -8,7 +8,7 @@ import javax.persistence.*;
  * @author Dave Lee
  */
 @Entity
-@Table(name="STOP_TIME", uniqueConstraints=@UniqueConstraint(columnNames = {"routeNumber", "routeScheduleNumber", "journeyNumber", "stopName"}))
+@Table(name="STOP_TIME")
 public class StopTime {
 
     @Id

@@ -15,7 +15,6 @@ public class TramsFile {
     private RouteModel[] routeModels;
     private RouteScheduleModel[] routeScheduleModels;
 	private String[] stops;
-	private StopTimeModel[] stopTimeModels;
     private TimetableModel[] timetableModels;
     private VehicleModel[] vehicleModels;
 
@@ -23,7 +22,7 @@ public class TramsFile {
 
     public TramsFile ( final DriverModel[] driverModels, final GameModel[] gameModel, final JourneyModel[] journeyModels, final JourneyPatternModel[] journeyPatternModels,
                        final MessageModel[] messageModels, final RouteModel[] routeModels, final RouteScheduleModel[] routeScheduleModels,
-                       final String[] stops, final StopTimeModel[] stopTimeModels, final TimetableModel[] timetableModels, final VehicleModel[] vehicleModels) {
+                       final String[] stops, final TimetableModel[] timetableModels, final VehicleModel[] vehicleModels) {
                 this.driverModels = driverModels;
                 this.gameModel = gameModel;
                 this.journeyModels = journeyModels;
@@ -32,7 +31,6 @@ public class TramsFile {
                 this.routeModels = routeModels;
                 this.routeScheduleModels = routeScheduleModels;
                 this.stops = stops;
-                this.stopTimeModels = stopTimeModels;
                 this.timetableModels = timetableModels;
                 this.vehicleModels = vehicleModels;
     }
@@ -99,14 +97,6 @@ public class TramsFile {
 
     public void setStops(final String[] stops) {
         this.stops = stops;
-    }
-
-    public StopTimeModel[] getStopTimeModels() {
-        return stopTimeModels;
-    }
-
-    public void setStopTimeModels(final StopTimeModel[] stopTimeModels) {
-        this.stopTimeModels = stopTimeModels;
     }
 
     public TimetableModel[] getTimetableModels() {

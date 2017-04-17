@@ -86,10 +86,6 @@ public class FileController {
 		if ( myFile.getRouteScheduleModels() != null ) {
 			routeScheduleController.loadRouteSchedules(myFile.getRouteScheduleModels());
 		}
-    	//Load stop times.
-		if ( myFile.getStopTimeModels() != null ) {
-			journeyController.loadStopTimes(myFile.getStopTimeModels());
-		}
     	//Load timetables.
 		if ( myFile.getTimetableModels() != null ) {
 			timetableController.loadTimetables(myFile.getTimetableModels());
@@ -112,7 +108,7 @@ public class FileController {
     public TramsFile prepareTramsFile ( ) {
     	return new TramsFile(driverController.getAllDrivers(), new GameModel[] { gameController.getGameModel() }, journeyController.getAllJourneys(),
 				journeyPatternController.getAllJourneyPatterns(), messageController.getAllMessages(), routeController.getRouteModels(),
-				routeScheduleController.getAllRouteSchedules(), journeyController.getAllStops(), journeyController.getAllStopTimes(),
+				routeScheduleController.getAllRouteSchedules(), journeyController.getAllStops(),
 				timetableController.getAllTimetableModels(), vehicleController.getVehicleModels());
     }
 
