@@ -26,8 +26,9 @@ public class GameThread extends Thread implements Runnable {
         try { this.sleep(simulationSpeed); } catch (InterruptedException ie) {}
         //Keep running this until pause.
         while ( !gameController.stillRunning() ) {
-            //Increment time.
-			controlScreen.updateTime(gameController.incrementTime());
+            //Increment time and update passenger satisfaction.
+			controlScreen.updateTime(gameController.incrementTime(), gameController.getGameModel().getDifficultyLevel());
+			controlScreen.updatePassengerBar(gameController.computeAndReturnPassengerSatisfaction());
             //Now sleep!
             try { this.sleep(simulationSpeed); } catch (InterruptedException ie) {}
         }

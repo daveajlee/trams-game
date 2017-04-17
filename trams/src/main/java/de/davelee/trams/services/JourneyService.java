@@ -71,7 +71,9 @@ public class JourneyService {
                 return null;
             }
             if (checkJourneyStatus(journeyModels[i], currentTime) == JourneyStatus.YET_TO_RUN) {
-                if ( journeyModels[i].getJourneyNumber() != 1 ) {
+                if ( i == 0 ) {
+                    return "Depot";
+                } else {
                     return getStartTerminus(journeyModels[i]);
                 }
             }

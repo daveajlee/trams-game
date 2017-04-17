@@ -109,10 +109,12 @@ public class GameService {
             totalSubtract = (numSmallLateSchedules*3) + (numMediumLateSchedules*4) + (numLargeLateSchedules*5);
         }
         //Subtract from passenger satisfaction.
-        gameRepository.findByPlayerName(playerName).setPassengerSatisfaction(gameModel.getPassengerSatisfaction() - totalSubtract);
+        Game game = gameRepository.findByPlayerName(playerName);
+        game.setPassengerSatisfaction(gameModel.getPassengerSatisfaction() - totalSubtract);
         //After all of this check that passenger satisfaction is greater than 0.
-        if ( gameModel.getPassengerSatisfaction() < 0 ) { gameRepository.findByPlayerName(playerName).setPassengerSatisfaction(0); }
-        return gameRepository.findByPlayerName(playerName).getPassengerSatisfaction();
+        if ( game.getPassengerSatisfaction() < 0 ) { game.setPassengerSatisfaction(0); }
+        gameRepository.save(game);
+        return game.getPassengerSatisfaction();
     }
 
     /**

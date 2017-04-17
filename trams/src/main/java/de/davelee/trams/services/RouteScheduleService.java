@@ -27,34 +27,34 @@ public class RouteScheduleService {
 
         //Generate a random number between 0 and 1.
         Random randNumGen = new Random();
-        double prob = randNumGen.nextDouble();
+        int val = randNumGen.nextInt(100);
         //Create probability array.
-        double[] ratioArray = new double[0];
+        int[] ratioArray = new int[0];
         //Set ratios according to difficulty level.
         switch (difficultyLevel) {
         case EASY:
-        	ratioArray = new double[] { 0.25, 0.85, 0.95 };
+        	ratioArray = new int[] { 25, 85, 95 };
         	break;
         case INTERMEDIATE:
-        	ratioArray = new double[] { 0.20, 0.85, 0.95 };
+        	ratioArray = new int[] { 20, 85, 95 };
         	break;
         case MEDIUM:
-        	ratioArray = new double[] { 0.20, 0.75, 0.90 };
+        	ratioArray = new int[] { 20, 75, 90 };
         	break;
         case HARD:
-        	ratioArray = new double[] { 0.30, 0.60, 0.85 };
+        	ratioArray = new int[] { 30, 60, 85 };
         	break;
         };
         //With ratioArray[0] probability no delay change.
-        if ( prob < ratioArray[0] ) { return; }
+        if ( val < ratioArray[0] ) { return; }
         //With ratioArray[1] probability - reduce delay by 1-5 mins.
-        if ( prob >= ratioArray[0] && prob < ratioArray[1] ) {
+        if ( val >= ratioArray[0] && val < ratioArray[1] ) {
             int delayReduction = randNumGen.nextInt(5) + 1;
             reduceDelay(scheduleModel, delayReduction);
             return;
         }
         //With 10% probability - increase delay by 1-5 mins.
-        if ( prob >= ratioArray[1] && prob < ratioArray[2] ) {
+        if ( val >= ratioArray[1] && val < ratioArray[2] ) {
             int delayIncrease = randNumGen.nextInt(5) + 1;
             increaseDelay(scheduleModel, delayIncrease);
             return;
@@ -74,13 +74,14 @@ public class RouteScheduleService {
         if (scheduleModel.getDelay() == 0) { return; }
         //Otherwise, reduce delay by that number of minutes.
         else {
-            routeScheduleRepository.findByScheduleNumberAndRouteNumber(scheduleModel.getScheduleNumber(),
-                    scheduleModel.getRouteNumber()).setDelayInMins(scheduleModel.getDelay()-mins);
+            RouteSchedule routeSchedule = routeScheduleRepository.findByScheduleNumberAndRouteNumber(scheduleModel.getScheduleNumber(),
+                    scheduleModel.getRouteNumber());
+            routeSchedule.setDelayInMins(scheduleModel.getDelay()-mins);
             //Now check if delay falls below 0, if it does then delay is 0.
-            if (scheduleModel.getDelay() < 0) {
-                routeScheduleRepository.findByScheduleNumberAndRouteNumber(scheduleModel.getScheduleNumber(),
-                        scheduleModel.getRouteNumber()).setDelayInMins(0);
+            if (routeSchedule.getDelayInMins() < 0) {
+                routeSchedule.setDelayInMins(0);
             }
+            routeScheduleRepository.save(routeSchedule);
         }    
     }
 
@@ -91,8 +92,10 @@ public class RouteScheduleService {
      */
     public void increaseDelay(final RouteScheduleModel scheduleModel, final int mins) {
         //This is easy because increasing delay has no special processing!!!!
-        routeScheduleRepository.findByScheduleNumberAndRouteNumber(scheduleModel.getScheduleNumber(),
-                scheduleModel.getRouteNumber()).setDelayInMins(mins);
+        RouteSchedule routeSchedule = routeScheduleRepository.findByScheduleNumberAndRouteNumber(scheduleModel.getScheduleNumber(),
+                scheduleModel.getRouteNumber());
+        routeSchedule.setDelayInMins(routeSchedule.getDelayInMins() + mins);
+        routeScheduleRepository.save(routeSchedule);
     }
 
     public RouteScheduleModel getRouteScheduleByScheduleNumberAndRouteNumber(final int scheduleNumber, final String routeNumber) {
