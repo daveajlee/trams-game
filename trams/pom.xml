@@ -57,7 +57,7 @@
 	  <dependency>
 		  <groupId>org.springframework.data</groupId>
 		  <artifactId>spring-data-jpa</artifactId>
-		  <version>1.6.0.RELEASE</version>
+		  <version>1.11.12.RELEASE</version>
       </dependency>
 
 	  <!-- Database Frameworks -->
@@ -119,8 +119,8 @@
     			<artifactId>maven-compiler-plugin</artifactId>
     			<version>3.1</version>
     			<configuration>
-        			<source>1.6</source>
-        			<target>1.6</target>
+        			<source>8</source>
+        			<target>8</target>
     			</configuration>
 			</plugin>
 			<plugin>
