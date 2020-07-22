@@ -5,7 +5,6 @@ import static org.junit.Assert.assertNotNull;
 
 import java.util.Calendar;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +17,6 @@ import de.davelee.trams.services.DriverService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("/de/davelee/trams/spring/test-context.xml")
-//TODO: remove ignore comment
-@Ignore
 public class DriverRepositoryTest {
 	
 	@Autowired
@@ -39,10 +36,10 @@ public class DriverRepositoryTest {
 		assertNotNull(driver2);
 		assertEquals(driver2.getName(), "Dave Lee");
 		assertEquals(driver2.getContractedHours(), 40);
-		assertEquals(driverRepository.findAll().size(), 3);
+		assertEquals(driverRepository.findAll().size(), 1);
 		//Test remove
 		driverRepository.delete(driver2);
-		assertEquals(driverRepository.findAll().size(), 2);
+		assertEquals(driverRepository.findAll().size(), 0);
 	}
 
 }

@@ -6,7 +6,6 @@ import static org.junit.Assert.assertNotNull;
 import java.util.Calendar;
 import java.util.List;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +19,6 @@ import de.davelee.trams.services.VehicleService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("/de/davelee/trams/spring/test-context.xml")
-//TODO: remove ignore comment test.
-@Ignore
 public class VehicleRepositoryTest {
 	
 	@Autowired
@@ -54,10 +51,10 @@ public class VehicleRepositoryTest {
 		assertEquals(vehicle2.getStandingCapacity(), 60);
 		assertEquals(vehicle2.getPurchasePrice(), 200.99, 0.01);
 		List<Vehicle> vehicles = vehicleRepository.findAll();
-		assertEquals(vehicles.size(), 2);
+		assertEquals(vehicles.size(), 1);
 		//Test remove
 		vehicleRepository.delete(vehicle2);
-		assertEquals(vehicleRepository.findAll().size(), 1);
+		assertEquals(vehicleRepository.findAll().size(), 0);
 	}
 
 }

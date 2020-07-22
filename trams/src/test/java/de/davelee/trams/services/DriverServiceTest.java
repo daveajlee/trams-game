@@ -10,7 +10,6 @@ import java.util.Calendar;
 
 import de.davelee.trams.model.DriverModel;
 import de.davelee.trams.repository.DriverRepository;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +20,6 @@ import de.davelee.trams.data.Driver;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("/de/davelee/trams/spring/test-context.xml")
-//TODO: remove ignore test
-@Ignore
 public class DriverServiceTest {
 	
 	@Autowired
@@ -44,7 +41,7 @@ public class DriverServiceTest {
 		assertEquals(driverModel2.getName(), "Dave Lee");
 		assertEquals(driverModel2.getContractedHours(), 40);
 		assertEquals(driverModel2.getStartDate().get(Calendar.YEAR), 2014);
-		assertEquals(driverModel2.getStartDate().get(Calendar.MONTH), 4);
+		assertEquals(driverModel2.getStartDate().get(Calendar.MONTH), Calendar.APRIL);
 		assertEquals(driverModel2.getStartDate().get(Calendar.DAY_OF_MONTH), 20);
 	}
 	

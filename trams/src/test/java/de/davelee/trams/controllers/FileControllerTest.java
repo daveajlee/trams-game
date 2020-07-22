@@ -1,6 +1,5 @@
 package de.davelee.trams.controllers;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,8 +12,6 @@ import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("/de/davelee/trams/spring/test-context.xml")
-//TODO: remove ignore test comment.
-@Ignore
 public class FileControllerTest {
 
     @Autowired
