@@ -1,19 +1,17 @@
 package de.davelee.trams.services;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import de.davelee.trams.beans.TramsFile;
 import de.davelee.trams.factory.VehicleFactory;
@@ -36,7 +34,7 @@ import de.davelee.trams.repository.TimetableRepository;
 import de.davelee.trams.repository.VehicleRepository;
 import de.davelee.trams.util.MessageFolder;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @ContextConfiguration("/de/davelee/trams/spring/test-context.xml")
 public class FileServiceTest {
 	
@@ -179,16 +177,16 @@ public class FileServiceTest {
 				routeScheduleService.getAllRouteSchedules(), journeyService.getAllStops(),
 				timetableService.getAllTimetableModels(), vehicleService.getVehicleModels());
 		
-		assertNotNull(tramsFile.getDriverModels());
-		assertNotNull(tramsFile.getVehicleModels());
-		assertNotNull(tramsFile.getRouteModels());
-		assertNotNull(tramsFile.getMessageModels());
-		assertNotNull(tramsFile.getStops());
-		assertNotNull(tramsFile.getJourneyPatternModels());
-		assertNotNull(tramsFile.getTimetableModels());
-		assertNotNull(tramsFile.getRouteScheduleModels());
-		assertNotNull(tramsFile.getJourneyModels());
-		assertNotNull(tramsFile.getGameModel());
+		Assertions.assertNotNull(tramsFile.getDriverModels());
+		Assertions.assertNotNull(tramsFile.getVehicleModels());
+		Assertions.assertNotNull(tramsFile.getRouteModels());
+		Assertions.assertNotNull(tramsFile.getMessageModels());
+		Assertions.assertNotNull(tramsFile.getStops());
+		Assertions.assertNotNull(tramsFile.getJourneyPatternModels());
+		Assertions.assertNotNull(tramsFile.getTimetableModels());
+		Assertions.assertNotNull(tramsFile.getRouteScheduleModels());
+		Assertions.assertNotNull(tramsFile.getJourneyModels());
+		Assertions.assertNotNull(tramsFile.getGameModel());
 		
 		fileService.saveFile(new File("test-trams.xml"), tramsFile);
 		
@@ -198,12 +196,12 @@ public class FileServiceTest {
 	@Test
 	public void testLoadFile ( ) {
 		TramsFile tramsFile2 = fileService.loadFile(new File("test-trams.xml"));
-		assertNotNull(tramsFile2);
-		assertEquals(tramsFile2.getDriverModels().length, 1);
-		assertEquals(tramsFile2.getDriverModels()[0].getName(), "Chris Lee");
-		assertEquals(tramsFile2.getVehicleModels().length, 1);
-		assertEquals(tramsFile2.getRouteScheduleModels().length, 1);
-		assertEquals(tramsFile2.getGameModel().length, 1);
+		Assertions.assertNotNull(tramsFile2);
+		Assertions.assertEquals(tramsFile2.getDriverModels().length, 1);
+		Assertions.assertEquals(tramsFile2.getDriverModels()[0].getName(), "Chris Lee");
+		Assertions.assertEquals(tramsFile2.getVehicleModels().length, 1);
+		Assertions.assertEquals(tramsFile2.getRouteScheduleModels().length, 1);
+		Assertions.assertEquals(tramsFile2.getGameModel().length, 1);
 	}
 
 }

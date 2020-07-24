@@ -2,23 +2,22 @@ package de.davelee.trams.controllers;
 
 import de.davelee.trams.model.RouteModel;
 import de.davelee.trams.model.RouteScheduleModel;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
 /**
  * Created by davelee on 12.04.17.
  */
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @ContextConfiguration("/de/davelee/trams/spring/test-context.xml")
 public class RouteScheduleControllerTest {
 
@@ -60,13 +59,13 @@ public class RouteScheduleControllerTest {
         calendar.set(Calendar.MINUTE, 0);
         //Test generate route schedules.
         List<RouteScheduleModel> routeScheduleModels = routeScheduleController.generateRouteSchedules(routeModel, generateCalendarDateTime(1,3,2017,4,0), "Landuff Transport Company");
-        assertNotNull(routeScheduleModels);
-        assertEquals(3, routeScheduleModels.size());
-        assertEquals(1, routeScheduleModels.get(0).getScheduleNumber());
-        assertEquals(2, routeScheduleModels.get(1).getScheduleNumber());
-        assertEquals(3, routeScheduleModels.get(2).getScheduleNumber());
-        assertEquals(0, routeScheduleModels.get(0).getDelay());
-        assertEquals("X1", routeScheduleModels.get(0).getRouteNumber());
+        Assertions.assertNotNull(routeScheduleModels);
+        Assertions.assertEquals(3, routeScheduleModels.size());
+        Assertions.assertEquals(1, routeScheduleModels.get(0).getScheduleNumber());
+        Assertions.assertEquals(2, routeScheduleModels.get(1).getScheduleNumber());
+        Assertions.assertEquals(3, routeScheduleModels.get(2).getScheduleNumber());
+        Assertions.assertEquals(0, routeScheduleModels.get(0).getDelay());
+        Assertions.assertEquals("X1", routeScheduleModels.get(0).getRouteNumber());
     }
 
     private Calendar generateCalendarDateTime ( final int day, final int month, final int year, final int hour, final int min) {

@@ -1,14 +1,13 @@
 package de.davelee.trams.services;
 
-import static org.junit.Assert.assertEquals;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @ContextConfiguration("/de/davelee/trams/spring/test-context.xml")
 public class JourneyServiceTest {
 
@@ -17,17 +16,17 @@ public class JourneyServiceTest {
 
 	@Test
 	public void testStopDistances() {
-		assertEquals(journeyService.getDistance("Landuff Transport Company", "Airport", "Cargo Terminal"), 12);
+		Assertions.assertEquals(journeyService.getDistance("Landuff Transport Company", "Airport", "Cargo Terminal"), 12);
 	}
 
-	@Test(expected=IndexOutOfBoundsException.class)
+	@Test
 	public void testStopDistanceNull1() {
-		assertEquals(journeyService.getDistance("Landuff Transport Company", "Strasse 201", "Cargo Terminal"), 12);
+		Assertions.assertThrows(IndexOutOfBoundsException.class, () -> journeyService.getDistance("Landuff Transport Company", "Strasse 201", "Cargo Terminal"));
 	}
 
-	@Test(expected=IndexOutOfBoundsException.class)
+	@Test
 	public void testStopDistanceNull2() {
-		assertEquals(journeyService.getDistance("Landuff Transport Company", "Airport", "Strasse 201"), 12);
+		Assertions.assertThrows(IndexOutOfBoundsException.class, () -> journeyService.getDistance("Landuff Transport Company", "Airport", "Strasse 201"));
 	}
 	
 }

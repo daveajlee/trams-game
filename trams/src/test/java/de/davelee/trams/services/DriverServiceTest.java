@@ -1,24 +1,17 @@
 package de.davelee.trams.services;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
 import java.util.Calendar;
 
 import de.davelee.trams.model.DriverModel;
 import de.davelee.trams.repository.DriverRepository;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import de.davelee.trams.data.Driver;
-
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @ContextConfiguration("/de/davelee/trams/spring/test-context.xml")
 public class DriverServiceTest {
 	
@@ -38,11 +31,11 @@ public class DriverServiceTest {
 		driverModel.setStartDate(startDate);
 		driverService.saveDriver(driverModel);
 		DriverModel driverModel2 = driverService.getDriverByName("Dave Lee");
-		assertEquals(driverModel2.getName(), "Dave Lee");
-		assertEquals(driverModel2.getContractedHours(), 40);
-		assertEquals(driverModel2.getStartDate().get(Calendar.YEAR), 2014);
-		assertEquals(driverModel2.getStartDate().get(Calendar.MONTH), Calendar.APRIL);
-		assertEquals(driverModel2.getStartDate().get(Calendar.DAY_OF_MONTH), 20);
+		Assertions.assertEquals(driverModel2.getName(), "Dave Lee");
+		Assertions.assertEquals(driverModel2.getContractedHours(), 40);
+		Assertions.assertEquals(driverModel2.getStartDate().get(Calendar.YEAR), 2014);
+		Assertions.assertEquals(driverModel2.getStartDate().get(Calendar.MONTH), Calendar.APRIL);
+		Assertions.assertEquals(driverModel2.getStartDate().get(Calendar.DAY_OF_MONTH), 20);
 	}
 	
 	@Test
@@ -52,21 +45,21 @@ public class DriverServiceTest {
 		startDate.set(2014, Calendar.APRIL, 20);
 		//Before - not started Work.
 		Calendar currentDate = Calendar.getInstance(); currentDate.set(2013, Calendar.APRIL, 20);
-		assertFalse(driverService.hasStartedWork(startDate, currentDate));
+		Assertions.assertFalse(driverService.hasStartedWork(startDate, currentDate));
 		currentDate.set(2014, Calendar.MARCH, 20);
-		assertFalse(driverService.hasStartedWork(startDate, currentDate));
+		Assertions.assertFalse(driverService.hasStartedWork(startDate, currentDate));
 		currentDate.set(2014, Calendar.APRIL, 19);
-		assertFalse(driverService.hasStartedWork(startDate, currentDate));
+		Assertions.assertFalse(driverService.hasStartedWork(startDate, currentDate));
 		//Same - started Work.
 		currentDate.set(2014, Calendar.APRIL, 20);
-		assertTrue(driverService.hasStartedWork(startDate, currentDate));
+		Assertions.assertTrue(driverService.hasStartedWork(startDate, currentDate));
 		//After - started Work.
 		currentDate.set(2014, Calendar.APRIL, 21);
-		assertTrue(driverService.hasStartedWork(startDate, currentDate));
+		Assertions.assertTrue(driverService.hasStartedWork(startDate, currentDate));
 		currentDate.set(2014, Calendar.MAY, 20);
-		assertTrue(driverService.hasStartedWork(startDate, currentDate));
+		Assertions.assertTrue(driverService.hasStartedWork(startDate, currentDate));
 		currentDate.set(2015, Calendar.APRIL, 20);
-		assertTrue(driverService.hasStartedWork(startDate, currentDate));
+		Assertions.assertTrue(driverService.hasStartedWork(startDate, currentDate));
 	}
 	
 	@Test
@@ -81,9 +74,9 @@ public class DriverServiceTest {
 		driverService.saveDriver(driverModel);
 		driverService.saveDriver(driverModel2);
 		driverService.saveDriver(driverModel3);
-		assertNotNull(driverService.getDriverByName("Brian Lee"));
-		assertEquals(driverService.getDriverByName("Brian Lee").getName(), "Brian Lee");
-		assertNull(driverService.getDriverByName("Stephan Lee"));
+		Assertions.assertNotNull(driverService.getDriverByName("Brian Lee"));
+		Assertions.assertEquals(driverService.getDriverByName("Brian Lee").getName(), "Brian Lee");
+		Assertions.assertNull(driverService.getDriverByName("Stephan Lee"));
 	}
 
 }

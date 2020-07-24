@@ -1,20 +1,18 @@
 package de.davelee.trams.services;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
 import de.davelee.trams.model.TimetableModel;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @ContextConfiguration("/de/davelee/trams/spring/test-context.xml")
 public class TimetableServiceTest {
 	
@@ -36,14 +34,14 @@ public class TimetableServiceTest {
 		timetableModel.setRouteNumber("155");
 		timetableModel.setValidFromDate(testDate);
 		timetableModel.setValidToDate(testDate2);
-		assertNotNull(timetableModel);
-		assertEquals(timetableModel.getName(), "myTimetable");
-		assertEquals(timetableModel.getValidFromDate().get(Calendar.YEAR), 2014);
-		assertEquals(timetableModel.getValidFromDate().get(Calendar.MONTH), 4);
-		assertEquals(timetableModel.getValidFromDate().get(Calendar.DAY_OF_MONTH), 20);
-		assertEquals(timetableModel.getValidToDate().get(Calendar.YEAR), 2014);
-		assertEquals(timetableModel.getValidToDate().get(Calendar.MONTH), 5);
-		assertEquals(timetableModel.getValidToDate().get(Calendar.DAY_OF_MONTH), 20);
+		Assertions.assertNotNull(timetableModel);
+		Assertions.assertEquals(timetableModel.getName(), "myTimetable");
+		Assertions.assertEquals(timetableModel.getValidFromDate().get(Calendar.YEAR), 2014);
+		Assertions.assertEquals(timetableModel.getValidFromDate().get(Calendar.MONTH), 4);
+		Assertions.assertEquals(timetableModel.getValidFromDate().get(Calendar.DAY_OF_MONTH), 20);
+		Assertions.assertEquals(timetableModel.getValidToDate().get(Calendar.YEAR), 2014);
+		Assertions.assertEquals(timetableModel.getValidToDate().get(Calendar.MONTH), 5);
+		Assertions.assertEquals(timetableModel.getValidToDate().get(Calendar.DAY_OF_MONTH), 20);
 	}
 
 }

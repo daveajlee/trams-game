@@ -1,24 +1,21 @@
 package de.davelee.trams.services;
 
-import static junit.framework.Assert.assertNotNull;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 import de.davelee.trams.model.GameModel;
 import de.davelee.trams.repository.GameRepository;
 import de.davelee.trams.util.DifficultyLevel;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import de.davelee.trams.util.DateFormats;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @ContextConfiguration("/de/davelee/trams/spring/test-context.xml")
 public class GameServiceTest {
 	
@@ -39,16 +36,16 @@ public class GameServiceTest {
 		gameModel.setDifficultyLevel(DifficultyLevel.EASY);
 		gameModel.setPassengerSatisfaction(100);
 		gameService.saveGame(gameModel);
-		assertNotNull(gameService.getGameByPlayerName("Dave A J Lee"));
-		assertNull(gameService.getGameByPlayerName("My First Name"));
+		Assertions.assertNotNull(gameService.getGameByPlayerName("Dave A J Lee"));
+		Assertions.assertNull(gameService.getGameByPlayerName("My First Name"));
 		GameModel gameModel2 = gameService.getGameByPlayerName("Dave A J Lee");
-		assertEquals(DateFormats.HOUR_MINUTE_FORMAT.getFormat().format(gameModel2.getCurrentTime().getTime()), "05:00");
+		Assertions.assertEquals(DateFormats.HOUR_MINUTE_FORMAT.getFormat().format(gameModel2.getCurrentTime().getTime()), "05:00");
 		gameService.incrementTime("Dave A J Lee");
 		gameModel2 = gameService.getGameByPlayerName("Dave A J Lee");
-		assertEquals(DateFormats.HOUR_MINUTE_FORMAT.getFormat().format(gameModel2.getCurrentTime().getTime()), "05:15");
+		Assertions.assertEquals(DateFormats.HOUR_MINUTE_FORMAT.getFormat().format(gameModel2.getCurrentTime().getTime()), "05:15");
 		gameService.withdrawBalance(100.0, "Dave A J Lee");
 		gameService.creditBalance(10.0, "Dave A J Lee");
-		assertEquals(gameService.computeAndReturnPassengerSatisfaction("Dave A J Lee", 4, 3, 2), 91);
+		Assertions.assertEquals(gameService.computeAndReturnPassengerSatisfaction("Dave A J Lee", 4, 3, 2), 91);
 	}
 
 }

@@ -1,24 +1,21 @@
 package de.davelee.trams.repository;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import de.davelee.trams.data.Timetable;
 import de.davelee.trams.model.TimetableModel;
-import de.davelee.trams.repository.TimetableRepository;
 import de.davelee.trams.services.TimetableService;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @ContextConfiguration("/de/davelee/trams/spring/test-context.xml")
 public class TimetableRepositoryTest {
 	
@@ -40,8 +37,8 @@ public class TimetableRepositoryTest {
 		timetableModel.setValidToDate(Calendar.getInstance());
 		timetableService.saveTimetable(timetableModel);
 		Timetable timetable2 = timetableRepository.findByRouteNumberAndName("155", "myTimetable");
-		assertNotNull(timetable2);
-		assertEquals(timetable2.getName(), "myTimetable");
+		Assertions.assertNotNull(timetable2);
+		Assertions.assertEquals(timetable2.getName(), "myTimetable");
 	}
 
 }

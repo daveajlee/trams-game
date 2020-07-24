@@ -1,19 +1,16 @@
 package de.davelee.trams.repository;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import de.davelee.trams.data.Stop;
-import de.davelee.trams.repository.StopRepository;
 import de.davelee.trams.services.JourneyService;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @ContextConfiguration("/de/davelee/trams/spring/test-context.xml")
 public class StopRepositoryTest {
 	
@@ -27,8 +24,8 @@ public class StopRepositoryTest {
 	public void stopTest() {
 		journeyService.saveStop("Ossietzkyplatz");
 		Stop stop2 = stopRepository.findByStopName("Ossietzkyplatz");
-		assertNotNull(stop2);
-		assertEquals(stop2.getStopName(), "Ossietzkyplatz");
+		Assertions.assertNotNull(stop2);
+		Assertions.assertEquals(stop2.getStopName(), "Ossietzkyplatz");
 	}
 	
 }

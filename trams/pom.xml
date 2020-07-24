@@ -18,10 +18,8 @@
 
   <properties>
 	  <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	  <slf4j.version>1.7.7</slf4j.version>
-	  <logback.version>1.1.2</logback.version>
-	  <spring.version>4.3.8.RELEASE</spring.version>
-	  <hibernate.version>4.3.5.Final</hibernate.version>
+	  <spring.version>5.2.8.RELEASE</spring.version>
+	  <hibernate.version>5.4.18.Final</hibernate.version>
   </properties>
 
   <dependencies>
@@ -30,6 +28,11 @@
 	  <dependency>
 		  <groupId>org.springframework</groupId>
 		  <artifactId>spring-context</artifactId>
+		  <version>${spring.version}</version>
+	  </dependency>
+	  <dependency>
+		  <groupId>org.springframework</groupId>
+		  <artifactId>spring-beans</artifactId>
 		  <version>${spring.version}</version>
 	  </dependency>
 	  <dependency>
@@ -45,7 +48,7 @@
 	  <dependency>
 		  <groupId>org.springframework.data</groupId>
 		  <artifactId>spring-data-jpa</artifactId>
-		  <version>1.11.12.RELEASE</version>
+		  <version>2.3.2.RELEASE</version>
       </dependency>
 
 	  <!-- Database Frameworks -->
@@ -57,40 +60,16 @@
 	  <dependency>
 		  <groupId>cglib</groupId>
 		  <artifactId>cglib</artifactId>
-		  <version>3.1</version>
+		  <version>3.3.0</version>
 	  </dependency>
 	  <dependency>
 		  <groupId>org.hsqldb</groupId>
 		  <artifactId>hsqldb</artifactId>
-		  <version>2.3.2</version>
+		  <version>2.5.1</version>
 		  <type>jar</type>
 		  <scope>compile</scope>
 	  </dependency>
 
-	  <!-- Test Frameworks -->
-	  <dependency>
-		  <groupId>junit</groupId>
-		  <artifactId>junit</artifactId>
-		  <version>4.12</version>
-		  <scope>test</scope>
-	  </dependency>
-
-	  <!-- Logging Frameworks -->
-	  <dependency>
-		  <groupId>org.slf4j</groupId>
-		  <artifactId>slf4j-api</artifactId>
-		  <version>${slf4j.version}</version>
-	  </dependency>
-	  <dependency>
-		  <groupId>ch.qos.logback</groupId>
-		  <artifactId>logback-classic</artifactId>
-		  <version>${logback.version}</version>
-	  </dependency>
-	  <dependency>
-		  <groupId>ch.qos.logback</groupId>
-		  <artifactId>logback-core</artifactId>
-		  <version>${logback.version}</version>
-	  </dependency>
 	  <!-- Temporary dependencies to ensure capability with Java 14 -->
 	  <dependency>
 		  <groupId>javax.annotation</groupId>
@@ -126,31 +105,32 @@
 		    <filtering>true</filtering>
 		  </resource>
 	  </resources>
-  	<pluginManagement>
   		<plugins>
-  			<plugin>
-    			<groupId>org.apache.maven.plugins</groupId>
-    			<artifactId>maven-compiler-plugin</artifactId>
-    			<version>3.1</version>
-    			<configuration>
-        			<source>8</source>
-        			<target>8</target>
-    			</configuration>
-			</plugin>
 			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-				<version>1.5.2.RELEASE</version>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>3.3.0</version>
+				<configuration>
+					<descriptorRefs>
+						<descriptorRef>jar-with-dependencies</descriptorRef>
+					</descriptorRefs>
+					<archive>
+						<manifest>
+							<mainClass>de.davelee.trams.app.Application</mainClass>
+						</manifest>
+					</archive>
+				</configuration>
 				<executions>
 					<execution>
+						<id>assembly</id>
+						<phase>install</phase>
 						<goals>
-							<goal>repackage</goal>
+							<goal>single</goal>
 						</goals>
 					</execution>
 				</executions>
 			</plugin>
 		</plugins>
-  	</pluginManagement>
   </build>
   
 </project>

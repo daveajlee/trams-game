@@ -1,21 +1,18 @@
 package de.davelee.trams.repository;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
 import java.util.Calendar;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import de.davelee.trams.data.Driver;
-import de.davelee.trams.repository.DriverRepository;
 import de.davelee.trams.services.DriverService;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @ContextConfiguration("/de/davelee/trams/spring/test-context.xml")
 public class DriverRepositoryTest {
 	
@@ -27,19 +24,20 @@ public class DriverRepositoryTest {
 	
 	@Test
 	public void driverTest() {
+		driverRepository.deleteAll();
 		Driver driver = new Driver();
 		driver.setName("Dave Lee");
 		driver.setContractedHours(40);
 		driver.setStartDate(Calendar.getInstance());
 		driverRepository.saveAndFlush(driver);
 		Driver driver2 = driverRepository.findByName("Dave Lee");
-		assertNotNull(driver2);
-		assertEquals(driver2.getName(), "Dave Lee");
-		assertEquals(driver2.getContractedHours(), 40);
-		assertEquals(driverRepository.findAll().size(), 1);
+		Assertions.assertNotNull(driver2);
+		Assertions.assertEquals(driver2.getName(), "Dave Lee");
+		Assertions.assertEquals(driver2.getContractedHours(), 40);
+		Assertions.assertEquals(driverRepository.findAll().size(), 1);
 		//Test remove
 		driverRepository.delete(driver2);
-		assertEquals(driverRepository.findAll().size(), 0);
+		Assertions.assertEquals(driverRepository.findAll().size(), 0);
 	}
 
 }

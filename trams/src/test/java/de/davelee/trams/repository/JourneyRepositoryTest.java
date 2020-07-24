@@ -1,21 +1,18 @@
 package de.davelee.trams.repository;
 
-import static org.junit.Assert.assertEquals;
-
 import java.util.Calendar;
 import java.util.HashMap;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import de.davelee.trams.model.JourneyModel;
-import de.davelee.trams.repository.JourneyRepository;
 import de.davelee.trams.services.JourneyService;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @ContextConfiguration("/de/davelee/trams/spring/test-context.xml")
 public class JourneyRepositoryTest {
 	
@@ -36,7 +33,7 @@ public class JourneyRepositoryTest {
 		journeyModel.setRouteScheduleNumber(1);
 		journeyModel.setRouteNumber("155");
         journeyService.saveJourney(journeyModel);
-		assertEquals(journeyRepository.findByRouteScheduleNumberAndRouteNumber(1, "155").get(0).getRouteScheduleNumber(), 1);
+		Assertions.assertEquals(journeyRepository.findByRouteScheduleNumberAndRouteNumber(1, "155").get(0).getRouteScheduleNumber(), 1);
 	}
 
 }

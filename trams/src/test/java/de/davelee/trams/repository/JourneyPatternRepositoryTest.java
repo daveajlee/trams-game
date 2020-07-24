@@ -1,24 +1,21 @@
 package de.davelee.trams.repository;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import de.davelee.trams.data.JourneyPattern;
 import de.davelee.trams.model.JourneyPatternModel;
-import de.davelee.trams.repository.JourneyPatternRepository;
 import de.davelee.trams.services.JourneyPatternService;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @ContextConfiguration("/de/davelee/trams/spring/test-context.xml")
 public class JourneyPatternRepositoryTest {
 	
@@ -46,13 +43,13 @@ public class JourneyPatternRepositoryTest {
 		journeyPatternModel.setRouteNumber("155");
 		journeyPatternService.saveJourneyPattern(journeyPatternModel);
 		JourneyPattern journeyPattern2 = journeyPatternRepository.findByTimetableNameAndRouteNumber("Mon-Fri", "155").get(0);
-		assertNotNull(journeyPattern2);
-		assertEquals(journeyPattern2.getName(), "Mon-Fri");
-		assertEquals(journeyPattern2.getDaysOfOperation().size(), 5);
-		assertEquals(journeyPattern2.getOutgoingTerminus(), "S+U Pankow");
-		assertEquals(journeyPattern2.getReturnTerminus(), "Rathaus Pankow");
-		assertEquals(journeyPattern2.getRouteDuration(), 3);
-		assertEquals(journeyPattern2.getFrequency(), 15);
+		Assertions.assertNotNull(journeyPattern2);
+		Assertions.assertEquals(journeyPattern2.getName(), "Mon-Fri");
+		Assertions.assertEquals(journeyPattern2.getDaysOfOperation().size(), 5);
+		Assertions.assertEquals(journeyPattern2.getOutgoingTerminus(), "S+U Pankow");
+		Assertions.assertEquals(journeyPattern2.getReturnTerminus(), "Rathaus Pankow");
+		Assertions.assertEquals(journeyPattern2.getRouteDuration(), 3);
+		Assertions.assertEquals(journeyPattern2.getFrequency(), 15);
 	}
 
 }

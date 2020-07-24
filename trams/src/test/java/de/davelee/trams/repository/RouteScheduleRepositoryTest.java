@@ -1,23 +1,20 @@
 package de.davelee.trams.repository;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
 import java.util.Calendar;
 import java.util.HashMap;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import de.davelee.trams.data.RouteSchedule;
 import de.davelee.trams.model.RouteScheduleModel;
-import de.davelee.trams.repository.RouteScheduleRepository;
 import de.davelee.trams.services.RouteScheduleService;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @ContextConfiguration("/de/davelee/trams/spring/test-context.xml")
 public class RouteScheduleRepositoryTest {
 	
@@ -39,10 +36,10 @@ public class RouteScheduleRepositoryTest {
 		routeScheduleModel.setScheduleNumber(1);
         routeScheduleService.saveRouteSchedule(routeScheduleModel);
         RouteSchedule schedule2 = routeScheduleRepository.findByScheduleNumberAndRouteNumber(1, "155");
-        assertNotNull(schedule2);
-        assertEquals(schedule2.getDelayInMins(), 5);
-        assertEquals(schedule2.getRouteNumber(), "155");
-        assertEquals(schedule2.getScheduleNumber(), 1);
+        Assertions.assertNotNull(schedule2);
+        Assertions.assertEquals(schedule2.getDelayInMins(), 5);
+        Assertions.assertEquals(schedule2.getRouteNumber(), "155");
+        Assertions.assertEquals(schedule2.getScheduleNumber(), 1);
 	}
 
 }

@@ -1,21 +1,19 @@
 package de.davelee.trams.services;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
 import de.davelee.trams.model.JourneyPatternModel;
 import de.davelee.trams.repository.JourneyPatternRepository;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @ContextConfiguration("/de/davelee/trams/spring/test-context.xml")
 public class JourneyPatternServiceTest {
 	
@@ -42,16 +40,16 @@ public class JourneyPatternServiceTest {
 		journeyPatternModel.setDuration(3);
 		journeyPatternModel.setTimetableName("Mon-Fri");
 		journeyPatternModel.setRouteNumber("155");
-		assertEquals(journeyPatternModel.getName(), "Test");
-		assertEquals(journeyPatternModel.getDaysOfOperation().size(), 3);
-		assertEquals(journeyPatternModel.getStartTime().get(Calendar.DAY_OF_MONTH), 28);
-		assertEquals(journeyPatternModel.getStartTime().get(Calendar.MONTH), 4);
-		assertEquals(journeyPatternModel.getStartTime().get(Calendar.YEAR), 2014);
-		assertEquals(journeyPatternModel.getEndTime().get(Calendar.DAY_OF_MONTH), 30);
-		assertEquals(journeyPatternModel.getEndTime().get(Calendar.MONTH), 4);
-		assertEquals(journeyPatternModel.getEndTime().get(Calendar.YEAR), 2014);
-		assertEquals(journeyPatternModel.getFrequency(), 15);
-		assertEquals(journeyPatternModel.getDuration(), 3);
+		Assertions.assertEquals(journeyPatternModel.getName(), "Test");
+		Assertions.assertEquals(journeyPatternModel.getDaysOfOperation().size(), 3);
+		Assertions.assertEquals(journeyPatternModel.getStartTime().get(Calendar.DAY_OF_MONTH), 28);
+		Assertions.assertEquals(journeyPatternModel.getStartTime().get(Calendar.MONTH), 4);
+		Assertions.assertEquals(journeyPatternModel.getStartTime().get(Calendar.YEAR), 2014);
+		Assertions.assertEquals(journeyPatternModel.getEndTime().get(Calendar.DAY_OF_MONTH), 30);
+		Assertions.assertEquals(journeyPatternModel.getEndTime().get(Calendar.MONTH), 4);
+		Assertions.assertEquals(journeyPatternModel.getEndTime().get(Calendar.YEAR), 2014);
+		Assertions.assertEquals(journeyPatternModel.getFrequency(), 15);
+		Assertions.assertEquals(journeyPatternModel.getDuration(), 3);
 	}
 	
 	@Test
@@ -72,9 +70,9 @@ public class JourneyPatternServiceTest {
 		journeyPatternModel.setTimetableName("Mon-Fri Timetable");
 		journeyPatternModel.setRouteNumber("155");
 		journeyPatternService.saveJourneyPattern(journeyPatternModel);
-		assertNotNull(journeyPatternRepository.findByTimetableNameAndRouteNumber("Mon-Fri Timetable", "155"));
-		assertEquals(journeyPatternRepository.findByTimetableNameAndRouteNumber("Mon-Fri Timetable", "155").get(0).getName(), "Mon-Fri");
-		assertEquals(journeyPatternRepository.findByTimetableNameAndRouteNumber("Mon-Fri Timetable", "156").size(), 0);
+		Assertions.assertNotNull(journeyPatternRepository.findByTimetableNameAndRouteNumber("Mon-Fri Timetable", "155"));
+		Assertions.assertEquals(journeyPatternRepository.findByTimetableNameAndRouteNumber("Mon-Fri Timetable", "155").get(0).getName(), "Mon-Fri");
+		Assertions.assertEquals(journeyPatternRepository.findByTimetableNameAndRouteNumber("Mon-Fri Timetable", "156").size(), 0);
 	}
 
 }

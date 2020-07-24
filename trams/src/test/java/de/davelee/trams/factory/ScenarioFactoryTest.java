@@ -1,20 +1,16 @@
 package de.davelee.trams.factory;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
 import de.davelee.trams.beans.Scenario;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.NoSuchElementException;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @ContextConfiguration("/de/davelee/trams/spring/test-context.xml")
 public class ScenarioFactoryTest {
 	
@@ -23,37 +19,37 @@ public class ScenarioFactoryTest {
 	
 	@Test
 	public void testNumberScenarios ( ) {
-		assertNotNull(scenarioFactory.getAvailableScenarios());
-		assertEquals(scenarioFactory.getAvailableScenarios().size(), 3);
+		Assertions.assertNotNull(scenarioFactory.getAvailableScenarios());
+		Assertions.assertEquals(scenarioFactory.getAvailableScenarios().size(), 3);
 	}
 	
 	@Test
 	public void testLanduffScenario() {
 		Scenario scenario = scenarioFactory.createScenarioByName("Landuff Transport Company");
-		assertNotNull(scenario);
-		assertEquals(scenario.getScenarioName(), "Landuff Transport Company");
-		assertEquals(scenario.getMinimumSatisfaction(), 70);
+		Assertions.assertNotNull(scenario);
+		Assertions.assertEquals(scenario.getScenarioName(), "Landuff Transport Company");
+		Assertions.assertEquals(scenario.getMinimumSatisfaction(), 70);
 	}
 
 	@Test
 	public void testLongtsScenario() {
 		Scenario scenario = scenarioFactory.createScenarioByName("Longts Transport Company");
-		assertNotNull(scenario);
-		assertEquals(scenario.getScenarioName(), "Longts Transport Company");
-		assertEquals(scenario.getMinimumSatisfaction(), 50);
+		Assertions.assertNotNull(scenario);
+		Assertions.assertEquals(scenario.getScenarioName(), "Longts Transport Company");
+		Assertions.assertEquals(scenario.getMinimumSatisfaction(), 50);
 	}
 	
 	@Test
 	public void testMDorfScenario() {
 		Scenario scenario = scenarioFactory.createScenarioByName("MDorf Transport Company");
-		assertNotNull(scenario);
-		assertEquals(scenario.getScenarioName(), "MDorf Transport Company");
-		assertEquals(scenario.getMinimumSatisfaction(), 35);
+		Assertions.assertNotNull(scenario);
+		Assertions.assertEquals(scenario.getScenarioName(), "MDorf Transport Company");
+		Assertions.assertEquals(scenario.getMinimumSatisfaction(), 35);
 	}
 
-	@Test(expected=NoSuchElementException.class)
+	@Test
 	public void testNullScenario() {
-		Scenario scenario = scenarioFactory.createScenarioByName("Londuff Transport Company");
+		Assertions.assertThrows(NoSuchElementException.class, () -> scenarioFactory.createScenarioByName("Londuff Transport Company"));
 	}
 	
 }

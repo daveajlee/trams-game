@@ -294,7 +294,7 @@ public class JourneyService {
     }
 
     public Journey getJourneyById(long id) {
-        return journeyRepository.findOne(id);
+        return journeyRepository.getOne(Long.valueOf(id));
     }
 
     public void saveJourney ( final JourneyModel journeyModel ) {
