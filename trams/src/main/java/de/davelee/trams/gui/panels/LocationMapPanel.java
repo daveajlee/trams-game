@@ -5,15 +5,10 @@ import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.naming.ldap.Control;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
 import de.davelee.trams.controllers.ControllerHandler;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import de.davelee.trams.controllers.GameController;
-import de.davelee.trams.controllers.ScenarioController;
 import de.davelee.trams.gui.ControlScreen;
 import de.davelee.trams.gui.ImageDisplay;
 import de.davelee.trams.model.GameModel;

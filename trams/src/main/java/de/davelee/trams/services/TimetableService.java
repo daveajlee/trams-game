@@ -6,7 +6,6 @@ import java.util.List;
 import de.davelee.trams.data.Timetable;
 import de.davelee.trams.model.TimetableModel;
 import de.davelee.trams.repository.TimetableRepository;
-import de.davelee.trams.util.DateFormats;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

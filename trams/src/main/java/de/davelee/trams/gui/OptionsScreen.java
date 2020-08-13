@@ -6,10 +6,8 @@ import java.awt.event.*;
 import javax.swing.*;
 
 import de.davelee.trams.controllers.ControllerHandler;
-import de.davelee.trams.controllers.GameController;
 import de.davelee.trams.model.GameModel;
 import de.davelee.trams.util.DifficultyLevel;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Class to display options within the TraMS program.

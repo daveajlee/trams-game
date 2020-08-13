@@ -6,8 +6,6 @@ import java.awt.event.*;
 import javax.swing.*;
 
 import de.davelee.trams.controllers.ControllerHandler;
-import de.davelee.trams.controllers.GameController;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Splash screen for the TraMS program.

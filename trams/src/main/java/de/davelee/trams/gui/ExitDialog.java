@@ -3,10 +3,6 @@ package de.davelee.trams.gui;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
-import de.davelee.trams.controllers.GameController;
-
 public class ExitDialog {
 	
 	public void createExitDialog ( final JFrame currentFrame ) {

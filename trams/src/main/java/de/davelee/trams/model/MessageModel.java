@@ -1,7 +1,5 @@
 package de.davelee.trams.model;
 
-import java.util.Calendar;
-
 import de.davelee.trams.util.MessageFolder;
 
 public class MessageModel {

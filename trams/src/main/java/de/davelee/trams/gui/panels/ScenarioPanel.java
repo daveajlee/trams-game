@@ -17,10 +17,6 @@ import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 
 import de.davelee.trams.controllers.ControllerHandler;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import de.davelee.trams.controllers.GameController;
-import de.davelee.trams.controllers.ScenarioController;
 import de.davelee.trams.gui.ControlScreen;
 import de.davelee.trams.model.GameModel;
 import de.davelee.trams.model.ScenarioModel;

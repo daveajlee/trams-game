@@ -31,11 +31,7 @@ import javax.swing.event.ChangeListener;
 import de.davelee.trams.controllers.ControllerHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
-import de.davelee.trams.controllers.GameController;
-import de.davelee.trams.controllers.JourneyController;
-import de.davelee.trams.controllers.JourneyPatternController;
 import de.davelee.trams.gui.ControlScreen;
 import de.davelee.trams.model.GameModel;
 import de.davelee.trams.model.JourneyPatternModel;

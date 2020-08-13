@@ -1,6 +1,5 @@
 package de.davelee.trams.services;
 
-import java.util.Calendar;
 import java.util.List;
 
 import de.davelee.trams.model.MessageModel;
