@@ -15,13 +15,10 @@ public class SplashScreen extends JFrame {
     
 	private static final long serialVersionUID = 1L;
 
-    private ImageDisplay logoDisplay;
-    private ImageDisplay busDisplay;
-    private JLabel titleLabel;
-    private JLabel loadingLabel;
-    private JLabel copyrightLabel;
-
     private ControllerHandler controllerHandler;
+
+    private ImageDisplay busDisplay;
+    private JLabel loadingLabel;
 
     public SplashScreen (final ControllerHandler controllerHandler ) {
         this.controllerHandler = controllerHandler;
@@ -55,7 +52,7 @@ public class SplashScreen extends JFrame {
         //Construct logo panel to add to the centre panel.
         JPanel logoPanel = new JPanel();
         logoPanel.setBackground(Color.WHITE);
-        logoDisplay = new ImageDisplay("TraMSlogo.png", 0, 0);
+        ImageDisplay logoDisplay = new ImageDisplay("TraMSlogo.png", 0, 0);
         logoDisplay.setSize(157,96);
         logoDisplay.setBackground(Color.WHITE);
         logoPanel.add(logoDisplay);
@@ -64,7 +61,7 @@ public class SplashScreen extends JFrame {
         //Construct title panel to add to the centre panel.
         JPanel titlePanel = new JPanel();
         titlePanel.setBackground(Color.WHITE);
-        titleLabel = new JLabel("TraMS - Transport Management Simulator");
+        JLabel titleLabel = new JLabel("TraMS - Transport Management Simulator");
         titleLabel.setFont(new Font("Arial", Font.BOLD, 25));
         titlePanel.add(titleLabel);
         centrePanel.add(titlePanel);
@@ -91,7 +88,7 @@ public class SplashScreen extends JFrame {
         //Construct copyright panel to add to the centre panel.
         JPanel copyrightPanel = new JPanel();
         copyrightPanel.setBackground(Color.WHITE);
-        copyrightLabel = new JLabel("Copyright 2014 Dr. David A J Lee. All rights reserved.");
+        JLabel copyrightLabel = new JLabel("Copyright 2014 Dr. David A J Lee. All rights reserved.");
         copyrightLabel.setFont(new Font("Arial", Font.PLAIN, 10));
         copyrightPanel.add(copyrightLabel);
         centrePanel.add(copyrightPanel);
@@ -104,19 +101,35 @@ public class SplashScreen extends JFrame {
                 public void mouseClicked(MouseEvent e) {
                     dispose();
                 }
-                public void mousePressed(MouseEvent e) {}
-                public void mouseReleased(MouseEvent e) {}
-                public void mouseEntered(MouseEvent e) {}
-                public void mouseExited(MouseEvent e) {}
+                public void mousePressed(MouseEvent e) {
+                    //Nothing happens when mouse pressed.
+                }
+                public void mouseReleased(MouseEvent e) {
+                    //Nothing happens when mouse released.
+                }
+                public void mouseEntered(MouseEvent e) {
+                    //Nothing happens when mouse entered.
+                }
+                public void mouseExited(MouseEvent e) {
+                    //Nothing happens when mouse exited.
+                }
             });
             busDisplay.addMouseListener ( new MouseListener () {
                 public void mouseClicked(MouseEvent e) {
                     dispose();
                 }
-                public void mousePressed(MouseEvent e) {}
-                public void mouseReleased(MouseEvent e) {}
-                public void mouseEntered(MouseEvent e) {}
-                public void mouseExited(MouseEvent e) {}
+                public void mousePressed(MouseEvent e) {
+                    //Nothing happens when mouse pressed.
+                }
+                public void mouseReleased(MouseEvent e) {
+                    //Nothing happens when mouse released.
+                }
+                public void mouseEntered(MouseEvent e) {
+                    //Nothing happens when mouse entered.
+                }
+                public void mouseExited(MouseEvent e) {
+                    //Nothing happens when mouse exited.
+                }
             });
         }
         

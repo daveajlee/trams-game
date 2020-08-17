@@ -10,9 +10,6 @@ import java.awt.*;
 public class LoadingScreen extends JFrame implements Runnable {
     
 	private static final long serialVersionUID = 1L;
-	
-	private JLabel loadingLabel;
-    private JLabel pleaseWaitLabel;
     
     /**
      * Create a new loading screen.
@@ -40,12 +37,12 @@ public class LoadingScreen extends JFrame implements Runnable {
         layoutPanel.setBackground(Color.WHITE);
         
         //Construct loading label.
-        loadingLabel = new JLabel("Loading ", SwingConstants.CENTER);
+        JLabel loadingLabel = new JLabel("Loading ", SwingConstants.CENTER);
         loadingLabel.setFont(new Font("Arial", Font.BOLD + Font.ITALIC, 40));
         layoutPanel.add(loadingLabel, BorderLayout.NORTH);
         
         //Construct please wait label.
-        pleaseWaitLabel = new JLabel("Please Wait...", SwingConstants.CENTER);
+        JLabel pleaseWaitLabel = new JLabel("Please Wait...", SwingConstants.CENTER);
         pleaseWaitLabel.setFont(new Font("Arial", Font.BOLD + Font.ITALIC, 35));
         layoutPanel.add(pleaseWaitLabel, BorderLayout.SOUTH);
         

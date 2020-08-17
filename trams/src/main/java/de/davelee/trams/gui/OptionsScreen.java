@@ -16,24 +16,14 @@ import de.davelee.trams.util.DifficultyLevel;
 public class OptionsScreen extends JFrame {
     
 	private static final long serialVersionUID = 1L;
-
-    private JLabel optionsLabel;
-    private JTabbedPane optionsTabbedPane;
     
     private JRadioButton[] difficultButtons;
-    
-    private JButton okButton;
-    private JButton closeButton;
-
-    private ControllerHandler controllerHandler;
 
     /**
      * Create a new options screen.
      * @param controllerHandler a <code>ControllerHandler</code> object containing the actual controllers from spring.
      */
     public OptionsScreen ( final ControllerHandler controllerHandler ) {
-
-        this.controllerHandler = controllerHandler;
         
         //Set image icon.
         Image img = Toolkit.getDefaultToolkit().getImage(OptionsScreen.class.getResource("/TraMSlogo.png"));
@@ -66,7 +56,7 @@ public class OptionsScreen extends JFrame {
         JPanel northPanel = new JPanel(new BorderLayout());
         northPanel.setBackground(Color.WHITE);
         JPanel optionsLabelPanel = new JPanel();
-        optionsLabel = new JLabel("Options Screen");
+        JLabel optionsLabel = new JLabel("Options Screen");
         optionsLabel.setFont(new Font("Arial", Font.BOLD, 20));
         optionsLabelPanel.add(optionsLabel);
         northPanel.add(optionsLabelPanel, BorderLayout.NORTH);
@@ -74,7 +64,7 @@ public class OptionsScreen extends JFrame {
         final GameModel gameModel = controllerHandler.getGameController().getGameModel();
         
         //Create panel for centre - options in grid layout.
-        optionsTabbedPane = new JTabbedPane();
+        JTabbedPane optionsTabbedPane = new JTabbedPane();
         //Create panel to display the difficulty options.
         JPanel difficultyPanel = new JPanel(new GridLayout(DifficultyLevel.values().length+1,2,5,5));
         difficultyPanel.setBackground(Color.WHITE);
@@ -123,7 +113,7 @@ public class OptionsScreen extends JFrame {
         JPanel southPanel = new JPanel();
         southPanel.setBackground(Color.WHITE);
         //Make Contact button.
-        okButton = new JButton("OK");
+        JButton okButton = new JButton("OK");
         okButton.addActionListener( new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 //Process options - set difficulty level!
@@ -144,7 +134,7 @@ public class OptionsScreen extends JFrame {
         });
         southPanel.add(okButton);
         //Close button.
-        closeButton = new JButton("Close Window");
+        JButton closeButton = new JButton("Close Window");
         closeButton.addActionListener( new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 dispose();

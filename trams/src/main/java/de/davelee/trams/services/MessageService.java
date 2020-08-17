@@ -16,10 +16,6 @@ public class MessageService {
 	@Autowired
     private MessageRepository messageRepository;
 	
-	public MessageService() {
-		
-	}
-	
 	/**
      * Save a new message.
      * @param messageModel a <code>MessageModel</code> object representing the message to save.

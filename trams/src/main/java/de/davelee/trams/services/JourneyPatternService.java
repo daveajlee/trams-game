@@ -13,10 +13,6 @@ public class JourneyPatternService {
 
     @Autowired
     private JourneyPatternRepository journeyPatternRepository;
-	
-	public JourneyPatternService() {
-		
-	}
 
     public void saveJourneyPattern ( final JourneyPatternModel journeyPatternModel ) {
         journeyPatternRepository.saveAndFlush(convertToJourneyPattern(journeyPatternModel));

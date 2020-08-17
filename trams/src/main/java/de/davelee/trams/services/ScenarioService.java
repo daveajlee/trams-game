@@ -13,10 +13,6 @@ public class ScenarioService {
 
 	@Autowired
 	private ScenarioFactory scenarioFactory;
-	
-	public ScenarioService() {
-		
-	}
 
 	/**
      * Get the stop names as a String array plus a - and return it.

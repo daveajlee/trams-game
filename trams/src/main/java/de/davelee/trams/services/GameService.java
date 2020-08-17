@@ -6,7 +6,6 @@ import java.util.List;
 import de.davelee.trams.data.Game;
 import de.davelee.trams.model.GameModel;
 import de.davelee.trams.repository.GameRepository;
-import de.davelee.trams.util.DateFormats;
 import de.davelee.trams.util.DifficultyLevel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,9 +16,6 @@ public class GameService {
 
     @Autowired
     private GameRepository gameRepository;
-	
-	public GameService() {
-	}
 
     public void saveGame ( final GameModel gameModel ) {
         Game game = convertToGame(gameModel);

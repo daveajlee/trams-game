@@ -44,9 +44,6 @@ public class Game {
     @Column
     private int timeIncrement;
     
-    public Game() {
-    }
-    
     public int getId() {
 		return id;
 	}

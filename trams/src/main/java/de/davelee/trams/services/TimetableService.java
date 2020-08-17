@@ -14,10 +14,6 @@ public class TimetableService {
 
     @Autowired
     private TimetableRepository timetableRepository;
-	
-	public TimetableService() {
-		
-	}
 
     public void saveTimetable ( final TimetableModel timetableModel ) {
         timetableRepository.saveAndFlush(convertToTimetable(timetableModel));
