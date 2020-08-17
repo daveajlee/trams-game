@@ -16,9 +16,6 @@ public class ButtonBar extends JFrame {
 	 */
 	private static final long serialVersionUID = 1L;
 	protected JMenuBar menuBar;
-    private JMenu fileMenu;
-    private JMenu toolsMenu;
-    private JMenu helpMenu;
     protected JMenuItem newGameItem;
     protected JMenuItem loadGameItem;
     protected JMenuItem saveGameItem;
@@ -40,7 +37,7 @@ public class ButtonBar extends JFrame {
         
         menuBar = new JMenuBar();
         
-        fileMenu = new JMenu("File");
+        JMenu fileMenu = new JMenu("File");
         menuBar.add(fileMenu);
         
         newGameItem = new JMenuItem("New Game");
@@ -85,7 +82,7 @@ public class ButtonBar extends JFrame {
         });
         fileMenu.add(exitGameItem);
         
-        toolsMenu = new JMenu("Tools");
+        JMenu toolsMenu = new JMenu("Tools");
         menuBar.add(toolsMenu);
         
         optionsItem = new JMenuItem("Options");
@@ -97,7 +94,7 @@ public class ButtonBar extends JFrame {
         });
         toolsMenu.add(optionsItem);
         
-        helpMenu = new JMenu("Help");
+        JMenu helpMenu = new JMenu("Help");
         menuBar.add(helpMenu);
         
         helpItem = new JMenuItem("Contents");

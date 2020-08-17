@@ -26,15 +26,14 @@ import de.davelee.trams.model.RouteModel;
 public class ViewTimetablePanel {
 
     private ControllerHandler controllerHandler;
-
-    public ViewTimetablePanel ( final ControllerHandler controllerHandler ) {
-        this.controllerHandler = controllerHandler;
-    }
-
     private JTable myTable = new JTable();
 	private JComboBox directionSelectionBox;
 	
 	private static final Logger logger = LoggerFactory.getLogger(ViewTimetablePanel.class);
+
+    public ViewTimetablePanel ( final ControllerHandler controllerHandler ) {
+        this.controllerHandler = controllerHandler;
+    }
 	
 	public JPanel createPanel ( final String route, final int min, final int dateIndex, final ControlScreen controlScreen, final RoutePanel routePanel, final DisplayPanel displayPanel ) {
         

@@ -17,10 +17,10 @@ public class MDorfScenarioTest {
 	
 	@Autowired
 	@Qualifier("mDorfScenario")
-	Scenario mDorfScenario;
+	private Scenario mDorfScenario;
 	
 	@Autowired
-	ScenarioService scenarioService;
+	private ScenarioService scenarioService;
 	
 	@Test
 	public void testPopulate() {

@@ -2,7 +2,7 @@ package de.davelee.trams.services;
 
 import java.util.*;
 
-import de.davelee.trams.data.*;
+import de.davelee.trams.data.RouteSchedule;
 import de.davelee.trams.model.RouteScheduleModel;
 import de.davelee.trams.repository.RouteScheduleRepository;
 import de.davelee.trams.util.DifficultyLevel;
@@ -14,9 +14,6 @@ public class RouteScheduleService {
 
     @Autowired
     private RouteScheduleRepository routeScheduleRepository;
-	
-	public RouteScheduleService() {
-	}
 
     /**
      * Calculate a new random delay for this route schedule.

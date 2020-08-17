@@ -9,7 +9,7 @@ import java.util.Random;
 public class TipService {
 	
 	//This is where we keep the tip messages.
-    String[] tipMessages;
+    private String[] tipMessages;
 
     @PostConstruct
     public void init() {

@@ -10,8 +10,6 @@ import java.util.List;
  */
 public class Scenario {
 
-	private long id;
-
     private String scenarioName;
 
     private String description;

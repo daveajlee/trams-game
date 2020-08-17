@@ -31,13 +31,12 @@ import de.davelee.trams.util.DateFormats;
 public class PurchaseVehiclePanel {
 
 	private ControllerHandler controllerHandler;
-
-	public PurchaseVehiclePanel ( final ControllerHandler controllerHandler ) {
-        this.controllerHandler = controllerHandler;
-    }
-	
 	private JLabel totalPriceField;
 	private JButton purchaseVehicleButton;
+
+    public PurchaseVehiclePanel ( final ControllerHandler controllerHandler ) {
+        this.controllerHandler = controllerHandler;
+    }
 	
 	public JPanel createPanel ( final String vehicleType, final ControlScreen controlScreen, final DisplayPanel displayPanel) {
         

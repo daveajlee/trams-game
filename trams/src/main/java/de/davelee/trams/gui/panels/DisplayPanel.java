@@ -29,11 +29,11 @@ public class DisplayPanel {
 
     private ControllerHandler controllerHandler;
 
+	private static final Logger logger = LoggerFactory.getLogger(DisplayPanel.class);
+
     public DisplayPanel (final ControllerHandler controllerHandler) {
         this.controllerHandler = controllerHandler;
     }
-
-	private static final Logger logger = LoggerFactory.getLogger(DisplayPanel.class);
 	
 	public JPanel createPanel ( final ControlScreen controlScreen ) {
     	

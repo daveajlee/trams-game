@@ -19,9 +19,6 @@ public class VehicleController {
 	
 	@Autowired
 	private VehicleService vehicleService;
-	
-	@Autowired
-	private RouteScheduleController routeScheduleController;
 
 	@Autowired
 	private GameController gameController;

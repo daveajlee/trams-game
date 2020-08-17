@@ -14,11 +14,8 @@ public class WelcomeScreen extends JFrame {
     
 	private static final long serialVersionUID = 1L;
 
-    private JLabel welcomeLabel;
     private ImageDisplay logoDisplay;
     private ImageDisplay newBusDisplay;
-    private ImageDisplay loadBusDisplay;
-    private ImageDisplay exitBusDisplay;
 
     private ControllerHandler controllerHandler;
 
@@ -60,7 +57,7 @@ public class WelcomeScreen extends JFrame {
         //Construct logo panel to add to the centre panel.
         JPanel welcomePanel = new JPanel();
         welcomePanel.setBackground(Color.WHITE);
-        welcomeLabel = new JLabel("Welcome to ", SwingConstants.CENTER);
+        JLabel welcomeLabel = new JLabel("Welcome to ", SwingConstants.CENTER);
         welcomeLabel.setFont(new Font("Arial", Font.BOLD + Font.ITALIC, 40));
         welcomePanel.add(welcomeLabel);
         JPanel logoPanel = new JPanel();
@@ -86,10 +83,18 @@ public class WelcomeScreen extends JFrame {
                 newGameScreen.displayScreen();
                 dispose();
             }
-            public void mousePressed(MouseEvent e) {}
-            public void mouseReleased(MouseEvent e) {}
-            public void mouseEntered(MouseEvent e) {}
-            public void mouseExited(MouseEvent e) {}
+            public void mousePressed(MouseEvent e) {
+                //Nothing happens when mouse pressed.
+            }
+            public void mouseReleased(MouseEvent e) {
+                //Nothing happens when mouse released.
+            }
+            public void mouseEntered(MouseEvent e) {
+                //Nothing happens when mouse entered.
+            }
+            public void mouseExited(MouseEvent e) {
+                //Nothing happens when mouse exited.
+            }
         });
         busPanel.add(newBusDisplay);
         newPanel.add(busPanel);
@@ -102,7 +107,7 @@ public class WelcomeScreen extends JFrame {
         loadPanel.setLayout ( new BoxLayout ( loadPanel, BoxLayout.PAGE_AXIS ) );
         JPanel busLoadPanel = new JPanel();
         initialiseLoadPanel(busLoadPanel);
-        loadBusDisplay = new ImageDisplay("loadgametramwelcome.png",25,0);
+        ImageDisplay loadBusDisplay = new ImageDisplay("loadgametramwelcome.png",25,0);
         loadBusDisplay.setSize(240,190);
         loadBusDisplay.setBackground(Color.WHITE);
         loadBusDisplay.addMouseListener ( new MouseListener () {
@@ -127,7 +132,7 @@ public class WelcomeScreen extends JFrame {
         exitPanel.setLayout ( new BoxLayout ( exitPanel, BoxLayout.PAGE_AXIS ) );
         JPanel busExitPanel = new JPanel();
         initialiseExitPanel(busExitPanel);
-        exitBusDisplay = new ImageDisplay("exitgamebendysmall.png",25,0);
+        ImageDisplay exitBusDisplay = new ImageDisplay("exitgamebendysmall.png",25,0);
         exitBusDisplay.setSize(240,190);
         exitBusDisplay.setBackground(Color.WHITE);
         exitBusDisplay.addMouseListener ( new MouseListener () {
@@ -135,10 +140,18 @@ public class WelcomeScreen extends JFrame {
                 ExitDialog exitDialog = new ExitDialog();
                 exitDialog.createExitDialog(WelcomeScreen.this);
             }
-            public void mousePressed(MouseEvent e) {}
-            public void mouseReleased(MouseEvent e) {}
-            public void mouseEntered(MouseEvent e) {}
-            public void mouseExited(MouseEvent e) {}
+            public void mousePressed(MouseEvent e) {
+                //Nothing happens when mouse pressed.
+            }
+            public void mouseReleased(MouseEvent e) {
+                //Nothing happens when mouse released.
+            }
+            public void mouseEntered(MouseEvent e) {
+                //Nothing happens when mouse entered.
+            }
+            public void mouseExited(MouseEvent e) {
+                //Nothing happens when mouse exited.
+            }
         });
         busExitPanel.add(exitBusDisplay);
         exitPanel.add(busExitPanel);
@@ -149,10 +162,18 @@ public class WelcomeScreen extends JFrame {
                 ExitDialog exitDialog = new ExitDialog();
                 exitDialog.createExitDialog(WelcomeScreen.this);
             }
-            public void mousePressed(MouseEvent e) {}
-            public void mouseReleased(MouseEvent e) {}
-            public void mouseEntered(MouseEvent e) {}
-            public void mouseExited(MouseEvent e) {}
+            public void mousePressed(MouseEvent e) {
+                //Nothing happens when mouse pressed.
+            }
+            public void mouseReleased(MouseEvent e) {
+                //Nothing happens when mouse released.
+            }
+            public void mouseEntered(MouseEvent e) {
+                //Nothing happens when mouse entered.
+            }
+            public void mouseExited(MouseEvent e) {
+                //Nothing happens when mouse exited.
+            }
         });
         
         //Add centre and bottom panels to container.
@@ -184,10 +205,18 @@ public class WelcomeScreen extends JFrame {
                 newGameScreen.displayScreen();
                 dispose();
             }
-            public void mousePressed(MouseEvent e) {}
-            public void mouseReleased(MouseEvent e) {}
-            public void mouseEntered(MouseEvent e) {}
-            public void mouseExited(MouseEvent e) {}
+            public void mousePressed(MouseEvent e) {
+                //Nothing happens when mouse pressed.
+            }
+            public void mouseReleased(MouseEvent e) {
+                //Nothing happens when mouse released.
+            }
+            public void mouseEntered(MouseEvent e) {
+                //Nothing happens when mouse entered.
+            }
+            public void mouseExited(MouseEvent e) {
+                //Nothing happens when mouse exited.
+            }
         });
     }
     
@@ -207,10 +236,18 @@ public class WelcomeScreen extends JFrame {
                     JOptionPane.showMessageDialog(WelcomeScreen.this,"The selected file is not a valid saved game for Transport Control Simulator. Please either choose another file or create a new game.", "ERROR: Saved Game Could Not Be Loaded", JOptionPane.ERROR_MESSAGE);
                 }
             }
-            public void mousePressed(MouseEvent e) {}
-            public void mouseReleased(MouseEvent e) {}
-            public void mouseEntered(MouseEvent e) {}
-            public void mouseExited(MouseEvent e) {}
+            public void mousePressed(MouseEvent e) {
+                //Nothing happens when mouse pressed.
+            }
+            public void mouseReleased(MouseEvent e) {
+                //Nothing happens when mouse released.
+            }
+            public void mouseEntered(MouseEvent e) {
+                //Nothing happens when mouse entered.
+            }
+            public void mouseExited(MouseEvent e) {
+                //Nothing happens when mouse exited.
+            }
         });
     }
     
@@ -225,10 +262,18 @@ public class WelcomeScreen extends JFrame {
                 ExitDialog exitDialog = new ExitDialog();
                 exitDialog.createExitDialog(WelcomeScreen.this);
             }
-            public void mousePressed(MouseEvent e) {}
-            public void mouseReleased(MouseEvent e) {}
-            public void mouseEntered(MouseEvent e) {}
-            public void mouseExited(MouseEvent e) {}
+            public void mousePressed(MouseEvent e) {
+                //Nothing happens when mouse pressed.
+            }
+            public void mouseReleased(MouseEvent e) {
+                //Nothing happens when mouse released.
+            }
+            public void mouseEntered(MouseEvent e) {
+                //Nothing happens when mouse entered.
+            }
+            public void mouseExited(MouseEvent e) {
+                //Nothing happens when mouse exited.
+            }
         });
     }
     

@@ -24,13 +24,7 @@ import de.davelee.trams.model.RouteModel;
 import de.davelee.trams.model.RouteScheduleModel;
 import de.davelee.trams.model.StopTimeModel;
 import de.davelee.trams.model.TimetableModel;
-import de.davelee.trams.repository.GameRepository;
-import de.davelee.trams.repository.JourneyRepository;
-import de.davelee.trams.repository.MessageRepository;
-import de.davelee.trams.repository.RouteRepository;
-import de.davelee.trams.repository.RouteScheduleRepository;
 import de.davelee.trams.repository.StopRepository;
-import de.davelee.trams.repository.TimetableRepository;
 import de.davelee.trams.repository.VehicleRepository;
 import de.davelee.trams.util.MessageFolder;
 
@@ -42,25 +36,7 @@ public class FileServiceTest {
 	private VehicleRepository vehicleRepository;
 	
 	@Autowired
-	private RouteRepository routeRepository;
-	
-	@Autowired
-	private MessageRepository messageRepository;
-	
-	@Autowired
 	private StopRepository stopRepository;
-	
-	@Autowired
-	private TimetableRepository timetableRepository;
-	
-	@Autowired
-	private RouteScheduleRepository routeScheduleRepository;
-	
-	@Autowired
-	private JourneyRepository journeyRepository;
-	
-	@Autowired
-	private GameRepository gameRepository;
 	
 	@Autowired
 	private DriverService driverService;

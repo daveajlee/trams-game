@@ -1,7 +1,11 @@
 package de.davelee.trams.data;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.GeneratedValue;
 import java.util.Calendar;
-import javax.persistence.*;
 
 /**
  * Class to represent a time for a journey to arrive at a stop.

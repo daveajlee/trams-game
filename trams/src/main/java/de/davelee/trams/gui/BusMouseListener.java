@@ -29,25 +29,33 @@ public class BusMouseListener implements MouseListener {
      * What to do when the mouse press is revoked.
      * @param e a <code>MouseEvent</code> object.
      */
-    public void mouseExited(MouseEvent e) {}
+    public void mouseExited(MouseEvent e) {
+        //Nothing happens when mouse exits
+    }
     
     /**
      * What to do when the mouse press is started.
      * @param e a <code>MouseEvent</code> object.
      */
-    public void mouseEntered(MouseEvent e) {}
+    public void mouseEntered(MouseEvent e) {
+        //Nothing happens when mouse enters.
+    }
     
     /**
      * What to do when the mouse press is released.
      * @param e a <code>MouseEvent</code> object.
      */
-    public void mouseReleased(MouseEvent e) {}
+    public void mouseReleased(MouseEvent e) {
+        //Nothing happens when mouse released.
+    }
     
     /**
      * What to do when the mouse is pressed.
      * @param e a <code>MouseEvent</code> object.
      */
-    public void mousePressed(MouseEvent e) {}
+    public void mousePressed(MouseEvent e) {
+        //Nothing happens when mouse pressed.
+    }
     
     /**
      * What to do when the mouse is clicked.

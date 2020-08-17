@@ -3,9 +3,8 @@ package de.davelee.trams.services;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.davelee.trams.data.*;
-import de.davelee.trams.factory.ScenarioFactory;
-
+import de.davelee.trams.data.Route;
+import de.davelee.trams.data.Stop;
 import de.davelee.trams.model.RouteModel;
 import de.davelee.trams.repository.RouteRepository;
 import de.davelee.trams.util.TramsConstants;
@@ -16,13 +15,7 @@ import org.springframework.stereotype.Service;
 public class RouteService {
 
     @Autowired
-    private ScenarioFactory scenarioFactory;
-
-    @Autowired
     private RouteRepository routeRepository;
-	
-	public RouteService() {
-	}
     
     /**
      * Move stops in the ordering list for a route.
@@ -88,9 +81,6 @@ public class RouteService {
         		stops.remove(i); result = true;
         	}
         }
-        if ( result == true ) {
-            //routeRepository.findRouteByNumber(routeModel.getRouteNumber()).setStops(stops);
-        }
         return result;
     }
     
@@ -148,7 +138,7 @@ public class RouteService {
         routeRepository.saveAndFlush(convertToRoute(routeModel));
     }
 
-    private Route convertToRoute ( final RouteModel routeModel ) {
+    private Route convertToRoute (final RouteModel routeModel ) {
     	Route route = new Route();
         route.setNumber(routeModel.getRouteNumber());
     	List<Stop> stops = new ArrayList<Stop>();

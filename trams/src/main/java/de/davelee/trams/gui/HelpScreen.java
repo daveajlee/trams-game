@@ -21,19 +21,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class HelpScreen extends JFrame {
 
 	private static final long serialVersionUID = 1L;
-	
-	private JLabel searchLabel;
+
     private JTextField searchField;
-    private JLabel topicsLabel;
     private JList topicsList;
     private DefaultListModel topicsModel;
     private JEditorPane displayPane;
 
     /**
      * Default constructor for HelpScreen which creates the help screen interface and displays it to the user.
-     * @param controllerHandler a <code>ControllerHandler</code> obtaining the currently used controllers from Spring.
      */
-    public HelpScreen ( final ControllerHandler controllerHandler ) {
+    public HelpScreen ( ) {
         
         //Set image icon.
         Image img = Toolkit.getDefaultToolkit().getImage(HelpScreen.class.getResource("/TraMSlogo.png"));
@@ -71,7 +68,7 @@ public class HelpScreen extends JFrame {
         
         //Add search label.
         JPanel searchLabelPanel = new JPanel();
-        searchLabel = new JLabel("Search for Help...");
+        JLabel searchLabel = new JLabel("Search for Help...");
         searchLabel.setFont(new Font("Arial", Font.BOLD, 14));
         searchLabelPanel.add(searchLabel);
         leftPanel.add(searchLabelPanel);
@@ -90,7 +87,7 @@ public class HelpScreen extends JFrame {
         
         //Add search label.
         JPanel topicLabelPanel = new JPanel();
-        topicsLabel = new JLabel("Choose a Help Topic...");
+        JLabel topicsLabel = new JLabel("Choose a Help Topic...");
         topicsLabel.setFont(new Font("Arial", Font.BOLD, 14));
         topicLabelPanel.add(topicsLabel);
         leftPanel.add(topicLabelPanel);

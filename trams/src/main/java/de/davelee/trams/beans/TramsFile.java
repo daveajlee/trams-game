@@ -2,7 +2,15 @@ package de.davelee.trams.beans;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-import de.davelee.trams.model.*;
+import de.davelee.trams.model.DriverModel;
+import de.davelee.trams.model.GameModel;
+import de.davelee.trams.model.JourneyModel;
+import de.davelee.trams.model.JourneyPatternModel;
+import de.davelee.trams.model.MessageModel;
+import de.davelee.trams.model.RouteModel;
+import de.davelee.trams.model.RouteScheduleModel;
+import de.davelee.trams.model.TimetableModel;
+import de.davelee.trams.model.VehicleModel;
 
 @XmlRootElement
 public class TramsFile {

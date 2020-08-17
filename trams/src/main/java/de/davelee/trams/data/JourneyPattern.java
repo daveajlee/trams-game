@@ -2,10 +2,18 @@ package de.davelee.trams.data;
 
 import java.util.*;
 
-import javax.persistence.*;
-
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.ElementCollection;
+import javax.persistence.CollectionTable;
+import javax.persistence.FetchType;
 
 /**
  * This class represents a journey pattern for a timetable - used by Easy Timetable Generator.
@@ -52,11 +60,6 @@ public class JourneyPattern {
 
 	@Column
 	private String routeNumber;
-    
-	/**
-     * Create a new JourneyPattern object.
-     */
-    public JourneyPattern ( ) { }
     
     /**
      * Get the name of the journey pattern.

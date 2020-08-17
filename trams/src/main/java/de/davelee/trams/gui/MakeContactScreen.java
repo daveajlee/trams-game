@@ -22,13 +22,8 @@ public class MakeContactScreen extends JFrame {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-    private ImageDisplay busDisplay;
     private JTextArea communicationArea;
-    private JLabel stopLabel;
     private JComboBox stopBox;
-    private JButton shortenRouteButton;
-    private JButton goOutOfServiceButton;
-    private JButton closeButton;
 
     private RouteScheduleModel routeScheduleModel;
 
@@ -40,9 +35,6 @@ public class MakeContactScreen extends JFrame {
 
     @Autowired
     private RouteScheduleController routeScheduleController;
-
-    @Autowired
-    private RouteController routeController;
 
     @Autowired
     private VehicleController vehicleController;
@@ -91,7 +83,7 @@ public class MakeContactScreen extends JFrame {
         //Create panel for west - picture of bus.
         JPanel westPanel = new JPanel(new BorderLayout());
         westPanel.setBackground(Color.WHITE);
-        busDisplay = new ImageDisplay(vehicleModel.getImagePath(),0,0);
+        ImageDisplay busDisplay = new ImageDisplay(vehicleModel.getImagePath(),0,0);
         busDisplay.setSize(210,190);
         busDisplay.setBackground(Color.WHITE);
         westPanel.add(busDisplay, BorderLayout.CENTER);
@@ -101,13 +93,13 @@ public class MakeContactScreen extends JFrame {
         //Whilst not strictly a button, it is very important to have stop choice here.
         JPanel stopPanel = new JPanel();
         stopPanel.setBackground(Color.WHITE);
-        stopLabel = new JLabel("Stop");
+        JLabel stopLabel = new JLabel("Stop");
         stopLabel.setFont(new Font("Arial", Font.BOLD, 12));
         stopPanel.add(stopLabel);
         stopBox = new JComboBox(getListOfStops(gameModel));
         stopPanel.add(stopBox);
         alterButtonPanel.add(stopPanel);
-        shortenRouteButton = new JButton("Terminate At Stop");
+        JButton shortenRouteButton = new JButton("Terminate At Stop");
         shortenRouteButton.addActionListener( new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 //Acknowledge control message!
@@ -119,7 +111,7 @@ public class MakeContactScreen extends JFrame {
             }
         });
         alterButtonPanel.add(shortenRouteButton);
-        goOutOfServiceButton = new JButton("Out of Service Until Stop");
+        JButton goOutOfServiceButton = new JButton("Out of Service Until Stop");
         goOutOfServiceButton.addActionListener( new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 communicationArea.setText(communicationArea.getText() +
@@ -157,7 +149,7 @@ public class MakeContactScreen extends JFrame {
         JPanel southPanel = new JPanel();
         southPanel.setBackground(Color.WHITE);
         //Close button.
-        closeButton = new JButton("End Contact");
+        JButton closeButton = new JButton("End Contact");
         closeButton.addActionListener( new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 dispose();

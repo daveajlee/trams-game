@@ -14,12 +14,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration("/de/davelee/trams/spring/test-context.xml")
 public class DriverServiceTest {
-	
+
 	@Autowired
 	private DriverService driverService;
-	
-	@Autowired
-	private DriverRepository driverRepository;
 	
 	@Test
 	public void testCreateDriver() {

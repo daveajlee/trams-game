@@ -36,13 +36,12 @@ import de.davelee.trams.util.DateFormats;
 public class AllocationPanel {
 	
 	private ControllerHandler controllerHandler;
-
-	public AllocationPanel ( final ControllerHandler controllerHandler ) {
-	    this.controllerHandler = controllerHandler;
-    }
-	
 	private DefaultListModel allocationsModel;
 	private JList allocationsList;
+
+    public AllocationPanel ( final ControllerHandler controllerHandler ) {
+        this.controllerHandler = controllerHandler;
+    }
 	
 	public JPanel createPanel ( final ControlScreen controlScreen, final DisplayPanel displayPanel  ) {
 		//Create allocation screen panel to add things to.

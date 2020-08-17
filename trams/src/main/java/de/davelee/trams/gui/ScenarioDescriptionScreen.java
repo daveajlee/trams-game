@@ -16,11 +16,7 @@ public class ScenarioDescriptionScreen extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 
-    private JLabel welcomeLabel;
     private ImageDisplay logoDisplay;
-    private JLabel mDLabel;
-    private JTextArea scenarioDescriptionArea;
-    private JButton continueButton;
 
     private ControllerHandler controllerHandler;
     
@@ -64,7 +60,7 @@ public class ScenarioDescriptionScreen extends JFrame {
         //Construct logo panel to add to the centre panel.
         JPanel welcomePanel = new JPanel();
         welcomePanel.setBackground(Color.WHITE);
-        welcomeLabel = new JLabel("Welcome to ", SwingConstants.CENTER);
+        JLabel welcomeLabel = new JLabel("Welcome to ", SwingConstants.CENTER);
         welcomeLabel.setFont(new Font("Arial", Font.BOLD + Font.ITALIC, 40));
         welcomePanel.add(welcomeLabel);
         JPanel logoPanel = new JPanel();
@@ -79,7 +75,7 @@ public class ScenarioDescriptionScreen extends JFrame {
         //Create the MDLabelPanel first of all.
         JPanel MDLabelPanel = new JPanel();
         MDLabelPanel.setBackground(Color.WHITE);
-        mDLabel = new JLabel(controllerHandler.getGameController().getCurrentPlayerName() + " appointed Managing Director of " + scenarioModel.getName());
+        JLabel mDLabel = new JLabel(controllerHandler.getGameController().getCurrentPlayerName() + " appointed Managing Director of " + scenarioModel.getName());
         mDLabel.setFont(new Font("Arial", Font.BOLD, 18));
         MDLabelPanel.add(mDLabel);
         screenPanel.add(MDLabelPanel);
@@ -87,7 +83,7 @@ public class ScenarioDescriptionScreen extends JFrame {
         //Create the descriptionPanel.
         JPanel descriptionPanel = new JPanel();
         descriptionPanel.setBackground(Color.WHITE);
-        scenarioDescriptionArea = new JTextArea(controllerHandler.getGameController().getCurrentPlayerName() + " " + scenarioModel.getDescription());
+        JTextArea scenarioDescriptionArea = new JTextArea(controllerHandler.getGameController().getCurrentPlayerName() + " " + scenarioModel.getDescription());
         scenarioDescriptionArea.setFont(new Font("Arial", Font.PLAIN, 16));
         scenarioDescriptionArea.setLineWrap(true);
         scenarioDescriptionArea.setWrapStyleWord(true);
@@ -98,7 +94,7 @@ public class ScenarioDescriptionScreen extends JFrame {
         //Create the buttonPanel.
         JPanel buttonPanel = new JPanel();
         buttonPanel.setBackground(Color.WHITE);
-        continueButton = new JButton("Continue");
+        JButton continueButton = new JButton("Continue");
         continueButton.addActionListener(new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
                 ControlScreen controlScreen = new ControlScreen(controllerHandler);

@@ -3,7 +3,15 @@ package de.davelee.trams.data;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
+import javax.persistence.Id;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Column;
+import javax.persistence.OneToMany;
+import javax.persistence.FetchType;
+import javax.persistence.CascadeType;
 import java.util.List;
 
 /**
@@ -35,12 +43,6 @@ public class Journey {
     @Fetch(value = FetchMode.SUBSELECT)
     @Column(name="JOURNEY_STOPTIMES")
     private List<StopTime> stopTimes;
-    
-    /**
-     * Create a new journey.
-     */
-    public Journey ( ) {
-    }
     
     /**
      * Get the journey id.

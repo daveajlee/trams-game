@@ -86,7 +86,6 @@ public class DriverController {
      * @param driverModel a <code>DriverModel</code> object representing the driver to sack.
      */
     public void sackDriver ( final DriverModel driverModel ) {
-        GameModel gameModel = gameController.getGameModel();
         driverService.removeDriver(driverModel);
     }
 

@@ -25,13 +25,6 @@ public class Stop {
 	@Column(unique=true)
 	private String stopName;
     
-	/**
-     * Create a new stop. 
-     */
-    public Stop ( ) {
-    	
-    }
-    
     public long getId() {
 		return id;
 	}

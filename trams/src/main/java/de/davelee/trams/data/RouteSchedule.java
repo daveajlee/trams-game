@@ -1,6 +1,11 @@
 package de.davelee.trams.data;
 
-import javax.persistence.*;
+import javax.persistence.Table;
+import javax.persistence.Entity;
+import javax.persistence.Column;
+import javax.persistence.Id;
+import javax.persistence.GeneratedValue;
+import javax.persistence.UniqueConstraint;
 
 /**
  * Class represents a route schedule (i.e. a particular timetable instance of a route) in the TraMS program.
@@ -23,12 +28,6 @@ public class RouteSchedule {
 
 	@Column()
     private String routeNumber;
-    
-    /**
-     * Create a new route schedule.
-     */
-    public RouteSchedule() {
-    }
 
 	public int getDelayInMins() {
 		return delayInMins;

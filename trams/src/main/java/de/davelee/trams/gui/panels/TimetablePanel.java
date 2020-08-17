@@ -39,15 +39,14 @@ import de.davelee.trams.util.DateFormats;
 public class TimetablePanel {
 
     private ControllerHandler controllerHandler;
-
-    public TimetablePanel (final ControllerHandler controllerHandler) {
-        this.controllerHandler = controllerHandler;
-    }
-	
 	private JButton createJourneyPatternButton;
     private JButton modifyJourneyPatternButton;
 	private JButton deleteJourneyPatternButton;
 	private DefaultListModel journeyPatternModel;
+
+    public TimetablePanel (final ControllerHandler controllerHandler) {
+        this.controllerHandler = controllerHandler;
+    }
 	
 	public JPanel createPanel ( final TimetableModel timetableModel, final RouteModel routeModel, final ControlScreen controlScreen, final RoutePanel routePanel, final DisplayPanel displayPanel ) {
 		final GameModel gameModel = controllerHandler.getGameController().getGameModel();
@@ -88,8 +87,12 @@ public class TimetablePanel {
                     createJourneyPatternButton.setEnabled(false);
                 }
             }
-            public void keyTyped(KeyEvent e) { }
-            public void keyPressed(KeyEvent e) { }
+            public void keyTyped(KeyEvent e) {
+                //Nothing happens when key typed.
+            }
+            public void keyPressed(KeyEvent e) {
+                //Nothing happens when key pressed.
+            }
         });
         timetableNameField.setFont(new Font("Arial", Font.PLAIN, 14));
         timetableNamePanel.add(timetableNameField);

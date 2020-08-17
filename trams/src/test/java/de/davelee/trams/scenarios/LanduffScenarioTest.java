@@ -17,10 +17,10 @@ public class LanduffScenarioTest {
 	
 	@Autowired
 	@Qualifier("landuffScenario")
-	Scenario landuffScenario;
+	private Scenario landuffScenario;
 	
 	@Autowired
-	ScenarioService scenarioService;
+	private ScenarioService scenarioService;
 	
 	@Test
 	public void testName() {

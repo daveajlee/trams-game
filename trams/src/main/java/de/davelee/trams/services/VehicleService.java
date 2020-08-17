@@ -17,9 +17,6 @@ public class VehicleService {
 
     @Autowired
     private VehicleFactory vehicleFactory;
-	
-	public VehicleService() {
-	}
 
 	/**
      * Check if the vehicle has been delivered yet!

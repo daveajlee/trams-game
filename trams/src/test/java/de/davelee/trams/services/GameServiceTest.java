@@ -4,7 +4,6 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 import de.davelee.trams.model.GameModel;
-import de.davelee.trams.repository.GameRepository;
 import de.davelee.trams.util.DifficultyLevel;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -21,9 +20,6 @@ public class GameServiceTest {
 	
 	@Autowired
 	private GameService gameService;
-
-	@Autowired
-	private GameRepository gameRepository;
 	
 	@Test
 	public void testIncrement() {

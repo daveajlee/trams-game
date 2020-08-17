@@ -2,7 +2,12 @@ package de.davelee.trams.data;
 
 import java.util.Calendar;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
+import javax.persistence.Id;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Column;
 
 @Entity
 @Table(name="VEHICLE", uniqueConstraints=@UniqueConstraint(columnNames = {"routeNumber", "routeScheduleNumber"}))
@@ -41,9 +46,6 @@ public class Vehicle {
 	
 	@Column
     private double purchasePrice;
-    
-    public Vehicle() {
-    }
     
     public long getId() {
 		return id;

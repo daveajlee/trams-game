@@ -30,10 +30,6 @@ public class Timetable {
 	@Column
 	private String routeNumber;
     
-    public Timetable() {
-
-    }
-    
     public long getId() {
 		return id;
 	}

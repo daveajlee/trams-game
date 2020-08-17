@@ -35,12 +35,6 @@ public class Message {
 	@Column
 	private MessageFolder folder;
 
-    /**
-     * Create a new message.
-     */
-    public Message ( ) {
-    }
-
     public int getId() {
 		return id;
 	}

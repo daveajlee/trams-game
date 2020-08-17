@@ -30,10 +30,6 @@ public class JourneyService {
     @Autowired
 	private ScenarioFactory scenarioFactory;
 	
-	public JourneyService() {
-		
-	}
-	
 	/**
      * Get the status of the journey based on the current time - either not yet run, running or finished.
      * @param journeyModel a <code>JourneyModel</code> object with the journey details.

@@ -30,11 +30,6 @@ public class Driver {
 	@Column(name="START_DATE")
     private Calendar startDate;
     
-    /**
-     * Create a new driver.
-     */
-    public Driver ( ) { }
-    
     public long getId() {
 		return id;
 	}

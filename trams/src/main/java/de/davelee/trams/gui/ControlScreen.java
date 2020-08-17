@@ -1,9 +1,7 @@
 package de.davelee.trams.gui;
 
 //Import java util package.
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
 //Import the Java GUI packages.
 import java.awt.*;
 import java.awt.event.*;
@@ -11,9 +9,13 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
 
-import de.davelee.trams.controllers.*;
+import de.davelee.trams.controllers.ControllerHandler;
 import de.davelee.trams.gui.panels.DisplayPanel;
-import de.davelee.trams.model.*;
+import de.davelee.trams.model.GameModel;
+import de.davelee.trams.model.MessageModel;
+import de.davelee.trams.model.RouteScheduleModel;
+import de.davelee.trams.model.RouteModel;
+import de.davelee.trams.model.ScenarioModel;
 import de.davelee.trams.util.DifficultyLevel;
 import de.davelee.trams.util.MessageFolder;
 import org.slf4j.Logger;
@@ -32,12 +34,8 @@ public class ControlScreen extends ButtonBar {
 	private static final Logger logger = LoggerFactory.getLogger(ControlScreen.class);
 	private static final long serialVersionUID = 1L;
 
-    private JLabel simulatorOptionsLabel;
     private JButton pauseSimulationButton;
     /*** GENERAL CONTROL SCREEN BUTTONS ***/
-    private JLabel numPagesLabel;
-    private JButton previousVehiclesButton;
-    private JButton nextVehiclesButton;
     private JPanel topPanel;
     private JTabbedPane tabbedPane;
     private JPanel graphicsPanel;
@@ -156,10 +154,18 @@ public class ControlScreen extends ButtonBar {
             tabbedPane.setSelectedIndex(1);
         }*/
         tabbedPane.addMouseListener(new MouseListener() {
-            public void mouseExited ( MouseEvent e ) { }
-            public void mouseEntered ( MouseEvent e ) { }
-            public void mouseReleased ( MouseEvent e ) { }
-            public void mousePressed ( MouseEvent e ) { }
+            public void mousePressed(MouseEvent e) {
+                //Nothing happens when mouse pressed.
+            }
+            public void mouseReleased(MouseEvent e) {
+                //Nothing happens when mouse released.
+            }
+            public void mouseEntered(MouseEvent e) {
+                //Nothing happens when mouse entered.
+            }
+            public void mouseExited(MouseEvent e) {
+                //Nothing happens when mouse exited.
+            }
             public void mouseClicked ( MouseEvent e ) { 
                 if ( tabbedPane.getSelectedIndex() == 1) {
                     logger.debug("You just selected message screen");
@@ -291,7 +297,7 @@ public class ControlScreen extends ButtonBar {
                 ControlScreen.super.getControllerHandler().getGameController().pauseSimulation();
                 Thread contentsThread = new Thread() {
                     public void run () {
-                        new HelpScreen(ControlScreen.super.getControllerHandler());
+                        new HelpScreen();
                     }
                 };
                 contentsThread.start();
@@ -680,7 +686,7 @@ public class ControlScreen extends ButtonBar {
         JPanel simulatorControlPanel = new JPanel();
         simulatorControlPanel.setBackground(Color.WHITE);
         //Simulator Options Label.
-        simulatorOptionsLabel = new JLabel("Simulator Options: ");
+        JLabel simulatorOptionsLabel = new JLabel("Simulator Options: ");
         simulatorOptionsLabel.setFont(new Font("Arial", Font.BOLD, 15));
         simulatorControlPanel.add(simulatorOptionsLabel);
         //Pause Simulation Button.
@@ -721,11 +727,11 @@ public class ControlScreen extends ButtonBar {
             totalPages = 0;
             routeScheduleModelsLength = 0;
         }
-        numPagesLabel = new JLabel("Page " + currentPage + " / " + totalPages);
+        JLabel numPagesLabel = new JLabel("Page " + currentPage + " / " + totalPages);
         logger.debug("This is page " + currentPage + " / " + totalPages);
         vehicleInfoPanel.add(numPagesLabel);
         //Previous vehicle button.
-        previousVehiclesButton = new JButton("Previous Vehicles");
+        JButton previousVehiclesButton = new JButton("Previous Vehicles");
         previousVehiclesButton.addActionListener( new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 //Subtract 4 to the min and max.
@@ -747,7 +753,7 @@ public class ControlScreen extends ButtonBar {
         }
         vehicleInfoPanel.add(previousVehiclesButton);
         //Next vehicle button.
-        nextVehiclesButton = new JButton("Next Vehicles");
+        JButton nextVehiclesButton = new JButton("Next Vehicles");
         nextVehiclesButton.addActionListener( new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 //Add 4 to the min and max.

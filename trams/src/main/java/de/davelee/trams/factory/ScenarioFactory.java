@@ -15,10 +15,6 @@ public class ScenarioFactory {
 	@Autowired
 	@Resource(name="availableScenariosList")
 	private List<Scenario> availableScenarios;
-	
-	public ScenarioFactory() {
-		
-	}
 
 	public List<Scenario> getAvailableScenarios() {
 		return availableScenarios;

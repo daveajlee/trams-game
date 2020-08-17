@@ -6,7 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import de.davelee.trams.data.Message;
 import org.springframework.data.repository.query.Param;
 
-import java.util.Calendar;
 import java.util.List;
 
 public interface MessageRepository extends JpaRepository<Message, Long> {

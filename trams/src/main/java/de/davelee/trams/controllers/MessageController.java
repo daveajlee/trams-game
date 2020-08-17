@@ -1,7 +1,5 @@
 package de.davelee.trams.controllers;
 
-import java.util.Calendar;
-
 import de.davelee.trams.model.MessageModel;
 import org.springframework.beans.factory.annotation.Autowired;
 

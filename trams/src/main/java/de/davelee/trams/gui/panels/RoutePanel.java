@@ -25,28 +25,26 @@ import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 
-import de.davelee.trams.controllers.*;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import de.davelee.trams.gui.ControlScreen;
 import de.davelee.trams.model.GameModel;
 import de.davelee.trams.model.RouteModel;
 import de.davelee.trams.model.TimetableModel;
 
+import de.davelee.trams.controllers.ControllerHandler;
+
 public class RoutePanel {
 
     private ControllerHandler controllerHandler;
-
-    public RoutePanel ( final ControllerHandler controllerHandler ) {
-        this.controllerHandler = controllerHandler;
-    }
-
     private DefaultListModel availableStopModel;
 	private DefaultListModel routeStopModel;
 	private DefaultListModel timetableModel;
 	private JButton createRouteButton;
 	private JButton createTimetableButton;
 	private JTextField routeNumberField;
+
+    public RoutePanel ( final ControllerHandler controllerHandler ) {
+        this.controllerHandler = controllerHandler;
+    }
 	
 	public JPanel createPanel ( final RouteModel routeModel, final ControlScreen controlScreen, final DisplayPanel displayPanel ) {
         
@@ -78,8 +76,8 @@ public class RoutePanel {
             public void keyReleased(KeyEvent e) {
                 enableCreateButtons();
             }
-            public void keyTyped(KeyEvent e) { }
-            public void keyPressed(KeyEvent e) { }
+            public void keyTyped(KeyEvent e) { /*Nothing happens when key is typed */ }
+            public void keyPressed(KeyEvent e) { /*Nothing happens when key is pressed */ }
         });
         routeNumberPanel.add(routeNumberField);
         

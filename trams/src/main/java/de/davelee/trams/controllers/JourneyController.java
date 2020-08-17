@@ -5,7 +5,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-import de.davelee.trams.model.*;
+import de.davelee.trams.model.JourneyModel;
+import de.davelee.trams.model.RouteScheduleModel;
+import de.davelee.trams.model.StopTimeModel;
+import de.davelee.trams.model.RouteModel;
+import de.davelee.trams.model.TimetableModel;
+import de.davelee.trams.model.JourneyPatternModel;
 import de.davelee.trams.util.DateFormats;
 import de.davelee.trams.util.SortedJourneyModels;
 import org.slf4j.Logger;

@@ -15,10 +15,6 @@ public class VehicleFactory {
 	@Autowired
 	@Resource(name="availableVehiclesList")
 	private List<Vehicle> availableVehicles;
-	
-	public VehicleFactory() {
-		
-	}
 
 	public List<Vehicle> getAvailableVehicles() {
 		return availableVehicles;

@@ -5,7 +5,7 @@ import java.awt.event.*;
 import java.text.SimpleDateFormat;
 import javax.swing.*;
 
-import de.davelee.trams.controllers.*;
+import de.davelee.trams.controllers.ControllerHandler;
 import de.davelee.trams.model.GameModel;
 import de.davelee.trams.model.ScenarioModel;
 
@@ -17,17 +17,10 @@ public class NewGameScreen extends JFrame {
     
 	private static final long serialVersionUID = 1L;
 
-    private JLabel welcomeLabel;
-    private ImageDisplay logoDisplay;
-    private JLabel playerNameLabel;
     private JTextField playerNameField;
-    private JLabel scenarioLabel;
-    private ButtonGroup scenarioButtonGroup;
     private JRadioButton[] scenarioButtons;
-    private JTextArea[] scenarioDescriptions;
 
     private JButton createGameButton;
-    private JButton welcomeScreenButton;
 
     private ControllerHandler controllerHandler;
 
@@ -71,12 +64,12 @@ public class NewGameScreen extends JFrame {
         //Create welcome panel.
         JPanel welcomePanel = new JPanel();
         welcomePanel.setBackground(Color.WHITE);
-        welcomeLabel = new JLabel("Welcome to ", SwingConstants.CENTER);
+        JLabel welcomeLabel = new JLabel("Welcome to ", SwingConstants.CENTER);
         welcomeLabel.setFont(new Font("Arial", Font.BOLD + Font.ITALIC, 40));
         welcomePanel.add(welcomeLabel);
         JPanel logoPanel = new JPanel();
         logoPanel.setBackground(Color.WHITE);
-        logoDisplay = new ImageDisplay("TraMSlogo.png", 0, 0);
+        ImageDisplay logoDisplay = new ImageDisplay("TraMSlogo.png", 0, 0);
         logoDisplay.setSize(157,92);
         logoDisplay.setBackground(Color.WHITE);
         logoPanel.add(logoDisplay);
@@ -86,7 +79,7 @@ public class NewGameScreen extends JFrame {
         //Create a new player name panel.
         JPanel newPlayerPanel = new JPanel();
         newPlayerPanel.setBackground(Color.WHITE);
-        playerNameLabel = new JLabel("Player Name:");
+        JLabel playerNameLabel = new JLabel("Player Name:");
         playerNameLabel.setFont(new Font("Arial", Font.BOLD, 18));
         playerNameField = new JTextField("");
         playerNameField.setFont(new Font("Arial", Font.PLAIN, 18));
@@ -100,8 +93,12 @@ public class NewGameScreen extends JFrame {
                     createGameButton.setEnabled(false);
                 }
             }
-            public void keyTyped(KeyEvent e) { }
-            public void keyPressed(KeyEvent e) { }
+            public void keyTyped(KeyEvent e) {
+                //Nothing happens when key typed.
+            }
+            public void keyPressed(KeyEvent e) {
+                //Nothing happens when key pressed.
+            }
         });
         newPlayerPanel.add(playerNameLabel);
         newPlayerPanel.add(playerNameField);
@@ -110,7 +107,7 @@ public class NewGameScreen extends JFrame {
         //Create the scenario panel.
         JPanel scenarioPanel = new JPanel(new BorderLayout());
         scenarioPanel.setBackground(Color.WHITE);
-        scenarioLabel = new JLabel("Choose a Fictional Scenario:");
+        JLabel scenarioLabel = new JLabel("Choose a Fictional Scenario:");
         scenarioLabel.setFont(new Font("Arial", Font.BOLD, 20));
         scenarioLabel.setHorizontalAlignment(SwingConstants.CENTER);
         scenarioPanel.add(scenarioLabel, BorderLayout.NORTH);
@@ -120,9 +117,9 @@ public class NewGameScreen extends JFrame {
         //Create the actual scenario radio buttons.
         JPanel scenarioRadioPanel = new JPanel(new GridLayout(3,1,5,5));
         scenarioRadioPanel.setBackground(Color.WHITE);
-        scenarioButtonGroup = new ButtonGroup();
+        ButtonGroup scenarioButtonGroup = new ButtonGroup();
         scenarioButtons = new JRadioButton[scenarioModels.length];
-        scenarioDescriptions = new JTextArea[scenarioModels.length];
+        JTextArea[] scenarioDescriptions = new JTextArea[scenarioModels.length];
         //Scenarios.
         for ( int i = 0; i < scenarioModels.length; i++ ) {
         	JPanel scenarioTownPanel = new JPanel(new BorderLayout());
@@ -179,7 +176,7 @@ public class NewGameScreen extends JFrame {
             }
         });
         buttonPanel.add(createGameButton);
-        welcomeScreenButton = new JButton("Back to Welcome Screen");
+        JButton welcomeScreenButton = new JButton("Back to Welcome Screen");
         welcomeScreenButton.addActionListener ( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
                 WelcomeScreen welcomeScreen = new WelcomeScreen(controllerHandler);
