@@ -10,14 +10,10 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import de.davelee.trams.data.Driver;
-import de.davelee.trams.services.DriverService;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration("/de/davelee/trams/spring/test-context.xml")
 public class DriverRepositoryTest {
-	
-	@Autowired
-	private DriverService driverService;
 	
 	@Autowired
 	private DriverRepository driverRepository;

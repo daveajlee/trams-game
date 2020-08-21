@@ -1,10 +1,14 @@
 package de.davelee.trams.data;
 
-import java.util.Calendar;
-
-import javax.persistence.*;
-
 import de.davelee.trams.util.MessageFolder;
+
+import javax.persistence.Entity;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
+import javax.persistence.Id;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Column;
+import javax.persistence.Lob;
 
 /**
  * Class representing a message in TraMS.

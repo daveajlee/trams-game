@@ -24,9 +24,6 @@ public class RouteScheduleController {
 	 private RouteScheduleService routeScheduleService;
 
 	 @Autowired
-	 private RouteController routeController;
-
-	 @Autowired
 	 private JourneyController journeyController;
 
 	 @Autowired

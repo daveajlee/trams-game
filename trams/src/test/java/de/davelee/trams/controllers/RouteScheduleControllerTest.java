@@ -27,9 +27,6 @@ public class RouteScheduleControllerTest {
     @Autowired
     private TimetableController timetableController;
 
-    @Autowired
-    private JourneyPatternController journeyPatternController;
-
     @Test
     public void testGenerateRouteSchedules() {
         //Test route.

@@ -9,7 +9,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import de.davelee.trams.beans.Scenario;
-import de.davelee.trams.services.ScenarioService;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration("/de/davelee/trams/spring/test-context.xml")
@@ -18,9 +17,6 @@ public class LanduffScenarioTest {
 	@Autowired
 	@Qualifier("landuffScenario")
 	private Scenario landuffScenario;
-	
-	@Autowired
-	private ScenarioService scenarioService;
 	
 	@Test
 	public void testName() {

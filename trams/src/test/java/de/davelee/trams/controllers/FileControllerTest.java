@@ -22,12 +22,16 @@ public class FileControllerTest {
     @Test
     public void testSaveFile() {
         gameController.createGameModel("Dave Lee", "Landuff Transport Company");
-        Assertions.assertEquals(gameController.getCurrentPlayerName(), "Dave Lee");
+        assertEquals("Dave Lee", gameController.getCurrentPlayerName());
         fileController.saveFile(new File("test-trams-controller.xml"));
         gameController.createGameModel("Bob Smith", "Landuff Transport Company");
-        Assertions.assertEquals(gameController.getCurrentPlayerName(), "Bob Smith");
+        assertEquals("Bob Smith", gameController.getCurrentPlayerName());
         fileController.loadFile(new File("test-trams-controller.xml"));
-        Assertions.assertEquals(gameController.getCurrentPlayerName(), "Dave Lee");
+        assertEquals("Dave Lee", gameController.getCurrentPlayerName());
+    }
+
+    private void assertEquals ( final String expected, final String actual ) {
+        Assertions.assertEquals(expected, actual);
     }
 
 }

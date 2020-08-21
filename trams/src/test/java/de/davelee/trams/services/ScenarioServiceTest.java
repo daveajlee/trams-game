@@ -17,9 +17,6 @@ public class ScenarioServiceTest {
 	@Autowired
 	private ScenarioService scenarioService;
 	
-	@Autowired
-	private VehicleService vehicleService;
-	
 	@Test
 	public void testStopNames() {
 		ScenarioModel scenario = scenarioService.retrieveScenarioObject("Landuff Transport Company");

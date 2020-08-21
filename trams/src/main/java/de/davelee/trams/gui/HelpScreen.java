@@ -8,10 +8,6 @@ import java.io.*;
 //Import java swing packages.
 import javax.swing.*;
 import javax.swing.event.*;
-//Import trams main package.
-import de.davelee.trams.controllers.ControllerHandler;
-import de.davelee.trams.controllers.GameController;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * HelpScreen.java is the screen to display the help screen for TraMS.

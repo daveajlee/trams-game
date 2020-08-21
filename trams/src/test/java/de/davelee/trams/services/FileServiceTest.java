@@ -24,7 +24,6 @@ import de.davelee.trams.model.RouteModel;
 import de.davelee.trams.model.RouteScheduleModel;
 import de.davelee.trams.model.StopTimeModel;
 import de.davelee.trams.model.TimetableModel;
-import de.davelee.trams.repository.StopRepository;
 import de.davelee.trams.repository.VehicleRepository;
 import de.davelee.trams.util.MessageFolder;
 
@@ -34,9 +33,6 @@ public class FileServiceTest {
 	
 	@Autowired
 	private VehicleRepository vehicleRepository;
-	
-	@Autowired
-	private StopRepository stopRepository;
 	
 	@Autowired
 	private DriverService driverService;

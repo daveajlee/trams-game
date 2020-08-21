@@ -5,7 +5,10 @@ import java.awt.event.*;
 
 import javax.swing.*;
 
-import de.davelee.trams.controllers.*;
+import de.davelee.trams.controllers.GameController;
+import de.davelee.trams.controllers.JourneyController;
+import de.davelee.trams.controllers.RouteScheduleController;
+import de.davelee.trams.controllers.VehicleController;
 import de.davelee.trams.model.GameModel;
 import de.davelee.trams.model.RouteScheduleModel;
 import de.davelee.trams.model.VehicleModel;

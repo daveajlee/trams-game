@@ -13,7 +13,7 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
-import de.davelee.trams.controllers.*;
+import de.davelee.trams.controllers.ControllerHandler;
 import de.davelee.trams.model.TimetableModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
