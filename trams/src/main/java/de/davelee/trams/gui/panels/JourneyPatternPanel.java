@@ -120,8 +120,8 @@ public class JourneyPatternPanel {
             daysBox[i].addActionListener(new ActionListener() {
                 public void actionPerformed ( ActionEvent e ) {
                     if ( !journeyPatternNameField.getText().equalsIgnoreCase("") ) {
-                        for ( int i = 0; i < daysBox.length; i++ ) {
-                            if ( daysBox[i].isSelected() ) {
+                        for ( int j = 0; j < daysBox.length; j++ ) {
+                            if ( daysBox[j].isSelected() ) {
                                 createJourneyPatternButton.setEnabled(true);
                                 return;
                             }
@@ -134,10 +134,8 @@ public class JourneyPatternPanel {
                 }
             });
             int addPos = (i+1);
-            if (journeyPatternModel != null ) { 
-            	if ( journeyPatternModel.getDaysOfOperation().contains("" + addPos) ) { 
-            		daysBox[i].setSelected(true); 
-            	} 
+            if (journeyPatternModel != null && journeyPatternModel.getDaysOfOperation().contains("" + addPos) ) {
+            	daysBox[i].setSelected(true);
             }
             dayOfWeekPanel.add(daysBox[i]);
         }

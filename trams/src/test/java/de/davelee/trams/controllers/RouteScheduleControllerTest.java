@@ -43,7 +43,7 @@ public class RouteScheduleControllerTest {
         List<Integer> operatingDays = new ArrayList<Integer>();
         operatingDays.add(1); operatingDays.add(2); operatingDays.add(3); operatingDays.add(4);
         operatingDays.add(5); operatingDays.add(6); operatingDays.add(7);
-        JourneyPatternModel journeyPatternModel = JourneyPatternModel.builder()
+        JourneyPatternModel.builder()
                 .name("Regular")
                 .daysOfOperation(operatingDays)
                 .outgoingTerminus("Airport")

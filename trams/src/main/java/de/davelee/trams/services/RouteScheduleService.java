@@ -27,11 +27,8 @@ public class RouteScheduleService {
         int val = randNumGen.nextInt(100);
         //Create probability array.
         int[] ratioArray = new int[0];
-        //Set ratios according to difficulty level.
+        //Set ratios according to difficulty level - default is easy.
         switch (difficultyLevel) {
-        case EASY:
-        	ratioArray = new int[] { 25, 85, 95 };
-        	break;
         case INTERMEDIATE:
         	ratioArray = new int[] { 20, 85, 95 };
         	break;
@@ -41,7 +38,10 @@ public class RouteScheduleService {
         case HARD:
         	ratioArray = new int[] { 30, 60, 85 };
         	break;
-        };
+        default: //easy
+                ratioArray = new int[] { 25, 85, 95 };
+                break;
+        }
         //With ratioArray[0] probability no delay change.
         if ( val < ratioArray[0] ) { return; }
         //With ratioArray[1] probability - reduce delay by 1-5 mins.

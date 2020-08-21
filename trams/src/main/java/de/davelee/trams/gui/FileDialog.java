@@ -20,8 +20,7 @@ public class FileDialog {
         int returnVal = fileDialog.showOpenDialog(currentFrame);
         //Check if user submitted file and print coming soon.
         boolean validFile = true;
-        if ( returnVal == JFileChooser.APPROVE_OPTION) {
-        	if ( controllerHandler.getFileController().loadFile(fileDialog.getSelectedFile()) ) {
+        if ( returnVal == JFileChooser.APPROVE_OPTION && controllerHandler.getFileController().loadFile(fileDialog.getSelectedFile())) {
         		JFrame oldFrame = currentFrame;
                 controlScreen.displayScreen("", 0, 4, false);
                 currentFrame.setVisible(true);
@@ -32,7 +31,6 @@ public class FileDialog {
                 controllerHandler.getGameController().resumeSimulation(controlScreen);
 
                 return true;
-        	}
         }
         if ( !validFile ) {
             JOptionPane.showMessageDialog(currentFrame,"The selected file is not compatible with this version of TraMS.\nYou may want to check the TraMS website for a convertor at http://trams.davelee.me.uk\nPlease either choose another file or create a new game.", "ERROR: Saved Game Could Not Be Loaded", JOptionPane.ERROR_MESSAGE);

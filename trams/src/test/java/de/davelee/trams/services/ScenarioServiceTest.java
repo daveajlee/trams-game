@@ -40,7 +40,7 @@ public class ScenarioServiceTest {
 
 	@Test
 	public void testCreateScenario() {
-		Assertions.assertNotNull(scenarioService.retrieveScenarioObject("Landuff Transport Company"));
+		assertNotNull(scenarioService.retrieveScenarioObject("Landuff Transport Company"));
 		Assertions.assertThrows(NoSuchElementException.class, () -> scenarioService.retrieveScenarioObject("Londuff Transport Company"));
 	}
 
@@ -63,5 +63,9 @@ public class ScenarioServiceTest {
 	private void assertEquals ( final int expected, final int actual ) {
 		Assertions.assertEquals(expected, actual);
 	}
-	
+
+	private void assertNotNull ( final Object actual ){
+		Assertions.assertNotNull(actual);
+	}
+
 }

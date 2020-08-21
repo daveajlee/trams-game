@@ -16,7 +16,11 @@ public class RouteServiceTest {
 	
 	@Test
 	public void testRouteService() {
-		Assertions.assertNotNull(routeService);
+		assertNotNull(routeService);
+	}
+
+	private void assertNotNull ( final Object actual ){
+		Assertions.assertNotNull(actual);
 	}
 	
 }

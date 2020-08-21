@@ -152,9 +152,6 @@ public class JourneyService {
     public JourneyModel getCurrentJourney ( final JourneyModel[] journeyModels, final Calendar currentTime ) {
         for ( int i = 0; i < journeyModels.length; i++ ) {
             if ( checkJourneyStatus(journeyModels[i], currentTime) == JourneyStatus.RUNNING) {
-                if (  i != (journeyModels.length-1) && checkJourneyStatus(journeyModels[i+1], currentTime) == JourneyStatus.YET_TO_RUN )  {
-                    return journeyModels[i];
-                }
                 return journeyModels[i];
             }
         }
@@ -237,9 +234,7 @@ public class JourneyService {
         //Now get the index of the second stop.
         int secondIndex = outwardStops.indexOf(journeyModel.getStopTimeModelList().get(1).getStopName());
         //If the indexes are consecutive i.e. difference of 1 then it is an outward journey.
-        if ( secondIndex - firstIndex == 1 ) { return true; }
-        //Otherwise it is not.
-        return false;
+        return secondIndex - firstIndex == 1;
     }
     
     /**

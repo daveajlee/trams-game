@@ -22,10 +22,7 @@ public class DriverService {
      * @return a <code>boolean</code> which is true iff the driver has started work.
      */
     public boolean hasStartedWork ( Calendar startDate, Calendar currentDate ) {
-    	if ( currentDate.after(startDate) || currentDate.equals(startDate) ) {
-    		return true;
-    	}
-    	return false;
+    	return currentDate.after(startDate) || currentDate.equals(startDate);
     }
 
 	private Driver convertToDriver ( final DriverModel driverModel ) {

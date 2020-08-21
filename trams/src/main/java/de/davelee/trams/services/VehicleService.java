@@ -25,10 +25,7 @@ public class VehicleService {
      * @return a <code>boolean</code> which is true iff the vehicle has been delivered.
      */
     public boolean hasBeenDelivered ( Calendar deliveryDate, Calendar currentDate ) {
-    	if ( currentDate.after(deliveryDate) || currentDate.equals(deliveryDate) ) {
-    		return true;
-    	}
-    	return false;
+    	return currentDate.after(deliveryDate) || currentDate.equals(deliveryDate);
     }    
     
     /**

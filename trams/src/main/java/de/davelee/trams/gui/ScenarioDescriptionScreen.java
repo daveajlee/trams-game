@@ -16,8 +16,6 @@ public class ScenarioDescriptionScreen extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 
-    private ImageDisplay logoDisplay;
-
     private ControllerHandler controllerHandler;
     
     /**
@@ -65,7 +63,7 @@ public class ScenarioDescriptionScreen extends JFrame {
         welcomePanel.add(welcomeLabel);
         JPanel logoPanel = new JPanel();
         logoPanel.setBackground(Color.WHITE);
-        logoDisplay = new ImageDisplay("TraMSlogo.png", 0, 0);
+        ImageDisplay logoDisplay = new ImageDisplay("TraMSlogo.png", 0, 0);
         logoDisplay.setSize(157,92);
         logoDisplay.setBackground(Color.WHITE);
         logoPanel.add(logoDisplay);

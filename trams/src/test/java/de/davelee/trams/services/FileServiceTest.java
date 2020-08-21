@@ -158,16 +158,16 @@ public class FileServiceTest {
 				.vehicleModels(vehicleService.getVehicleModels())
 				.build();
 		
-		Assertions.assertNotNull(tramsFile.getDriverModels());
-		Assertions.assertNotNull(tramsFile.getVehicleModels());
-		Assertions.assertNotNull(tramsFile.getRouteModels());
-		Assertions.assertNotNull(tramsFile.getMessageModels());
-		Assertions.assertNotNull(tramsFile.getStops());
-		Assertions.assertNotNull(tramsFile.getJourneyPatternModels());
-		Assertions.assertNotNull(tramsFile.getTimetableModels());
-		Assertions.assertNotNull(tramsFile.getRouteScheduleModels());
-		Assertions.assertNotNull(tramsFile.getJourneyModels());
-		Assertions.assertNotNull(tramsFile.getGameModel());
+		assertNotNull(tramsFile.getDriverModels());
+		assertNotNull(tramsFile.getVehicleModels());
+		assertNotNull(tramsFile.getRouteModels());
+		assertNotNull(tramsFile.getMessageModels());
+		assertNotNull(tramsFile.getStops());
+		assertNotNull(tramsFile.getJourneyPatternModels());
+		assertNotNull(tramsFile.getTimetableModels());
+		assertNotNull(tramsFile.getRouteScheduleModels());
+		assertNotNull(tramsFile.getJourneyModels());
+		assertNotNull(tramsFile.getGameModel());
 		
 		fileService.saveFile(new File("test-trams.xml"), tramsFile);
 		
@@ -177,7 +177,7 @@ public class FileServiceTest {
 	@Test
 	public void testLoadFile ( ) {
 		TramsFile tramsFile2 = fileService.loadFile(new File("test-trams.xml"));
-		Assertions.assertNotNull(tramsFile2);
+		assertNotNull(tramsFile2);
 		Assertions.assertEquals(tramsFile2.getDriverModels().length, 1);
 		assertEquals(tramsFile2.getDriverModels()[0].getName(), "Chris Lee");
 		Assertions.assertEquals(tramsFile2.getVehicleModels().length, 1);
@@ -187,6 +187,10 @@ public class FileServiceTest {
 
 	private void assertEquals ( final String expected, final String actual ) {
 		Assertions.assertEquals(expected, actual);
+	}
+
+	private void assertNotNull ( final Object actual ){
+		Assertions.assertNotNull(actual);
 	}
 
 }

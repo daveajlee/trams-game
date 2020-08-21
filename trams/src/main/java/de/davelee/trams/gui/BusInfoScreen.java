@@ -24,10 +24,6 @@ public class BusInfoScreen extends JFrame {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
-	//GUI Parameters.
-    private JLabel vehicleIDLabel;
-    private JButton closeButton;
 
     @Autowired
     private GameController gameController;
@@ -93,7 +89,7 @@ public class BusInfoScreen extends JFrame {
         timetableIDLabel.setFont(new Font("Arial", Font.BOLD, 15));
         eastPanel.add(timetableIDLabel);
         //Vehicle id.
-        vehicleIDLabel = new JLabel("Vehicle ID: " + vehicleModel.getRegistrationNumber());
+        JLabel vehicleIDLabel = new JLabel("Vehicle ID: " + vehicleModel.getRegistrationNumber());
         vehicleIDLabel.setFont(new Font("Arial", Font.BOLD, 15));
         eastPanel.add(vehicleIDLabel);
         //Location.
@@ -124,7 +120,7 @@ public class BusInfoScreen extends JFrame {
         });
         southPanel.add(makeContactButton);
         //Close button.
-        closeButton = new JButton("Close Window");
+        JButton closeButton = new JButton("Close Window");
         closeButton.addActionListener( new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 dispose();

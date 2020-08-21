@@ -615,10 +615,7 @@ public class ControlScreen extends ButtonBar {
     private boolean isPastMidnight ( final Calendar currentTime, final int timeIncrement ) {
         Calendar previousTime = (Calendar) currentTime.clone();
         previousTime.add(Calendar.MINUTE, -timeIncrement);
-        if ( previousTime.get(Calendar.DAY_OF_WEEK) != currentTime.get(Calendar.DAY_OF_WEEK) ) {
-            return true;
-        }
-        return false;
+        return previousTime.get(Calendar.DAY_OF_WEEK) != currentTime.get(Calendar.DAY_OF_WEEK);
     }
 
     /**
@@ -775,24 +772,6 @@ public class ControlScreen extends ButtonBar {
         vehicleInfoPanel.add(nextVehiclesButton);
         //Return vehicleInfoPanel.
         return vehicleInfoPanel;
-    }
-
-    /**
-     * Speed up the simulation!
-     */
-    private void speedUpSimulation() {
-        if ( simulationSpeed > 1000 ) {
-            simulationSpeed -= 250;
-        }
-    }
-
-    /**
-     * Slow down the simulation!
-     */
-    private void slowSimulation() {
-        if ( simulationSpeed < 4000 ) {
-            simulationSpeed += 250;
-        }
     }
 
     /**

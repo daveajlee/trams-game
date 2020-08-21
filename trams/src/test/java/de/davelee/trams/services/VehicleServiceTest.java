@@ -136,7 +136,7 @@ public class VehicleServiceTest {
 
 	@Test
 	public void testCreateVehicleObject() {
-		Assertions.assertNotNull(vehicleService.createVehicleObject("MyBus Single Decker", "CV58 2DD", Calendar.getInstance()));
+		assertNotNull(vehicleService.createVehicleObject("MyBus Single Decker", "CV58 2DD", Calendar.getInstance()));
 		Assertions.assertThrows(NoSuchElementException.class, () -> vehicleService.createVehicleObject("MyTrain", "123", Calendar.getInstance()));
 	}
 
@@ -165,6 +165,10 @@ public class VehicleServiceTest {
 
 	private void assertTrue ( final boolean condition ) {
 		Assertions.assertTrue(condition);
+	}
+
+	private void assertNotNull ( final Object actual ){
+		Assertions.assertNotNull(actual);
 	}
 
 }

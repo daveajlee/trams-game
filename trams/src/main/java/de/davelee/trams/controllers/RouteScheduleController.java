@@ -257,9 +257,7 @@ public class RouteScheduleController {
 							//Continue loop.
 							continue;
 					}
-					if ( loopPos < returnJourneyModels.size() ) {
-						//if ( wantReturn ) { logger.debug("I want a return service so trying: " + returnServices.get(loopPos).getAllDisplayStops() + " to route schedule " + counter); }
-						if ( wantReturn && journeyController.getFirstStopTime(returnJourneyModels.get(loopPos)).get(Calendar.HOUR_OF_DAY) == myCal.get(Calendar.HOUR_OF_DAY) && journeyController.getFirstStopTime(returnJourneyModels.get(loopPos)).get(Calendar.MINUTE) == myCal.get(Calendar.MINUTE)) {
+					if ( loopPos < returnJourneyModels.size() && wantReturn && journeyController.getFirstStopTime(returnJourneyModels.get(loopPos)).get(Calendar.HOUR_OF_DAY) == myCal.get(Calendar.HOUR_OF_DAY) && journeyController.getFirstStopTime(returnJourneyModels.get(loopPos)).get(Calendar.MINUTE) == myCal.get(Calendar.MINUTE)) {
 							//logger.debug("Adding service " + returnServices.get(loopPos).getAllDisplayStops() + " to route schedule " + counter);
 							//We have found our journey - its a return one!!!
 							journeyController.assignRouteSchedule(returnJourneyModels.get(loopPos), mySchedule);
@@ -272,7 +270,6 @@ public class RouteScheduleController {
 							wantReturn = false; wantOutgoing = true;
 							//Continue loop.
 							continue;
-						}
 					}
 					//Increment loopPos.
 					loopPos++;

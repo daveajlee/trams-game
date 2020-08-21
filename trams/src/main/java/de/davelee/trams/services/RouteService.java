@@ -95,11 +95,7 @@ public class RouteService {
         stop.setStopName(stopName);
         List<Stop> stops = new ArrayList<Stop>();
         //List<Stop> stops = routeRepository.findRouteByNumber(routeModel.getRouteNumber()).getStops();
-        boolean result = stops.add(stop);
-        if ( result ) {
-            //routeRepository.findRouteByNumber(routeModel.getRouteNumber()).setStops(stops);
-        }
-        return result;
+        return stops.add(stop);
     }
 
     /**
