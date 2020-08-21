@@ -36,8 +36,12 @@ public class RouteRepositoryTest {
 		routeService.saveRoute(routeModel);
 		Route route2 = routeRepository.findRouteByNumber("155");
 		Assertions.assertNotNull(route2);
-		Assertions.assertEquals(route2.getNumber(), "155");
+		assertEquals(route2.getNumber(), "155");
 		//assertEquals(route2.getStops().size(), 3);
+	}
+
+	private void assertEquals ( final String expected, final String actual ) {
+		Assertions.assertEquals(expected, actual);
 	}
 
 }

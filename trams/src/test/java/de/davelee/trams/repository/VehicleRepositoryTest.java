@@ -41,10 +41,10 @@ public class VehicleRepositoryTest {
 		vehicleService.saveVehicle(vehicleModel);
 		Vehicle vehicle2 = vehicleRepository.findByRegistrationNumber("CV58 2XD");
 		Assertions.assertNotNull(vehicle2);
-		Assertions.assertEquals(vehicle2.getRegistrationNumber(), "CV58 2XD");
+		assertEquals(vehicle2.getRegistrationNumber(), "CV58 2XD");
 		Assertions.assertEquals(vehicle2.getDepreciationFactor(), 0.006, 0.01);
-		Assertions.assertEquals(vehicle2.getImagePath(), "image.png");
-		Assertions.assertEquals(vehicle2.getModel(), "Mercedes");
+		assertEquals(vehicle2.getImagePath(), "image.png");
+		assertEquals(vehicle2.getModel(), "Mercedes");
 		Assertions.assertEquals(vehicle2.getSeatingCapacity(), 40);
 		Assertions.assertEquals(vehicle2.getStandingCapacity(), 60);
 		Assertions.assertEquals(vehicle2.getPurchasePrice(), 200.99, 0.01);
@@ -54,5 +54,10 @@ public class VehicleRepositoryTest {
 		vehicleRepository.delete(vehicle2);
 		Assertions.assertEquals(vehicleRepository.findAll().size(), 0);
 	}
+
+	private void assertEquals ( final String expected, final String actual ) {
+		Assertions.assertEquals(expected, actual);
+	}
+
 
 }

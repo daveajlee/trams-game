@@ -79,13 +79,13 @@ public class VehicleServiceTest {
 		double purchasePrice = 20000.00; double depreciationFactor = 0.006;
 		//Vehicle is brand new - full value.
 		Calendar currentDate = Calendar.getInstance(); currentDate.set(2014, 4, 20);
-		Assertions.assertEquals(vehicleService.getValue(purchasePrice, depreciationFactor, deliveryDate, currentDate), 20000.00, 0.01);
+		assertEquals(vehicleService.getValue(purchasePrice, depreciationFactor, deliveryDate, currentDate), 20000.00, 0.01);
 		//Vehicle is a bit older.
 		currentDate.set(2017,5,21);
-		Assertions.assertEquals(vehicleService.getValue(purchasePrice, depreciationFactor, deliveryDate, currentDate), 15560.00, 0.01);
+		assertEquals(vehicleService.getValue(purchasePrice, depreciationFactor, deliveryDate, currentDate), 15560.00, 0.01);
 		//Vehicle is practically worthless.
 		currentDate.set(2027,5,21);
-		Assertions.assertEquals(vehicleService.getValue(purchasePrice, depreciationFactor, deliveryDate, currentDate), 1160.00, 0.01);
+		assertEquals(vehicleService.getValue(purchasePrice, depreciationFactor, deliveryDate, currentDate), 1160.00, 0.01);
 	}
 	
 	@Test
@@ -125,13 +125,13 @@ public class VehicleServiceTest {
 		//Test begins here.
 		vehicleService.saveVehicle(vehicleModel);
 		Assertions.assertNotNull(vehicleService.getVehicleByRegistrationNumber("CV58 2DX"));
-		Assertions.assertEquals(vehicleService.getVehicleByRegistrationNumber("CV58 2DX").getImagePath(), "singledecker.png");
+		assertEquals(vehicleService.getVehicleByRegistrationNumber("CV58 2DX").getImagePath(), "singledecker.png");
 		Assertions.assertNull(vehicleService.getVehicleByRegistrationNumber("2013-001"));
 	}
 	
 	@Test
 	public void testGetAllVehicles ( ) {
-		Assertions.assertEquals(vehicleService.getVehicleModels().length, 1);
+		assertEquals(vehicleService.getVehicleModels().length, 1);
 	}
 
 	@Test
@@ -148,7 +148,19 @@ public class VehicleServiceTest {
 
 	@Test
 	public void testVehicleSize() {
-		Assertions.assertEquals(vehicleService.getNumberVehicleTypes(), 4);
+		assertEquals(vehicleService.getNumberVehicleTypes(), 4);
+	}
+
+	private void assertEquals ( final double expected, final double actual, final double delta ) {
+		Assertions.assertEquals(expected, actual, delta);
+	}
+
+	private void assertEquals ( final String expected, final String actual ) {
+		Assertions.assertEquals(expected, actual);
+	}
+
+	private void assertEquals ( final int expected, final int actual ) {
+		Assertions.assertEquals(expected, actual);
 	}
 
 }

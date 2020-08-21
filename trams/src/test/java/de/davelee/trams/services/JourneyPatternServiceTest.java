@@ -41,7 +41,7 @@ public class JourneyPatternServiceTest {
 				.timetableName("Mon-Fri")
 				.routeNumber("155")
 				.build();
-		Assertions.assertEquals(journeyPatternModel.getName(), "Test");
+		assertEquals(journeyPatternModel.getName(), "Test");
 		Assertions.assertEquals(journeyPatternModel.getDaysOfOperation().size(), 3);
 		Assertions.assertEquals(journeyPatternModel.getStartTime().get(Calendar.DAY_OF_MONTH), 28);
 		Assertions.assertEquals(journeyPatternModel.getStartTime().get(Calendar.MONTH), 4);
@@ -73,8 +73,12 @@ public class JourneyPatternServiceTest {
 				.build();
 		journeyPatternService.saveJourneyPattern(journeyPatternModel);
 		Assertions.assertNotNull(journeyPatternRepository.findByTimetableNameAndRouteNumber("Mon-Fri Timetable", "155"));
-		Assertions.assertEquals(journeyPatternRepository.findByTimetableNameAndRouteNumber("Mon-Fri Timetable", "155").get(0).getName(), "Mon-Fri");
+		assertEquals(journeyPatternRepository.findByTimetableNameAndRouteNumber("Mon-Fri Timetable", "155").get(0).getName(), "Mon-Fri");
 		Assertions.assertEquals(journeyPatternRepository.findByTimetableNameAndRouteNumber("Mon-Fri Timetable", "156").size(), 0);
+	}
+
+	private void assertEquals ( final String expected, final String actual ) {
+		Assertions.assertEquals(expected, actual);
 	}
 
 }

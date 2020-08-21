@@ -35,13 +35,17 @@ public class GameServiceTest {
 		Assertions.assertNotNull(gameService.getGameByPlayerName("Dave A J Lee"));
 		Assertions.assertNull(gameService.getGameByPlayerName("My First Name"));
 		GameModel gameModel2 = gameService.getGameByPlayerName("Dave A J Lee");
-		Assertions.assertEquals(DateFormats.HOUR_MINUTE_FORMAT.getFormat().format(gameModel2.getCurrentTime().getTime()), "05:00");
+		assertEquals(DateFormats.HOUR_MINUTE_FORMAT.getFormat().format(gameModel2.getCurrentTime().getTime()), "05:00");
 		gameService.incrementTime("Dave A J Lee");
 		gameModel2 = gameService.getGameByPlayerName("Dave A J Lee");
-		Assertions.assertEquals(DateFormats.HOUR_MINUTE_FORMAT.getFormat().format(gameModel2.getCurrentTime().getTime()), "05:15");
+		assertEquals(DateFormats.HOUR_MINUTE_FORMAT.getFormat().format(gameModel2.getCurrentTime().getTime()), "05:15");
 		gameService.withdrawBalance(100.0, "Dave A J Lee");
 		gameService.creditBalance(10.0, "Dave A J Lee");
 		Assertions.assertEquals(gameService.computeAndReturnPassengerSatisfaction("Dave A J Lee", 4, 3, 2), 91);
+	}
+
+	private void assertEquals ( final String expected, final String actual ) {
+		Assertions.assertEquals(expected, actual);
 	}
 
 }

@@ -20,7 +20,11 @@ public class TimetableControllerTest {
 	public void testDateInfo() {
 		Calendar testDate = Calendar.getInstance();
 		testDate.set(2014, 4, 20, 14, 23);
-		Assertions.assertEquals(timetableController.getDateInfo(testDate), "Tuesday, 20 May 2014");
+		assertEquals("Tuesday, 20 May 2014", timetableController.getDateInfo(testDate));
+	}
+
+	private void assertEquals ( final String expected, final String actual ) {
+		Assertions.assertEquals(expected, actual);
 	}
 
 }

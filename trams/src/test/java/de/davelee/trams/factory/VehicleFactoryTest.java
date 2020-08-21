@@ -21,44 +21,48 @@ public class VehicleFactoryTest {
 	@Test
 	public void testNumberVehicles() {
 		Assertions.assertNotNull(vehicleFactory.getAvailableVehicles());
-		Assertions.assertEquals(vehicleFactory.getAvailableVehicles().size(), 4);
+		assertEquals(vehicleFactory.getAvailableVehicles().size(), 4);
 	}
 	
 	@Test
 	public void testSingleDecker() {
 		Vehicle vehicle = vehicleFactory.createVehicleByModel("MyBus Single Decker");
 		Assertions.assertNotNull(vehicle);
-		Assertions.assertEquals(vehicle.getSeatingCapacity(), 44);
-		Assertions.assertEquals(vehicle.getStandingCapacity(), 36);
+		assertEquals(vehicle.getSeatingCapacity(), 44);
+		assertEquals(vehicle.getStandingCapacity(), 36);
 	}
 	
 	@Test
 	public void testDoubleDecker() {
 		Vehicle vehicle = vehicleFactory.createVehicleByModel("MyBus Double Decker");
 		Assertions.assertNotNull(vehicle);
-		Assertions.assertEquals(vehicle.getSeatingCapacity(), 78);
-		Assertions.assertEquals(vehicle.getStandingCapacity(), 25);
+		assertEquals(vehicle.getSeatingCapacity(), 78);
+		assertEquals(vehicle.getStandingCapacity(), 25);
 	}
 	
 	@Test
 	public void testBendy() {
 		Vehicle vehicle = vehicleFactory.createVehicleByModel("MyBus Bendy");
 		Assertions.assertNotNull(vehicle);
-		Assertions.assertEquals(vehicle.getSeatingCapacity(), 48);
-		Assertions.assertEquals(vehicle.getStandingCapacity(), 97);
+		assertEquals(vehicle.getSeatingCapacity(), 48);
+		assertEquals(vehicle.getStandingCapacity(), 97);
 	}
 	
 	@Test
 	public void testTram() {
 		Vehicle vehicle = vehicleFactory.createVehicleByModel("MyTram Tram1");
 		Assertions.assertNotNull(vehicle);
-		Assertions.assertEquals(vehicle.getSeatingCapacity(), 104);
-		Assertions.assertEquals(vehicle.getStandingCapacity(), 83);
+		assertEquals(vehicle.getSeatingCapacity(), 104);
+		assertEquals(vehicle.getStandingCapacity(), 83);
 	}
 
 	@Test
 	public void testNull() {
 		Assertions.assertThrows(NoSuchElementException.class, () -> vehicleFactory.createVehicleByModel("MyTrain"));
+	}
+
+	private void assertEquals ( final int expected, final int actual ) {
+		Assertions.assertEquals(expected, actual);
 	}
 	
 }

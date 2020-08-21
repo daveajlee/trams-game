@@ -38,8 +38,12 @@ public class RouteScheduleRepositoryTest {
         RouteSchedule schedule2 = routeScheduleRepository.findByScheduleNumberAndRouteNumber(1, "155");
         Assertions.assertNotNull(schedule2);
         Assertions.assertEquals(schedule2.getDelayInMins(), 5);
-        Assertions.assertEquals(schedule2.getRouteNumber(), "155");
+        assertEquals(schedule2.getRouteNumber(), "155");
         Assertions.assertEquals(schedule2.getScheduleNumber(), 1);
+	}
+
+	private void assertEquals ( final String expected, final String actual ) {
+		Assertions.assertEquals(expected, actual);
 	}
 
 }

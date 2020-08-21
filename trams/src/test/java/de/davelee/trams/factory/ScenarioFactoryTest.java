@@ -27,7 +27,7 @@ public class ScenarioFactoryTest {
 	public void testLanduffScenario() {
 		Scenario scenario = scenarioFactory.createScenarioByName("Landuff Transport Company");
 		Assertions.assertNotNull(scenario);
-		Assertions.assertEquals(scenario.getScenarioName(), "Landuff Transport Company");
+		assertEquals(scenario.getScenarioName(), "Landuff Transport Company");
 		Assertions.assertEquals(scenario.getMinimumSatisfaction(), 70);
 	}
 
@@ -35,7 +35,7 @@ public class ScenarioFactoryTest {
 	public void testLongtsScenario() {
 		Scenario scenario = scenarioFactory.createScenarioByName("Longts Transport Company");
 		Assertions.assertNotNull(scenario);
-		Assertions.assertEquals(scenario.getScenarioName(), "Longts Transport Company");
+		assertEquals(scenario.getScenarioName(), "Longts Transport Company");
 		Assertions.assertEquals(scenario.getMinimumSatisfaction(), 50);
 	}
 	
@@ -43,13 +43,17 @@ public class ScenarioFactoryTest {
 	public void testMDorfScenario() {
 		Scenario scenario = scenarioFactory.createScenarioByName("MDorf Transport Company");
 		Assertions.assertNotNull(scenario);
-		Assertions.assertEquals(scenario.getScenarioName(), "MDorf Transport Company");
+		assertEquals(scenario.getScenarioName(), "MDorf Transport Company");
 		Assertions.assertEquals(scenario.getMinimumSatisfaction(), 35);
 	}
 
 	@Test
 	public void testNullScenario() {
 		Assertions.assertThrows(NoSuchElementException.class, () -> scenarioFactory.createScenarioByName("Londuff Transport Company"));
+	}
+
+	private void assertEquals ( final String expected, final String actual ) {
+		Assertions.assertEquals(expected, actual);
 	}
 	
 }
