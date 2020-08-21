@@ -106,10 +106,18 @@ public class FileController {
     }
     
     public TramsFile prepareTramsFile ( ) {
-    	return new TramsFile(driverController.getAllDrivers(), new GameModel[] { gameController.getGameModel() }, journeyController.getAllJourneys(),
-				journeyPatternController.getAllJourneyPatterns(), messageController.getAllMessages(), routeController.getRouteModels(),
-				routeScheduleController.getAllRouteSchedules(), journeyController.getAllStops(),
-				timetableController.getAllTimetableModels(), vehicleController.getVehicleModels());
+    	return TramsFile.builder()
+				.driverModels(driverController.getAllDrivers())
+				.gameModel(new GameModel[] { gameController.getGameModel() })
+				.journeyModels(journeyController.getAllJourneys())
+				.journeyPatternModels(journeyPatternController.getAllJourneyPatterns())
+				.messageModels(messageController.getAllMessages())
+				.routeModels(routeController.getRouteModels())
+				.routeScheduleModels(routeScheduleController.getAllRouteSchedules())
+				.stops(journeyController.getAllStops())
+				.timetableModels(timetableController.getAllTimetableModels())
+				.vehicleModels(vehicleController.getVehicleModels())
+				.build();
     }
 
 }

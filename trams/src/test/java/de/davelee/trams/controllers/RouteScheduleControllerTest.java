@@ -1,5 +1,6 @@
 package de.davelee.trams.controllers;
 
+import de.davelee.trams.model.JourneyPatternModel;
 import de.davelee.trams.model.RouteModel;
 import de.davelee.trams.model.RouteScheduleModel;
 import org.junit.jupiter.api.Assertions;
@@ -45,7 +46,18 @@ public class RouteScheduleControllerTest {
         List<Integer> operatingDays = new ArrayList<Integer>();
         operatingDays.add(1); operatingDays.add(2); operatingDays.add(3); operatingDays.add(4);
         operatingDays.add(5); operatingDays.add(6); operatingDays.add(7);
-        journeyPatternController.createJourneyPattern("Regular", operatingDays, "Airport", "Bus Station", generateCalendarTime(6,0), generateCalendarTime(18,30), 15, 30, timetableController.getRouteTimetable(routeModel, "RegularTimetable"), "X1");
+        JourneyPatternModel journeyPatternModel = JourneyPatternModel.builder()
+                .name("Regular")
+                .daysOfOperation(operatingDays)
+                .outgoingTerminus("Airport")
+                .returnTerminus("Bus Station")
+                .startTime(generateCalendarTime(6,0))
+                .endTime(generateCalendarTime(18,30))
+                .frequency(15)
+                .duration(30)
+                .timetableName(timetableController.getRouteTimetable(routeModel, "RegularTimetable").getName())
+                .routeNumber("X1")
+                .build();
         //Test current time.
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.DAY_OF_MONTH, 1);

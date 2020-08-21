@@ -1,8 +1,11 @@
 package de.davelee.trams.model;
 
+import lombok.Builder;
+
 import java.util.Calendar;
 import java.util.List;
 
+@Builder
 public class JourneyPatternModel {
 	
 	private String name;

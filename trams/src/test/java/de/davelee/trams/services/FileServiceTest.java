@@ -110,17 +110,18 @@ public class FileServiceTest {
 		List<Integer> daysOfOperation = new ArrayList<>(); daysOfOperation.add(Calendar.MONDAY);
 		daysOfOperation.add(Calendar.TUESDAY); daysOfOperation.add(Calendar.WEDNESDAY); daysOfOperation.add(Calendar.THURSDAY);
 		daysOfOperation.add(Calendar.FRIDAY);
-		JourneyPatternModel journeyPatternModel = new JourneyPatternModel();
-		journeyPatternModel.setName("Mon-Fri");
-		journeyPatternModel.setDaysOfOperation(daysOfOperation);
-		journeyPatternModel.setOutgoingTerminus("S+U Pankow");
-		journeyPatternModel.setReturnTerminus("Rathaus Pankow");
-		journeyPatternModel.setStartTime(Calendar.getInstance());
-		journeyPatternModel.setEndTime(Calendar.getInstance());
-		journeyPatternModel.setFrequency(15);
-		journeyPatternModel.setDuration(3);
-		journeyPatternModel.setTimetableName("Mon-Fri Times");
-		journeyPatternModel.setRouteNumber("155");
+		JourneyPatternModel journeyPatternModel = JourneyPatternModel.builder()
+				.name("Mon-Fri")
+				.daysOfOperation(daysOfOperation)
+				.outgoingTerminus("S+U Pankow")
+				.returnTerminus("Rathaus Pankow")
+				.startTime(Calendar.getInstance())
+				.endTime(Calendar.getInstance())
+				.frequency(15)
+				.duration(3)
+				.timetableName("Mon-Fri Times")
+				.routeNumber("155")
+				.build();
 		journeyPatternService.saveJourneyPattern(journeyPatternModel);
 		TimetableModel timetableModel = new TimetableModel();
 		timetableModel.setName("Test");
@@ -148,10 +149,18 @@ public class FileServiceTest {
 		gameModel.setScenarioName("Landuff Transport Company");
 		gameService.saveGame(gameModel);
 		
-		TramsFile tramsFile = new TramsFile(driverService.getAllDrivers(), gameService.getAllGames(), journeyService.getAllJourneys(), 
-				journeyPatternService.getAllJourneyPatterns(), messageService.getAllMessages(), routeService.getAllRoutes(), 
-				routeScheduleService.getAllRouteSchedules(), journeyService.getAllStops(),
-				timetableService.getAllTimetableModels(), vehicleService.getVehicleModels());
+		TramsFile tramsFile = TramsFile.builder()
+				.driverModels(driverService.getAllDrivers())
+				.gameModel(gameService.getAllGames())
+				.journeyModels(journeyService.getAllJourneys())
+				.journeyPatternModels(journeyPatternService.getAllJourneyPatterns())
+				.messageModels(messageService.getAllMessages())
+				.routeModels(routeService.getAllRoutes())
+				.routeScheduleModels(routeScheduleService.getAllRouteSchedules())
+				.stops(journeyService.getAllStops())
+				.timetableModels(timetableService.getAllTimetableModels())
+				.vehicleModels(vehicleService.getVehicleModels())
+				.build();
 		
 		Assertions.assertNotNull(tramsFile.getDriverModels());
 		Assertions.assertNotNull(tramsFile.getVehicleModels());

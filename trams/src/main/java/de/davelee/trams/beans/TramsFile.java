@@ -11,8 +11,10 @@ import de.davelee.trams.model.RouteModel;
 import de.davelee.trams.model.RouteScheduleModel;
 import de.davelee.trams.model.TimetableModel;
 import de.davelee.trams.model.VehicleModel;
+import lombok.Builder;
 
 @XmlRootElement
+@Builder
 public class TramsFile {
 
     private DriverModel[] driverModels;
@@ -25,23 +27,6 @@ public class TramsFile {
 	private String[] stops;
     private TimetableModel[] timetableModels;
     private VehicleModel[] vehicleModels;
-
-    public TramsFile ( ) { }
-
-    public TramsFile ( final DriverModel[] driverModels, final GameModel[] gameModel, final JourneyModel[] journeyModels, final JourneyPatternModel[] journeyPatternModels,
-                       final MessageModel[] messageModels, final RouteModel[] routeModels, final RouteScheduleModel[] routeScheduleModels,
-                       final String[] stops, final TimetableModel[] timetableModels, final VehicleModel[] vehicleModels) {
-                this.driverModels = driverModels;
-                this.gameModel = gameModel;
-                this.journeyModels = journeyModels;
-                this.journeyPatternModels = journeyPatternModels;
-                this.messageModels = messageModels;
-                this.routeModels = routeModels;
-                this.routeScheduleModels = routeScheduleModels;
-                this.stops = stops;
-                this.timetableModels = timetableModels;
-                this.vehicleModels = vehicleModels;
-    }
 
     public DriverModel[] getDriverModels() {
         return driverModels;

@@ -30,17 +30,18 @@ public class JourneyPatternRepositoryTest {
 		List<Integer> daysOfOperation = new ArrayList<Integer>(); daysOfOperation.add(Calendar.MONDAY);
 		daysOfOperation.add(Calendar.TUESDAY); daysOfOperation.add(Calendar.WEDNESDAY); daysOfOperation.add(Calendar.THURSDAY);
 		daysOfOperation.add(Calendar.FRIDAY);
-		JourneyPatternModel journeyPatternModel = new JourneyPatternModel();
-		journeyPatternModel.setName("Mon-Fri");
-		journeyPatternModel.setDaysOfOperation(daysOfOperation);
-		journeyPatternModel.setOutgoingTerminus("S+U Pankow");
-		journeyPatternModel.setReturnTerminus("Rathaus Pankow");
-		journeyPatternModel.setStartTime(Calendar.getInstance());
-		journeyPatternModel.setEndTime(Calendar.getInstance());
-		journeyPatternModel.setFrequency(15);
-		journeyPatternModel.setDuration(3);
-		journeyPatternModel.setTimetableName("Mon-Fri");
-		journeyPatternModel.setRouteNumber("155");
+		JourneyPatternModel journeyPatternModel = JourneyPatternModel.builder()
+				.name("Mon-Fri")
+				.daysOfOperation(daysOfOperation)
+				.outgoingTerminus("S+U Pankow")
+				.returnTerminus("Rathaus Pankow")
+				.startTime(Calendar.getInstance())
+				.endTime(Calendar.getInstance())
+				.frequency(15)
+				.duration(3)
+				.timetableName("Mon-Fri")
+				.routeNumber("155")
+				.build();
 		journeyPatternService.saveJourneyPattern(journeyPatternModel);
 		JourneyPattern journeyPattern2 = journeyPatternRepository.findByTimetableNameAndRouteNumber("Mon-Fri", "155").get(0);
 		Assertions.assertNotNull(journeyPattern2);

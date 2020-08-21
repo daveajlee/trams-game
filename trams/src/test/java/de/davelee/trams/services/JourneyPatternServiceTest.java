@@ -29,17 +29,18 @@ public class JourneyPatternServiceTest {
 		Calendar endDate = Calendar.getInstance(); endDate.set(2014, 4, 30);
 		List<Integer> daysOfOperation = new ArrayList<Integer>(); daysOfOperation.add(Calendar.MONDAY);
 		daysOfOperation.add(Calendar.TUESDAY); daysOfOperation.add(Calendar.WEDNESDAY);
-		JourneyPatternModel journeyPatternModel = new JourneyPatternModel();
-		journeyPatternModel.setName("Test");
-		journeyPatternModel.setDaysOfOperation(daysOfOperation);
-		journeyPatternModel.setOutgoingTerminus("S+U Pankow");
-		journeyPatternModel.setReturnTerminus("Rathaus Pankow");
-		journeyPatternModel.setStartTime(startDate);
-		journeyPatternModel.setEndTime(endDate);
-		journeyPatternModel.setFrequency(15);
-		journeyPatternModel.setDuration(3);
-		journeyPatternModel.setTimetableName("Mon-Fri");
-		journeyPatternModel.setRouteNumber("155");
+		JourneyPatternModel journeyPatternModel = JourneyPatternModel.builder()
+				.name("Test")
+				.daysOfOperation(daysOfOperation)
+				.outgoingTerminus("S+U Pankow")
+				.returnTerminus("Rathaus Pankow")
+				.startTime(startDate)
+				.endTime(endDate)
+				.frequency(15)
+				.duration(3)
+				.timetableName("Mon-Fri")
+				.routeNumber("155")
+				.build();
 		Assertions.assertEquals(journeyPatternModel.getName(), "Test");
 		Assertions.assertEquals(journeyPatternModel.getDaysOfOperation().size(), 3);
 		Assertions.assertEquals(journeyPatternModel.getStartTime().get(Calendar.DAY_OF_MONTH), 28);
@@ -58,17 +59,18 @@ public class JourneyPatternServiceTest {
 		Calendar endDate = Calendar.getInstance(); endDate.set(2014, 4, 30);
 		List<Integer> daysOfOperation = new ArrayList<Integer>(); daysOfOperation.add(Calendar.MONDAY);
 		daysOfOperation.add(Calendar.TUESDAY); daysOfOperation.add(Calendar.WEDNESDAY);
-		JourneyPatternModel journeyPatternModel = new JourneyPatternModel();
-		journeyPatternModel.setName("Mon-Fri");
-		journeyPatternModel.setDaysOfOperation(daysOfOperation);
-		journeyPatternModel.setOutgoingTerminus("S+U Pankow");
-		journeyPatternModel.setReturnTerminus("Rathaus Pankow");
-		journeyPatternModel.setStartTime(startDate);
-		journeyPatternModel.setEndTime(endDate);
-		journeyPatternModel.setFrequency(15);
-		journeyPatternModel.setDuration(3);
-		journeyPatternModel.setTimetableName("Mon-Fri Timetable");
-		journeyPatternModel.setRouteNumber("155");
+		JourneyPatternModel journeyPatternModel = JourneyPatternModel.builder()
+				.name("Mon-Fri")
+				.daysOfOperation(daysOfOperation)
+				.outgoingTerminus("S+U Pankow")
+				.returnTerminus("Rathaus Pankow")
+				.startTime(startDate)
+				.endTime(endDate)
+				.frequency(15)
+				.duration(3)
+				.timetableName("Mon-Fri Timetable")
+				.routeNumber("155")
+				.build();
 		journeyPatternService.saveJourneyPattern(journeyPatternModel);
 		Assertions.assertNotNull(journeyPatternRepository.findByTimetableNameAndRouteNumber("Mon-Fri Timetable", "155"));
 		Assertions.assertEquals(journeyPatternRepository.findByTimetableNameAndRouteNumber("Mon-Fri Timetable", "155").get(0).getName(), "Mon-Fri");

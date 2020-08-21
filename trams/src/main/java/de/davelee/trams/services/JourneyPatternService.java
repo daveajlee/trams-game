@@ -34,7 +34,7 @@ public class JourneyPatternService {
     }
 
     private JourneyPatternModel convertToJourneyPatternModel ( final JourneyPattern journeyPattern ) {
-        JourneyPatternModel journeyPatternModel = new JourneyPatternModel();
+        JourneyPatternModel journeyPatternModel = JourneyPatternModel.builder().build();
         journeyPatternModel.setDaysOfOperation(journeyPattern.getDaysOfOperation());
         journeyPatternModel.setEndTime(journeyPattern.getEndTime());
         journeyPatternModel.setFrequency(journeyPattern.getFrequency());

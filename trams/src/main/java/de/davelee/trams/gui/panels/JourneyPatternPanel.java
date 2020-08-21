@@ -284,11 +284,20 @@ public class JourneyPatternPanel {
                     controllerHandler.getJourneyPatternController().deleteJourneyPattern(journeyPatternModel.getName(), journeyPatternModel.getTimetableName(), journeyPatternModel.getRouteNumber());
                 }
                 logger.debug("I am calling add method with timetable name " + timetableModel.getName() + "!");
-                controllerHandler.getJourneyPatternController().createJourneyPattern(journeyPatternNameField.getText(), operatingDays,
-            			terminus1Box.getSelectedItem().toString(), terminus2Box.getSelectedItem().toString(), timeFrom,
-            			timeTo, Integer.parseInt(everyMinuteSpinner.getValue().toString()),
-            			getCurrentRouteDuration(Integer.parseInt(everyMinuteSpinner.getValue().toString())),
-            			timetableModel, routeModel.getRouteNumber());
+
+                JourneyPatternModel journeyPatternModel = JourneyPatternModel.builder()
+                        .name(journeyPatternNameField.getText())
+                        .daysOfOperation(operatingDays)
+                        .outgoingTerminus(terminus1Box.getSelectedItem().toString())
+                        .returnTerminus(terminus2Box.getSelectedItem().toString())
+                        .startTime(timeFrom)
+                        .endTime(timeTo)
+                        .frequency(Integer.parseInt(everyMinuteSpinner.getValue().toString()))
+                        .duration(getCurrentRouteDuration(Integer.parseInt(everyMinuteSpinner.getValue().toString())))
+                        .timetableName(timetableModel.getName())
+                        .routeNumber(routeModel.getRouteNumber())
+                        .build();
+                controllerHandler.getJourneyPatternController().createJourneyPattern(journeyPatternModel);
                 //Now return to the timetable screen.
                 TimetablePanel myTimetablePanel = new TimetablePanel(controllerHandler);
                 RoutePanel myRoutePanel = new RoutePanel(controllerHandler);

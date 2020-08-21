@@ -31,20 +31,7 @@ public class JourneyPatternController {
 		return journeyPatternService.getJourneyPatternsByTimetableNameAndRouteNumber(timetableModel.getName(), routeNumber);
 	}
 	
-	public void createJourneyPattern ( final String name, final List<Integer> operatingDays, final String outgoingTerminus, 
-			final String returnTerminus, final Calendar timeFrom, final Calendar timeTo, final int frequency, final int routeDuration,
-			final TimetableModel timetableModel, final String routeNumber ) {
-		JourneyPatternModel journeyPatternModel = new JourneyPatternModel();
-		journeyPatternModel.setName(name);
-		journeyPatternModel.setDaysOfOperation(operatingDays);
-		journeyPatternModel.setOutgoingTerminus(outgoingTerminus);
-		journeyPatternModel.setReturnTerminus(returnTerminus);
-		journeyPatternModel.setStartTime(timeFrom);
-		journeyPatternModel.setEndTime(timeTo);
-		journeyPatternModel.setFrequency(frequency);
-		journeyPatternModel.setDuration(routeDuration);
-		journeyPatternModel.setTimetableName(timetableModel.getName());
-		journeyPatternModel.setRouteNumber(routeNumber);
+	public void createJourneyPattern ( final JourneyPatternModel journeyPatternModel ) {
 		journeyPatternService.saveJourneyPattern(journeyPatternModel);
 	}
 
