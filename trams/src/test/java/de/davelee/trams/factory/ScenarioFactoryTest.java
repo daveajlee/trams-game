@@ -20,7 +20,7 @@ public class ScenarioFactoryTest {
 	@Test
 	public void testNumberScenarios ( ) {
 		Assertions.assertNotNull(scenarioFactory.getAvailableScenarios());
-		Assertions.assertEquals(scenarioFactory.getAvailableScenarios().size(), 3);
+		assertEquals(scenarioFactory.getAvailableScenarios().size(), 3);
 	}
 	
 	@Test
@@ -53,6 +53,10 @@ public class ScenarioFactoryTest {
 	}
 
 	private void assertEquals ( final String expected, final String actual ) {
+		Assertions.assertEquals(expected, actual);
+	}
+
+	private void assertEquals ( final int expected, final int actual ) {
 		Assertions.assertEquals(expected, actual);
 	}
 	

@@ -97,15 +97,18 @@ public class VehicleController {
 		return vehicleService.getVehicleByRouteNumberAndRouteScheduleNumber(routeNumber, Long.parseLong(scheduleNumber));
 	}
 
-	public void createSuppliedVehicles(final ScenarioModel scenarioModel, Calendar currentTime) {
+	public int createSuppliedVehicles(final ScenarioModel scenarioModel, Calendar currentTime) {
 		Iterator<String> vehicleModels = scenarioModel.getSuppliedVehicles().keySet().iterator();
+		int numCreatedVehicles = 0;
 		while (vehicleModels.hasNext()) {
 			String vehicleModel = vehicleModels.next();
 			for ( int i = 0; i < scenarioModel.getSuppliedVehicles().get(vehicleModel); i++ )  {
 				vehicleService.saveVehicle(vehicleService.createVehicleObject(vehicleModel, vehicleService.generateRandomReg(
 						currentTime.get(Calendar.YEAR)), currentTime));
+				numCreatedVehicles++;
 			}
 		}
+		return numCreatedVehicles;
 	}
 
 	public VehicleModel[] getVehicleModels ( ) {

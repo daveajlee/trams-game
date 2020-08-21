@@ -33,7 +33,11 @@ public class JourneyRepositoryTest {
 		journeyModel.setRouteScheduleNumber(1);
 		journeyModel.setRouteNumber("155");
         journeyService.saveJourney(journeyModel);
-		Assertions.assertEquals(journeyRepository.findByRouteScheduleNumberAndRouteNumber(1, "155").get(0).getRouteScheduleNumber(), 1);
+		assertEquals(journeyRepository.findByRouteScheduleNumberAndRouteNumber(1, "155").get(0).getRouteScheduleNumber(), 1);
+	}
+
+	private void assertEquals ( final int expected, final int actual ) {
+		Assertions.assertEquals(expected, actual);
 	}
 
 }

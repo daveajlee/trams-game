@@ -70,7 +70,7 @@ public class RouteScheduleControllerTest {
         Assertions.assertEquals(2, routeScheduleModels.get(1).getScheduleNumber());
         Assertions.assertEquals(3, routeScheduleModels.get(2).getScheduleNumber());
         Assertions.assertEquals(0, routeScheduleModels.get(0).getDelay());
-        Assertions.assertEquals("X1", routeScheduleModels.get(0).getRouteNumber());
+        assertEquals("X1", routeScheduleModels.get(0).getRouteNumber());
     }
 
     private Calendar generateCalendarDateTime ( final int day, final int month, final int year, final int hour, final int min) {
@@ -88,6 +88,10 @@ public class RouteScheduleControllerTest {
         calendar.set(Calendar.HOUR_OF_DAY, hour);
         calendar.set(Calendar.MINUTE, min);
         return calendar;
+    }
+
+    private void assertEquals ( final String expected, final String actual ) {
+        Assertions.assertEquals(expected, actual);
     }
 
 }

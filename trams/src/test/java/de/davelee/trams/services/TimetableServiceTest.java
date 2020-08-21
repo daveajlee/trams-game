@@ -28,13 +28,17 @@ public class TimetableServiceTest {
 		timetableModel.setValidFromDate(testDate);
 		timetableModel.setValidToDate(testDate2);
 		Assertions.assertNotNull(timetableModel);
-		Assertions.assertEquals(timetableModel.getName(), "myTimetable");
+		assertEquals(timetableModel.getName(), "myTimetable");
 		Assertions.assertEquals(timetableModel.getValidFromDate().get(Calendar.YEAR), 2014);
 		Assertions.assertEquals(timetableModel.getValidFromDate().get(Calendar.MONTH), 4);
 		Assertions.assertEquals(timetableModel.getValidFromDate().get(Calendar.DAY_OF_MONTH), 20);
 		Assertions.assertEquals(timetableModel.getValidToDate().get(Calendar.YEAR), 2014);
 		Assertions.assertEquals(timetableModel.getValidToDate().get(Calendar.MONTH), 5);
 		Assertions.assertEquals(timetableModel.getValidToDate().get(Calendar.DAY_OF_MONTH), 20);
+	}
+
+	private void assertEquals ( final String expected, final String actual ) {
+		Assertions.assertEquals(expected, actual);
 	}
 
 }

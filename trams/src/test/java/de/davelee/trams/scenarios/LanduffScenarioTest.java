@@ -20,7 +20,11 @@ public class LanduffScenarioTest {
 	
 	@Test
 	public void testName() {
-		Assertions.assertEquals(landuffScenario.getScenarioName(), "Landuff Transport Company");
+		assertEquals(landuffScenario.getScenarioName(), "Landuff Transport Company");
+	}
+
+	private void assertEquals ( final String expected, final String actual ) {
+		Assertions.assertEquals(expected, actual);
 	}
 
 }

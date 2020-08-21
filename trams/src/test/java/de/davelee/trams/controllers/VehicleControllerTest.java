@@ -3,6 +3,7 @@ package de.davelee.trams.controllers;
 import java.util.Calendar;
 import java.util.HashMap;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +27,11 @@ public class VehicleControllerTest {
 		suppliedVehicles.put("MyBus Single Decker", Integer.valueOf(1));
 		scenarioModel.setSuppliedVehicles(suppliedVehicles);
 		Calendar currentDate = Calendar.getInstance(); currentDate.set(Calendar.YEAR, 2014);
-		vehicleController.createSuppliedVehicles(scenarioModel, currentDate);
+		assertEquals(1, vehicleController.createSuppliedVehicles(scenarioModel, currentDate));
+	}
+
+	private void assertEquals ( final int expected, final int actual ) {
+		Assertions.assertEquals(expected, actual);
 	}
 
 }

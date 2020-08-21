@@ -179,10 +179,14 @@ public class FileServiceTest {
 		TramsFile tramsFile2 = fileService.loadFile(new File("test-trams.xml"));
 		Assertions.assertNotNull(tramsFile2);
 		Assertions.assertEquals(tramsFile2.getDriverModels().length, 1);
-		Assertions.assertEquals(tramsFile2.getDriverModels()[0].getName(), "Chris Lee");
+		assertEquals(tramsFile2.getDriverModels()[0].getName(), "Chris Lee");
 		Assertions.assertEquals(tramsFile2.getVehicleModels().length, 1);
 		Assertions.assertEquals(tramsFile2.getRouteScheduleModels().length, 1);
 		Assertions.assertEquals(tramsFile2.getGameModel().length, 1);
+	}
+
+	private void assertEquals ( final String expected, final String actual ) {
+		Assertions.assertEquals(expected, actual);
 	}
 
 }

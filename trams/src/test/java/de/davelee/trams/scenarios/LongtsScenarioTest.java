@@ -20,7 +20,11 @@ public class LongtsScenarioTest {
 	
 	@Test
 	public void testName() {
-		Assertions.assertEquals(longtsScenario.getScenarioName(), "Longts Transport Company");
+		assertEquals(longtsScenario.getScenarioName(), "Longts Transport Company");
+	}
+
+	private void assertEquals ( final String expected, final String actual ) {
+		Assertions.assertEquals(expected, actual);
 	}
 
 }

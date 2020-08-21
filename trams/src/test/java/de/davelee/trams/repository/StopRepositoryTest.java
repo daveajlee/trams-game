@@ -25,7 +25,11 @@ public class StopRepositoryTest {
 		journeyService.saveStop("Ossietzkyplatz");
 		Stop stop2 = stopRepository.findByStopName("Ossietzkyplatz");
 		Assertions.assertNotNull(stop2);
-		Assertions.assertEquals(stop2.getStopName(), "Ossietzkyplatz");
+		assertEquals(stop2.getStopName(), "Ossietzkyplatz");
+	}
+
+	private void assertEquals ( final String expected, final String actual ) {
+		Assertions.assertEquals(expected, actual);
 	}
 	
 }

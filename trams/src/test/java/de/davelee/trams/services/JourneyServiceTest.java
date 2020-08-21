@@ -16,7 +16,7 @@ public class JourneyServiceTest {
 
 	@Test
 	public void testStopDistances() {
-		Assertions.assertEquals(journeyService.getDistance("Landuff Transport Company", "Airport", "Cargo Terminal"), 12);
+		assertEquals(journeyService.getDistance("Landuff Transport Company", "Airport", "Cargo Terminal"), 12);
 	}
 
 	@Test
@@ -27,6 +27,10 @@ public class JourneyServiceTest {
 	@Test
 	public void testStopDistanceNull2() {
 		Assertions.assertThrows(IndexOutOfBoundsException.class, () -> journeyService.getDistance("Landuff Transport Company", "Airport", "Strasse 201"));
+	}
+
+	private void assertEquals ( final int expected, final int actual ) {
+		Assertions.assertEquals(expected, actual);
 	}
 	
 }

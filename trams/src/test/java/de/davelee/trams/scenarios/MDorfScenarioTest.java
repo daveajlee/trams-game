@@ -20,7 +20,11 @@ public class MDorfScenarioTest {
 	
 	@Test
 	public void testPopulate() {
-		Assertions.assertEquals(mDorfScenario.getScenarioName(), "MDorf Transport Company");
+		assertEquals(mDorfScenario.getScenarioName(), "MDorf Transport Company");
+	}
+
+	private void assertEquals ( final String expected, final String actual ) {
+		Assertions.assertEquals(expected, actual);
 	}
 
 }

@@ -35,16 +35,16 @@ public class VehicleServiceTest {
 		vehicleModel.setSeatingCapacity("45");
 		vehicleModel.setStandingCapacity("20");
 		vehicleModel.setPurchasePrice(20000.00);
-		Assertions.assertEquals(vehicleModel.getRegistrationNumber(), "CV58 2DX");
+		assertEquals(vehicleModel.getRegistrationNumber(), "CV58 2DX");
 		Assertions.assertEquals(vehicleModel.getDeliveryDate().get(Calendar.YEAR), 2014);
 		Assertions.assertEquals(vehicleModel.getDeliveryDate().get(Calendar.MONTH), 4);
 		Assertions.assertEquals(vehicleModel.getDeliveryDate().get(Calendar.DAY_OF_MONTH), 20);
 		Assertions.assertEquals(vehicleModel.getDepreciationFactor(), 0.06, 0.0001);
-		Assertions.assertEquals(vehicleModel.getImagePath(), "singledecker.png");
-		Assertions.assertEquals(vehicleModel.getModel(), "Mercedes");
+		assertEquals(vehicleModel.getImagePath(), "singledecker.png");
+		assertEquals(vehicleModel.getModel(), "Mercedes");
 		Assertions.assertEquals(vehicleModel.getRouteScheduleNumber(), 1);
-		Assertions.assertEquals(vehicleModel.getSeatingCapacity(), "45");
-		Assertions.assertEquals(vehicleModel.getStandingCapacity(), "20");
+		assertEquals(vehicleModel.getSeatingCapacity(), "45");
+		assertEquals(vehicleModel.getStandingCapacity(), "20");
 		Assertions.assertEquals(vehicleModel.getPurchasePrice(), 20000.00, 0.0001);
 	}
 	
@@ -62,14 +62,14 @@ public class VehicleServiceTest {
 		Assertions.assertFalse(vehicleService.hasBeenDelivered(deliveryDate, currentDate));
 		//Same - been delivered.
 		currentDate.set(2014, 4, 20);
-		Assertions.assertTrue(vehicleService.hasBeenDelivered(deliveryDate, currentDate));
+		assertTrue(vehicleService.hasBeenDelivered(deliveryDate, currentDate));
 		//After - been delivered.
 		currentDate.set(2014, 4, 21);
-		Assertions.assertTrue(vehicleService.hasBeenDelivered(deliveryDate, currentDate));
+		assertTrue(vehicleService.hasBeenDelivered(deliveryDate, currentDate));
 		currentDate.set(2014, 5, 20);
-		Assertions.assertTrue(vehicleService.hasBeenDelivered(deliveryDate, currentDate));
+		assertTrue(vehicleService.hasBeenDelivered(deliveryDate, currentDate));
 		currentDate.set(2015, 4, 20);
-		Assertions.assertTrue(vehicleService.hasBeenDelivered(deliveryDate, currentDate));
+		assertTrue(vehicleService.hasBeenDelivered(deliveryDate, currentDate));
 	}
 	
 	@Test
@@ -94,16 +94,16 @@ public class VehicleServiceTest {
 		Calendar deliveryDate = Calendar.getInstance(); deliveryDate.set(2014, 4, 20);
 		//Vehicle is not even bought - age is minus.
 		Calendar currentDate = Calendar.getInstance(); currentDate.set(2014, 2, 20);
-		Assertions.assertEquals(vehicleService.getAge(deliveryDate, currentDate), -1);
+		assertEquals(vehicleService.getAge(deliveryDate, currentDate), -1);
 		//Vehicle is brand new - age 0.
 		currentDate.set(2014, 4, 20);
-		Assertions.assertEquals(vehicleService.getAge(deliveryDate, currentDate), 0);
+		assertEquals(vehicleService.getAge(deliveryDate, currentDate), 0);
 		//Vehicle is 12 months old.
 		currentDate.set(2015, 4, 20);
-		Assertions.assertEquals(vehicleService.getAge(deliveryDate, currentDate), 12);
+		assertEquals(vehicleService.getAge(deliveryDate, currentDate), 12);
 		//Vehicle is very old!
 		currentDate.set(2027, 4, 22);
-		Assertions.assertEquals(vehicleService.getAge(deliveryDate, currentDate), 156);
+		assertEquals(vehicleService.getAge(deliveryDate, currentDate), 156);
 	}
 	
 	@Test
@@ -143,7 +143,7 @@ public class VehicleServiceTest {
 	@Test
 	public void testGetModel() {
 		Assertions.assertNotNull(vehicleService.getFirstVehicleModel());
-		Assertions.assertEquals(vehicleService.getFirstVehicleModel(), "MyBus Single Decker");
+		assertEquals(vehicleService.getFirstVehicleModel(), "MyBus Single Decker");
 	}
 
 	@Test
@@ -161,6 +161,10 @@ public class VehicleServiceTest {
 
 	private void assertEquals ( final int expected, final int actual ) {
 		Assertions.assertEquals(expected, actual);
+	}
+
+	private void assertTrue ( final boolean condition ) {
+		Assertions.assertTrue(condition);
 	}
 
 }

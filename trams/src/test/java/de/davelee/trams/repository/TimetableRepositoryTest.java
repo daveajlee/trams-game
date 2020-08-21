@@ -38,7 +38,11 @@ public class TimetableRepositoryTest {
 		timetableService.saveTimetable(timetableModel);
 		Timetable timetable2 = timetableRepository.findByRouteNumberAndName("155", "myTimetable");
 		Assertions.assertNotNull(timetable2);
-		Assertions.assertEquals(timetable2.getName(), "myTimetable");
+		assertEquals(timetable2.getName(), "myTimetable");
+	}
+
+	private void assertEquals ( final String expected, final String actual ) {
+		Assertions.assertEquals(expected, actual);
 	}
 
 }

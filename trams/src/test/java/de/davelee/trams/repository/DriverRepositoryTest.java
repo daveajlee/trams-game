@@ -28,12 +28,16 @@ public class DriverRepositoryTest {
 		driverRepository.saveAndFlush(driver);
 		Driver driver2 = driverRepository.findByName("Dave Lee");
 		Assertions.assertNotNull(driver2);
-		Assertions.assertEquals(driver2.getName(), "Dave Lee");
+		assertEquals(driver2.getName(), "Dave Lee");
 		Assertions.assertEquals(driver2.getContractedHours(), 40);
 		Assertions.assertEquals(driverRepository.findAll().size(), 1);
 		//Test remove
 		driverRepository.delete(driver2);
 		Assertions.assertEquals(driverRepository.findAll().size(), 0);
+	}
+
+	private void assertEquals ( final String expected, final String actual ) {
+		Assertions.assertEquals(expected, actual);
 	}
 
 }

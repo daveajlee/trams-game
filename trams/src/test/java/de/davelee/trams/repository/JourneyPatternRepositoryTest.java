@@ -45,12 +45,16 @@ public class JourneyPatternRepositoryTest {
 		journeyPatternService.saveJourneyPattern(journeyPatternModel);
 		JourneyPattern journeyPattern2 = journeyPatternRepository.findByTimetableNameAndRouteNumber("Mon-Fri", "155").get(0);
 		Assertions.assertNotNull(journeyPattern2);
-		Assertions.assertEquals(journeyPattern2.getName(), "Mon-Fri");
+		assertEquals(journeyPattern2.getName(), "Mon-Fri");
 		Assertions.assertEquals(journeyPattern2.getDaysOfOperation().size(), 5);
-		Assertions.assertEquals(journeyPattern2.getOutgoingTerminus(), "S+U Pankow");
-		Assertions.assertEquals(journeyPattern2.getReturnTerminus(), "Rathaus Pankow");
+		assertEquals(journeyPattern2.getOutgoingTerminus(), "S+U Pankow");
+		assertEquals(journeyPattern2.getReturnTerminus(), "Rathaus Pankow");
 		Assertions.assertEquals(journeyPattern2.getRouteDuration(), 3);
 		Assertions.assertEquals(journeyPattern2.getFrequency(), 15);
+	}
+
+	private void assertEquals ( final String expected, final String actual ) {
+		Assertions.assertEquals(expected, actual);
 	}
 
 }

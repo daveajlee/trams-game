@@ -20,17 +20,17 @@ public class ScenarioServiceTest {
 	@Test
 	public void testStopNames() {
 		ScenarioModel scenario = scenarioService.retrieveScenarioObject("Landuff Transport Company");
-		Assertions.assertEquals(scenario.getName(), "Landuff Transport Company");
-		Assertions.assertEquals(scenario.getStopNames()[0], "Airport");
-		Assertions.assertEquals(scenario.getStopNames()[45], "Mile Inn");
-		Assertions.assertEquals(scenario.getStopNames().length, 47);
+		assertEquals(scenario.getName(), "Landuff Transport Company");
+		assertEquals(scenario.getStopNames()[0], "Airport");
+		assertEquals(scenario.getStopNames()[45], "Mile Inn");
+		assertEquals(scenario.getStopNames().length, 47);
 	}
 
 	@Test
 	public void testStopDistances() {
 		ScenarioModel scenario = scenarioService.retrieveScenarioObject("Landuff Transport Company");
 		Assertions.assertNotNull(scenario);
-		Assertions.assertEquals(scenario.getStopNames().length, 47);
+		assertEquals(scenario.getStopNames().length, 47);
 	}
 
 	public void testRetrieveScenarioObject() {
@@ -46,14 +46,22 @@ public class ScenarioServiceTest {
 
 	@Test
 	public void testScenarioSize() {
-		Assertions.assertEquals(scenarioService.getAvailableScenarios().length, 3);
+		assertEquals(scenarioService.getAvailableScenarios().length, 3);
 	}
 
 	@Test
 	public void testScenarioModels() {
 		ScenarioModel[] scenarioModels = scenarioService.getAvailableScenarios();
 		Assertions.assertEquals(scenarioModels.length, 3);
-		Assertions.assertEquals(scenarioModels[0].getName(), "Landuff Transport Company");
+		assertEquals(scenarioModels[0].getName(), "Landuff Transport Company");
+	}
+
+	private void assertEquals ( final String expected, final String actual ) {
+		Assertions.assertEquals(expected, actual);
+	}
+
+	private void assertEquals ( final int expected, final int actual ) {
+		Assertions.assertEquals(expected, actual);
 	}
 	
 }
