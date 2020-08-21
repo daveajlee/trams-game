@@ -64,8 +64,6 @@ public class ControlScreen extends ButtonBar {
 
     private boolean redrawOnRouteChange = true;
 
-    private int simulationSpeed = 2000;
-
     /**
      * Create a new control screen.
      * @param controllerHandler a <code>ControllerHandler</code> obtaining the currently used controllers from Spring.

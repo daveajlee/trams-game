@@ -8,7 +8,6 @@ import org.springframework.test.context.ContextConfiguration;
 import de.davelee.trams.beans.Scenario;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.lang.reflect.Executable;
 import java.util.NoSuchElementException;
 
 @ExtendWith(SpringExtension.class)

@@ -133,11 +133,10 @@ public class JourneyService {
                 StopTimeModel stopTime = journeyModels[i].getStopTimeModelList().get(journeyModels[i].getStopTimeModelList().size()-1);
                 return stopTime.getStopName();
             }
-            else if (checkJourneyStatus(journeyModels[i], currentTime) == JourneyStatus.YET_TO_RUN) {
-                if ( journeyModels[i].getJourneyNumber() != 1 ) {
+            else if (checkJourneyStatus(journeyModels[i], currentTime) == JourneyStatus.YET_TO_RUN && journeyModels[i].getJourneyNumber() != 1) {
                     StopTimeModel stopTime = journeyModels[i].getStopTimeModelList().get(journeyModels[i].getStopTimeModelList().size()-1);
                     return stopTime.getStopName();
-                }
+
             }
         }
         return "Depot";
