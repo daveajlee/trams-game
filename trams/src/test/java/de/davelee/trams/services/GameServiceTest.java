@@ -3,6 +3,7 @@ package de.davelee.trams.services;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
+import de.davelee.trams.data.Game;
 import de.davelee.trams.model.GameModel;
 import de.davelee.trams.util.DifficultyLevel;
 import org.junit.jupiter.api.Assertions;
@@ -23,15 +24,15 @@ public class GameServiceTest {
 	
 	@Test
 	public void testIncrement() {
-		GameModel gameModel = new GameModel();
-		gameModel.setPlayerName("Dave A J Lee");
-		gameModel.setScenarioName("Landuff Transport Company");
-		gameModel.setBalance(80000.0);
-		gameModel.setCurrentTime(new GregorianCalendar(2009,Calendar.AUGUST,20,5,0,0));
-		gameModel.setTimeIncrement(15);
-		gameModel.setDifficultyLevel(DifficultyLevel.EASY);
-		gameModel.setPassengerSatisfaction(100);
-		gameService.saveGame(gameModel);
+		gameService.saveGame(GameModel.builder()
+				.playerName("Dave A J Lee")
+				.scenarioName("Landuff Transport Company")
+				.balance(80000.0)
+				.currentTime(new GregorianCalendar(2009,Calendar.AUGUST,20,5,0,0))
+				.timeIncrement(15)
+				.difficultyLevel(DifficultyLevel.EASY)
+				.passengerSatisfaction(100)
+				.build());
 		Assertions.assertNotNull(gameService.getGameByPlayerName("Dave A J Lee"));
 		Assertions.assertNull(gameService.getGameByPlayerName("My First Name"));
 		GameModel gameModel2 = gameService.getGameByPlayerName("Dave A J Lee");

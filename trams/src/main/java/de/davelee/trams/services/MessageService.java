@@ -31,13 +31,13 @@ public class MessageService {
     }
 
     private MessageModel convertToMessageModel ( final Message message ) {
-        MessageModel messageModel = new MessageModel();
-        messageModel.setDate(message.getDate());
-        messageModel.setMessageFolder(message.getFolder());
-        messageModel.setSender(message.getSender());
-        messageModel.setSubject(message.getSubject());
-        messageModel.setText(message.getText());
-        return messageModel;
+        return MessageModel.builder()
+                .date(message.getDate())
+                .messageFolder(message.getFolder())
+                .sender(message.getSender())
+                .subject(message.getSubject())
+                .text(message.getText())
+                .build();
     }
 
     /**

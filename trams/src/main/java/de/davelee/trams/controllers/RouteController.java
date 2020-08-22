@@ -41,10 +41,10 @@ public class RouteController {
 	 * @param stopNames a <code>String</code> list with the stops served by this route.
 	 */
 	public void addNewRoute ( final String routeNumber, final List<String> stopNames ) {
-		RouteModel routeModel = new RouteModel();
-		routeModel.setRouteNumber(routeNumber);
-		routeModel.setStopNames(stopNames);
-		routeService.saveRoute(routeModel);
+		routeService.saveRoute(RouteModel.builder()
+				.routeNumber(routeNumber)
+				.stopNames(stopNames)
+				.build());
 	}
 
 	/**

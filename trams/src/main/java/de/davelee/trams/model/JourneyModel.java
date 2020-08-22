@@ -1,8 +1,11 @@
 package de.davelee.trams.model;
 
+import lombok.Builder;
+
 import java.util.ArrayList;
 import java.util.List;
 
+@Builder
 public class JourneyModel {
 
 	private int journeyNumber;

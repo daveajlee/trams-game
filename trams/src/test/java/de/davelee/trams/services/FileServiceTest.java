@@ -2,7 +2,6 @@ package de.davelee.trams.services;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
@@ -69,46 +68,30 @@ public class FileServiceTest {
 	
 	@Test
 	public void testSaveFile ( ) {
-		//Delete temporary content.
-		driverService.removeAllDrivers();
-		routeService.deleteAllRoutes();
-		messageService.deleteAllMessages();
-		vehicleRepository.deleteAll();
-		journeyService.deleteAllJourneys();
-		journeyService.deleteAllStops();
-		journeyPatternService.deleteAllJourneyPatterns();
-		timetableService.deleteAllTimetables();
-		routeScheduleService.deleteAllRouteSchedules();
+		//Delete temporary content
+		deleteTemporaryContent();
 		//Now create and save file.
 		Calendar startDate = Calendar.getInstance(); startDate.set(2014, Calendar.APRIL, 20);
-		DriverModel driver = new DriverModel();
-		driver.setName("Chris Lee");
-		driver.setContractedHours(40);
-		driver.setStartDate(startDate);
-		driverService.saveDriver(driver);
+		driverService.saveDriver(DriverModel.builder()
+				.name("Chris Lee")
+				.contractedHours(40)
+				.startDate(startDate).build());
 		vehicleRepository.saveAndFlush(vehicleFactory.createVehicleByModel("MyBus Single Decker"));
-		RouteModel routeModel = new RouteModel();
-		routeModel.setRouteNumber("M2");
-		List<String> stops = new ArrayList<>();
-		stops.add("Heinersdorf"); stops.add("Am Steinberg"); stops.add("Alexanderplatz");
-		routeModel.setStopNames(stops);
-		routeService.saveRoute(routeModel);
-		MessageModel messageModel = new MessageModel();
-		messageModel.setSubject("Test Message");
-		messageModel.setSender("Dave Lee");
-		messageModel.setMessageFolder(MessageFolder.INBOX);
-		messageModel.setText("This is a test message");
-		SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
-		String date = dateFormat.format(Calendar.getInstance().getTime());
-		messageModel.setDate(date);
-		messageService.saveMessage(messageModel);
+		routeService.saveRoute(RouteModel.builder()
+				.routeNumber("M2")
+				.stopNames(List.of("Heinersdorf", "Am Steinberg", "Alexanderplatz"))
+				.build());
+		messageService.saveMessage(MessageModel.builder()
+				.subject("Test Message")
+				.sender("Dave Lee")
+				.messageFolder(MessageFolder.INBOX)
+				.text("This is a test message")
+				.date(new SimpleDateFormat("dd-MM-yyyy").format(Calendar.getInstance().getTime()))
+				.build());
 		journeyService.saveStop("Danziger Strasse");
-		List<Integer> daysOfOperation = new ArrayList<>(); daysOfOperation.add(Calendar.MONDAY);
-		daysOfOperation.add(Calendar.TUESDAY); daysOfOperation.add(Calendar.WEDNESDAY); daysOfOperation.add(Calendar.THURSDAY);
-		daysOfOperation.add(Calendar.FRIDAY);
-		JourneyPatternModel journeyPatternModel = JourneyPatternModel.builder()
+		journeyPatternService.saveJourneyPattern(JourneyPatternModel.builder()
 				.name("Mon-Fri")
-				.daysOfOperation(daysOfOperation)
+				.daysOfOperation(List.of(Calendar.MONDAY, Calendar.TUESDAY, Calendar.WEDNESDAY, Calendar.THURSDAY, Calendar.FRIDAY))
 				.outgoingTerminus("S+U Pankow")
 				.returnTerminus("Rathaus Pankow")
 				.startTime(Calendar.getInstance())
@@ -117,33 +100,33 @@ public class FileServiceTest {
 				.duration(3)
 				.timetableName("Mon-Fri Times")
 				.routeNumber("155")
+				.build());
+		timetableService.saveTimetable(TimetableModel.builder()
+				.name("Test")
+				.validFromDate(startDate)
+				.validToDate(startDate)
+				.routeNumber("M1")
+				.build());
+		routeScheduleService.saveRouteSchedule(RouteScheduleModel.builder()
+				.delay(10)
+				.routeNumber("M1")
+				.scheduleNumber(1)
+				.build());
+		JourneyModel journeyModel = JourneyModel.builder()
+				.journeyNumber(1)
+				.routeNumber("M2")
+				.routeScheduleNumber(1)
 				.build();
-		journeyPatternService.saveJourneyPattern(journeyPatternModel);
-		TimetableModel timetableModel = new TimetableModel();
-		timetableModel.setName("Test");
-		timetableModel.setValidFromDate(startDate);
-		timetableModel.setValidToDate(startDate);
-		timetableModel.setRouteNumber("M1");
-		timetableService.saveTimetable(timetableModel);
-		RouteScheduleModel routeScheduleModel = new RouteScheduleModel();
-		routeScheduleModel.setDelay(10);
-		routeScheduleModel.setRouteNumber("M1");
-		routeScheduleModel.setScheduleNumber(1);
-		routeScheduleService.saveRouteSchedule(routeScheduleModel);
-		JourneyModel journeyModel = new JourneyModel();
-		journeyModel.setJourneyNumber(1);
-		journeyModel.setRouteNumber("M2");
-		journeyModel.setRouteScheduleNumber(1);
-		StopTimeModel stopTimeModel = new StopTimeModel();
-		stopTimeModel.setJourneyNumber(1);
-		stopTimeModel.setStopName("Heinersdorf");
-		stopTimeModel.setTime(Calendar.getInstance());
-		journeyModel.addStopTimeToList(stopTimeModel);
+		journeyModel.addStopTimeToList(StopTimeModel.builder()
+				.journeyNumber(1)
+				.stopName("Heinersdorf")
+				.time(Calendar.getInstance())
+				.build());
 		journeyService.saveJourney(journeyModel);
-		GameModel gameModel = new GameModel();
-		gameModel.setPlayerName("Dave Lee");
-		gameModel.setScenarioName("Landuff Transport Company");
-		gameService.saveGame(gameModel);
+		gameService.saveGame(GameModel.builder()
+				.playerName("Dave Lee")
+				.scenarioName("Landuff Transport Company")
+				.build());
 		
 		TramsFile tramsFile = TramsFile.builder()
 				.driverModels(driverService.getAllDrivers())
@@ -170,8 +153,19 @@ public class FileServiceTest {
 		assertNotNull(tramsFile.getGameModel());
 		
 		fileService.saveFile(new File("test-trams.xml"), tramsFile);
-		
-		driverService.removeDriver(driver);
+	}
+
+	private void deleteTemporaryContent ( ) {
+		//Delete temporary content.
+		driverService.removeAllDrivers();
+		routeService.deleteAllRoutes();
+		messageService.deleteAllMessages();
+		vehicleRepository.deleteAll();
+		journeyService.deleteAllJourneys();
+		journeyService.deleteAllStops();
+		journeyPatternService.deleteAllJourneyPatterns();
+		timetableService.deleteAllTimetables();
+		routeScheduleService.deleteAllRouteSchedules();
 	}
 	
 	@Test

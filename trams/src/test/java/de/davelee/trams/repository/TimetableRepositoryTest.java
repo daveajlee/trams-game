@@ -27,15 +27,11 @@ public class TimetableRepositoryTest {
 	
 	@Test
 	public void timetableTest() {
-		List<Integer> daysOfOperation = new ArrayList<Integer>(); daysOfOperation.add(Calendar.MONDAY);
-		daysOfOperation.add(Calendar.TUESDAY); daysOfOperation.add(Calendar.WEDNESDAY); daysOfOperation.add(Calendar.THURSDAY);
-		daysOfOperation.add(Calendar.FRIDAY);
-		TimetableModel timetableModel = new TimetableModel();
-		timetableModel.setName("myTimetable");
-		timetableModel.setRouteNumber("155");
-		timetableModel.setValidFromDate(Calendar.getInstance());
-		timetableModel.setValidToDate(Calendar.getInstance());
-		timetableService.saveTimetable(timetableModel);
+		timetableService.saveTimetable(TimetableModel.builder()
+				.name("myTimetable")
+				.routeNumber("155")
+				.validFromDate(Calendar.getInstance())
+				.validToDate(Calendar.getInstance()).build());
 		Timetable timetable2 = timetableRepository.findByRouteNumberAndName("155", "myTimetable");
 		Assertions.assertNotNull(timetable2);
 		assertEquals(timetable2.getName(), "myTimetable");

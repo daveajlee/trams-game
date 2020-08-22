@@ -22,11 +22,12 @@ public class TimetableServiceTest {
 		List<Integer> daysOfOperation = new ArrayList<Integer>(); daysOfOperation.add(Calendar.MONDAY);
 		daysOfOperation.add(Calendar.TUESDAY); daysOfOperation.add(Calendar.WEDNESDAY); daysOfOperation.add(Calendar.THURSDAY);
 		daysOfOperation.add(Calendar.FRIDAY);
-		TimetableModel timetableModel = new TimetableModel();
-		timetableModel.setName("myTimetable");
-		timetableModel.setRouteNumber("155");
-		timetableModel.setValidFromDate(testDate);
-		timetableModel.setValidToDate(testDate2);
+		TimetableModel timetableModel = TimetableModel.builder()
+				.name("myTimetable")
+				.routeNumber("155")
+				.validFromDate(testDate)
+				.validToDate(testDate2)
+				.build();
 		Assertions.assertNotNull(timetableModel);
 		assertEquals(timetableModel.getName(), "myTimetable");
 		Assertions.assertEquals(timetableModel.getValidFromDate().get(Calendar.YEAR), 2014);

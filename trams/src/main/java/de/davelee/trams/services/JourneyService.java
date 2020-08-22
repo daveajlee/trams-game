@@ -102,13 +102,13 @@ public class JourneyService {
     }
 
     private StopTimeModel convertToStopTimeModel ( final StopTime stopTime ) {
-        StopTimeModel stopTimeModel = new StopTimeModel();
-        stopTimeModel.setJourneyNumber(stopTime.getJourneyNumber());
-        stopTimeModel.setStopName(stopTime.getStopName());
-        stopTimeModel.setTime(stopTime.getTime());
-        stopTimeModel.setRouteNumber(stopTime.getRouteNumber());
-        stopTimeModel.setRouteScheduleNumber(stopTime.getRouteScheduleNumber());
-        return stopTimeModel;
+        return StopTimeModel.builder()
+                .journeyNumber(stopTime.getJourneyNumber())
+                .stopName(stopTime.getStopName())
+                .time(stopTime.getTime())
+                .routeNumber(stopTime.getRouteNumber())
+                .routeScheduleNumber(stopTime.getRouteScheduleNumber())
+                .build();
     }
 
     private StopTime convertToStopTime ( final StopTimeModel stopTimeModel ) {
@@ -459,10 +459,11 @@ public class JourneyService {
                 else {
                     //logger.debug("I want a journey starting from both terminuses at " + myTime.get(Calendar.HOUR_OF_DAY) + ":" + myTime.get(Calendar.MINUTE));
                     //Create an outgoing service.
-                    JourneyModel newJourney = new JourneyModel();
-                    newJourney.setRouteNumber(myJourneyPattern.getRouteNumber());
-                    newJourney.setRouteScheduleNumber(routeScheduleNumber);
-                    newJourney.setJourneyNumber(journeyNumber);
+                    JourneyModel newJourney = JourneyModel.builder()
+                            .routeScheduleNumber(routeScheduleNumber)
+                            .routeNumber(myJourneyPattern.getRouteNumber())
+                            .journeyNumber(journeyNumber)
+                            .build();
                     //Add stops - we also need to create a separate calendar to ensure we don't advance more than we want!!!!
                     Calendar journeyTime = (Calendar) myTime.clone();
                     List<String> journeyStops = new ArrayList<String>();
@@ -472,24 +473,24 @@ public class JourneyService {
                     else {
                         journeyStops = getStopsBetween(stops, myJourneyPattern.getReturnTerminus(), myJourneyPattern.getOutgoingTerminus(), direction);
                     }
-                    StopTimeModel newStopTime = new StopTimeModel();
-                    newStopTime.setJourneyNumber(newJourney.getJourneyNumber());
-                    newStopTime.setStopName(journeyStops.get(0));
-                    newStopTime.setTime( (Calendar) journeyTime.clone());
-                    newStopTime.setRouteNumber(myJourneyPattern.getRouteNumber());
-                    newStopTime.setRouteScheduleNumber(routeScheduleNumber);
-                    newJourney.addStopTimeToList(newStopTime);
+                    newJourney.addStopTimeToList(StopTimeModel.builder()
+                            .journeyNumber(newJourney.getJourneyNumber())
+                            .stopName(journeyStops.get(0))
+                            .time((Calendar) journeyTime.clone())
+                            .routeNumber(myJourneyPattern.getRouteNumber())
+                            .routeScheduleNumber(routeScheduleNumber)
+                            .build());
                     for ( int i = 1; i < journeyStops.size(); i++ ) {
                         //Now add to journey time the difference between the two stops.
                         journeyTime.add(Calendar.MINUTE, getDistance(scenarioName, journeyStops.get(i-1), journeyStops.get(i)));
                         //Create stop.
-                        StopTimeModel newStopTime2 = new StopTimeModel();
-                        newStopTime2.setJourneyNumber(newJourney.getJourneyNumber());
-                        newStopTime2.setStopName(journeyStops.get(i));
-                        newStopTime2.setTime( (Calendar) journeyTime.clone());
-                        newStopTime2.setRouteNumber(myJourneyPattern.getRouteNumber());
-                        newStopTime2.setRouteScheduleNumber(routeScheduleNumber);
-                        newJourney.addStopTimeToList(newStopTime2);
+                        newJourney.addStopTimeToList(StopTimeModel.builder()
+                                .journeyNumber(newJourney.getJourneyNumber())
+                                .stopName(journeyStops.get(i))
+                                .time((Calendar) journeyTime.clone())
+                                .routeScheduleNumber(routeScheduleNumber)
+                                .routeNumber(myJourneyPattern.getRouteNumber())
+                                .build());
                     }
                     //logger.debug("Service #" + serviceId + ": " + newService.getAllDisplayStops());{
                     saveJourney(newJourney);
@@ -505,17 +506,17 @@ public class JourneyService {
     }
 
     private JourneyModel convertToJourneyModel ( final Journey journey ) {
-        JourneyModel journeyModel = new JourneyModel();
-        journeyModel.setJourneyNumber(journey.getJourneyNumber());
-        journeyModel.setRouteNumber(journey.getRouteNumber());
-        journeyModel.setRouteScheduleNumber(journey.getRouteScheduleNumber());
         List<StopTime> stopTimes = journey.getStopTimes();
         List<StopTimeModel> stopTimeModels = new ArrayList<StopTimeModel>();
         for ( StopTime stopTime : stopTimes ) {
             stopTimeModels.add(convertToStopTimeModel(stopTime));
         }
-        journeyModel.setStopTimeModelList(stopTimeModels);
-        return journeyModel;
+        return JourneyModel.builder()
+                .journeyNumber(journey.getJourneyNumber())
+                .routeNumber(journey.getRouteNumber())
+                .routeScheduleNumber(journey.getRouteScheduleNumber())
+                .stopTimeModelList(stopTimeModels)
+                .build();
     }
 
     private List<String> getStopsBetween ( final List<String> stops, final String startStop, final String endStop, final int direction ) {

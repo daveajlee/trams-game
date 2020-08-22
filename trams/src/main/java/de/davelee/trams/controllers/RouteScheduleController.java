@@ -207,9 +207,10 @@ public class RouteScheduleController {
 			//Control what journey we want - initially we don't care.
 			boolean wantOutgoing = true; boolean wantReturn = true;
 			//Create a new route schedule.
-			RouteScheduleModel mySchedule = new RouteScheduleModel ( );
-			mySchedule.setScheduleNumber(counter);
-			mySchedule.setRouteNumber(routeModel.getRouteNumber());
+			RouteScheduleModel mySchedule = RouteScheduleModel.builder()
+					.scheduleNumber(counter)
+					.routeNumber(routeModel.getRouteNumber())
+					.build();
 			//Create our calendar object and set it to midnight.
 			Calendar myCal = new GregorianCalendar(2009,7,7,0,0);
 			//Find whether the first outgoing journey time is before the first return journey time.

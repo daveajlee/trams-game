@@ -90,6 +90,60 @@ public class HelpScreen extends JFrame {
         leftPanel.add(Box.createRigidArea(new Dimension(0, 10)));
         
         //Add topics list.
+
+        leftPanel.add(addTopics());
+        leftPanel.add(Box.createRigidArea(new Dimension(0, 10))); //Spacer.
+        leftPanel.setMaximumSize(new Dimension(450,400));
+        
+        //Add left panel to help panel.
+        helpPanel.add(leftPanel);
+        helpPanel.add(Box.createRigidArea(new Dimension(10, 0)));
+        
+        //Create right pane.
+        JPanel rightPanel = new JPanel();
+        rightPanel.setLayout( new BoxLayout ( rightPanel, BoxLayout.PAGE_AXIS ) );
+        rightPanel.add(Box.createRigidArea(new Dimension(0, 10))); //Spacer
+        //Add editor pane.
+        try {
+            displayPane = new JEditorPane(HelpScreen.class.getResource("/intro.html")); 
+            displayPane.setMaximumSize(new Dimension(650,500));
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+            dispose();
+        }
+        JScrollPane displayScroll = new JScrollPane(displayPane);
+        displayScroll.setMaximumSize(new Dimension(650,390));
+        rightPanel.add(displayScroll);
+        rightPanel.add(Box.createRigidArea(new Dimension(0, 10))); //Spacer.
+        rightPanel.setMaximumSize(new Dimension(650,390));
+        helpPanel.add(rightPanel);
+        helpPanel.setMaximumSize(new Dimension(650,390));
+        //Add help panel to dialog panel.
+        dialogPanel.add(helpPanel);
+        dialogPanel.setMaximumSize(new Dimension(450,390));
+        
+         //Add the panel to the container.
+        c.add ( dialogPanel );
+        
+        //Display the dialog box to the user.
+        //this.pack ();
+        this.setVisible (true);
+        this.setSize ( new Dimension(700,450) );
+        
+        // Set the window's bounds, centering the window
+        Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
+        int x = (screen.width - this.getWidth()) / 2;
+        int y = (screen.height - this.getHeight()) / 2;
+        setBounds(x, y, this.getWidth(), this.getHeight());
+        
+    }
+
+    /**
+     * Add a panel containing all of the topics for the help screen.
+     * @return a <code>JPanel</code> object containing the topics.
+     */
+    public JPanel addTopics ( ) {
         JPanel topicListPanel = new JPanel(new BorderLayout());
         topicsModel = new DefaultListModel();
         topicsModel.addElement("Welcome"); topicsModel.addElement("Getting Started");
@@ -164,52 +218,7 @@ public class HelpScreen extends JFrame {
         });
         JScrollPane topicsPane = new JScrollPane(topicsList);
         topicListPanel.add(topicsPane, BorderLayout.CENTER);
-        leftPanel.add(topicListPanel);
-        leftPanel.add(Box.createRigidArea(new Dimension(0, 10))); //Spacer.
-        leftPanel.setMaximumSize(new Dimension(450,400));
-        
-        //Add left panel to help panel.
-        helpPanel.add(leftPanel);
-        helpPanel.add(Box.createRigidArea(new Dimension(10, 0)));
-        
-        //Create right pane.
-        JPanel rightPanel = new JPanel();
-        rightPanel.setLayout( new BoxLayout ( rightPanel, BoxLayout.PAGE_AXIS ) );
-        rightPanel.add(Box.createRigidArea(new Dimension(0, 10))); //Spacer
-        //Add editor pane.
-        try {
-            displayPane = new JEditorPane(HelpScreen.class.getResource("/intro.html")); 
-            displayPane.setMaximumSize(new Dimension(650,500));
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-            dispose();
-        }
-        JScrollPane displayScroll = new JScrollPane(displayPane);
-        displayScroll.setMaximumSize(new Dimension(650,390));
-        rightPanel.add(displayScroll);
-        rightPanel.add(Box.createRigidArea(new Dimension(0, 10))); //Spacer.
-        rightPanel.setMaximumSize(new Dimension(650,390));
-        helpPanel.add(rightPanel);
-        helpPanel.setMaximumSize(new Dimension(650,390));
-        //Add help panel to dialog panel.
-        dialogPanel.add(helpPanel);
-        dialogPanel.setMaximumSize(new Dimension(450,390));
-        
-         //Add the panel to the container.
-        c.add ( dialogPanel );
-        
-        //Display the dialog box to the user.
-        //this.pack ();
-        this.setVisible (true);
-        this.setSize ( new Dimension(700,450) );
-        
-        // Set the window's bounds, centering the window
-        Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
-        int x = (screen.width - this.getWidth()) / 2;
-        int y = (screen.height - this.getHeight()) / 2;
-        setBounds(x, y, this.getWidth(), this.getHeight());
-        
+        return topicListPanel;
     }
     
     /**

@@ -30,11 +30,11 @@ public class RouteScheduleRepositoryTest {
 		stops.put("Rathaus Pankow", Calendar.getInstance());
 		stops.put("Pankow Kirche", Calendar.getInstance());
 		stops.put("S+U Pankow", Calendar.getInstance());
-		RouteScheduleModel routeScheduleModel = new RouteScheduleModel();
-		routeScheduleModel.setDelay(5);
-		routeScheduleModel.setRouteNumber("155");
-		routeScheduleModel.setScheduleNumber(1);
-        routeScheduleService.saveRouteSchedule(routeScheduleModel);
+        routeScheduleService.saveRouteSchedule(RouteScheduleModel.builder()
+				.delay(5)
+				.routeNumber("155")
+				.scheduleNumber(1)
+				.build());
         RouteSchedule schedule2 = routeScheduleRepository.findByScheduleNumberAndRouteNumber(1, "155");
         Assertions.assertNotNull(schedule2);
         Assertions.assertEquals(schedule2.getDelayInMins(), 5);

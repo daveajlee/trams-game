@@ -1,7 +1,10 @@
 package de.davelee.trams.model;
 
+import lombok.Builder;
+
 import java.util.Calendar;
 
+@Builder
 public class DriverModel {
 	
 	private String name;

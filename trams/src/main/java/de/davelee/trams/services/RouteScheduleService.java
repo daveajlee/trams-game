@@ -100,11 +100,11 @@ public class RouteScheduleService {
     }
 
     private RouteScheduleModel convertToRouteScheduleModel ( final RouteSchedule routeSchedule ) {
-        RouteScheduleModel routeScheduleModel = new RouteScheduleModel();
-        routeScheduleModel.setDelay(routeSchedule.getDelayInMins());
-        routeScheduleModel.setRouteNumber(routeSchedule.getRouteNumber());
-        routeScheduleModel.setScheduleNumber(routeSchedule.getScheduleNumber());
-        return routeScheduleModel;
+        return RouteScheduleModel.builder()
+                .scheduleNumber(routeSchedule.getScheduleNumber())
+                .delay(routeSchedule.getDelayInMins())
+                .routeNumber(routeSchedule.getRouteNumber())
+                .build();
     }
 
     private RouteSchedule convertToRouteSchedule ( final RouteScheduleModel routeScheduleModel ) {

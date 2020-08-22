@@ -45,15 +45,15 @@ public class GameService {
     }
 
      private GameModel convertToGameModel ( final Game game ) {
-        GameModel gameModel = new GameModel();
-        gameModel.setPlayerName(game.getPlayerName());
-        gameModel.setBalance(game.getBalance());
-        gameModel.setPassengerSatisfaction(game.getPassengerSatisfaction());
-        gameModel.setScenarioName(game.getScenarioName());
-        gameModel.setDifficultyLevel(game.getDifficultyLevel());
-        gameModel.setCurrentTime(game.getCurrentTime());
-        gameModel.setTimeIncrement(game.getTimeIncrement());
-        return gameModel;
+        return GameModel.builder()
+                .playerName(game.getPlayerName())
+                .balance(game.getBalance())
+                .passengerSatisfaction(game.getPassengerSatisfaction())
+                .scenarioName(game.getScenarioName())
+                .difficultyLevel(game.getDifficultyLevel())
+                .currentTime(game.getCurrentTime())
+                .timeIncrement(game.getTimeIncrement())
+                .build();
     }
     
     /**

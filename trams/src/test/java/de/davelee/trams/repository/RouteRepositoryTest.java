@@ -26,14 +26,10 @@ public class RouteRepositoryTest {
 	
 	@Test
 	public void routeTest() {
-		List<String> outwardStopNames = new ArrayList<String>();
-		outwardStopNames.add("Rathaus Pankow");
-		outwardStopNames.add("Pankow Kirche");
-		outwardStopNames.add("S+U Pankow");
-		RouteModel routeModel = new RouteModel();
-		routeModel.setRouteNumber("155");
-		routeModel.setStopNames(outwardStopNames);
-		routeService.saveRoute(routeModel);
+		routeService.saveRoute(RouteModel.builder()
+				.routeNumber("155")
+				.stopNames(List.of("Rathaus Pankow", "Pankow Kirche", "S+U Pankow"))
+				.build());
 		Route route2 = routeRepository.findRouteByNumber("155");
 		Assertions.assertNotNull(route2);
 		assertEquals(route2.getNumber(), "155");

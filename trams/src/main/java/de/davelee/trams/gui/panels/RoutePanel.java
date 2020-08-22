@@ -202,10 +202,10 @@ public class RoutePanel {
                     for ( int i = 0; i < routeStopModel.size(); i++ ) {
                         selectedOutwardStops.add(routeStopModel.getElementAt(i).toString());
                     }
-                    RouteModel routeModel2 = new RouteModel();
-                    routeModel2.setRouteNumber(routeNumberField.getText());
-                    routeModel2.setStopNames(selectedOutwardStops);
-                    displayRouteModel = routeModel2;
+                    displayRouteModel = RouteModel.builder()
+                            .routeNumber((routeNumberField.getText()))
+                            .stopNames(selectedOutwardStops)
+                            .build();
                     //Show the actual screen!
 
 

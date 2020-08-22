@@ -1,7 +1,10 @@
 package de.davelee.trams.model;
 
+import lombok.Builder;
+
 import java.util.List;
 
+@Builder
 public class RouteModel {
 	
 	private String routeNumber;

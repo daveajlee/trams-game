@@ -1,7 +1,9 @@
 package de.davelee.trams.model;
 
 import de.davelee.trams.util.MessageFolder;
+import lombok.Builder;
 
+@Builder
 public class MessageModel {
 	
 	private String subject;

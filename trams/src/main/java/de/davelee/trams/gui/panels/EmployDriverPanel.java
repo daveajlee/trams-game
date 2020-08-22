@@ -96,11 +96,11 @@ public class EmployDriverPanel {
         JButton employDriverButton = new JButton("Employ Driver");
         employDriverButton.addActionListener( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
-            	DriverModel driverModel = new DriverModel();
-            	driverModel.setName(driverNameField.getText());
-            	driverModel.setContractedHours((Integer) contractedHoursSpinner.getValue());
-            	driverModel.setStartDate(startDate);
-                controllerHandler.getDriverController().employDriver(driverModel);
+                controllerHandler.getDriverController().employDriver(DriverModel.builder()
+                        .name(driverNameField.getText())
+                        .contractedHours((Integer) contractedHoursSpinner.getValue())
+                        .startDate(startDate)
+                        .build());
                 controlScreen.redrawManagement(displayPanel.createPanel(controlScreen), controllerHandler.getGameController().getGameModel());
             }
         });

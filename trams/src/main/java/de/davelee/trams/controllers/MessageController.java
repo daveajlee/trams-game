@@ -55,13 +55,13 @@ public class MessageController {
      * @param date a <code>Calendar</code> object representing the date the message was sent.
      */
     public void addMessage ( final String subject, final String text, final String sender, final String folder, final String date) {
-        MessageModel messageModel = new MessageModel();
-        messageModel.setSubject(subject);
-        messageModel.setText(text);
-        messageModel.setSender(sender);
-        messageModel.setMessageFolder(MessageFolder.valueOf(folder));
-        messageModel.setDate(date);
-        messageService.saveMessage(messageModel);
+        messageService.saveMessage(MessageModel.builder()
+                .subject(subject)
+                .text(text)
+                .sender(sender)
+                .messageFolder(MessageFolder.valueOf(folder))
+                .date(date)
+                .build());
     }
 
     public MessageModel[] getAllMessages ( ) { return messageService.getAllMessages();

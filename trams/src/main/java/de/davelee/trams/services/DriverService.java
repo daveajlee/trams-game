@@ -34,11 +34,11 @@ public class DriverService {
     }
 
 	private DriverModel convertToDriverModel ( final Driver driver ) {
-		DriverModel driverModel = new DriverModel();
-		driverModel.setName(driver.getName());
-		driverModel.setContractedHours(driver.getContractedHours());
-		driverModel.setStartDate(driver.getStartDate());
-		return driverModel;
+		return DriverModel.builder()
+				.name(driver.getName())
+				.contractedHours(driver.getContractedHours())
+				.startDate(driver.getStartDate())
+				.build();
 	}
 
 	public DriverModel getDriverByName(final String name) {

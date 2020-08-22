@@ -69,20 +69,21 @@ public class GameController {
 		//There can only be one game!
 		gameService.deleteAllGames();
 		//Create game.
-		GameModel gameModel = new GameModel();
-		gameModel.setBalance(80000.00);
 		Calendar calendar = Calendar.getInstance();
 		calendar.set(Calendar.DAY_OF_MONTH, 1);
 		calendar.set(Calendar.MONTH, 3);
 		calendar.set(Calendar.YEAR, 2017);
 		calendar.set(Calendar.HOUR_OF_DAY, 4);
 		calendar.set(Calendar.MINUTE, 0);
-		gameModel.setCurrentTime(calendar);
-		gameModel.setDifficultyLevel(DifficultyLevel.EASY);
-		gameModel.setPlayerName(playerName);
-		gameModel.setScenarioName(scenarioName);
-		gameModel.setTimeIncrement(15);
-		gameModel.setPassengerSatisfaction(100);
+		GameModel gameModel = GameModel.builder()
+				.balance(80000.00)
+				.currentTime(calendar)
+				.difficultyLevel(DifficultyLevel.EASY)
+				.playerName(playerName)
+				.scenarioName(scenarioName)
+				.timeIncrement(15)
+				.passengerSatisfaction(100)
+				.build();
 		//Save game to db, update cache and return it.
 		gameService.saveGame(gameModel);
 		cachedGameModel = gameModel;

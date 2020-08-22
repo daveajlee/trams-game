@@ -21,10 +21,10 @@ public class DriverServiceTest {
 	public void testCreateDriver() {
 		Calendar startDate = Calendar.getInstance();
 		startDate.set(2014, Calendar.APRIL, 20);
-		DriverModel driverModel = new DriverModel();
-		driverModel.setName("Dave Lee");
-		driverModel.setContractedHours(40);
-		driverModel.setStartDate(startDate);
+		DriverModel driverModel = DriverModel.builder()
+				.name("Dave Lee")
+				.contractedHours(40)
+				.startDate(startDate).build();
 		driverService.saveDriver(driverModel);
 		DriverModel driverModel2 = driverService.getDriverByName("Dave Lee");
 		assertEquals(driverModel2.getName(), "Dave Lee");
@@ -63,10 +63,18 @@ public class DriverServiceTest {
 		Calendar startDate = Calendar.getInstance();
 		startDate.set(2014, Calendar.APRIL, 20);
 		//Treble needed so that test works in both Maven and JUnit.
-		DriverModel driverModel = new DriverModel(); DriverModel driverModel2 = new DriverModel(); DriverModel driverModel3 = new DriverModel();
-		driverModel.setName("Dave Lee"); driverModel2.setName("Brian Lee"); driverModel.setName("Rachel Lee");
-		driverModel.setContractedHours(40); driverModel2.setContractedHours(35); driverModel3.setContractedHours(30);
-		driverModel.setStartDate(startDate); driverModel2.setStartDate(startDate); driverModel3.setStartDate(startDate);
+		DriverModel driverModel = DriverModel.builder()
+				.name("Dave Lee")
+				.contractedHours(40)
+				.startDate(startDate).build();
+		DriverModel driverModel2 = DriverModel.builder()
+				.name("Brian Lee")
+				.contractedHours(35)
+				.startDate(startDate).build();
+		DriverModel driverModel3 = DriverModel.builder()
+				.name("Rachel Lee")
+				.contractedHours(30)
+				.startDate(startDate).build();
 		driverService.saveDriver(driverModel);
 		driverService.saveDriver(driverModel2);
 		driverService.saveDriver(driverModel3);

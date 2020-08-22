@@ -1,5 +1,6 @@
 package de.davelee.trams.services;
 
+import java.sql.Time;
 import java.util.Calendar;
 import java.util.List;
 
@@ -29,12 +30,12 @@ public class TimetableService {
     }
 
     private TimetableModel convertToTimetableModel ( final Timetable timetable ) {
-        TimetableModel timetableModel = new TimetableModel();
-        timetableModel.setName(timetable.getName());
-        timetableModel.setRouteNumber(timetable.getRouteNumber());
-        timetableModel.setValidFromDate(timetable.getValidFromDate());
-        timetableModel.setValidToDate(timetable.getValidToDate());
-        return timetableModel;
+        return TimetableModel.builder()
+                .name(timetable.getName())
+                .routeNumber(timetable.getRouteNumber())
+                .validFromDate(timetable.getValidFromDate())
+                .validToDate(timetable.getValidToDate())
+                .build();
     }
 
     public TimetableModel[] getTimetablesByRouteNumber ( final String routeNumber ) {

@@ -148,15 +148,15 @@ public class RouteService {
     }
 
     private RouteModel convertToRouteModel ( final Route route ) {
-        RouteModel routeModel = new RouteModel();
-        routeModel.setRouteNumber(route.getNumber());
         List<Stop> stops = route.getStops();
         List<String> stopNames = new ArrayList<String>();
         for ( int i = 0; i < stops.size(); i++ ) {
             stopNames.add(stops.get(i).getStopName());
         }
-        routeModel.setStopNames(stopNames);
-        return routeModel;
+        return RouteModel.builder()
+                .routeNumber(route.getNumber())
+                .stopNames(stopNames)
+                .build();
     }
     
     /**

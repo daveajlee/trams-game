@@ -27,19 +27,18 @@ public class DriverControllerTest {
     public void testDrivers() {
         gameController.createGameModel("John Smith", "Landuff");
         assertFalse(driverController.hasSomeDriversBeenEmployed());
-        DriverModel driverModel = new DriverModel();
-        driverModel.setContractedHours(20);
-        driverModel.setName("Max Mustermann");
-        driverModel.setStartDate(Calendar.getInstance());
-        driverController.employDriver(driverModel);
+        driverController.employDriver(DriverModel.builder()
+                .name("Max Mustermann")
+                .contractedHours(20)
+                .startDate(Calendar.getInstance())
+                .build());
         assertFalse(driverController.hasSomeDriversBeenEmployed());
-        DriverModel driverModel2 = new DriverModel();
-        driverModel2.setContractedHours(20);
-        driverModel2.setName("Micha Mustermann");
         Calendar currentDate = Calendar.getInstance();
         currentDate.set(2013,4,20);
-        driverModel2.setStartDate(currentDate);
-        driverController.employDriver(driverModel2);
+        driverController.employDriver(DriverModel.builder()
+                .name("Micha Mustermann")
+                .contractedHours(20)
+                .startDate(currentDate).build());
         assertTrue(driverController.hasSomeDriversBeenEmployed());
     }
 

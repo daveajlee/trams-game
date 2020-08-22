@@ -35,11 +35,11 @@ public class DriverController {
 
     public void createSuppliedDrivers(final ScenarioModel scenarioModel, Calendar currentTime) {
         for ( String suppliedDriver : scenarioModel.getSuppliedDrivers()) {
-            DriverModel driverModel = new DriverModel();
-            driverModel.setContractedHours(35);
-            driverModel.setName(suppliedDriver);
-            driverModel.setStartDate(currentTime);
-            driverService.saveDriver(driverModel);
+            driverService.saveDriver(DriverModel.builder()
+                    .contractedHours(35)
+                    .name(suppliedDriver)
+                    .startDate(currentTime)
+                    .build());
         }
     }
 

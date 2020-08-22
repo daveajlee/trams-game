@@ -33,12 +33,12 @@ public class TimetableController {
 	}
 	
 	public void createTimetable ( final String name, final Calendar validFromDate, final Calendar validToDate, final RouteModel routeModel ) {
-		TimetableModel timetableModel = new TimetableModel();
-		timetableModel.setName(name);
-		timetableModel.setValidFromDate(validFromDate);
-		timetableModel.setValidToDate(validToDate);
-		timetableModel.setRouteNumber(routeModel.getRouteNumber());
-		timetableService.saveTimetable(timetableModel);
+		timetableService.saveTimetable(TimetableModel.builder()
+				.name(name)
+				.validFromDate(validFromDate)
+				.validToDate(validToDate)
+				.routeNumber(routeModel.getRouteNumber())
+				.build());
 	}
 	
 	public TimetableModel getCurrentTimetable ( final RouteModel routeModel, final Calendar currentDate) {

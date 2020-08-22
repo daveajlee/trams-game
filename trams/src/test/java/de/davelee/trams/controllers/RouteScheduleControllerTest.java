@@ -30,15 +30,15 @@ public class RouteScheduleControllerTest {
     @Test
     public void testGenerateRouteSchedules() {
         //Test route.
-        RouteModel routeModel = new RouteModel();
-        routeModel.setRouteNumber("X1");
-        List<String> stopList = new ArrayList<String>();
-        stopList.add("Airport");
-        stopList.add("Bus Station");
-        routeModel.setStopNames(stopList);
+        RouteModel routeModel = RouteModel.builder()
+                .routeNumber("X1")
+                .stopNames(List.of("Airport", "Bus Station"))
+                .build();
         //Add test timetable.
         timetableController.createTimetable("RegularTimetable", generateCalendarDateTime(1,3,2017,4,0),
-                generateCalendarDateTime(1,4,2017,23,0), routeModel);
+                generateCalendarDateTime(1,4,2017,23,0), RouteModel.builder()
+                        .routeNumber("X1")
+                        .stopNames(List.of("Airport", "Bus Station")).build());
         //Add test journey pattern.
         List<Integer> operatingDays = new ArrayList<Integer>();
         operatingDays.add(1); operatingDays.add(2); operatingDays.add(3); operatingDays.add(4);

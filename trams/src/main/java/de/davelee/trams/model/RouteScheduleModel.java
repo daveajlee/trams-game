@@ -1,5 +1,8 @@
 package de.davelee.trams.model;
 
+import lombok.Builder;
+
+@Builder
 public class RouteScheduleModel {
 	
 	private int delay;
