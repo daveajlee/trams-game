@@ -3,7 +3,6 @@ package de.davelee.trams.services;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
-import de.davelee.trams.data.Game;
 import de.davelee.trams.model.GameModel;
 import de.davelee.trams.util.DifficultyLevel;
 import org.junit.jupiter.api.Assertions;
