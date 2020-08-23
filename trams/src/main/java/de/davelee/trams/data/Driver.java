@@ -1,12 +1,11 @@
 package de.davelee.trams.data;
 
-import java.util.*;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.time.LocalDate;
 
 /**
  * Class representing a driver in the TraMS program.
@@ -28,7 +27,7 @@ public class Driver {
     private int contractedHours;
 	
 	@Column(name="START_DATE")
-    private Calendar startDate;
+    private LocalDate startDate;
     
     public long getId() {
 		return id;
@@ -38,11 +37,11 @@ public class Driver {
 		this.id = id;
 	}
 
-	public Calendar getStartDate() {
+	public LocalDate getStartDate() {
 		return startDate;
 	}
 
-	public void setStartDate(Calendar startDate) {
+	public void setStartDate(LocalDate startDate) {
 		this.startDate = startDate;
 	}
 

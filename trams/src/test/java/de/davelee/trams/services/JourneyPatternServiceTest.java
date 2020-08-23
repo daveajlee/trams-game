@@ -1,7 +1,8 @@
 package de.davelee.trams.services;
 
-import java.util.ArrayList;
-import java.util.Calendar;
+import java.time.DayOfWeek;
+
+import java.time.LocalTime;
 import java.util.List;
 
 import de.davelee.trams.model.JourneyPatternModel;
@@ -25,17 +26,16 @@ public class JourneyPatternServiceTest {
 
 	@Test
 	public void testCreateJourneyPattern() {
-		Calendar startDate = Calendar.getInstance(); startDate.set(2014, 4, 28);
-		Calendar endDate = Calendar.getInstance(); endDate.set(2014, 4, 30);
-		List<Integer> daysOfOperation = new ArrayList<Integer>(); daysOfOperation.add(Calendar.MONDAY);
-		daysOfOperation.add(Calendar.TUESDAY); daysOfOperation.add(Calendar.WEDNESDAY);
+		LocalTime startTime = LocalTime.of(6,0);
+		LocalTime endTime = LocalTime.of(18,30);
+		List<DayOfWeek> daysOfOperation = List.of(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY);
 		JourneyPatternModel journeyPatternModel = JourneyPatternModel.builder()
 				.name("Test")
 				.daysOfOperation(daysOfOperation)
 				.outgoingTerminus("S+U Pankow")
 				.returnTerminus("Rathaus Pankow")
-				.startTime(startDate)
-				.endTime(endDate)
+				.startTime(startTime)
+				.endTime(endTime)
 				.frequency(15)
 				.duration(3)
 				.timetableName("Mon-Fri")
@@ -43,29 +43,26 @@ public class JourneyPatternServiceTest {
 				.build();
 		assertEquals(journeyPatternModel.getName(), "Test");
 		Assertions.assertEquals(journeyPatternModel.getDaysOfOperation().size(), 3);
-		Assertions.assertEquals(journeyPatternModel.getStartTime().get(Calendar.DAY_OF_MONTH), 28);
-		Assertions.assertEquals(journeyPatternModel.getStartTime().get(Calendar.MONTH), 4);
-		Assertions.assertEquals(journeyPatternModel.getStartTime().get(Calendar.YEAR), 2014);
-		Assertions.assertEquals(journeyPatternModel.getEndTime().get(Calendar.DAY_OF_MONTH), 30);
-		Assertions.assertEquals(journeyPatternModel.getEndTime().get(Calendar.MONTH), 4);
-		Assertions.assertEquals(journeyPatternModel.getEndTime().get(Calendar.YEAR), 2014);
+		Assertions.assertEquals(journeyPatternModel.getStartTime().getHour(), 6);
+		Assertions.assertEquals(journeyPatternModel.getStartTime().getMinute(), 0);
+		Assertions.assertEquals(journeyPatternModel.getEndTime().getHour(), 18);
+		Assertions.assertEquals(journeyPatternModel.getEndTime().getMinute(), 30);
 		Assertions.assertEquals(journeyPatternModel.getFrequency(), 15);
 		Assertions.assertEquals(journeyPatternModel.getDuration(), 3);
 	}
 	
 	@Test
 	public void testGetJourneyPattern ( ) {
-		Calendar startDate = Calendar.getInstance(); startDate.set(2014, 4, 28);
-		Calendar endDate = Calendar.getInstance(); endDate.set(2014, 4, 30);
-		List<Integer> daysOfOperation = new ArrayList<Integer>(); daysOfOperation.add(Calendar.MONDAY);
-		daysOfOperation.add(Calendar.TUESDAY); daysOfOperation.add(Calendar.WEDNESDAY);
+		LocalTime startTime = LocalTime.of(5,00);
+		LocalTime endTime = LocalTime.of(19,30);
+		List<DayOfWeek> daysOfOperation = List.of(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY);
 		JourneyPatternModel journeyPatternModel = JourneyPatternModel.builder()
 				.name("Mon-Fri")
 				.daysOfOperation(daysOfOperation)
 				.outgoingTerminus("S+U Pankow")
 				.returnTerminus("Rathaus Pankow")
-				.startTime(startDate)
-				.endTime(endDate)
+				.startTime(startTime)
+				.endTime(endTime)
 				.frequency(15)
 				.duration(3)
 				.timetableName("Mon-Fri Timetable")

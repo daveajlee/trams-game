@@ -6,7 +6,7 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Calendar;
+import java.time.LocalDate;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -82,9 +82,9 @@ public class EmployDriverPanel {
         JLabel startLabel = new JLabel("Start Date:", SwingConstants.CENTER);
         startLabel.setFont(new Font("Arial", Font.BOLD, 16));
         startLabelPanel.add(startLabel);
-        final Calendar startDate = (Calendar) gameModel.getCurrentTime().clone();
-        startDate.add(Calendar.HOUR, 72);
-        JLabel startField = new JLabel("" + DateFormats.FULL_FORMAT.getFormat().format(startDate.getTime()));
+        final LocalDate startDate = gameModel.getCurrentDateTime().toLocalDate();
+        startDate.plusDays(3);
+        JLabel startField = new JLabel("" + DateFormats.FULL_FORMAT.getFormat().format(startDate));
         startField.setFont(new Font("Arial", Font.ITALIC, 14));
         startLabelPanel.add(startField);
         gridPanel.add(startLabelPanel);

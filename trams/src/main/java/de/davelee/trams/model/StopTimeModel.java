@@ -2,7 +2,7 @@ package de.davelee.trams.model;
 
 import lombok.Builder;
 
-import java.util.Calendar;
+import java.time.LocalTime;
 
 @Builder
 public class StopTimeModel {
@@ -11,7 +11,7 @@ public class StopTimeModel {
 	private String routeNumber;
 	private int routeScheduleNumber;
 	private String stopName;
-	private Calendar time;
+	private LocalTime time;
 	
 	public int getJourneyNumber() {
 		return journeyNumber;
@@ -45,11 +45,11 @@ public class StopTimeModel {
 		this.stopName = stopName;
 	}
 	
-	public Calendar getTime() {
+	public LocalTime getTime() {
 		return time;
 	}
 	
-	public void setTime(final Calendar time) {
+	public void setTime(final LocalTime time) {
 		this.time = time;
 	}
 

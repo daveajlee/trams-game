@@ -1,6 +1,6 @@
 package de.davelee.trams.repository;
 
-import java.util.Calendar;
+import java.time.LocalDate;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -28,8 +28,8 @@ public class TimetableRepositoryTest {
 		timetableService.saveTimetable(TimetableModel.builder()
 				.name("myTimetable")
 				.routeNumber("155")
-				.validFromDate(Calendar.getInstance())
-				.validToDate(Calendar.getInstance()).build());
+				.validFromDate(LocalDate.now())
+				.validToDate(LocalDate.now()).build());
 		Timetable timetable2 = timetableRepository.findByRouteNumberAndName("155", "myTimetable");
 		Assertions.assertNotNull(timetable2);
 		assertEquals(timetable2.getName(), "myTimetable");

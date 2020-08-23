@@ -3,7 +3,6 @@ package de.davelee.trams.gui.panels;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Calendar;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -93,7 +92,7 @@ public class ViewDriverPanel {
         startDateLabel.setFont(new Font("Arial", Font.ITALIC, 14));
         startDateLabelPanel.add(startDateLabel);
         gridPanel.add(startDateLabel);
-        JLabel startDateField = new JLabel(driverModel.getStartDate().get(Calendar.DAY_OF_MONTH) + "-" + (driverModel.getStartDate().get(Calendar.MONTH)+1) + "-" + driverModel.getStartDate().get(Calendar.YEAR));
+        JLabel startDateField = new JLabel(driverModel.getStartDate().getDayOfMonth() + "-" + driverModel.getStartDate().getMonth() + "-" + driverModel.getStartDate().getYear());
         startDateField.setFont(new Font("Arial", Font.PLAIN, 12));
         gridPanel.add(startDateField);
 

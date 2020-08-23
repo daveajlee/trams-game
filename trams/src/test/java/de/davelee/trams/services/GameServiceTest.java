@@ -1,7 +1,6 @@
 package de.davelee.trams.services;
 
-import java.util.Calendar;
-import java.util.GregorianCalendar;
+import java.time.LocalDateTime;
 
 import de.davelee.trams.model.GameModel;
 import de.davelee.trams.util.DifficultyLevel;
@@ -27,7 +26,7 @@ public class GameServiceTest {
 				.playerName("Dave A J Lee")
 				.scenarioName("Landuff Transport Company")
 				.balance(80000.0)
-				.currentTime(new GregorianCalendar(2009,Calendar.AUGUST,20,5,0,0))
+				.currentDateTime(LocalDateTime.of(2009,8,20,5,0,0))
 				.timeIncrement(15)
 				.difficultyLevel(DifficultyLevel.EASY)
 				.passengerSatisfaction(100)
@@ -35,10 +34,10 @@ public class GameServiceTest {
 		Assertions.assertNotNull(gameService.getGameByPlayerName("Dave A J Lee"));
 		Assertions.assertNull(gameService.getGameByPlayerName("My First Name"));
 		GameModel gameModel2 = gameService.getGameByPlayerName("Dave A J Lee");
-		assertEquals(DateFormats.HOUR_MINUTE_FORMAT.getFormat().format(gameModel2.getCurrentTime().getTime()), "05:00");
+		assertEquals(DateFormats.HOUR_MINUTE_FORMAT.getFormat().format(gameModel2.getCurrentDateTime()), "05:00");
 		gameService.incrementTime("Dave A J Lee");
 		gameModel2 = gameService.getGameByPlayerName("Dave A J Lee");
-		assertEquals(DateFormats.HOUR_MINUTE_FORMAT.getFormat().format(gameModel2.getCurrentTime().getTime()), "05:15");
+		assertEquals(DateFormats.HOUR_MINUTE_FORMAT.getFormat().format(gameModel2.getCurrentDateTime()), "05:15");
 		gameService.withdrawBalance(100.0, "Dave A J Lee");
 		gameService.creditBalance(10.0, "Dave A J Lee");
 		Assertions.assertEquals(gameService.computeAndReturnPassengerSatisfaction("Dave A J Lee", 4, 3, 2), 91);

@@ -1,8 +1,5 @@
 package de.davelee.trams.repository;
 
-import java.util.Calendar;
-import java.util.HashMap;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,10 +23,6 @@ public class RouteScheduleRepositoryTest {
 	
 	@Test
 	public void routeScheduleTest() {
-		HashMap<String, Calendar> stops = new HashMap<String, Calendar>();
-		stops.put("Rathaus Pankow", Calendar.getInstance());
-		stops.put("Pankow Kirche", Calendar.getInstance());
-		stops.put("S+U Pankow", Calendar.getInstance());
         routeScheduleService.saveRouteSchedule(RouteScheduleModel.builder()
 				.delay(5)
 				.routeNumber("155")

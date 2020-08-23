@@ -1,6 +1,6 @@
 package de.davelee.trams.controllers;
 
-import java.util.Calendar;
+import java.time.LocalDate;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -18,9 +18,7 @@ public class TimetableControllerTest {
 	
 	@Test
 	public void testDateInfo() {
-		Calendar testDate = Calendar.getInstance();
-		testDate.set(2014, 4, 20, 14, 23);
-		assertEquals("Tuesday, 20 May 2014", timetableController.getDateInfo(testDate));
+		assertEquals("Tuesday, 20 May 2014", timetableController.getDateInfo(LocalDate.of(2014,4,20)));
 	}
 
 	private void assertEquals ( final String expected, final String actual ) {

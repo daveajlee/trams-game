@@ -257,7 +257,7 @@ public class RoutePanel {
         createRouteButton.addActionListener ( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
                final GameModel gameModel = controllerHandler.getGameController().getGameModel();
-               controllerHandler.getRouteScheduleController().generateRouteSchedules(routeModel, gameModel.getCurrentTime(), gameModel.getScenarioName());
+               controllerHandler.getRouteScheduleController().generateRouteSchedules(routeModel, gameModel.getCurrentDateTime().toLocalDate(), gameModel.getScenarioName());
                List<String> selectedOutwardStops = new ArrayList<String>();
                for ( int i = 0; i < routeStopModel.size(); i++ ) {
                     selectedOutwardStops.add(routeStopModel.getElementAt(i).toString());

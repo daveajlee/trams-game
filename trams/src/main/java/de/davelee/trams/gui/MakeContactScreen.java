@@ -110,7 +110,7 @@ public class MakeContactScreen extends JFrame {
                         "\n\n Control: Vehicle " + vehicleModel.getRegistrationNumber() + ", please terminate at " + stopBox.getSelectedItem().toString() + " and proceed in service in the reverse direction. Over!" +
                         "\n\n Vehicle " + vehicleModel.getRegistrationNumber() + ": Message acknowledeged. Thanks. Over!");
                 //Ask vehicle to shorten current route to the specified destination.
-                routeScheduleController.shortenSchedule(routeScheduleModel, stopBox.getSelectedItem().toString(), gameModel.getCurrentTime());
+                routeScheduleController.shortenSchedule(routeScheduleModel, stopBox.getSelectedItem().toString(), gameModel.getCurrentDateTime().toLocalTime());
             }
         });
         alterButtonPanel.add(shortenRouteButton);
@@ -121,7 +121,7 @@ public class MakeContactScreen extends JFrame {
                         "\n\n Control: Vehicle " + vehicleModel.getRegistrationNumber() + ", please go out of service until " + stopBox.getSelectedItem().toString() + ". Over!" +
                         "\n\n Vehicle " + vehicleModel.getRegistrationNumber() + ": Message acknowledeged. Thanks. Over!");
                 //Request vehicle to go out of service.
-                routeScheduleController.outOfService(routeScheduleModel, routeScheduleController.getCurrentStopName(routeScheduleModel, gameModel.getCurrentTime(), gameModel.getDifficultyLevel()), stopBox.getSelectedItem().toString(), gameModel.getCurrentTime());
+                routeScheduleController.outOfService(routeScheduleModel, routeScheduleController.getCurrentStopName(routeScheduleModel, gameModel.getCurrentDateTime(), gameModel.getDifficultyLevel()), stopBox.getSelectedItem().toString(), gameModel.getCurrentDateTime().toLocalTime());
             }
         });
         alterButtonPanel.add(goOutOfServiceButton);
@@ -135,7 +135,7 @@ public class MakeContactScreen extends JFrame {
         communicationArea = new JTextArea(3,5);
         communicationArea.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         communicationArea.setText("Control: Vehicle " + vehicleModel.getRegistrationNumber() + ", please state your current position. Over!");
-        communicationArea.setText(communicationArea.getText() + "\n\n Vehicle " + vehicleModel.getRegistrationNumber() + ": At " + routeScheduleController.getCurrentStopName(routeScheduleModel, gameModel.getCurrentTime(), gameModel.getDifficultyLevel()) + " heading towards " + getCurrentDestination(gameModel) + " with delay of " + routeScheduleModel.getDelay() + " mins. Over!");
+        communicationArea.setText(communicationArea.getText() + "\n\n Vehicle " + vehicleModel.getRegistrationNumber() + ": At " + routeScheduleController.getCurrentStopName(routeScheduleModel, gameModel.getCurrentDateTime(), gameModel.getDifficultyLevel()) + " heading towards " + getCurrentDestination(gameModel) + " with delay of " + routeScheduleModel.getDelay() + " mins. Over!");
         communicationArea.setFont(new Font("Arial", Font.ITALIC, 12));
         communicationArea.setEditable(false);
         communicationArea.setLineWrap(true);
@@ -185,7 +185,7 @@ public class MakeContactScreen extends JFrame {
      * @return a <code>String</code> with the current destination.
      */
     public String getCurrentDestination ( final GameModel gameModel ) {
-        return routeScheduleController.getLastStopName(routeScheduleModel, gameModel.getCurrentTime(), gameModel.getDifficultyLevel());
+        return routeScheduleController.getLastStopName(routeScheduleModel, gameModel.getCurrentDateTime(), gameModel.getDifficultyLevel());
     }
     
     /**
@@ -195,9 +195,9 @@ public class MakeContactScreen extends JFrame {
      */
     public String[] getListOfStops(final GameModel gameModel) {
         //Create the String array.
-        String[] stops = new String[journeyController.getNumStopTimes(routeScheduleModel, gameModel.getCurrentTime())];
+        String[] stops = new String[journeyController.getNumStopTimes(routeScheduleModel, gameModel.getCurrentDateTime().toLocalTime())];
         for ( int i = 0; i < stops.length; i++ ) {
-            stops[i] = journeyController.getStopName(routeScheduleModel, gameModel.getCurrentTime(), i);
+            stops[i] = journeyController.getStopName(routeScheduleModel, gameModel.getCurrentDateTime().toLocalTime(), i);
         }
         return stops;
     }

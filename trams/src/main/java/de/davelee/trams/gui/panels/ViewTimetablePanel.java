@@ -3,7 +3,7 @@ package de.davelee.trams.gui.panels;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Calendar;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -128,10 +128,10 @@ public class ViewTimetablePanel {
         //Show valid information.
         JPanel validityPanel = new JPanel(new BorderLayout());
         validityPanel.setBackground(Color.WHITE);
-        JLabel validFromDateLabel = new JLabel("Valid From: " + controllerHandler.getTimetableController().getDateInfo(controllerHandler.getTimetableController().getCurrentTimetable(routeModel, gameModel.getCurrentTime()).getValidFromDate()));
+        JLabel validFromDateLabel = new JLabel("Valid From: " + controllerHandler.getTimetableController().getDateInfo(controllerHandler.getTimetableController().getCurrentTimetable(routeModel, gameModel.getCurrentDateTime().toLocalDate()).getValidFromDate()));
         validFromDateLabel.setFont(new Font("Arial", Font.ITALIC, 14));
         validityPanel.add(validFromDateLabel, BorderLayout.NORTH);
-        JLabel validToDateLabel = new JLabel("Valid To: " + controllerHandler.getTimetableController().getDateInfo(controllerHandler.getTimetableController().getCurrentTimetable(routeModel, gameModel.getCurrentTime()).getValidToDate()));
+        JLabel validToDateLabel = new JLabel("Valid To: " + controllerHandler.getTimetableController().getDateInfo(controllerHandler.getTimetableController().getCurrentTimetable(routeModel, gameModel.getCurrentDateTime().toLocalDate()).getValidToDate()));
         validToDateLabel.setFont(new Font("Arial", Font.ITALIC, 14));
         validityPanel.add(validToDateLabel, BorderLayout.SOUTH);
         topPanel.add(validityPanel, BorderLayout.SOUTH);
@@ -185,25 +185,20 @@ public class ViewTimetablePanel {
         String[] columnNames = new String[] { "", "Monday - Friday", "Saturday", "Sunday" };
         String[][] data = new String[24][4];
         //TODO: Preprocessing necessary?
-        //Calendar cal = Calendar.getInstance();
-        /*try {
-        	cal.setTime(DateFormats.FULL_FORMAT.getFormat().parse(datesComboBox.getSelectedItem().toString()));
-        } catch ( ParseException parseEx ) {
-        }*/
         //TODO: Add multiple route schedules.
         JourneyModel[] journeyModels = controllerHandler.getJourneyController().getJourneysByRouteScheduleNumberAndRouteNumber(direction, routeNumber);
         for ( int i = 0; i < journeyModels.length; i++ ) {
             try {
-                Calendar cal = controllerHandler.getJourneyController().getStopTime(journeyModels[i], stopName);
-                int hour = cal.get(Calendar.HOUR_OF_DAY); int minute = cal.get(Calendar.MINUTE); String minuteStr = "";
-                if ( minute < 10 ) { minuteStr = "0" + minute; } else { minuteStr = "" + minute; }
+                LocalTime myTime = controllerHandler.getJourneyController().getStopTime(journeyModels[i], stopName);
+                String minuteStr = "";
+                if ( myTime.getMinute() < 10 ) { minuteStr = "0" + myTime.getMinute(); } else { minuteStr = "" + myTime.getMinute(); }
                 int displayPos = 1;
-                if ( cal.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY ) { displayPos = 2; }
-                else if ( cal.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) { displayPos = 3; }
-                if ( data[hour][displayPos] == null ) {
-                    data[hour][displayPos] = "" + minuteStr;
+                /*if ( myDateTime.getDayOfWeek()==DayOfWeek.SATURDAY ) { displayPos = 2; }
+                else if ( myDateTime.getDayOfWeek()==DayOfWeek.SUNDAY ) { displayPos = 3; }*/
+                if ( data[myTime.getHour()][displayPos] == null ) {
+                    data[myTime.getHour()][displayPos] = "" + minuteStr;
                 } else {
-                    data[hour][displayPos] = data[hour][displayPos] + " " + minuteStr;
+                    data[myTime.getHour()][displayPos] = data[myTime.getHour()][displayPos] + " " + minuteStr;
                 }
             } catch (NoSuchElementException ex) {
                 logger.debug("No stop time found for " + journeyModels[i] + " and stop name " + stopName);

@@ -1,7 +1,8 @@
 package de.davelee.trams.repository;
 
+import java.time.DayOfWeek;
+import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 import org.junit.jupiter.api.Assertions;
@@ -27,16 +28,16 @@ public class JourneyPatternRepositoryTest {
 	
 	@Test
 	public void journeyPatternTest() {
-		List<Integer> daysOfOperation = new ArrayList<Integer>(); daysOfOperation.add(Calendar.MONDAY);
-		daysOfOperation.add(Calendar.TUESDAY); daysOfOperation.add(Calendar.WEDNESDAY); daysOfOperation.add(Calendar.THURSDAY);
-		daysOfOperation.add(Calendar.FRIDAY);
+		List<DayOfWeek> daysOfOperation = new ArrayList<DayOfWeek>(); daysOfOperation.add(DayOfWeek.MONDAY);
+		daysOfOperation.add(DayOfWeek.TUESDAY); daysOfOperation.add(DayOfWeek.WEDNESDAY); daysOfOperation.add(DayOfWeek.THURSDAY);
+		daysOfOperation.add(DayOfWeek.FRIDAY);
 		JourneyPatternModel journeyPatternModel = JourneyPatternModel.builder()
 				.name("Mon-Fri")
 				.daysOfOperation(daysOfOperation)
 				.outgoingTerminus("S+U Pankow")
 				.returnTerminus("Rathaus Pankow")
-				.startTime(Calendar.getInstance())
-				.endTime(Calendar.getInstance())
+				.startTime(LocalTime.now())
+				.endTime(LocalTime.now())
 				.frequency(15)
 				.duration(3)
 				.timetableName("Mon-Fri")

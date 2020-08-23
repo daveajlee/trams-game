@@ -1,13 +1,12 @@
 package de.davelee.trams.data;
 
-import java.util.Calendar;
-
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.persistence.Id;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Column;
+import java.time.LocalDate;
 
 @Entity
 @Table(name="VEHICLE", uniqueConstraints=@UniqueConstraint(columnNames = {"routeNumber", "routeScheduleNumber"}))
@@ -21,7 +20,7 @@ public class Vehicle {
 	private String registrationNumber;
 	
 	@Column
-    private Calendar deliveryDate;
+    private LocalDate deliveryDate;
 
 	@Column
 	private String routeNumber;
@@ -107,11 +106,11 @@ public class Vehicle {
 		this.registrationNumber = registrationNumber;
 	}
 	
-	public Calendar getDeliveryDate ( ) {
+	public LocalDate getDeliveryDate ( ) {
     	return deliveryDate;
     }
 
-	public void setDeliveryDate(final Calendar deliveryDate) {
+	public void setDeliveryDate(final LocalDate deliveryDate) {
 		this.deliveryDate = deliveryDate;
 	}
 	

@@ -1,6 +1,6 @@
 package de.davelee.trams.model;
 
-import java.util.Calendar;
+import java.time.LocalDate;
 
 public class VehicleModel {
 	
@@ -9,7 +9,7 @@ public class VehicleModel {
 	private String seatingCapacity;
 	private String standingCapacity;
 	private double purchasePrice;
-	private Calendar deliveryDate;
+	private LocalDate deliveryDate;
 	private String registrationNumber;
 	private double depreciationFactor;
 	private String routeNumber;
@@ -55,11 +55,11 @@ public class VehicleModel {
 		this.purchasePrice = purchasePrice;
 	}
 	
-	public Calendar getDeliveryDate() {
+	public LocalDate getDeliveryDate() {
 		return deliveryDate;
 	}
 	
-	public void setDeliveryDate(final Calendar deliveryDate) {
+	public void setDeliveryDate(final LocalDate deliveryDate) {
 		this.deliveryDate = deliveryDate;
 	}
 	

@@ -9,7 +9,8 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
-import java.util.Calendar;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -136,9 +137,9 @@ public class PurchaseVehiclePanel {
         deliveryLabel.setFont(new Font("Arial", Font.ITALIC, 14));
         deliveryLabelPanel.add(deliveryLabel);
         gridPanel.add(deliveryLabel);
-        final Calendar deliveryDate = (Calendar) gameModel.getCurrentTime().clone();
-        deliveryDate.add(Calendar.HOUR, 72);
-        JLabel deliveryField = new JLabel("" + DateFormats.FULL_FORMAT.getFormat().format(deliveryDate.getTime()));
+        final LocalDate deliveryDate = gameModel.getCurrentDateTime().toLocalDate();
+        deliveryDate.plusDays(3);
+        JLabel deliveryField = new JLabel("" + DateTimeFormatter.RFC_1123_DATE_TIME.format(deliveryDate));
         deliveryField.setFont(new Font("Arial", Font.PLAIN, 12));
         gridPanel.add(deliveryField);
         //Create label and field for purchase price and add it to the price panel.

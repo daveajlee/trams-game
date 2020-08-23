@@ -1,7 +1,5 @@
 package de.davelee.trams.controllers;
 
-import java.util.Calendar;
-
 import org.springframework.beans.factory.annotation.Autowired;
 
 import de.davelee.trams.model.RouteModel;
@@ -9,6 +7,9 @@ import de.davelee.trams.model.TimetableModel;
 import de.davelee.trams.services.TimetableService;
 import de.davelee.trams.util.DateFormats;
 import org.springframework.stereotype.Controller;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 @Controller
 public class TimetableController {
@@ -32,7 +33,7 @@ public class TimetableController {
 		return timetableService.getTimetableByRouteNumberAndName(routeModel.getRouteNumber(), timetableName);
 	}
 	
-	public void createTimetable ( final String name, final Calendar validFromDate, final Calendar validToDate, final RouteModel routeModel ) {
+	public void createTimetable (final String name, final LocalDate validFromDate, final LocalDate validToDate, final RouteModel routeModel ) {
 		timetableService.saveTimetable(TimetableModel.builder()
 				.name(name)
 				.validFromDate(validFromDate)
@@ -41,17 +42,17 @@ public class TimetableController {
 				.build());
 	}
 	
-	public TimetableModel getCurrentTimetable ( final RouteModel routeModel, final Calendar currentDate) {
+	public TimetableModel getCurrentTimetable ( final RouteModel routeModel, final LocalDate currentDate) {
 		return timetableService.getCurrentTimetable(routeModel.getRouteNumber(), currentDate);
 	}
 	
 	/**
      * Format timetable date.
-	 * @param myCalendar a <code>Calendar</code> representing the calendar object to format.
+	 * @param myDate a <code>LocalDate</code> representing the value to format.
      * @return a <code>String</code> object.
      */
-    public String getDateInfo ( final Calendar myCalendar ) {
-    	return DateFormats.FULL_FORMAT.getFormat().format(myCalendar.getTime());
+    public String getDateInfo ( final LocalDate myDate ) {
+    	return DateTimeFormatter.RFC_1123_DATE_TIME.format(myDate);
     }
 
 	public TimetableModel[] getAllTimetableModels ( ) {

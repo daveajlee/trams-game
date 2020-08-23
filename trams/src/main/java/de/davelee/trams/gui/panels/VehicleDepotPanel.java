@@ -66,7 +66,7 @@ public class VehicleDepotPanel {
         DefaultListModel vehiclesModel = new DefaultListModel();
         VehicleModel[] vehicleModels = controllerHandler.getVehicleController().getAllCreatedVehicles();
         for ( int i = 0; i < vehicleModels.length; i++ ) {
-            if ( controllerHandler.getVehicleController().hasVehicleBeenDelivered(vehicleModels[i].getDeliveryDate(), gameModel.getCurrentTime()) ) {
+            if ( controllerHandler.getVehicleController().hasVehicleBeenDelivered(vehicleModels[i].getDeliveryDate(), gameModel.getCurrentDateTime().toLocalDate()) ) {
                 vehiclesModel.addElement(vehicleModels[i].getRegistrationNumber());
             }
         }
@@ -119,7 +119,7 @@ public class VehicleDepotPanel {
         ageLabelPanel.add(ageLabel);
         gridPanel.add(ageLabel);
         JLabel ageField = new JLabel(controllerHandler.getVehicleController().getAge(vehicleModel.getDeliveryDate(),
-        		gameModel.getCurrentTime()) + " months");
+        		gameModel.getCurrentDateTime().toLocalDate()) + " months");
         ageField.setFont(new Font("Arial", Font.PLAIN, 12));
         gridPanel.add(ageField);
         //Create label and field for seating capacity and add it to the seating panel.
@@ -160,7 +160,7 @@ public class VehicleDepotPanel {
         valueLabelPanel.add(valueLabel);
         gridPanel.add(valueLabel);
         DecimalFormat format = new DecimalFormat("0.00");
-        JLabel valueField = new JLabel("£" + format.format(controllerHandler.getVehicleController().getValue(vehicleModel, gameModel.getCurrentTime())));
+        JLabel valueField = new JLabel("£" + format.format(controllerHandler.getVehicleController().getValue(vehicleModel, gameModel.getCurrentDateTime().toLocalDate())));
         valueField.setFont(new Font("Arial", Font.PLAIN, 12));
         gridPanel.add(valueField);
         

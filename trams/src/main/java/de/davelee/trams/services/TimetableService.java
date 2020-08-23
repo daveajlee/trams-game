@@ -1,6 +1,6 @@
 package de.davelee.trams.services;
 
-import java.util.Calendar;
+import java.time.LocalDate;
 import java.util.List;
 
 import de.davelee.trams.data.Timetable;
@@ -69,26 +69,21 @@ public class TimetableService {
      * This method gets the current timetable which is valid for day.
      * It is specifically used for getting the days which this timetable is valid for.
      * @param routeNumber a <code>String</code> with the route number to get the current timetable for.
-     * @param today a <code>Calendar</code> object with today's date.
+     * @param today a <code>LocalDate</code> object with today's date.
      * @return a <code>Timetable</code> object.
      */
-    public TimetableModel getCurrentTimetable ( final String routeNumber, final Calendar today ) {
+    public TimetableModel getCurrentTimetable ( final String routeNumber, final LocalDate today ) {
         List<Timetable> timetables = timetableRepository.findByRouteNumber(routeNumber);
         for ( Timetable myTimetable : timetables ) {
-            boolean clause1 = today.after(myTimetable.getValidFromDate());
-            boolean clause2 = compareDayMonthYear(myTimetable.getValidFromDate(), today);
-            boolean clause3 = today.before(myTimetable.getValidToDate());
-            boolean clause4 = compareDayMonthYear(myTimetable.getValidToDate(), today);
+            boolean clause1 = today.isAfter(myTimetable.getValidFromDate());
+            boolean clause2 = today.isEqual(myTimetable.getValidFromDate());
+            boolean clause3 = today.isBefore(myTimetable.getValidToDate());
+            boolean clause4 = today.isEqual(myTimetable.getValidToDate());
             if ( (clause1 || clause2) && ( clause3 || clause4 ) ) {
                 return convertToTimetableModel(myTimetable);
             }
         }
         return null; //If can't find timetable.
-    }
-
-    private boolean compareDayMonthYear ( final Calendar cal1, final Calendar cal2 ) {
-        return cal1.get(Calendar.DAY_OF_MONTH)==cal2.get(Calendar.DAY_OF_MONTH) && cal1.get(Calendar.MONTH)==cal2.get(Calendar.MONTH)
-            && cal1.get(Calendar.YEAR)==cal2.get(Calendar.YEAR);
     }
 
     /**

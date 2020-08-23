@@ -1,9 +1,9 @@
 package de.davelee.trams.model;
 
-import java.util.Calendar;
-
 import de.davelee.trams.util.DifficultyLevel;
 import lombok.Builder;
+
+import java.time.LocalDateTime;
 
 @Builder
 public class GameModel {
@@ -13,7 +13,7 @@ public class GameModel {
 	private double balance;
 	private DifficultyLevel difficultyLevel;
 	private String scenarioName;
-	private Calendar currentTime;
+	private LocalDateTime currentDateTime;
 	private int timeIncrement;
 	
 	public String getPlayerName() {
@@ -56,12 +56,12 @@ public class GameModel {
 		this.scenarioName = scenarioName;
 	}
 	
-	public Calendar getCurrentTime() {
-		return currentTime;
+	public LocalDateTime getCurrentDateTime() {
+		return currentDateTime;
 	}
 	
-	public void setCurrentTime(final Calendar currentTime) {
-		this.currentTime = currentTime;
+	public void setCurrentDateTime(final LocalDateTime currentDateTime) {
+		this.currentDateTime = currentDateTime;
 	}
 	
 	public int getTimeIncrement() {

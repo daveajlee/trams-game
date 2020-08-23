@@ -1,12 +1,15 @@
 package de.davelee.trams.data;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Column;
-import java.util.*;
+import java.time.LocalDate;
 
 /**
  * This class represents timetable outlines for the Easy Timetable Generator in TraMS.
@@ -15,6 +18,8 @@ import java.util.*;
 
 @Entity
 @Table(name="TIMETABLE", uniqueConstraints=@UniqueConstraint(columnNames = {"routeNumber", "name"}))
+@Getter
+@Setter
 public class Timetable {
 
 	@Id
@@ -26,56 +31,12 @@ public class Timetable {
     private String name;
 	
 	@Column
-    private Calendar validFromDate;
+    private LocalDate validFromDate;
 	
 	@Column
-    private Calendar validToDate;
+    private LocalDate validToDate;
 
 	@Column
 	private String routeNumber;
-    
-    public long getId() {
-		return id;
-	}
 
-	public void setId(long id) {
-		this.id = id;
-	}
-
-	public Calendar getValidFromDate() {
-		return validFromDate;
-	}
-
-	public void setValidFromDate(Calendar validFromDate) {
-		this.validFromDate = validFromDate;
-	}
-
-	public Calendar getValidToDate() {
-		return validToDate;
-	}
-
-	public void setValidToDate(Calendar validToDate) {
-		this.validToDate = validToDate;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-	
-	/**
-     * Method to return the name of this timetable.
-     * @return a <code>String</code> with the timetable name.
-     */
-    public String getName () {
-        return name;
-    }
-
-	public String getRouteNumber() {
-		return routeNumber;
-	}
-
-	public void setRouteNumber(final String routeNumber) {
-		this.routeNumber = routeNumber;
-	}
-    
 }

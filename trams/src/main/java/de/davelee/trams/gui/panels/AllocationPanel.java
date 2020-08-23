@@ -8,8 +8,8 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -62,7 +62,7 @@ public class AllocationPanel {
         topRightPanel.add(topLabel);
         JPanel dayPanel = new JPanel();
         dayPanel.setBackground(Color.WHITE);
-        JLabel dayLabel = new JLabel(DateFormats.FULL_FORMAT.getFormat().format(gameModel.getCurrentTime().getTime()), SwingConstants.CENTER);
+        JLabel dayLabel = new JLabel(DateTimeFormatter.RFC_1123_DATE_TIME.format(gameModel.getCurrentDateTime()), SwingConstants.CENTER);
         dayLabel.setFont(new Font("Arial", Font.BOLD + Font.ITALIC, 20));
         dayPanel.add(dayLabel);
         topRightPanel.add(dayPanel);
@@ -221,7 +221,7 @@ public class AllocationPanel {
         allocationListPanel.setBackground(Color.WHITE);
         allocationsModel = new DefaultListModel();
         List<String> allocations;
-        String currentDate = gameModel.getCurrentTime().get(Calendar.YEAR) + "-" + gameModel.getCurrentTime().get(Calendar.MONTH) + "-" + gameModel.getCurrentTime().get(Calendar.DATE);
+        String currentDate = gameModel.getCurrentDateTime().getYear() + "-" + gameModel.getCurrentDateTime().getMonth() + "-" + gameModel.getCurrentDateTime().getDayOfMonth();
         allocations = controllerHandler.getRouteScheduleController().getTodayAllocations(currentDate);
         for ( int i = 0; i < allocations.size(); i++ ) {
             allocationsModel.addElement(allocations.get(i).toString());

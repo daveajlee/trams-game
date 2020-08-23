@@ -1,6 +1,8 @@
 package de.davelee.trams.controllers;
 
-import java.util.Calendar;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -35,43 +37,43 @@ public class JourneyController {
 	private JourneyPatternController journeyPatternController;
 
 
-	public JourneyModel getCurrentJourney (final RouteScheduleModel routeScheduleModel, final Calendar currentTime ) {
+	public JourneyModel getCurrentJourney (final RouteScheduleModel routeScheduleModel, final LocalTime currentTime ) {
 		return journeyService.getCurrentJourney(journeyService.getJourneysByRouteScheduleNumberAndRouteNumber(routeScheduleModel.getScheduleNumber(), routeScheduleModel.getRouteNumber()), currentTime);
 	}
 
-	public JourneyModel getNextJourney ( final RouteScheduleModel routeScheduleModel, final Calendar currentTime ) {
+	public JourneyModel getNextJourney ( final RouteScheduleModel routeScheduleModel, final LocalTime currentTime ) {
 		return journeyService.getNextJourney(journeyService.getJourneysByRouteScheduleNumberAndRouteNumber(routeScheduleModel.getScheduleNumber(), routeScheduleModel.getRouteNumber()), currentTime);
 	}
 
-	public boolean isOutwardJourney ( final RouteScheduleModel routeScheduleModel, final Calendar currentTime, final List<String> stops ) {
+	public boolean isOutwardJourney ( final RouteScheduleModel routeScheduleModel, final LocalTime currentTime, final List<String> stops ) {
 		return journeyService.isOutwardJourney(getCurrentJourney(routeScheduleModel, currentTime), stops);
 	}
 
-	public long getStopMaxTimeDiff ( final RouteScheduleModel routeScheduleModel, final Calendar currentTime, final String prevStopName, final String thisStopName ) {
+	public long getStopMaxTimeDiff ( final RouteScheduleModel routeScheduleModel, final LocalTime currentTime, final String prevStopName, final String thisStopName ) {
 		return journeyService.getStopMaxTimeDiff(getCurrentJourney(routeScheduleModel, currentTime), prevStopName, thisStopName);
 	}
 
-	public int getNumStopTimes ( final RouteScheduleModel routeScheduleModel, final Calendar currentTime ) {
+	public int getNumStopTimes ( final RouteScheduleModel routeScheduleModel, final LocalTime currentTime ) {
 		return getCurrentJourney(routeScheduleModel, currentTime).getStopTimeModelList().size();
 	}
 
-	public String getStopName ( final RouteScheduleModel routeScheduleModel, final Calendar currentTime, final int pos ) {
+	public String getStopName ( final RouteScheduleModel routeScheduleModel, final LocalTime currentTime, final int pos ) {
 		return getCurrentJourney(routeScheduleModel, currentTime).getStopTimeModelList().get(pos).getStopName();
 	}
 
-	public String getStopName ( final RouteScheduleModel routeScheduleModel, final Calendar currentTime ) {
+	public String getStopName ( final RouteScheduleModel routeScheduleModel, final LocalTime currentTime ) {
 		return journeyService.getCurrentStopName(journeyService.getJourneysByRouteScheduleNumberAndRouteNumber(routeScheduleModel.getScheduleNumber(), routeScheduleModel.getRouteNumber()), currentTime);
 	}
 
-	public String getLastStopName ( final RouteScheduleModel routeScheduleModel, final Calendar currentTime ) {
+	public String getLastStopName ( final RouteScheduleModel routeScheduleModel, final LocalTime currentTime ) {
 		return journeyService.getLastStopName(journeyService.getJourneysByRouteScheduleNumberAndRouteNumber(routeScheduleModel.getScheduleNumber(), routeScheduleModel.getRouteNumber()), currentTime);
 	}
 
-	public long removeStopsFromCurrentJourney ( final RouteScheduleModel routeScheduleModel, final Calendar currentTime, final String stop, final String oldEnd ) {
+	public long removeStopsFromCurrentJourney ( final RouteScheduleModel routeScheduleModel, final LocalTime currentTime, final String stop, final String oldEnd ) {
 		return journeyService.removeStopsBetween(getCurrentJourney(routeScheduleModel, currentTime), stop, oldEnd, false, true);
 	}
 
-	public long removeStopsFromNextJourney ( final RouteScheduleModel routeScheduleModel, final Calendar currentTime, final String stop, final String oldEnd ) {
+	public long removeStopsFromNextJourney ( final RouteScheduleModel routeScheduleModel, final LocalTime currentTime, final String stop, final String oldEnd ) {
 		return journeyService.removeStopsBetween(getNextJourney(routeScheduleModel, currentTime), oldEnd, stop, false, true);
 	}
 
@@ -89,7 +91,7 @@ public class JourneyController {
 		}
 	}
 
-	public Calendar getStopTime ( final JourneyModel journeyModel, String name ) {
+	public LocalTime getStopTime ( final JourneyModel journeyModel, String name ) {
 		StopTimeModel stopTime = journeyService.getStopTime(journeyModel, name);
 		if ( stopTime != null ) {
 			return stopTime.getTime();
@@ -97,11 +99,11 @@ public class JourneyController {
 		throw new NoSuchElementException();
 	}
 
-	public Calendar getFirstStopTime ( final JourneyModel journeyModel ) {
+	public LocalTime getFirstStopTime ( final JourneyModel journeyModel ) {
     	return journeyModel.getStopTimeModelList().get(0).getTime();
 	}
 
-	public Calendar getLastStopTime ( final JourneyModel journeyModel ) {
+	public LocalTime getLastStopTime ( final JourneyModel journeyModel ) {
 		int position = journeyModel.getStopTimeModelList().size()-1;
 		return journeyModel.getStopTimeModelList().get(position).getTime();
 	}
@@ -125,14 +127,14 @@ public class JourneyController {
 	/**
 	 * This method generates the route timetables for a particular day - it is a very important method.
 	 * @param routeModel a <code>RouteModel</code> object containing the details of the route to generate timetables for.
-	 * @param today a <code>Calendar</code> object with today's date.
+	 * @param today a <code>LocalDate</code> object with today's date.
 	 * @param scenarioName a <code>String</code> object with the name of the scenario to generate timeables for.
 	 * @param direction a <code>int</code> which determines the direction to generate timetables for.
 	 * @param journeyNumberToStart a <code>int</code> which contains the start number for journeys to avoid duplicates.
 	 * @return a <code>JourneyModel</code> list of objects representing the timetables generated.
 	 */
-	public List<JourneyModel> generateJourneyTimetables ( final RouteModel routeModel, final Calendar today, final String scenarioName, final int direction, final int journeyNumberToStart ) {
-		logger.debug("I'm generating timetable for route number " + routeModel.getRouteNumber() + " for " + DateFormats.DAY_MONTH_YEAR_FORMAT.getFormat().format(today.getTime()));
+	public List<JourneyModel> generateJourneyTimetables (final RouteModel routeModel, final LocalDate today, final String scenarioName, final int direction, final int journeyNumberToStart ) {
+		logger.debug("I'm generating timetable for route number " + routeModel.getRouteNumber() + " for " + DateTimeFormatter.RFC_1123_DATE_TIME.format(today));
 		//First of all, get the current timetable.
 		TimetableModel currentTimetableModel = timetableController.getCurrentTimetable(routeModel, today);
 		JourneyPatternModel[] journeyPatternModels = journeyPatternController.getJourneyPatternModels(currentTimetableModel, routeModel.getRouteNumber());

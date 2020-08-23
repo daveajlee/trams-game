@@ -1,7 +1,5 @@
 package de.davelee.trams.services;
 
-import java.util.*;
-
 import de.davelee.trams.data.Journey;
 import de.davelee.trams.data.Stop;
 import de.davelee.trams.data.StopTime;
@@ -12,11 +10,17 @@ import de.davelee.trams.model.RouteScheduleModel;
 import de.davelee.trams.model.StopTimeModel;
 import de.davelee.trams.repository.JourneyRepository;
 import de.davelee.trams.repository.StopRepository;
-import de.davelee.trams.util.DateFormats;
 import de.davelee.trams.util.JourneyStatus;
 import de.davelee.trams.util.TramsConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class JourneyService {
@@ -33,10 +37,10 @@ public class JourneyService {
 	/**
      * Get the status of the journey based on the current time - either not yet run, running or finished.
      * @param journeyModel a <code>JourneyModel</code> object with the journey details.
-     * @param currentTime a <code>Calendar</code> object.
+     * @param currentTime a <code>LocalTime</code> object.
      * @return a <code>JourneyStatus</code> which has the current status of the journey.
      */
-    private JourneyStatus checkJourneyStatus(final JourneyModel journeyModel, final Calendar currentTime) {
+    private JourneyStatus checkJourneyStatus(final JourneyModel journeyModel, final LocalTime currentTime) {
     	//Did the journey start?
         if ( checkTimeDiff(currentTime, journeyModel.getStopTimeModelList().get(0).getTime() ) > -1 ) {
         	//Has the journey already ended?
@@ -51,10 +55,10 @@ public class JourneyService {
     /**
      * Get the current stop name based on the current time.
      * @param journeyModels a <code>JourneyModel</code> array with all available journeys.
-     * @param currentTime a <code>Calendar</code> object. 
+     * @param currentTime a <code>LocalTime</code> object.
      * @return a <code>String</code> array with the current stop.
      */
-    public String getCurrentStopName(final JourneyModel[] journeyModels, final Calendar currentTime) {
+    public String getCurrentStopName(final JourneyModel[] journeyModels, final LocalTime currentTime) {
         for (int i = 0; i < journeyModels.length; i++) {
             if (checkJourneyStatus(journeyModels[i], currentTime) == JourneyStatus.RUNNING) {
                 for ( StopTimeModel myJourneyStop : journeyModels[i].getStopTimeModelList() ) {
@@ -124,10 +128,10 @@ public class JourneyService {
     /**
      * Get the last stop.
      * @param journeyModels a <code>JourneyModel</code> array with all available journeys.
-     * @param currentTime a <code>Calendar</code> representing the current time.
+     * @param currentTime a <code>LocalTime</code> representing the current time.
      * @return a <code>Stop</code> object representing the last stop in this journey.
      */
-    public String getLastStopName ( final JourneyModel[] journeyModels, final Calendar currentTime ) {
+    public String getLastStopName ( final JourneyModel[] journeyModels, final LocalTime currentTime ) {
         for (int i = 0; i < journeyModels.length; i++) {
             if (checkJourneyStatus(journeyModels[i], currentTime) == JourneyStatus.RUNNING) {
                 StopTimeModel stopTime = journeyModels[i].getStopTimeModelList().get(journeyModels[i].getStopTimeModelList().size()-1);
@@ -145,10 +149,10 @@ public class JourneyService {
     /**
      * Get the current journey running on this schedule based on the current date.
      * @param journeyModels a <code>JourneyModel</code> array with all available journeys.
-     * @param currentTime a <code>Calendar</code> object with current time.
+     * @param currentTime a <code>LocalTime</code> object with current time.
      * @return a <code>Service</code> object.
      */
-    public JourneyModel getCurrentJourney ( final JourneyModel[] journeyModels, final Calendar currentTime ) {
+    public JourneyModel getCurrentJourney ( final JourneyModel[] journeyModels, final LocalTime currentTime ) {
         for ( int i = 0; i < journeyModels.length; i++ ) {
             if ( checkJourneyStatus(journeyModels[i], currentTime) == JourneyStatus.RUNNING) {
                 return journeyModels[i];
@@ -157,7 +161,7 @@ public class JourneyService {
         return null;
     }
 
-    public JourneyModel getNextJourney ( final JourneyModel[] journeyModels, final Calendar currentTime ) {
+    public JourneyModel getNextJourney ( final JourneyModel[] journeyModels, final LocalTime currentTime ) {
         boolean returnNextJourney = false;
         for ( JourneyModel myJourneyModel : journeyModels ) {
             if ( returnNextJourney ) {
@@ -237,26 +241,13 @@ public class JourneyService {
     }
     
     /**
-     * Check the time diff between two calendar objects.
-     * @param firstTime a <code>Calendar</code> object with the first time.
-     * @param secondTime a <code>Calendar</code> object with the second time.
-     * @return a <code>long</code> with the time difference.
+     * Check the time diff between two LocalTime objects.
+     * @param firstTime a <code>LocalTime</code> object with the first time.
+     * @param secondTime a <code>LocalTime</code> object with the second time.
+     * @return a <code>long</code> with the time difference in seconds.
      */
-    private long checkTimeDiff(final Calendar firstTime, final Calendar secondTime) {
-        //Store time diff.
-        long timeDiff = 0;
-        if ( firstTime.get(Calendar.AM_PM) == Calendar.AM && secondTime.get(Calendar.AM_PM) == Calendar.PM ) {
-            timeDiff = -(12 * (60 * 60));
-        }
-        else if ( secondTime.get(Calendar.AM_PM) == Calendar.AM && firstTime.get(Calendar.AM_PM) == Calendar.PM ) {
-            timeDiff = 12 *(60 * 60);
-        }
-        long diffHour = (firstTime.get(Calendar.HOUR) - secondTime.get(Calendar.HOUR) ) * (60 * 60);
-        long diffMins = (firstTime.get(Calendar.MINUTE) - secondTime.get(Calendar.MINUTE)) * 60;
-        long diffSecs = (firstTime.get(Calendar.SECOND) - secondTime.get(Calendar.SECOND));
-        //Calculate timeDiff.
-        timeDiff += diffHour + diffMins + diffSecs;
-        return timeDiff;
+    private long checkTimeDiff(final LocalTime firstTime, final LocalTime secondTime) {
+        return firstTime.until(secondTime, ChronoUnit.SECONDS);
     }
     
     /**
@@ -272,15 +263,6 @@ public class JourneyService {
         } catch ( NullPointerException npe ) {
             return Integer.MAX_VALUE;
         }
-    }
-    
-    /**
-     * Get date info based on Calendar object.
-     * @param stopTime a <code>Calendar</code> object with stop time.
-     * @return a <code>String</code> with a formatted time String.
-     */
-    public String getDateInfo ( Calendar stopTime ) {
-    	return DateFormats.FULL_FORMAT.getFormat().format(stopTime.getTime());
     }
 
     public Journey getJourneyById(long id) {
@@ -431,8 +413,8 @@ public class JourneyService {
         return stopNames;
     }
 
-    public List<JourneyModel> generateJourneyTimetables ( final JourneyPatternModel[] journeyPatternModels,
-                                                          final Calendar today, final int direction, final List<String> stops, final String scenarioName, final int journeyNumberToStart ) {
+    public List<JourneyModel> generateJourneyTimetables (final JourneyPatternModel[] journeyPatternModels,
+                                                         final LocalDate today, final int direction, final List<String> stops, final String scenarioName, final int journeyNumberToStart ) {
         int routeScheduleNumber = 0;
         if ( direction == TramsConstants.RETURN_DIRECTION ) { routeScheduleNumber = 1; }
         //Create a list to store journeys.
@@ -440,32 +422,25 @@ public class JourneyService {
         //Now we need to go through the journey patterns.
         for ( JourneyPatternModel myJourneyPattern : journeyPatternModels ) {
             int journeyNumber = journeyNumberToStart;
-            //Clone the time so that we can add to it but keep it the same for next iteration.
-            Calendar myTime = (Calendar) today.clone();
             //If this service pattern is not valid for this date then don't bother.
-            if ( !myJourneyPattern.getDaysOfOperation().contains(myTime.get(Calendar.DAY_OF_WEEK))) { continue; }
+            if ( !myJourneyPattern.getDaysOfOperation().contains(today.getDayOfWeek())) { continue; }
             //Set myTime hour and minute to the start time of the service pattern.
-            myTime.set(Calendar.HOUR_OF_DAY, myJourneyPattern.getStartTime().get(Calendar.HOUR_OF_DAY));
-            myTime.set(Calendar.MINUTE, myJourneyPattern.getStartTime().get(Calendar.MINUTE));
+            LocalTime myCurrentTime = myJourneyPattern.getStartTime();
             int diffDurationFreq = myJourneyPattern.getDuration() % myJourneyPattern.getFrequency();
             if ( direction == TramsConstants.RETURN_DIRECTION && diffDurationFreq <= (myJourneyPattern.getFrequency()/2)) {
-                myTime.add(Calendar.MINUTE, myJourneyPattern.getFrequency()/2);
+                myCurrentTime.plusMinutes(myJourneyPattern.getFrequency()/2);
             }
-            //logger.debug("End time is " + myJourneyPattern.getEndTime().get(Calendar.HOUR_OF_DAY) + ":" + myJourneyPattern.getEndTime().get(Calendar.MINUTE) );
             //Now repeat this loop until myTime is after the journey pattern end time.
             while ( true ) {
-                if ( (myTime.get(Calendar.HOUR_OF_DAY) > myJourneyPattern.getEndTime().get(Calendar.HOUR_OF_DAY)) ) { break; }
-                else if ( (myTime.get(Calendar.HOUR_OF_DAY) == myJourneyPattern.getEndTime().get(Calendar.HOUR_OF_DAY)) && (myTime.get(Calendar.MINUTE) > myJourneyPattern.getEndTime().get(Calendar.MINUTE)) ) { break; }
+                if ( myCurrentTime.isAfter(myJourneyPattern.getEndTime()) ) { break; }
                 else {
-                    //logger.debug("I want a journey starting from both terminuses at " + myTime.get(Calendar.HOUR_OF_DAY) + ":" + myTime.get(Calendar.MINUTE));
                     //Create an outgoing service.
                     JourneyModel newJourney = JourneyModel.builder()
                             .routeScheduleNumber(routeScheduleNumber)
                             .routeNumber(myJourneyPattern.getRouteNumber())
                             .journeyNumber(journeyNumber)
                             .build();
-                    //Add stops - we also need to create a separate calendar to ensure we don't advance more than we want!!!!
-                    Calendar journeyTime = (Calendar) myTime.clone();
+                    //Add stops.
                     List<String> journeyStops = new ArrayList<String>();
                     if ( direction == TramsConstants.OUTWARD_DIRECTION ) {
                         journeyStops = getStopsBetween(stops, myJourneyPattern.getOutgoingTerminus(), myJourneyPattern.getReturnTerminus(), direction);
@@ -476,18 +451,18 @@ public class JourneyService {
                     newJourney.addStopTimeToList(StopTimeModel.builder()
                             .journeyNumber(newJourney.getJourneyNumber())
                             .stopName(journeyStops.get(0))
-                            .time((Calendar) journeyTime.clone())
+                            .time(myCurrentTime)
                             .routeNumber(myJourneyPattern.getRouteNumber())
                             .routeScheduleNumber(routeScheduleNumber)
                             .build());
                     for ( int i = 1; i < journeyStops.size(); i++ ) {
                         //Now add to journey time the difference between the two stops.
-                        journeyTime.add(Calendar.MINUTE, getDistance(scenarioName, journeyStops.get(i-1), journeyStops.get(i)));
+                        myCurrentTime.plusMinutes(getDistance(scenarioName, journeyStops.get(i-1), journeyStops.get(i)));
                         //Create stop.
                         newJourney.addStopTimeToList(StopTimeModel.builder()
                                 .journeyNumber(newJourney.getJourneyNumber())
                                 .stopName(journeyStops.get(i))
-                                .time((Calendar) journeyTime.clone())
+                                .time(myCurrentTime)
                                 .routeScheduleNumber(routeScheduleNumber)
                                 .routeNumber(myJourneyPattern.getRouteNumber())
                                 .build());
@@ -495,8 +470,8 @@ public class JourneyService {
                     //logger.debug("Service #" + serviceId + ": " + newService.getAllDisplayStops());{
                     saveJourney(newJourney);
                     allJourneys.add(newJourney);
-                    //Increment calendar.
-                    myTime.add(Calendar.MINUTE, myJourneyPattern.getFrequency());
+                    //Increment minutes.
+                    myCurrentTime.plusMinutes(myJourneyPattern.getFrequency());
                 }
                 journeyNumber++;
             }

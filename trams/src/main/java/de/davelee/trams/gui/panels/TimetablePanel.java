@@ -10,8 +10,10 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.text.ParseException;
-import java.util.Calendar;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.Month;
+import java.time.YearMonth;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -104,29 +106,28 @@ public class TimetablePanel {
         JLabel validFromLabel = new JLabel("Valid From: ", SwingConstants.CENTER);
         validFromLabel.setFont(new Font("Arial", Font.ITALIC, 16));
         validityPanel.add(validFromLabel);
-        //Get the calendar object with current time.
-        Calendar currTime = (Calendar) gameModel.getCurrentTime().clone();
-        currTime.add(Calendar.HOUR, 0);
         //Valid From Day.
-        final int fromStartDay = currTime.get(Calendar.DAY_OF_MONTH);
+        final int fromStartDay = gameModel.getCurrentDateTime().getDayOfMonth();
         final DefaultComboBoxModel validFromDayModel = new DefaultComboBoxModel();
-        for ( int i = currTime.get(Calendar.DAY_OF_MONTH); i <= currTime.getActualMaximum(Calendar.DAY_OF_MONTH); i++ ) {
+        YearMonth yearMonth = YearMonth.of(gameModel.getCurrentDateTime().getYear(), gameModel.getCurrentDateTime().getMonthValue());
+        for ( int i = gameModel.getCurrentDateTime().getDayOfMonth(); i <= yearMonth.lengthOfMonth(); i++ ) {
             validFromDayModel.addElement(i);
         }
         JComboBox validFromDayBox = new JComboBox(validFromDayModel);
         if ( timetableModel != null ) {
-            validFromDayBox.setSelectedItem(timetableModel.getValidFromDate().get(Calendar.DAY_OF_MONTH));
+            validFromDayBox.setSelectedItem(timetableModel.getValidFromDate().getDayOfMonth());
         }
         validFromDayBox.setFont(new Font("Arial", Font.PLAIN, 14));
         validityPanel.add(validFromDayBox);
         //Valid From Month.
         final JComboBox validFromMonthBox = new JComboBox();
+        LocalDate monthNames = gameModel.getCurrentDateTime().toLocalDate();
         for ( int i = 0; i < 4; i++ ) {
-            validFromMonthBox.addItem(DateFormats.MONTH_YEAR_FORMAT.getFormat().format(currTime.getTime()));
-            currTime.add(Calendar.MONTH, 1);
+            validFromMonthBox.addItem(monthNames.getMonth() + " " + monthNames.getYear());
+            monthNames.plusMonths(1);
         }
         if ( timetableModel != null ) {
-            validFromMonthBox.setSelectedItem(DateFormats.MONTH_YEAR_FORMAT.getFormat().format(timetableModel.getValidFromDate().getTime()));
+            validFromMonthBox.setSelectedItem(timetableModel.getValidFromDate().getMonth() + " " + timetableModel.getValidFromDate().getYear());
         }
         validFromMonthBox.setFont(new Font("Arial", Font.PLAIN, 14));
         validFromMonthBox.addActionListener( new ActionListener() {
@@ -134,17 +135,15 @@ public class TimetablePanel {
                 int month = validFromMonthBox.getSelectedIndex();
                 if ( validFromMonthBox.getSelectedIndex() == 0 ) {
                     validFromDayModel.removeAllElements();
-                    Calendar cal = Calendar.getInstance();
-                    cal.set(Calendar.MONTH, month);
-                    for ( int i = fromStartDay; i <= cal.getActualMaximum(Calendar.MONTH); i++ ) {
+                    YearMonth yearMonth = YearMonth.of(LocalDate.now().getYear(), month);
+                    for ( int i = fromStartDay; i <= yearMonth.lengthOfMonth(); i++ ) {
                         validFromDayModel.addElement(i);
                     }
                 }
                 else {
                     validFromDayModel.removeAllElements();
-                    Calendar cal = Calendar.getInstance();
-                    cal.set(Calendar.MONTH, month);
-                    for ( int i = 1; i <= cal.getActualMaximum(Calendar.MONTH); i++ ) {
+                    YearMonth yearMonth = YearMonth.of(LocalDate.now().getYear(), month);
+                    for ( int i = 1; i <= yearMonth.lengthOfMonth(); i++ ) {
                         validFromDayModel.addElement(i);
                     }
                 }
@@ -155,29 +154,30 @@ public class TimetablePanel {
         JLabel validToLabel = new JLabel("Valid To: ", SwingConstants.CENTER);
         validToLabel.setFont(new Font("Arial", Font.ITALIC, 16));
         validityPanel.add(validToLabel);
-        //Get the calendar object with current time.
-        Calendar myCurrTime = (Calendar) gameModel.getCurrentTime().clone();
-        myCurrTime.add(Calendar.HOUR, 72);
+        //Get the local date object with current date.
+        LocalDate defaultValidToDate = gameModel.getCurrentDateTime().toLocalDate();
+        defaultValidToDate.plusDays(3);
         //Valid To Day.
-        final int toStartDay = myCurrTime.get(Calendar.DAY_OF_MONTH);
+        final int toStartDay = defaultValidToDate.getDayOfMonth();
         final DefaultComboBoxModel validToDayModel = new DefaultComboBoxModel();
-        for ( int i = myCurrTime.get(Calendar.DAY_OF_MONTH); i <= myCurrTime.getActualMaximum(Calendar.DAY_OF_MONTH); i++ ) {
+        YearMonth yearMonthValidTo = YearMonth.of(defaultValidToDate.getYear(), defaultValidToDate.getMonthValue());
+        for ( int i = toStartDay; i <= yearMonthValidTo.lengthOfMonth(); i++ ) {
             validToDayModel.addElement(i);
         }
         JComboBox validToDayBox = new JComboBox(validToDayModel);
         if ( timetableModel != null ) {
-            validToDayBox.setSelectedItem(timetableModel.getValidToDate().get(Calendar.DAY_OF_MONTH));
+            validToDayBox.setSelectedItem(timetableModel.getValidToDate().getDayOfMonth());
         }
         validToDayBox.setFont(new Font("Arial", Font.PLAIN, 14));
         validityPanel.add(validToDayBox);
         //Valid To Month.
         final JComboBox validToMonthBox = new JComboBox();
         for ( int i = 0; i < 25; i++ ) {
-            validToMonthBox.addItem(DateFormats.MONTH_YEAR_FORMAT.getFormat().format(myCurrTime.getTime()));
-            myCurrTime.add(Calendar.MONTH, 1);
+            validToMonthBox.addItem(defaultValidToDate.getMonth() + " " + defaultValidToDate.getYear());
+            defaultValidToDate.plusMonths(1);
         }
         if ( timetableModel != null ) {
-            validToMonthBox.setSelectedItem(DateFormats.MONTH_YEAR_FORMAT.getFormat().format(timetableModel.getValidToDate().getTime()));
+            validToMonthBox.setSelectedItem(timetableModel.getValidToDate().getMonth() + " " + timetableModel.getValidToDate().getYear());
         }
         validToMonthBox.setFont(new Font("Arial", Font.PLAIN, 14));
         validToMonthBox.addActionListener( new ActionListener() {
@@ -185,17 +185,15 @@ public class TimetablePanel {
                 int month = validToMonthBox.getSelectedIndex();
                 if ( validToMonthBox.getSelectedIndex() == 0 ) {
                     validToDayModel.removeAllElements();
-                    Calendar cal = Calendar.getInstance();
-                    cal.set(Calendar.MONTH, month);
-                    for ( int i = toStartDay; i <= cal.getActualMaximum(Calendar.MONTH); i++ ) {
+                    YearMonth yearMonth = YearMonth.of(LocalDate.now().getYear(), month);
+                    for ( int i = toStartDay; i <= yearMonth.lengthOfMonth(); i++ ) {
                         validToDayModel.addElement(i);
                     }
                 }
                 else {
                     validToDayModel.removeAllElements();
-                    Calendar cal = Calendar.getInstance();
-                    cal.set(Calendar.MONTH, month);
-                    for ( int i = 1; i <= cal.getActualMaximum(Calendar.MONTH); i++ ) {
+                    YearMonth yearMonth = YearMonth.of(LocalDate.now().getYear(), month);
+                    for ( int i = 1; i <= yearMonth.lengthOfMonth(); i++ ) {
                         validToDayModel.addElement(i);
                     }
                 }
@@ -247,23 +245,19 @@ public class TimetablePanel {
         createJourneyPatternButton.addActionListener(new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
             	TimetableModel selectedTimetableModel = controllerHandler.getTimetableController().getRouteTimetable(routeModel, timetableNameField.getText());
-                //Create relevant calendar object.
+                //Create relevant local date objects for valid from and valid to.
                 if ( selectedTimetableModel == null) {
                     try {
-                        Calendar validFrom = Calendar.getInstance();
-                        Date date = DateFormats.MONTH_YEAR_FORMAT.getFormat().parse(validFromMonthBox.getSelectedItem().toString());
-                        validFrom.setTime(date);
-                        validFrom.set(Calendar.DAY_OF_MONTH, Integer.parseInt(validFromDayModel.getSelectedItem().toString()));
-                        Calendar validTo = Calendar.getInstance();
-                        Date dateTo = DateFormats.MONTH_YEAR_FORMAT.getFormat().parse(validToMonthBox.getSelectedItem().toString());
-                        validTo.setTime(dateTo);
-                        validTo.set(Calendar.DAY_OF_MONTH, Integer.parseInt(validToDayModel.getSelectedItem().toString()));
+                        String[] validFromMonthYear = validFromMonthBox.getSelectedItem().toString().split(" ");
+                        LocalDate validFromDate = LocalDate.of(Integer.parseInt(validFromMonthYear[1]), Month.valueOf(validFromMonthYear[0]).getValue(), validFromDayBox.getSelectedIndex());
+                        String[] validToMonthYear = validToMonthBox.getSelectedItem().toString().split(" ");
+                        LocalDate validToDate = LocalDate.of(Integer.parseInt(validToMonthYear[1]), Month.valueOf(validToMonthYear[0]).getValue(), validToDayBox.getSelectedIndex());
                         //Save this timetable with valid dates first.
-                        controllerHandler.getTimetableController().createTimetable(timetableNameField.getText(), validFrom, validTo, routeModel);
+                        controllerHandler.getTimetableController().createTimetable(timetableNameField.getText(), validFromDate, validToDate, routeModel);
                         selectedTimetableModel = controllerHandler.getTimetableController().getRouteTimetable(routeModel, timetableNameField.getText());
                         //logger.debug("Adding timetable with name " + theTimetableNameField.getText() + " to route " + theSelectedRoute.getRouteNumber());
-                    } catch ( ParseException pe ) {
-                        pe.printStackTrace();
+                    } catch ( NumberFormatException nfe ) {
+                        nfe.printStackTrace();
                     }
                 }
                 //Show the actual screen!

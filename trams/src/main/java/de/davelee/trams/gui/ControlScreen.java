@@ -1,7 +1,5 @@
 package de.davelee.trams.gui;
 
-//Import java util package.
-import java.util.Calendar;
 //Import the Java GUI packages.
 import java.awt.*;
 import java.awt.event.*;
@@ -22,6 +20,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.text.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import de.davelee.trams.util.DateFormats;
 
@@ -119,7 +119,7 @@ public class ControlScreen extends ButtonBar {
         topPanel = new JPanel();
         topPanel.setLayout ( new BorderLayout () );
         topPanel.setBackground(Color.WHITE);
-        timeLabel = new JLabel(DateFormats.CONTROL_SCREEN_FORMAT.getFormat().format(gameModel.getCurrentTime().getTime()).replace("AM", "am").replace("PM","pm"), SwingConstants.CENTER);
+        timeLabel = new JLabel(DateFormats.CONTROL_SCREEN_FORMAT.getFormat().format(gameModel.getCurrentDateTime().format(DateTimeFormatter.RFC_1123_DATE_TIME)), SwingConstants.CENTER);
         timeLabel.setFont(new Font("Arial", Font.ITALIC, 20));
         topPanel.add(timeLabel, BorderLayout.NORTH);
 
@@ -136,7 +136,7 @@ public class ControlScreen extends ButtonBar {
         //Create Live Situation tab.
         if ( super.getControllerHandler().getRouteController().getNumberRoutes() > 0 ) {
             drawVehicles(gameModel);
-            updateVehicleStatus(gameModel.getCurrentTime(), gameModel.getDifficultyLevel());
+            updateVehicleStatus(gameModel.getCurrentDateTime(), gameModel.getDifficultyLevel());
             tabbedPane.addTab("Live Situation", graphicsPanel);
             tabbedPane.setSelectedIndex(0);
         }
@@ -318,18 +318,17 @@ public class ControlScreen extends ButtonBar {
         
     }
 
-    public void updateTime ( final Calendar currentTime, final DifficultyLevel difficultyLevel ) {
-        String time = DateFormats.CONTROL_SCREEN_FORMAT.getFormat().format(currentTime.getTime());
-        timeLabel.setText(time.replace("AM", "am").replace("PM","pm"));
-        updateVehicleStatus(currentTime, difficultyLevel);
+    public void updateDateTime (final LocalDateTime currentDateTime, final DifficultyLevel difficultyLevel ) {
+        timeLabel.setText(DateTimeFormatter.RFC_1123_DATE_TIME.format(currentDateTime));
+        updateVehicleStatus(currentDateTime, difficultyLevel);
     }
 
-    public void updateVehicleStatus ( final Calendar currentTime, final DifficultyLevel difficultyLevel ) {
+    public void updateVehicleStatus ( final LocalDateTime currentDateTime, final DifficultyLevel difficultyLevel ) {
         String vehicleStatus = "";
 
         RouteScheduleModel[] routeScheduleModels = super.getControllerHandler().getRouteScheduleController().getRouteSchedulesByRouteNumber(routeList.getSelectedValue().toString().split(":")[0]);
         for (int i = 0; i < routeScheduleModels.length; i++) {
-            String vehiclePos = super.getControllerHandler().getRouteScheduleController().getCurrentStopName(routeScheduleModels[i], currentTime, difficultyLevel);
+            String vehiclePos = super.getControllerHandler().getRouteScheduleController().getCurrentStopName(routeScheduleModels[i], currentDateTime, difficultyLevel);
             vehicleStatus += "Schedule " + routeScheduleModels[i].getScheduleNumber() + " is at " + vehiclePos + " with a delay of " + routeScheduleModels[i].getDelay() + " minutes.\n";
         }
 
@@ -348,11 +347,11 @@ public class ControlScreen extends ButtonBar {
      */
     public void drawVehicles ( final GameModel gameModel ) {
         //Now check if it is past midnight! If it is dispose, and create Allocation Screen.
-        if ( isPastMidnight(gameModel.getCurrentTime(), gameModel.getTimeIncrement()) && !doneAllocations ) {
+        if ( isPastMidnight(gameModel.getCurrentDateTime(), gameModel.getTimeIncrement()) && !doneAllocations ) {
             //Now add a message to summarise days events!!!
             SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
-            String date = dateFormat.format(gameModel.getCurrentTime().getTime());
-            super.getControllerHandler().getMessageController().addMessage("Passenger Satisfaction for " + DateFormats.FULL_FORMAT.getFormat().format(getPreviousDay(gameModel.getCurrentTime(), gameModel.getTimeIncrement()).getTime()), "Congratulations you have successfully completed transport operations for " + gameModel.getScenarioName() + " on " + DateFormats.FULL_FORMAT.getFormat().format(getPreviousDay(gameModel.getCurrentTime(), gameModel.getTimeIncrement()).getTime()) + " with a passenger satisfaction of " + super.getControllerHandler().getGameController().computeAndReturnPassengerSatisfaction() + "%.\n\nNow you need to allocate vehicles to routes for " + DateFormats.FULL_FORMAT.getFormat().format(gameModel.getCurrentTime().getTime()) + " and keep the passenger satisfaction up! Click on the Management tab and then choose Allocations. Good luck!", "Council", "INBOX", date);
+            String date = DateTimeFormatter.RFC_1123_DATE_TIME.format(gameModel.getCurrentDateTime());
+            super.getControllerHandler().getMessageController().addMessage("Passenger Satisfaction for " + DateFormats.FULL_FORMAT.getFormat().format(getPreviousDateTime(gameModel.getCurrentDateTime(), gameModel.getTimeIncrement())), "Congratulations you have successfully completed transport operations for " + gameModel.getScenarioName() + " on " + DateFormats.FULL_FORMAT.getFormat().format(getPreviousDateTime(gameModel.getCurrentDateTime(), gameModel.getTimeIncrement())) + " with a passenger satisfaction of " + super.getControllerHandler().getGameController().computeAndReturnPassengerSatisfaction() + "%.\n\nNow you need to allocate vehicles to routes for " + DateFormats.FULL_FORMAT.getFormat().format(gameModel.getCurrentDateTime()) + " and keep the passenger satisfaction up! Click on the Management tab and then choose Allocations. Good luck!", "Council", "INBOX", date);
             //Refresh messages.
             MessageModel[] messageModels = super.getControllerHandler().getMessageController().getMessagesByFolderDateSender(foldersBox.getSelectedItem().toString(),dateBox.getSelectedItem().toString(),"Council");
             messagesModel.removeAllElements();
@@ -370,14 +369,14 @@ public class ControlScreen extends ButtonBar {
                 messagesArea.setText(messageModels[messagesList.getSelectedIndex()].getText());
             }
 
-            dateModel.addElement(DateFormats.FULL_TIME_FORMAT.getFormat().format(gameModel.getCurrentTime().getTime()).split("-")[0]);
+            dateModel.addElement(DateTimeFormatter.RFC_1123_DATE_TIME.format(gameModel.getCurrentDateTime()));
             //Then display it to the user.
             doneAllocations = true;
             super.getControllerHandler().getGameController().pauseSimulation();
             topPanel.getComponent(1).setVisible(false);
             tabbedPane.setSelectedIndex(1);
             //Now here we need to update satisfaction bar.
-            timeLabel.setText(DateFormats.FULL_TIME_FORMAT.getFormat().format(gameModel.getCurrentTime().getTime()));
+            timeLabel.setText(DateTimeFormatter.RFC_1123_DATE_TIME.format(gameModel.getCurrentDateTime()));
             int satValue = super.getControllerHandler().getGameController().computeAndReturnPassengerSatisfaction();
             ScenarioModel scenarioModel = super.getControllerHandler().getScenarioController().getScenario(gameModel.getScenarioName());
             if ( satValue < scenarioModel.getMinimumSatisfaction() ) {
@@ -606,26 +605,26 @@ public class ControlScreen extends ButtonBar {
     
     /**
      * Check if the current time is the first past midnight.
-     * @param currentTime a <code>Calendar</code> object which represents the current time.
+     * @param currentDateTime a <code>LocalDateTime</code> object which represents the current time.
      * @param timeIncrement a <code>int</code> with the time increment in order to calculate previous time.
      * @return a <code>boolean</code> which is true iff this is the first time past midnight.
      */
-    private boolean isPastMidnight ( final Calendar currentTime, final int timeIncrement ) {
-        Calendar previousTime = (Calendar) currentTime.clone();
-        previousTime.add(Calendar.MINUTE, -timeIncrement);
-        return previousTime.get(Calendar.DAY_OF_WEEK) != currentTime.get(Calendar.DAY_OF_WEEK);
+    private boolean isPastMidnight ( final LocalDateTime currentDateTime, final int timeIncrement ) {
+        LocalDateTime previousDateTime = currentDateTime;
+        previousDateTime.minusMinutes(timeIncrement);
+        return previousDateTime.getDayOfWeek() != currentDateTime.getDayOfWeek();
     }
 
     /**
      * Get the previous day by calculating the current day and subtracting the time increment.
-     * @param currentTime a <code>Calendar</code> object which represents the current time.
+     * @param currentDateTime a <code>LocalDateTime</code> object which represents the current time.
      * @param timeIncrement a <code>int</code> with the time increment in order to calculate previous time.
      * @return a <code>Calendar</code> with the previous day.
      */
-    private Calendar getPreviousDay ( final Calendar currentTime, final int timeIncrement ) {
-        Calendar previousTime = (Calendar) currentTime.clone();
-        previousTime.add(Calendar.MINUTE, -timeIncrement);
-        return previousTime;
+    private LocalDateTime getPreviousDateTime ( final LocalDateTime currentDateTime, final int timeIncrement ) {
+        LocalDateTime previousDateTime = currentDateTime;
+        previousDateTime.minusMinutes(timeIncrement);
+        return previousDateTime;
     }
     
     /**

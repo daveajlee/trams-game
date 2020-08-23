@@ -4,13 +4,14 @@ import de.davelee.trams.model.GameModel;
 import de.davelee.trams.model.ScenarioModel;
 import de.davelee.trams.model.VehicleModel;
 import de.davelee.trams.util.SortedVehicleModels;
+import net.sf.cglib.core.Local;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import de.davelee.trams.services.VehicleService;
 import org.springframework.stereotype.Controller;
 
+import java.time.LocalDate;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
 
@@ -34,8 +35,8 @@ public class VehicleController {
 		return vehicleModels;
 	}
 
-	public boolean hasVehicleBeenDelivered ( final Calendar deliveryDate, final Calendar currentTime ) {
-		return vehicleService.hasBeenDelivered(deliveryDate, currentTime);
+	public boolean hasVehicleBeenDelivered (final LocalDate deliveryDate, final LocalDate currentDate ) {
+		return vehicleService.hasBeenDelivered(deliveryDate, currentDate);
 	}
 
 	/**
@@ -47,7 +48,7 @@ public class VehicleController {
 		GameModel gameModel = gameController.getGameModel();
 		if ( vehicleModels.length == 0 ) { return false; }
 		for ( int i = 0; i < vehicleModels.length; i++ ) {
-			if ( hasVehicleBeenDelivered(vehicleModels[i].getDeliveryDate(), gameModel.getCurrentTime()) ) { return true; }
+			if ( hasVehicleBeenDelivered(vehicleModels[i].getDeliveryDate(), gameModel.getCurrentDateTime().toLocalDate()) ) { return true; }
 		}
 		return false;
 	}
@@ -61,11 +62,11 @@ public class VehicleController {
 		return vehicleService.getVehicleByRegistrationNumber(registrationNumber);
 	}
 
-	public int getAge (final Calendar deliveryDate, final Calendar currentDate ) {
+	public int getAge (final LocalDate deliveryDate, final LocalDate currentDate ) {
 		return vehicleService.getAge(deliveryDate, currentDate);
 	}
 
-	public double getValue ( final VehicleModel vehicleModel, final Calendar currentDate ) {
+	public double getValue ( final VehicleModel vehicleModel, final LocalDate currentDate ) {
 		return vehicleService.getValue(vehicleModel.getPurchasePrice(), vehicleModel.getDepreciationFactor(),
 			vehicleModel.getDeliveryDate(), currentDate);
 	}
@@ -76,19 +77,19 @@ public class VehicleController {
 	 */
 	public void sellVehicle ( final VehicleModel vehicleModel ) {
 		GameModel gameModel = gameController.getGameModel();
-		gameController.creditBalance(vehicleService.getValue(vehicleModel.getPurchasePrice(), vehicleModel.getDepreciationFactor(), vehicleModel.getDeliveryDate(), gameModel.getCurrentTime()));
+		gameController.creditBalance(vehicleService.getValue(vehicleModel.getPurchasePrice(), vehicleModel.getDepreciationFactor(), vehicleModel.getDeliveryDate(), gameModel.getCurrentDateTime().toLocalDate()));
 		vehicleService.removeVehicle(vehicleModel);
 	}
 
 	/**
 	 * Purchase a new vehicle.
 	 * @param type a <code>String</code> with the vehicle type.
-	 * @param deliveryDate a <code>Calendar</code> with the delivery date.
+	 * @param deliveryDate a <code>LocalDate</code> with the delivery date.
 	 */
-	public void purchaseVehicle ( final String type, final Calendar deliveryDate ) {
+	public void purchaseVehicle ( final String type, final LocalDate deliveryDate ) {
 		GameModel gameModel = gameController.getGameModel();
 		VehicleModel vehicle = vehicleService.createVehicleObject(type, vehicleService.generateRandomReg(
-		gameModel.getCurrentTime().get(Calendar.YEAR)), deliveryDate);
+		gameModel.getCurrentDateTime().getYear()), deliveryDate);
 		gameController.withdrawBalance(vehicle.getPurchasePrice());
 		vehicleService.saveVehicle(vehicle);
 	}
@@ -97,14 +98,14 @@ public class VehicleController {
 		return vehicleService.getVehicleByRouteNumberAndRouteScheduleNumber(routeNumber, Long.parseLong(scheduleNumber));
 	}
 
-	public int createSuppliedVehicles(final ScenarioModel scenarioModel, Calendar currentTime) {
+	public int createSuppliedVehicles(final ScenarioModel scenarioModel, LocalDate currentDate) {
 		Iterator<String> vehicleModels = scenarioModel.getSuppliedVehicles().keySet().iterator();
 		int numCreatedVehicles = 0;
 		while (vehicleModels.hasNext()) {
 			String vehicleModel = vehicleModels.next();
 			for ( int i = 0; i < scenarioModel.getSuppliedVehicles().get(vehicleModel); i++ )  {
 				vehicleService.saveVehicle(vehicleService.createVehicleObject(vehicleModel, vehicleService.generateRandomReg(
-						currentTime.get(Calendar.YEAR)), currentTime));
+						currentDate.getYear()), currentDate));
 				numCreatedVehicles++;
 			}
 		}
@@ -124,7 +125,7 @@ public class VehicleController {
 	}
 
 	public VehicleModel getVehicleByModel ( final String model ) {
-		return vehicleService.createVehicleObject(model, vehicleService.generateRandomReg(Calendar.getInstance().get(Calendar.YEAR)), Calendar.getInstance());
+		return vehicleService.createVehicleObject(model, vehicleService.generateRandomReg(LocalDate.now().getYear()), LocalDate.now());
 	}
 
 	public String getFirstVehicleModel ( ) {

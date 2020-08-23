@@ -1,7 +1,7 @@
 package de.davelee.trams.controllers;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 
@@ -63,41 +63,38 @@ public class JourneyPatternController {
 	/**
 	 * Return a formatted String array of schedule dates from today.
 	 * @param routeModel a <code>RouteModel</code> representing details of the route.
-	 * @param today a <code>Calendar</code> object with the current date.
+	 * @param today a <code>LocalDate</code> object with the current date.
 	 * @return a <code>String</code> array of possible schedule dates.
 	 */
-	public String[] getPossibleSchedulesDates (final RouteModel routeModel, Calendar today ) {
+	public String[] getPossibleSchedulesDates (final RouteModel routeModel, LocalDate today ) {
 		//Create the list.
-		List<Calendar> myCalendar = new ArrayList<Calendar>();
+		List<LocalDate> myPossibleDates = new ArrayList<LocalDate>();
 		//Go through all of the timetables and add them if they are not already in.
 		TimetableModel[] timetableModels = timetableController.getRouteTimetables(routeModel);
-		Calendar thisDate;
 		for (TimetableModel timeT : timetableModels) {
-			thisDate = (Calendar) today.clone();
 			//Now check if we have passed the valid to date.
-			while ( !thisDate.after(timeT.getValidToDate()) ) {
+			while ( !today.isAfter(timeT.getValidToDate()) ) {
 				//Check if we have added this date before...
-				if ( !myCalendar.contains(thisDate) ) {
+				if ( !myPossibleDates.contains(today) ) {
 					//Finally check that at least one of the journey patterns has an operating service on this day.
 					JourneyPatternModel[] journeyPatternModels = getJourneyPatternModels(timeT, routeModel.getRouteNumber());
 					for ( JourneyPatternModel jpm : journeyPatternModels ) {
-						if ( jpm.getDaysOfOperation().contains(thisDate.get(Calendar.DAY_OF_WEEK)) ) {
-							myCalendar.add(thisDate);
+						if ( jpm.getDaysOfOperation().contains(today.getDayOfWeek()) ) {
+							myPossibleDates.add(today);
 							break;
 						}
 					}
 				}
-				thisDate = ((Calendar) (thisDate.clone()));
-				thisDate.add(Calendar.HOUR, 24);
+				today.plusDays(1);
 			}
 		}
-		Collections.sort(myCalendar);
-		String[] myCalDates = new String[myCalendar.size()];
-		logger.debug("MyCalDates length is " + myCalDates.length);
-		for ( int i = 0; i < myCalDates.length; i++ ) {
-			myCalDates[i] = DateFormats.FULL_FORMAT.getFormat().format(myCalendar.get(i).getTime());
+		Collections.sort(myPossibleDates);
+		String[] myDatesStr = new String[myPossibleDates.size()];
+		logger.debug("MyCalDates length is " + myDatesStr.length);
+		for ( int i = 0; i < myDatesStr.length; i++ ) {
+			myDatesStr[i] = DateFormats.FULL_FORMAT.getFormat().format(myPossibleDates.get(i));
 		}
-		return myCalDates;
+		return myDatesStr;
 	}
 
 	/**

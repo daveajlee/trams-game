@@ -1,7 +1,8 @@
 package de.davelee.trams.services;
 
-import java.util.ArrayList;
-import java.util.Calendar;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.Month;
 import java.util.List;
 
 import de.davelee.trams.model.TimetableModel;
@@ -17,25 +18,23 @@ public class TimetableServiceTest {
 	
 	@Test
 	public void testCreate() {
-		Calendar testDate = Calendar.getInstance(); Calendar testDate2 = Calendar.getInstance();
-		testDate.set(2014, 4, 20, 14, 23); testDate2.set(2014,5,20);
-		List<Integer> daysOfOperation = new ArrayList<Integer>(); daysOfOperation.add(Calendar.MONDAY);
-		daysOfOperation.add(Calendar.TUESDAY); daysOfOperation.add(Calendar.WEDNESDAY); daysOfOperation.add(Calendar.THURSDAY);
-		daysOfOperation.add(Calendar.FRIDAY);
+		LocalDate validFromDate = LocalDate.of(2014,4,20);
+		LocalDate validToDate = LocalDate.of(2014,5,20);
+		List<DayOfWeek> daysOfOperation = List.of(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY);
 		TimetableModel timetableModel = TimetableModel.builder()
 				.name("myTimetable")
 				.routeNumber("155")
-				.validFromDate(testDate)
-				.validToDate(testDate2)
+				.validFromDate(validFromDate)
+				.validToDate(validToDate)
 				.build();
 		Assertions.assertNotNull(timetableModel);
 		assertEquals(timetableModel.getName(), "myTimetable");
-		Assertions.assertEquals(timetableModel.getValidFromDate().get(Calendar.YEAR), 2014);
-		Assertions.assertEquals(timetableModel.getValidFromDate().get(Calendar.MONTH), 4);
-		Assertions.assertEquals(timetableModel.getValidFromDate().get(Calendar.DAY_OF_MONTH), 20);
-		Assertions.assertEquals(timetableModel.getValidToDate().get(Calendar.YEAR), 2014);
-		Assertions.assertEquals(timetableModel.getValidToDate().get(Calendar.MONTH), 5);
-		Assertions.assertEquals(timetableModel.getValidToDate().get(Calendar.DAY_OF_MONTH), 20);
+		Assertions.assertEquals(timetableModel.getValidFromDate().getYear(), 2014);
+		Assertions.assertEquals(timetableModel.getValidFromDate().getMonth(), Month.APRIL);
+		Assertions.assertEquals(timetableModel.getValidFromDate().getDayOfMonth(), 20);
+		Assertions.assertEquals(timetableModel.getValidToDate().getYear(), 2014);
+		Assertions.assertEquals(timetableModel.getValidToDate().getMonth(), Month.MAY);
+		Assertions.assertEquals(timetableModel.getValidToDate().getDayOfMonth(), 20);
 	}
 
 	private void assertEquals ( final String expected, final String actual ) {

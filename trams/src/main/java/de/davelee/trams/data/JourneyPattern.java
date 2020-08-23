@@ -1,6 +1,8 @@
 package de.davelee.trams.data;
 
-import java.util.*;
+import java.time.DayOfWeek;
+import java.time.LocalTime;
+import java.util.List;
 
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -35,7 +37,7 @@ public class JourneyPattern {
 	@CollectionTable(name="DAYS_OF_OPERATIONS")
 	@Fetch(value = FetchMode.SUBSELECT)
 	@Column
-    private List<Integer> daysOfOperation;
+    private List<DayOfWeek> daysOfOperation;
 	
 	@Column
     private String returnTerminus;
@@ -44,10 +46,10 @@ public class JourneyPattern {
     private String outgoingTerminus;
 	
 	@Column
-    private Calendar startTime;
+    private LocalTime startTime;
 	
 	@Column
-    private Calendar endTime;
+    private LocalTime endTime;
 	
 	@Column
     private int frequency;
@@ -93,11 +95,11 @@ public class JourneyPattern {
      * Get the days of operations for this journey pattern.
      * @return a <code>List</code> with the days of operation.
      */
-    public List<Integer> getDaysOfOperation ( ) {
+    public List<DayOfWeek> getDaysOfOperation ( ) {
         return daysOfOperation;
     }
 
-	public void setDaysOfOperation(final List<Integer> daysOfOperation) {
+	public void setDaysOfOperation(final List<DayOfWeek> daysOfOperation) {
 		this.daysOfOperation = daysOfOperation;
 	}
 	
@@ -127,25 +129,25 @@ public class JourneyPattern {
 
 	/**
      * Get the start time of this service journey.
-     * @return a <code>Calendar</code> with the start time.
+     * @return a <code>LocalTime</code> with the start time.
      */
-    public Calendar getStartTime ( ) {
+    public LocalTime getStartTime ( ) {
         return startTime;
     }
 	
-	public void setStartTime(final Calendar startTime) {
+	public void setStartTime(final LocalTime startTime) {
 		this.startTime = startTime;
 	}
 	
 	/**
      * Get the end time of this service journey.
-     * @return a <code>Calendar</code> with the end time.
+     * @return a <code>LocalTime</code> with the end time.
      */
-    public Calendar getEndTime ( ) {
+    public LocalTime getEndTime ( ) {
         return endTime;
     }
 
-	public void setEndTime(final Calendar endTime) {
+	public void setEndTime(final LocalTime endTime) {
 		this.endTime = endTime;
 	}
 	

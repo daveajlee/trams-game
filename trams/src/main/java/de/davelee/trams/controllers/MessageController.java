@@ -52,7 +52,7 @@ public class MessageController {
      * @param text a <code>String</code> with the text of the message.
      * @param sender a <code>String</code> with the name of the sender.
      * @param folder a <code>String</code> with the name of the folder to save the message to.
-     * @param date a <code>Calendar</code> object representing the date the message was sent.
+     * @param date a <code>LocalDate</code> object representing the date the message was sent.
      */
     public void addMessage ( final String subject, final String text, final String sender, final String folder, final String date) {
         messageService.saveMessage(MessageModel.builder()

@@ -2,7 +2,9 @@ package de.davelee.trams.services;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 import org.junit.jupiter.api.Assertions;
@@ -71,11 +73,10 @@ public class FileServiceTest {
 		//Delete temporary content
 		deleteTemporaryContent();
 		//Now create and save file.
-		Calendar startDate = Calendar.getInstance(); startDate.set(2014, Calendar.APRIL, 20);
 		driverService.saveDriver(DriverModel.builder()
 				.name("Chris Lee")
 				.contractedHours(40)
-				.startDate(startDate).build());
+				.startDate(LocalDate.of(2014,4,20)).build());
 		vehicleRepository.saveAndFlush(vehicleFactory.createVehicleByModel("MyBus Single Decker"));
 		routeService.saveRoute(RouteModel.builder()
 				.routeNumber("M2")
@@ -86,16 +87,16 @@ public class FileServiceTest {
 				.sender("Dave Lee")
 				.messageFolder(MessageFolder.INBOX)
 				.text("This is a test message")
-				.date(new SimpleDateFormat("dd-MM-yyyy").format(Calendar.getInstance().getTime()))
+				.date(new SimpleDateFormat("dd-MM-yyyy").format(LocalDate.now()))
 				.build());
 		journeyService.saveStop("Danziger Strasse");
 		journeyPatternService.saveJourneyPattern(JourneyPatternModel.builder()
 				.name("Mon-Fri")
-				.daysOfOperation(List.of(Calendar.MONDAY, Calendar.TUESDAY, Calendar.WEDNESDAY, Calendar.THURSDAY, Calendar.FRIDAY))
+				.daysOfOperation(List.of(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY))
 				.outgoingTerminus("S+U Pankow")
 				.returnTerminus("Rathaus Pankow")
-				.startTime(Calendar.getInstance())
-				.endTime(Calendar.getInstance())
+				.startTime(LocalTime.now())
+				.endTime(LocalTime.now())
 				.frequency(15)
 				.duration(3)
 				.timetableName("Mon-Fri Times")
@@ -103,8 +104,8 @@ public class FileServiceTest {
 				.build());
 		timetableService.saveTimetable(TimetableModel.builder()
 				.name("Test")
-				.validFromDate(startDate)
-				.validToDate(startDate)
+				.validFromDate(LocalDate.of(2014,4,20))
+				.validToDate(LocalDate.of(2014,4,20))
 				.routeNumber("M1")
 				.build());
 		routeScheduleService.saveRouteSchedule(RouteScheduleModel.builder()
@@ -120,7 +121,7 @@ public class FileServiceTest {
 		journeyModel.addStopTimeToList(StopTimeModel.builder()
 				.journeyNumber(1)
 				.stopName("Heinersdorf")
-				.time(Calendar.getInstance())
+				.time(LocalTime.now())
 				.build());
 		journeyService.saveJourney(journeyModel);
 		gameService.saveGame(GameModel.builder()

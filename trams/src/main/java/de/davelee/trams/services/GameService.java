@@ -1,6 +1,6 @@
 package de.davelee.trams.services;
 
-import java.util.Calendar;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import de.davelee.trams.data.Game;
@@ -31,7 +31,7 @@ public class GameService {
         game.setPassengerSatisfaction(gameModel.getPassengerSatisfaction());
         game.setScenarioName(gameModel.getScenarioName());
         game.setDifficultyLevel(gameModel.getDifficultyLevel());
-        game.setCurrentTime(gameModel.getCurrentTime());
+        game.setCurrentDateTime(gameModel.getCurrentDateTime());
         game.setTimeIncrement(gameModel.getTimeIncrement());
         return game;
     }
@@ -51,7 +51,7 @@ public class GameService {
                 .passengerSatisfaction(game.getPassengerSatisfaction())
                 .scenarioName(game.getScenarioName())
                 .difficultyLevel(game.getDifficultyLevel())
-                .currentTime(game.getCurrentTime())
+                .currentDateTime(game.getCurrentDateTime())
                 .timeIncrement(game.getTimeIncrement())
                 .build();
     }
@@ -116,18 +116,18 @@ public class GameService {
     /**
      * Increment the current time.
      * @param playerName a <code>String</code> with the player name.
-     * @return a <code>Calendar</code> containing the new time.
+     * @return a <code>LocalDateTime</code> containing the new time.
      */
-    public Calendar incrementTime ( final String playerName ) {
+    public LocalDateTime incrementTime (final String playerName ) {
         //Retrieve the game.
         Game game = gameRepository.findByPlayerName(playerName);
         //Increment time.
-        Calendar newCurrentTime = game.getCurrentTime();
-        newCurrentTime.add(Calendar.MINUTE, game.getTimeIncrement());
-        game.setCurrentTime(newCurrentTime);
+        LocalDateTime newCurrentDateTime = game.getCurrentDateTime();
+        newCurrentDateTime.plusMinutes(game.getTimeIncrement());
+        game.setCurrentDateTime(newCurrentDateTime);
         //Save game and return the new time.
         gameRepository.save(game);
-        return newCurrentTime;
+        return newCurrentDateTime;
     }
 
     public String getCurrentPlayerName ( ) {

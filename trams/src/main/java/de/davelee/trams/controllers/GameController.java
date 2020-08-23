@@ -1,6 +1,7 @@
 package de.davelee.trams.controllers;
 
-import java.util.Calendar;
+import java.time.LocalDateTime;
+import java.time.Month;
 
 import de.davelee.trams.gui.ControlScreen;
 import de.davelee.trams.model.GameModel;
@@ -69,15 +70,10 @@ public class GameController {
 		//There can only be one game!
 		gameService.deleteAllGames();
 		//Create game.
-		Calendar calendar = Calendar.getInstance();
-		calendar.set(Calendar.DAY_OF_MONTH, 1);
-		calendar.set(Calendar.MONTH, 3);
-		calendar.set(Calendar.YEAR, 2017);
-		calendar.set(Calendar.HOUR_OF_DAY, 4);
-		calendar.set(Calendar.MINUTE, 0);
+		LocalDateTime startDateTime = LocalDateTime.of(2017, Month.MARCH,1,4,0);
 		GameModel gameModel = GameModel.builder()
 				.balance(80000.00)
-				.currentTime(calendar)
+				.currentDateTime(startDateTime)
 				.difficultyLevel(DifficultyLevel.EASY)
 				.playerName(playerName)
 				.scenarioName(scenarioName)
@@ -153,10 +149,10 @@ public class GameController {
 
 	/**
 	 * Increment the time for the currently running simulation.
-	 * @return a <code>Calendar</code> with the new time after incrementing it.
+	 * @return a <code>LocalDateTime</code> with the new time after incrementing it.
 	 */
-	public Calendar incrementTime ( ) {
-		Calendar newTime = gameService.incrementTime(cachedGameModel.getPlayerName());
+	public LocalDateTime incrementTime ( ) {
+		LocalDateTime newTime = gameService.incrementTime(cachedGameModel.getPlayerName());
 		updateCache();
 		return newTime;
 	}

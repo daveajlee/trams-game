@@ -5,7 +5,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.GeneratedValue;
-import java.util.Calendar;
+import java.time.LocalTime;
 
 /**
  * Class to represent a time for a journey to arrive at a stop.
@@ -33,7 +33,7 @@ public class StopTime {
 	private String stopName;
 
     @Column
-	private Calendar time;
+	private LocalTime time;
 
     public long getId() {
         return id;
@@ -75,11 +75,11 @@ public class StopTime {
         this.stopName = stopName;
     }
 
-    public Calendar getTime() {
+    public LocalTime getTime() {
         return time;
     }
 
-    public void setTime(final Calendar time) {
+    public void setTime(final LocalTime time) {
         this.time = time;
     }
 }

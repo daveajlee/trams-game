@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.util.Calendar;
+import java.time.LocalDate;
 
 /**
  * Created by davelee on 20.09.16.
@@ -30,15 +30,14 @@ public class DriverControllerTest {
         driverController.employDriver(DriverModel.builder()
                 .name("Max Mustermann")
                 .contractedHours(20)
-                .startDate(Calendar.getInstance())
+                .startDate(LocalDate.now())
                 .build());
         assertFalse(driverController.hasSomeDriversBeenEmployed());
-        Calendar currentDate = Calendar.getInstance();
-        currentDate.set(2013,4,20);
+        LocalDate startDate = LocalDate.of(2013,4,20);
         driverController.employDriver(DriverModel.builder()
                 .name("Micha Mustermann")
                 .contractedHours(20)
-                .startDate(currentDate).build());
+                .startDate(startDate).build());
         assertTrue(driverController.hasSomeDriversBeenEmployed());
     }
 

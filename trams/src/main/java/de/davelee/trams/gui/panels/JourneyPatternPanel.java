@@ -10,9 +10,9 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.time.DayOfWeek;
+import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.List;
 
 import javax.swing.BoxLayout;
@@ -200,11 +200,11 @@ public class JourneyPatternPanel {
         fromLabel.setFont(new Font("Arial", Font.ITALIC, 16));
         timesPanel.add(fromLabel);
         final JSpinner fromHourSpinner = new JSpinner(new SpinnerNumberModel(6,0,23,1));
-        if ( journeyPatternModel != null ) { fromHourSpinner.setValue(journeyPatternModel.getStartTime().get(Calendar.HOUR_OF_DAY)); }
+        if ( journeyPatternModel != null ) { fromHourSpinner.setValue(journeyPatternModel.getStartTime().getHour()); }
         fromHourSpinner.setFont(new Font("Arial", Font.PLAIN, 14));
         timesPanel.add(fromHourSpinner);
         final JSpinner fromMinuteSpinner = new JSpinner(new SpinnerNumberModel(0,0,59,1));
-        if ( journeyPatternModel != null ) { fromMinuteSpinner.setValue(journeyPatternModel.getStartTime().get(Calendar.MINUTE)); }
+        if ( journeyPatternModel != null ) { fromMinuteSpinner.setValue(journeyPatternModel.getStartTime().getMinute()); }
         fromMinuteSpinner.setFont(new Font("Arial", Font.PLAIN, 14));
         timesPanel.add(fromMinuteSpinner);
         //To + times.
@@ -212,11 +212,11 @@ public class JourneyPatternPanel {
         toLabel.setFont(new Font("Arial", Font.ITALIC, 16));
         timesPanel.add(toLabel);
         final JSpinner toHourSpinner = new JSpinner(new SpinnerNumberModel(18,0,23,1));
-        if ( journeyPatternModel != null ) { toHourSpinner.setValue(journeyPatternModel.getEndTime().get(Calendar.HOUR_OF_DAY)); }
+        if ( journeyPatternModel != null ) { toHourSpinner.setValue(journeyPatternModel.getEndTime().getHour()); }
         toHourSpinner.setFont(new Font("Arial", Font.PLAIN, 14));
         timesPanel.add(toHourSpinner);
         final JSpinner toMinuteSpinner = new JSpinner(new SpinnerNumberModel(30,0,59,1));
-        if ( journeyPatternModel != null ) { toMinuteSpinner.setValue(journeyPatternModel.getEndTime().get(Calendar.MINUTE)); }
+        if ( journeyPatternModel != null ) { toMinuteSpinner.setValue(journeyPatternModel.getEndTime().getMinute()); }
         toMinuteSpinner.setFont(new Font("Arial", Font.PLAIN, 14));
         timesPanel.add(toMinuteSpinner);
         //Every.
@@ -266,16 +266,18 @@ public class JourneyPatternPanel {
         createJourneyPatternButton.addActionListener ( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
                 //Create a linked list of days selected.
-                List<Integer> operatingDays = new ArrayList<Integer>();
-                for ( int i = 0; i < daysBox.length; i++ ) {
-                    if ( daysBox[i].isSelected() ) {
-                        operatingDays.add(i+1);
-                    }
-                }
+                List<DayOfWeek> operatingDays = new ArrayList<DayOfWeek>();
+                if ( daysBox[0].isSelected() ) { operatingDays.add(DayOfWeek.SUNDAY); }
+                if ( daysBox[1].isSelected() ) { operatingDays.add(DayOfWeek.MONDAY); }
+                if ( daysBox[2].isSelected() ) { operatingDays.add(DayOfWeek.TUESDAY); }
+                if ( daysBox[3].isSelected() ) { operatingDays.add(DayOfWeek.WEDNESDAY); }
+                if ( daysBox[4].isSelected() ) { operatingDays.add(DayOfWeek.THURSDAY); }
+                if ( daysBox[5].isSelected() ) { operatingDays.add(DayOfWeek.FRIDAY); }
+                if ( daysBox[6].isSelected() ) { operatingDays.add(DayOfWeek.SATURDAY); }
                 //Create time from.
-                GregorianCalendar timeFrom = new GregorianCalendar(2009,7,3,Integer.parseInt(fromHourSpinner.getValue().toString()), Integer.parseInt(fromMinuteSpinner.getValue().toString()));
+                LocalTime timeFrom = LocalTime.of(Integer.parseInt(fromHourSpinner.getValue().toString()), Integer.parseInt(fromMinuteSpinner.getValue().toString()));
                 //Create time to.
-                GregorianCalendar timeTo = new GregorianCalendar(2009,7,3,Integer.parseInt(toHourSpinner.getValue().toString()), Integer.parseInt(toMinuteSpinner.getValue().toString()));
+                LocalTime timeTo = LocalTime.of(Integer.parseInt(toHourSpinner.getValue().toString()), Integer.parseInt(toMinuteSpinner.getValue().toString()));
                 //Create + add journey pattern.
                 if ( journeyPatternModel != null ) {
                     //If editing, delete old journey pattern model before readding it.

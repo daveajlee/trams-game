@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import de.davelee.trams.services.DriverService;
 import org.springframework.stereotype.Controller;
 
-import java.util.Calendar;
+import java.time.LocalDate;
 
 @Controller
 public class DriverController {
@@ -33,12 +33,12 @@ public class DriverController {
         driverService.saveDriver(driverModel);
     }
 
-    public void createSuppliedDrivers(final ScenarioModel scenarioModel, Calendar currentTime) {
+    public void createSuppliedDrivers(final ScenarioModel scenarioModel, LocalDate startDate) {
         for ( String suppliedDriver : scenarioModel.getSuppliedDrivers()) {
             driverService.saveDriver(DriverModel.builder()
                     .contractedHours(35)
                     .name(suppliedDriver)
-                    .startDate(currentTime)
+                    .startDate(startDate)
                     .build());
         }
     }
@@ -67,7 +67,7 @@ public class DriverController {
         DriverModel[] driverModels = driverService.getAllDrivers();
         GameModel gameModel = gameController.getGameModel();
         for ( int i = 0; i < driverModels.length; i++ ) {
-            if ( driverService.hasStartedWork(driverModels[i].getStartDate(), gameModel.getCurrentTime()) ) { return true; }
+            if ( driverService.hasStartedWork(driverModels[i].getStartDate(), gameModel.getCurrentDateTime().toLocalDate()) ) { return true; }
         }
         return false;
     }

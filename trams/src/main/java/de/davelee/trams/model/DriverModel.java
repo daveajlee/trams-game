@@ -2,14 +2,14 @@ package de.davelee.trams.model;
 
 import lombok.Builder;
 
-import java.util.Calendar;
+import java.time.LocalDate;
 
 @Builder
 public class DriverModel {
 	
 	private String name;
 	private int contractedHours;
-	private Calendar startDate;
+	private LocalDate startDate;
 	
 	public String getName() {
 		return name;
@@ -27,11 +27,11 @@ public class DriverModel {
 		this.contractedHours = contractedHours;
 	}
 	
-	public Calendar getStartDate() {
+	public LocalDate getStartDate() {
 		return startDate;
 	}
 	
-	public void setStartDate(final Calendar startDate) {
+	public void setStartDate(final LocalDate startDate) {
 		this.startDate = startDate;
 	}
 

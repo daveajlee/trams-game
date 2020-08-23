@@ -3,6 +3,7 @@ package de.davelee.trams.gui;
 import java.awt.*;
 import java.awt.event.*;
 import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import javax.swing.*;
 
 import de.davelee.trams.controllers.ControllerHandler;
@@ -161,12 +162,12 @@ public class NewGameScreen extends JFrame {
                 //Create Game
                 GameModel gameModel = controllerHandler.getGameController().createGameModel(playerNameField.getText(), scenarioModels[selectedPosition].getName());
                 //Create supplied vehicles.
-                controllerHandler.getVehicleController().createSuppliedVehicles(scenarioModels[selectedPosition], gameModel.getCurrentTime());
+                controllerHandler.getVehicleController().createSuppliedVehicles(scenarioModels[selectedPosition], gameModel.getCurrentDateTime().toLocalDate());
                 //Create supplied drivers.
-                controllerHandler.getDriverController().createSuppliedDrivers(scenarioModels[selectedPosition], gameModel.getCurrentTime());
+                controllerHandler.getDriverController().createSuppliedDrivers(scenarioModels[selectedPosition], gameModel.getCurrentDateTime().toLocalDate());
                 //Create welcome message.
                 SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
-                String date = dateFormat.format(gameModel.getCurrentTime().getTime());
+                String date = DateTimeFormatter.RFC_1123_DATE_TIME.format(gameModel.getCurrentDateTime());
                 controllerHandler.getMessageController().addMessage("Welcome Message", "Congratulations on your appointment as Managing Director of the " +
                         scenarioModels[selectedPosition].getName() + "! \n\n Your targets for the coming days and months are: " +
                         scenarioModels[selectedPosition].getTargets(),"Council","INBOX", date);

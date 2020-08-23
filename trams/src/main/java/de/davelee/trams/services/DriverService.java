@@ -1,6 +1,6 @@
 package de.davelee.trams.services;
 
-import java.util.Calendar;
+import java.time.LocalDate;
 import java.util.List;
 
 import de.davelee.trams.data.Driver;
@@ -17,12 +17,12 @@ public class DriverService {
 
 	/**
      * Check if the driver has started work or not.
-	 * @param startDate a <code>Calendar</code> object with the start date.
-     * @param currentDate a <code>Calendar</code> object with the current date.
+	 * @param startDate a <code>LocalDate</code> object with the start date.
+     * @param currentDate a <code>LocalDate</code> object with the current date.
      * @return a <code>boolean</code> which is true iff the driver has started work.
      */
-    public boolean hasStartedWork ( Calendar startDate, Calendar currentDate ) {
-    	return currentDate.after(startDate) || currentDate.equals(startDate);
+    public boolean hasStartedWork (final LocalDate startDate, final LocalDate currentDate ) {
+    	return currentDate.isAfter(startDate) || currentDate.isEqual(startDate);
     }
 
 	private Driver convertToDriver ( final DriverModel driverModel ) {

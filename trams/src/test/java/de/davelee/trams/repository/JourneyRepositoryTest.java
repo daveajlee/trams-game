@@ -1,8 +1,10 @@
 package de.davelee.trams.repository;
 
-import java.util.Calendar;
+import java.time.LocalTime;
 import java.util.HashMap;
+import java.util.List;
 
+import de.davelee.trams.model.StopTimeModel;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,14 +26,24 @@ public class JourneyRepositoryTest {
 	
 	@Test
 	public void journeyTest() {
-		HashMap<String, Calendar> stops = new HashMap<String, Calendar>();
-		stops.put("Rathaus Pankow", Calendar.getInstance());
-		stops.put("Pankow Kirche", Calendar.getInstance());
-		stops.put("S+U Pankow", Calendar.getInstance());
+		List<StopTimeModel> stopTimeModelList = List.of(
+				StopTimeModel.builder()
+						.stopName("Rathaus Pankow")
+						.time(LocalTime.now())
+						.build(),
+				StopTimeModel.builder()
+						.stopName("Pankow Kirche")
+						.time(LocalTime.now())
+						.build(),
+				StopTimeModel.builder()
+						.stopName("S+U Pankow")
+						.time(LocalTime.now())
+						.build());
         journeyService.saveJourney(JourneyModel.builder()
 				.journeyNumber(1)
 				.routeScheduleNumber(1)
-				.routeNumber("155").build());
+				.routeNumber("155")
+				.stopTimeModelList(stopTimeModelList).build());
 		assertEquals(journeyRepository.findByRouteScheduleNumberAndRouteNumber(1, "155").get(0).getRouteScheduleNumber(), 1);
 	}
 

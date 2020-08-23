@@ -1,6 +1,6 @@
 package de.davelee.trams.repository;
 
-import java.util.Calendar;
+import java.time.LocalDate;
 import java.util.List;
 
 import org.junit.jupiter.api.Assertions;
@@ -29,7 +29,7 @@ public class VehicleRepositoryTest {
 		vehicleRepository.deleteAll();
 		VehicleModel vehicleModel = new VehicleModel();
 		vehicleModel.setRegistrationNumber("CV58 2XD");
-		vehicleModel.setDeliveryDate(Calendar.getInstance());
+		vehicleModel.setDeliveryDate(LocalDate.now());
 		vehicleModel.setDepreciationFactor(0.006);
 		vehicleModel.setImagePath("image.png");
 		vehicleModel.setModel("Mercedes");

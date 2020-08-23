@@ -1,6 +1,10 @@
 package de.davelee.trams.services;
 
-import java.util.*;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Random;
 
 import de.davelee.trams.data.Vehicle;
 import de.davelee.trams.factory.VehicleFactory;
@@ -20,36 +24,36 @@ public class VehicleService {
 
 	/**
      * Check if the vehicle has been delivered yet!
-     * @param deliveryDate a <code>Calendar</code> object with the deliveryDate.
-     * @param currentDate a <code>Calendar</code> object with the currentDate.
+     * @param deliveryDate a <code>LocalDate</code> object with the deliveryDate.
+     * @param currentDate a <code>LocalDate</code> object with the currentDate.
      * @return a <code>boolean</code> which is true iff the vehicle has been delivered.
      */
-    public boolean hasBeenDelivered ( Calendar deliveryDate, Calendar currentDate ) {
-    	return currentDate.after(deliveryDate) || currentDate.equals(deliveryDate);
+    public boolean hasBeenDelivered ( LocalDate deliveryDate, LocalDate currentDate ) {
+    	return currentDate.isAfter(deliveryDate) || currentDate.isEqual(deliveryDate);
     }    
     
     /**
      * Get the vehicle's value after taking depreciation into account.
      * @param purchasePrice a <code>double</code> representing the purchase price.
      * @param depreciationFactor a <code>double</code> representing the depreciatonFactor as percentage.
-     * @param deliveryDate a <code>Calendar</code> object with the deliveryDate.
-     * @param currentDate a <code>Calendar</code> object with the currentDate.
+     * @param deliveryDate a <code>LocalDate</code> object with the deliveryDate.
+     * @param currentDate a <code>LocalDate</code> object with the currentDate.
      * @return a <code>double</code> with the value.
      */
-    public double getValue ( double purchasePrice, double depreciationFactor, Calendar deliveryDate, Calendar currentDate ) {
+    public double getValue ( double purchasePrice, double depreciationFactor, LocalDate deliveryDate, LocalDate currentDate ) {
         return purchasePrice - ((depreciationFactor * getAge(deliveryDate, currentDate)) * purchasePrice);
     }
     
     /**
      * Get the vehicle age based on the difference between deliveryDate and currentDate in months.
-     * @param deliveryDate a <code>Calendar</code> object with the deliveryDate.
-     * @param currentDate a <code>Calendar</code> object with the currentDate.
+     * @param deliveryDate a <code>LocalDate</code> object with the deliveryDate.
+     * @param currentDate a <code>LocalDate</code> object with the currentDate.
      * @return a <code>int</code> with the vehicle age.
      */
-    public int getAge ( Calendar deliveryDate, Calendar currentDate ) {
-    	if ( currentDate.before(deliveryDate) ) return -1; 
-    	int yearDiff = Math.abs(currentDate.get(Calendar.YEAR) - deliveryDate.get(Calendar.YEAR));
-        int monthDiff = Math.abs(currentDate.get(Calendar.MONTH) - deliveryDate.get(Calendar.MONTH));
+    public int getAge ( LocalDate deliveryDate, LocalDate currentDate ) {
+    	if ( currentDate.isBefore(deliveryDate) ) return -1;
+    	int yearDiff = Math.abs(currentDate.getYear() - deliveryDate.getYear());
+        int monthDiff = Math.abs(currentDate.getMonthValue() - deliveryDate.getMonthValue());
         return (yearDiff * 12) + monthDiff;
     }
 
@@ -167,7 +171,7 @@ public class VehicleService {
         return convertToVehicleModel(vehicle);
     }
 
-    public VehicleModel createVehicleObject ( final String model, final String registrationNumber, final Calendar deliveryDate ) {
+    public VehicleModel createVehicleObject ( final String model, final String registrationNumber, final LocalDate deliveryDate ) {
         Vehicle vehicle = vehicleFactory.createVehicleByModel(model);
         if ( vehicle != null ) {
             vehicle.setRegistrationNumber(registrationNumber);

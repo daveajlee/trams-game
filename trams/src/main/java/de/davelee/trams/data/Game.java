@@ -8,7 +8,7 @@ import javax.persistence.Table;
 
 import de.davelee.trams.util.DifficultyLevel;
 
-import java.util.Calendar;
+import java.time.LocalDateTime;
 
 /**
  * Class representing a game in TraMS.
@@ -39,7 +39,7 @@ public class Game {
 	private String scenarioName;
 
     @Column
-	private Calendar currentTime;
+	private LocalDateTime currentDateTime;
 
     @Column
     private int timeIncrement;
@@ -143,14 +143,14 @@ public class Game {
 
     /**
      * Get the current time.
-     * @return a <code>Calendar</code> representing the current time.
+     * @return a <code>LocalDateTime</code> representing the current time.
      */
-    public Calendar getCurrentTime ( ) {
-        return currentTime;
+    public LocalDateTime getCurrentDateTime ( ) {
+        return currentDateTime;
     }
 
-    public void setCurrentTime(Calendar currentTime) {
-        this.currentTime = currentTime;
+    public void setCurrentDateTime(LocalDateTime currentDateTime) {
+        this.currentDateTime = currentDateTime;
     }
 
 }

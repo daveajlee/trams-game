@@ -1,6 +1,6 @@
 package de.davelee.trams.repository;
 
-import java.util.Calendar;
+import java.time.LocalDate;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -24,7 +24,7 @@ public class DriverRepositoryTest {
 		Driver driver = new Driver();
 		driver.setName("Dave Lee");
 		driver.setContractedHours(40);
-		driver.setStartDate(Calendar.getInstance());
+		driver.setStartDate(LocalDate.now());
 		driverRepository.saveAndFlush(driver);
 		Driver driver2 = driverRepository.findByName("Dave Lee");
 		Assertions.assertNotNull(driver2);
