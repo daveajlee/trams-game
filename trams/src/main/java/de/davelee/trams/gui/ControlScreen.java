@@ -349,7 +349,6 @@ public class ControlScreen extends ButtonBar {
         //Now check if it is past midnight! If it is dispose, and create Allocation Screen.
         if ( isPastMidnight(gameModel.getCurrentDateTime(), gameModel.getTimeIncrement()) && !doneAllocations ) {
             //Now add a message to summarise days events!!!
-            SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
             String date = DateTimeFormatter.RFC_1123_DATE_TIME.format(gameModel.getCurrentDateTime());
             super.getControllerHandler().getMessageController().addMessage("Passenger Satisfaction for " + DateFormats.FULL_FORMAT.getFormat().format(getPreviousDateTime(gameModel.getCurrentDateTime(), gameModel.getTimeIncrement())), "Congratulations you have successfully completed transport operations for " + gameModel.getScenarioName() + " on " + DateFormats.FULL_FORMAT.getFormat().format(getPreviousDateTime(gameModel.getCurrentDateTime(), gameModel.getTimeIncrement())) + " with a passenger satisfaction of " + super.getControllerHandler().getGameController().computeAndReturnPassengerSatisfaction() + "%.\n\nNow you need to allocate vehicles to routes for " + DateFormats.FULL_FORMAT.getFormat().format(gameModel.getCurrentDateTime()) + " and keep the passenger satisfaction up! Click on the Management tab and then choose Allocations. Good luck!", "Council", "INBOX", date);
             //Refresh messages.

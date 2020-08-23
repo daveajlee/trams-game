@@ -2,7 +2,6 @@ package de.davelee.trams.gui;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
 import javax.swing.*;
 
@@ -166,7 +165,6 @@ public class NewGameScreen extends JFrame {
                 //Create supplied drivers.
                 controllerHandler.getDriverController().createSuppliedDrivers(scenarioModels[selectedPosition], gameModel.getCurrentDateTime().toLocalDate());
                 //Create welcome message.
-                SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
                 String date = DateTimeFormatter.RFC_1123_DATE_TIME.format(gameModel.getCurrentDateTime());
                 controllerHandler.getMessageController().addMessage("Welcome Message", "Congratulations on your appointment as Managing Director of the " +
                         scenarioModels[selectedPosition].getName() + "! \n\n Your targets for the coming days and months are: " +

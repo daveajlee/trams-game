@@ -34,7 +34,6 @@ import de.davelee.trams.model.GameModel;
 import de.davelee.trams.model.JourneyPatternModel;
 import de.davelee.trams.model.RouteModel;
 import de.davelee.trams.model.TimetableModel;
-import de.davelee.trams.util.DateFormats;
 
 public class TimetablePanel {
 

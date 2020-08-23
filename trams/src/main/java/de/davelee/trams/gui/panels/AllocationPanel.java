@@ -31,7 +31,6 @@ import de.davelee.trams.model.GameModel;
 import de.davelee.trams.model.RouteModel;
 import de.davelee.trams.model.RouteScheduleModel;
 import de.davelee.trams.model.VehicleModel;
-import de.davelee.trams.util.DateFormats;
 
 public class AllocationPanel {
 	

@@ -1,7 +1,6 @@
 package de.davelee.trams.repository;
 
 import java.time.LocalTime;
-import java.util.HashMap;
 import java.util.List;
 
 import de.davelee.trams.model.StopTimeModel;

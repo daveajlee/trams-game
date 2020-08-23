@@ -27,7 +27,6 @@ import de.davelee.trams.gui.ControlScreen;
 import de.davelee.trams.gui.ImageDisplay;
 import de.davelee.trams.model.GameModel;
 import de.davelee.trams.model.VehicleModel;
-import de.davelee.trams.util.DateFormats;
 
 public class PurchaseVehiclePanel {
 
