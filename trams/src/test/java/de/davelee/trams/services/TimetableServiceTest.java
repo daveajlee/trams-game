@@ -1,9 +1,7 @@
 package de.davelee.trams.services;
 
-import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.Month;
-import java.util.List;
 
 import de.davelee.trams.model.TimetableModel;
 import org.junit.jupiter.api.Assertions;
@@ -20,7 +18,6 @@ public class TimetableServiceTest {
 	public void testCreate() {
 		LocalDate validFromDate = LocalDate.of(2014,4,20);
 		LocalDate validToDate = LocalDate.of(2014,5,20);
-		List<DayOfWeek> daysOfOperation = List.of(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY);
 		TimetableModel timetableModel = TimetableModel.builder()
 				.name("myTimetable")
 				.routeNumber("155")

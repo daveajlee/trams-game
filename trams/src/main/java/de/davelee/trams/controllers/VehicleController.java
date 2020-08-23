@@ -4,7 +4,6 @@ import de.davelee.trams.model.GameModel;
 import de.davelee.trams.model.ScenarioModel;
 import de.davelee.trams.model.VehicleModel;
 import de.davelee.trams.util.SortedVehicleModels;
-import net.sf.cglib.core.Local;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import de.davelee.trams.services.VehicleService;
