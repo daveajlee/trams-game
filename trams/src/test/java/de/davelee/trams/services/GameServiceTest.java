@@ -12,8 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import de.davelee.trams.util.DateFormats;
-
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration("/de/davelee/trams/spring/test-context.xml")
 public class GameServiceTest {

@@ -10,6 +10,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.NoSuchElementException;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration("/de/davelee/trams/spring/test-context.xml")
 public class ScenarioFactoryTest {
@@ -49,7 +51,7 @@ public class ScenarioFactoryTest {
 
 	@Test
 	public void testNullScenario() {
-		Assertions.assertThrows(NoSuchElementException.class, () -> scenarioFactory.createScenarioByName("Londuff Transport Company"));
+		assertThrows(NoSuchElementException.class, () -> scenarioFactory.createScenarioByName("Londuff Transport Company"));
 	}
 
 	private void assertEquals ( final String expected, final String actual ) {

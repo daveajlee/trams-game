@@ -1,7 +1,6 @@
 package de.davelee.trams.services;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import de.davelee.trams.data.Game;

@@ -11,6 +11,8 @@ import de.davelee.trams.data.Vehicle;
 
 import java.util.NoSuchElementException;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration("/de/davelee/trams/spring/test-context.xml")
 public class VehicleFactoryTest {
@@ -58,7 +60,7 @@ public class VehicleFactoryTest {
 
 	@Test
 	public void testNull() {
-		Assertions.assertThrows(NoSuchElementException.class, () -> vehicleFactory.createVehicleByModel("MyTrain"));
+		assertThrows(NoSuchElementException.class, () -> vehicleFactory.createVehicleByModel("MyTrain"));
 	}
 
 	private void assertEquals ( final int expected, final int actual ) {
