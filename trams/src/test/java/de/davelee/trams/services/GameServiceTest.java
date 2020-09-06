@@ -1,6 +1,7 @@
 package de.davelee.trams.services;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import de.davelee.trams.model.GameModel;
 import de.davelee.trams.util.DifficultyLevel;
@@ -34,10 +35,10 @@ public class GameServiceTest {
 		Assertions.assertNotNull(gameService.getGameByPlayerName("Dave A J Lee"));
 		Assertions.assertNull(gameService.getGameByPlayerName("My First Name"));
 		GameModel gameModel2 = gameService.getGameByPlayerName("Dave A J Lee");
-		assertEquals(DateFormats.HOUR_MINUTE_FORMAT.getFormat().format(gameModel2.getCurrentDateTime()), "05:00");
+		assertEquals(DateTimeFormatter.ofPattern("HH:mm").format(gameModel2.getCurrentDateTime()), "05:00");
 		gameService.incrementTime("Dave A J Lee");
 		gameModel2 = gameService.getGameByPlayerName("Dave A J Lee");
-		assertEquals(DateFormats.HOUR_MINUTE_FORMAT.getFormat().format(gameModel2.getCurrentDateTime()), "05:15");
+		assertEquals(DateTimeFormatter.ofPattern("HH:mm").format(gameModel2.getCurrentDateTime()), "05:15");
 		gameService.withdrawBalance(100.0, "Dave A J Lee");
 		gameService.creditBalance(10.0, "Dave A J Lee");
 		Assertions.assertEquals(gameService.computeAndReturnPassengerSatisfaction("Dave A J Lee", 4, 3, 2), 91);

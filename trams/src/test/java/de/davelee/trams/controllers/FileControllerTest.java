@@ -23,10 +23,10 @@ public class FileControllerTest {
     public void testSaveFile() {
         gameController.createGameModel("Dave Lee", "Landuff Transport Company");
         assertEquals("Dave Lee", gameController.getCurrentPlayerName());
-        fileController.saveFile(new File("test-trams-controller.xml"));
+        fileController.saveFile(new File("test-game.json"));
         gameController.createGameModel("Bob Smith", "Landuff Transport Company");
         assertEquals("Bob Smith", gameController.getCurrentPlayerName());
-        fileController.loadFile(new File("test-trams-controller.xml"));
+        fileController.loadFile(new File("test-game.json"));
         assertEquals("Dave Lee", gameController.getCurrentPlayerName());
     }
 

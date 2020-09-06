@@ -274,7 +274,7 @@ public class RouteScheduleController {
 					loopPos++;
 				}
 				//Increment minutes and loopPos.
-				myTime.plusMinutes(1);
+				myTime = myTime.plusMinutes(1);
 			}
 			//Add route schedule to database.
 			routeScheduleService.saveRouteSchedule(mySchedule);

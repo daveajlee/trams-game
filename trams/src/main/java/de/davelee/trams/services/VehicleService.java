@@ -82,18 +82,18 @@ public class VehicleService {
     }
 
     private VehicleModel convertToVehicleModel ( final Vehicle vehicle ) {
-        VehicleModel vehicleModel = new VehicleModel();
-        vehicleModel.setRegistrationNumber(vehicle.getRegistrationNumber());
-        vehicleModel.setDeliveryDate(vehicle.getDeliveryDate());
-        vehicleModel.setDepreciationFactor(vehicle.getDepreciationFactor());
-        vehicleModel.setImagePath(vehicle.getImagePath());
-        vehicleModel.setModel(vehicle.getModel());
-        vehicleModel.setRouteNumber(vehicle.getRouteNumber());
-        vehicleModel.setRouteScheduleNumber(vehicle.getRouteScheduleNumber());
-        vehicleModel.setSeatingCapacity("" + vehicle.getSeatingCapacity());
-        vehicleModel.setStandingCapacity("" + vehicle.getStandingCapacity());
-        vehicleModel.setPurchasePrice(vehicle.getPurchasePrice());
-        return vehicleModel;
+        return VehicleModel.builder()
+                .registrationNumber(vehicle.getRegistrationNumber())
+                .deliveryDate(vehicle.getDeliveryDate())
+                .depreciationFactor(vehicle.getDepreciationFactor())
+                .imagePath(vehicle.getImagePath())
+                .model(vehicle.getModel())
+                .routeNumber(vehicle.getRouteNumber())
+                .routeScheduleNumber(vehicle.getRouteScheduleNumber())
+                .seatingCapacity("" + vehicle.getSeatingCapacity())
+                .standingCapacity("" + vehicle.getStandingCapacity())
+                .purchasePrice(vehicle.getPurchasePrice())
+                .build();
     }
 
     public void saveVehicle ( final VehicleModel vehicle ) {

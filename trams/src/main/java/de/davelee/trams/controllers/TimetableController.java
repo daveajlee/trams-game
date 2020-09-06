@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 @Controller
 public class TimetableController {
@@ -51,7 +52,7 @@ public class TimetableController {
      * @return a <code>String</code> object.
      */
     public String getDateInfo ( final LocalDate myDate ) {
-    	return DateTimeFormatter.RFC_1123_DATE_TIME.format(myDate);
+    	return DateTimeFormatter.ofPattern("EEEE, d MMMM y", Locale.ENGLISH).format(myDate);
     }
 
 	public TimetableModel[] getAllTimetableModels ( ) {

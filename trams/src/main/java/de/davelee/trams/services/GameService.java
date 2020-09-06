@@ -1,6 +1,7 @@
 package de.davelee.trams.services;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import de.davelee.trams.data.Game;
@@ -122,12 +123,10 @@ public class GameService {
         //Retrieve the game.
         Game game = gameRepository.findByPlayerName(playerName);
         //Increment time.
-        LocalDateTime newCurrentDateTime = game.getCurrentDateTime();
-        newCurrentDateTime.plusMinutes(game.getTimeIncrement());
-        game.setCurrentDateTime(newCurrentDateTime);
+        game.setCurrentDateTime(game.getCurrentDateTime().plusMinutes(game.getTimeIncrement()));
         //Save game and return the new time.
         gameRepository.save(game);
-        return newCurrentDateTime;
+        return game.getCurrentDateTime();
     }
 
     public String getCurrentPlayerName ( ) {

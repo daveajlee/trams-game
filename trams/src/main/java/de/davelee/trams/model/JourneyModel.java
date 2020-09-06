@@ -1,49 +1,25 @@
 package de.davelee.trams.model;
 
 import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.AllArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Builder
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class JourneyModel {
 
 	private int journeyNumber;
 	private int routeScheduleNumber;
 	private String routeNumber;
 	private List<StopTimeModel> stopTimeModelList = new ArrayList<StopTimeModel>();
-
-	public int getJourneyNumber() {
-		return journeyNumber;
-	}
-
-	public void setJourneyNumber(final int journeyNumber) {
-		this.journeyNumber = journeyNumber;
-	}
-
-	public int getRouteScheduleNumber() {
-		return routeScheduleNumber;
-	}
-
-	public void setRouteScheduleNumber(final int routeScheduleNumber) {
-		this.routeScheduleNumber = routeScheduleNumber;
-	}
-
-	public String getRouteNumber() {
-		return routeNumber;
-	}
-
-	public void setRouteNumber(final String routeNumber) {
-		this.routeNumber = routeNumber;
-	}
-
-	public List<StopTimeModel> getStopTimeModelList() {
-		return stopTimeModelList;
-	}
-
-	public void setStopTimeModelList(final List<StopTimeModel> stopTimeModelList) {
-		this.stopTimeModelList = stopTimeModelList;
-	}
 
 	public void removeStopTimeInList(final String stopName) {
 		for ( StopTimeModel stopTimeModel : stopTimeModelList ) {
@@ -55,6 +31,9 @@ public class JourneyModel {
 	}
 
 	public void addStopTimeToList ( final StopTimeModel stopTimeModel ) {
+		if ( stopTimeModelList == null ) {
+			stopTimeModelList = new ArrayList<>();
+		}
 		stopTimeModelList.add(stopTimeModel);
 	}
 

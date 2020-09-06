@@ -29,6 +29,9 @@ public class RouteScheduleControllerTest {
     @Autowired
     private TimetableController timetableController;
 
+    @Autowired
+    private JourneyPatternController journeyPatternController;
+
     @Test
     public void testGenerateRouteSchedules() {
         //Test route.
@@ -45,7 +48,7 @@ public class RouteScheduleControllerTest {
         List<DayOfWeek> operatingDays = new ArrayList<DayOfWeek>();
         operatingDays.add(DayOfWeek.SUNDAY); operatingDays.add(DayOfWeek.MONDAY); operatingDays.add(DayOfWeek.TUESDAY); operatingDays.add(DayOfWeek.WEDNESDAY);
         operatingDays.add(DayOfWeek.THURSDAY); operatingDays.add(DayOfWeek.FRIDAY); operatingDays.add(DayOfWeek.SATURDAY);
-        JourneyPatternModel.builder()
+        journeyPatternController.createJourneyPattern(JourneyPatternModel.builder()
                 .name("Regular")
                 .daysOfOperation(operatingDays)
                 .outgoingTerminus("Airport")
@@ -56,7 +59,7 @@ public class RouteScheduleControllerTest {
                 .duration(30)
                 .timetableName(timetableController.getRouteTimetable(routeModel, "RegularTimetable").getName())
                 .routeNumber("X1")
-                .build();
+                .build());
         //Test current time.
         LocalDate testDateTime = LocalDate.of(2017,3,1);
         //Test generate route schedules.

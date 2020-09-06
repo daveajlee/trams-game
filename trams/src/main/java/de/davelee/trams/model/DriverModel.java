@@ -1,38 +1,22 @@
 package de.davelee.trams.model;
 
 import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
 @Builder
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class DriverModel {
 	
 	private String name;
 	private int contractedHours;
 	private LocalDate startDate;
-	
-	public String getName() {
-		return name;
-	}
-	
-	public void setName(final String name) {
-		this.name = name;
-	}
-	
-	public int getContractedHours() {
-		return contractedHours;
-	}
-	
-	public void setContractedHours(final int contractedHours) {
-		this.contractedHours = contractedHours;
-	}
-	
-	public LocalDate getStartDate() {
-		return startDate;
-	}
-	
-	public void setStartDate(final LocalDate startDate) {
-		this.startDate = startDate;
-	}
 
 }

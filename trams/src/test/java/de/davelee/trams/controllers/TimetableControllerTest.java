@@ -18,7 +18,7 @@ public class TimetableControllerTest {
 	
 	@Test
 	public void testDateInfo() {
-		assertEquals("Tuesday, 20 May 2014", timetableController.getDateInfo(LocalDate.of(2014,4,20)));
+		assertEquals("Tuesday, 20 May 2014", timetableController.getDateInfo(LocalDate.of(2014,5,20)));
 	}
 
 	private void assertEquals ( final String expected, final String actual ) {

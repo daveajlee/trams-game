@@ -2,7 +2,9 @@ package de.davelee.trams.model;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.AllArgsConstructor;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;
@@ -11,6 +13,8 @@ import java.util.List;
 @Builder
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class JourneyPatternModel {
 	
 	private String name;

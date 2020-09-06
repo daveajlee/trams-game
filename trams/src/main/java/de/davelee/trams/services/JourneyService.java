@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
@@ -431,7 +432,7 @@ public class JourneyService {
             }
             //Now repeat this loop until myTime is after the journey pattern end time.
             while ( true ) {
-                if ( myCurrentTime.isAfter(myJourneyPattern.getEndTime()) ) { break; }
+                if ( myCurrentTime.isAfter(myJourneyPattern.getEndTime()) ) {  break; }
                 else {
                     //Create an outgoing service.
                     JourneyModel newJourney = JourneyModel.builder()
@@ -456,12 +457,12 @@ public class JourneyService {
                             .build());
                     for ( int i = 1; i < journeyStops.size(); i++ ) {
                         //Now add to journey time the difference between the two stops.
-                        myCurrentTime.plusMinutes(getDistance(scenarioName, journeyStops.get(i-1), journeyStops.get(i)));
+                        LocalTime myStopTime = myCurrentTime.plusMinutes(getDistance(scenarioName, journeyStops.get(i-1), journeyStops.get(i)));
                         //Create stop.
                         newJourney.addStopTimeToList(StopTimeModel.builder()
                                 .journeyNumber(newJourney.getJourneyNumber())
                                 .stopName(journeyStops.get(i))
-                                .time(myCurrentTime)
+                                .time(myStopTime)
                                 .routeScheduleNumber(routeScheduleNumber)
                                 .routeNumber(myJourneyPattern.getRouteNumber())
                                 .build());
@@ -470,7 +471,7 @@ public class JourneyService {
                     saveJourney(newJourney);
                     allJourneys.add(newJourney);
                     //Increment minutes.
-                    myCurrentTime.plusMinutes(myJourneyPattern.getFrequency());
+                    myCurrentTime = myCurrentTime.plusMinutes(myJourneyPattern.getFrequency());
                 }
                 journeyNumber++;
             }

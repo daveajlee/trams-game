@@ -20,6 +20,7 @@ public class DriverServiceTest {
 	
 	@Test
 	public void testCreateDriver() {
+		driverService.removeAllDrivers();
 		DriverModel driverModel = DriverModel.builder()
 				.name("Dave Lee")
 				.contractedHours(40)

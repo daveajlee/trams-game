@@ -119,15 +119,12 @@ public class VehicleServiceTest {
 		vehicleModel.setStandingCapacity("20");
 		vehicleModel.setPurchasePrice(20000.00);
 		//Test begins here.
+		vehicleService.deleteAllVehicles();
 		vehicleService.saveVehicle(vehicleModel);
+		assertEquals(1, vehicleService.getVehicleModels().length);
 		Assertions.assertNotNull(vehicleService.getVehicleByRegistrationNumber("CV58 2DX"));
 		assertEquals(vehicleService.getVehicleByRegistrationNumber("CV58 2DX").getImagePath(), "singledecker.png");
 		Assertions.assertNull(vehicleService.getVehicleByRegistrationNumber("2013-001"));
-	}
-	
-	@Test
-	public void testGetAllVehicles ( ) {
-		assertEquals(vehicleService.getVehicleModels().length, 1);
 	}
 
 	@Test

@@ -1,10 +1,10 @@
 package de.davelee.trams.services;
 
 import java.io.File;
-import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import org.junit.jupiter.api.Assertions;
@@ -87,7 +87,7 @@ public class FileServiceTest {
 				.sender("Dave Lee")
 				.messageFolder(MessageFolder.INBOX)
 				.text("This is a test message")
-				.date(new SimpleDateFormat("dd-MM-yyyy").format(LocalDate.now()))
+				.date(DateTimeFormatter.ofPattern("dd-MM-yyyy").format(LocalDate.now()))
 				.build());
 		journeyService.saveStop("Danziger Strasse");
 		journeyPatternService.saveJourneyPattern(JourneyPatternModel.builder()
@@ -153,7 +153,7 @@ public class FileServiceTest {
 		assertNotNull(tramsFile.getJourneyModels());
 		assertNotNull(tramsFile.getGameModel());
 		
-		fileService.saveFile(new File("test-trams.xml"), tramsFile);
+		fileService.saveFile(new File("test-game-service.json"), tramsFile);
 	}
 
 	private void deleteTemporaryContent ( ) {
@@ -171,7 +171,7 @@ public class FileServiceTest {
 	
 	@Test
 	public void testLoadFile ( ) {
-		TramsFile tramsFile2 = fileService.loadFile(new File("test-trams.xml"));
+		TramsFile tramsFile2 = fileService.loadFile(new File("test-game-service.json"));
 		assertNotNull(tramsFile2);
 		Assertions.assertEquals(tramsFile2.getDriverModels().length, 1);
 		assertEquals(tramsFile2.getDriverModels()[0].getName(), "Chris Lee");
