@@ -18,7 +18,6 @@ public class NewGameScreen extends JFrame {
 	private static final long serialVersionUID = 1L;
 
     private JTextField playerNameField;
-    private JRadioButton[] scenarioButtons;
 
     private JButton createGameButton;
 
@@ -111,8 +110,6 @@ public class NewGameScreen extends JFrame {
         scenarioLabel.setFont(new Font("Arial", Font.BOLD, 20));
         scenarioLabel.setHorizontalAlignment(SwingConstants.CENTER);
         scenarioPanel.add(scenarioLabel, BorderLayout.NORTH);
-
-        final java.util.List<String> availableScenarios = controllerHandler.getScenarioController().getAvailableScenarios();
         
         //Create the actual scenario radio buttons.
         JComboBox<String> availableScenariosComboBox = new JComboBox<String>(controllerHandler.getScenarioController().getAvailableScenarios().toArray(new String[controllerHandler.getScenarioController().getAvailableScenarios().size()]));
