@@ -3,6 +3,7 @@ package de.davelee.trams.controllers;
 import de.davelee.trams.TramsGameApplication;
 import de.davelee.trams.model.DriverModel;
 import de.davelee.trams.model.GameModel;
+import org.junit.Ignore;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes= TramsGameApplication.class)
+@Ignore
 public class DriverControllerTest {
 
     @Autowired
