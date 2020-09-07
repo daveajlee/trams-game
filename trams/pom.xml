@@ -10,6 +10,14 @@
   <name>trams</name>
   <url>http://maven.apache.org</url>
 
+	<repositories>
+		<repository>
+			<id>github</id>
+			<name>GitHub daveajlee ci-parent-pom Apache Maven Packages</name>
+			<url>https://maven.pkg.github.com/daveajlee/ci-parent-pom</url>
+		</repository>
+	</repositories>
+
 	<parent>
 		<groupId>de.davelee</groupId>
 		<artifactId>ci-springboot-parent-pom</artifactId>
