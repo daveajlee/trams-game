@@ -3,6 +3,8 @@ package de.davelee.trams.controllers;
 import de.davelee.trams.model.DriverModel;
 import de.davelee.trams.model.GameModel;
 import de.davelee.trams.model.ScenarioModel;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import de.davelee.trams.services.DriverService;
@@ -11,6 +13,8 @@ import org.springframework.stereotype.Controller;
 import java.time.LocalDate;
 
 @Controller
+@Getter
+@Setter
 public class DriverController {
 	
 	@Autowired
