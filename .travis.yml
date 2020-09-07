@@ -1,4 +1,4 @@
 language: java
 jdk: -openjdk11
 
-script: ./trams/mvnw clean install
+script: mvn clean install
