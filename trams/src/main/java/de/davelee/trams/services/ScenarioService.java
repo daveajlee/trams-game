@@ -1,18 +1,21 @@
 package de.davelee.trams.services;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.util.List;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import de.davelee.trams.beans.Scenario;
-import de.davelee.trams.factory.ScenarioFactory;
 import de.davelee.trams.model.ScenarioModel;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
 public class ScenarioService {
 
-	@Autowired
-	private ScenarioFactory scenarioFactory;
+	private static final Logger logger = LoggerFactory.getLogger(ScenarioService.class);
 
 	/**
      * Get the stop names as a String array plus a - and return it.
@@ -28,20 +31,23 @@ public class ScenarioService {
         return possStops;
     }
 
-	public ScenarioModel retrieveScenarioObject ( String name ) {
-		if ( scenarioFactory.createScenarioByName(name) != null ) {
-			return convertToScenarioModel(scenarioFactory.createScenarioByName(name));
+	public ScenarioModel retrieveScenarioFile ( String name ) {
+		//Define json importer.
+		final ObjectMapper mapper = new ObjectMapper();
+		mapper.registerModule(new JavaTimeModule());
+		try {
+			String filePath = "scenarios/" + name.split(" ")[0].toLowerCase() + ".json";
+			BufferedReader reader = new BufferedReader(new InputStreamReader(getClass().getClassLoader().getResourceAsStream(filePath)));
+			StringBuilder out = new StringBuilder();
+			String line;
+			while ((line = reader.readLine()) != null) {
+				out.append(line);   // add everything to StringBuilder
+			}
+			return convertToScenarioModel(mapper.readValue(out.toString(), Scenario.class));
+		} catch ( Exception exception ) {
+			logger.error("exception whilst loading file", exception);
+			return null;
 		}
-		return null;
-	}
-
-	public ScenarioModel[] getAvailableScenarios ( ) {
-		List<Scenario> scenarios = scenarioFactory.getAvailableScenarios();
-		ScenarioModel[] scenarioModels = new ScenarioModel[scenarios.size()];
-		for ( int i = 0; i < scenarioModels.length; i++ ) {
-			scenarioModels[i] = convertToScenarioModel(scenarios.get(i));
-		}
-		return scenarioModels;
 	}
 
 	private ScenarioModel convertToScenarioModel ( final Scenario scenario ) {
@@ -55,6 +61,7 @@ public class ScenarioService {
 		scenarioModel.setStopNames(getStopNames(scenario.getStopDistances()));
 		scenarioModel.setMinimumSatisfaction(scenario.getMinimumSatisfaction());
 		scenarioModel.setLocationMapFileName(scenario.getLocationMapFileName());
+		scenarioModel.setStopDistances(scenario.getStopDistances());
 		return scenarioModel;
 	}
 

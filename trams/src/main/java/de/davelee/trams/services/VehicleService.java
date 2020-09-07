@@ -7,20 +7,26 @@ import java.util.NoSuchElementException;
 import java.util.Random;
 
 import de.davelee.trams.data.Vehicle;
-import de.davelee.trams.factory.VehicleFactory;
 import de.davelee.trams.model.VehicleModel;
 import de.davelee.trams.repository.VehicleRepository;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 
 @Service
+@ConfigurationProperties(prefix="vehicles")
+@PropertySource("classpath:vehicles.properties")
+@Getter
+@Setter
 public class VehicleService {
 
     @Autowired
     private VehicleRepository vehicleRepository;
 
-    @Autowired
-    private VehicleFactory vehicleFactory;
+    private List<Vehicle> vehiclesList;
 
 	/**
      * Check if the vehicle has been delivered yet!
@@ -171,18 +177,19 @@ public class VehicleService {
         return convertToVehicleModel(vehicle);
     }
 
-    public VehicleModel createVehicleObject ( final String model, final String registrationNumber, final LocalDate deliveryDate ) {
-        Vehicle vehicle = vehicleFactory.createVehicleByModel(model);
-        if ( vehicle != null ) {
-            vehicle.setRegistrationNumber(registrationNumber);
-            vehicle.setDeliveryDate(deliveryDate);
-            return convertToVehicleModel(vehicle);
+    public VehicleModel createVehicleObject ( final String model, final String registrationNumber, final LocalDate deliveryDate ) throws NoSuchElementException  {
+        for ( Vehicle vehicle : vehiclesList ) {
+            if ( vehicle.getModel().contentEquals(model) ) {
+                vehicle.setRegistrationNumber(registrationNumber);
+                vehicle.setDeliveryDate(deliveryDate);
+                return convertToVehicleModel(vehicle);
+            }
         }
-        return null;
+        throw new NoSuchElementException();
     }
 
     public int getNumberVehicleTypes ( ) {
-        return vehicleFactory.getAvailableVehicles().size();
+        return vehiclesList.size();
     }
 
     public VehicleModel getVehicleByRegistrationNumber ( final String registrationNumber ) {
@@ -194,26 +201,26 @@ public class VehicleService {
     }
 
     public String getFirstVehicleModel ( ) {
-        return vehicleFactory.getAvailableVehicles().get(0).getModel();
+        return vehiclesList.get(0).getModel();
     }
 
     public String getLastVehicleModel ( ) {
-        return vehicleFactory.getAvailableVehicles().get(vehicleFactory.getAvailableVehicles().size()-1).getModel();
+        return vehiclesList.get(vehiclesList.size()-1).getModel();
     }
 
     public String getNextVehicleModel ( final String model ) {
-        for ( int i = 0; i < vehicleFactory.getAvailableVehicles().size(); i++ ) {
-            if ( vehicleFactory.getAvailableVehicles().get(i).getModel().contentEquals(model) ) {
-                return vehicleFactory.getAvailableVehicles().get(i+1).getModel();
+        for ( int i = 0; i < vehiclesList.size(); i++ ) {
+            if ( vehiclesList.get(i).getModel().contentEquals(model) ) {
+                return vehiclesList.get(i+1).getModel();
             }
         }
         return "";
     }
 
     public String getPreviousVehicleModel ( final String model ) {
-        for ( int i = 0; i < vehicleFactory.getAvailableVehicles().size(); i++ ) {
-            if ( vehicleFactory.getAvailableVehicles().get(i).getModel().contentEquals(model) ) {
-                return vehicleFactory.getAvailableVehicles().get(i-1).getModel();
+        for ( int i = 0; i < vehiclesList.size(); i++ ) {
+            if ( vehiclesList.get(i).getModel().contentEquals(model) ) {
+                return vehiclesList.get(i-1).getModel();
             }
         }
         return "";

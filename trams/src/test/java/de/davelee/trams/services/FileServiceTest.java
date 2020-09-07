@@ -7,15 +7,15 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+import de.davelee.trams.TramsGameApplication;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import de.davelee.trams.beans.TramsFile;
-import de.davelee.trams.factory.VehicleFactory;
 import de.davelee.trams.model.DriverModel;
 import de.davelee.trams.model.GameModel;
 import de.davelee.trams.model.JourneyModel;
@@ -25,21 +25,14 @@ import de.davelee.trams.model.RouteModel;
 import de.davelee.trams.model.RouteScheduleModel;
 import de.davelee.trams.model.StopTimeModel;
 import de.davelee.trams.model.TimetableModel;
-import de.davelee.trams.repository.VehicleRepository;
 import de.davelee.trams.util.MessageFolder;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration("/de/davelee/trams/spring/test-context.xml")
+@SpringBootTest(classes= TramsGameApplication.class)
 public class FileServiceTest {
 	
 	@Autowired
-	private VehicleRepository vehicleRepository;
-	
-	@Autowired
 	private DriverService driverService;
-	
-	@Autowired
-	private VehicleFactory vehicleFactory;
 	
 	@Autowired
 	private RouteService routeService;
@@ -77,7 +70,7 @@ public class FileServiceTest {
 				.name("Chris Lee")
 				.contractedHours(40)
 				.startDate(LocalDate.of(2014,4,20)).build());
-		vehicleRepository.saveAndFlush(vehicleFactory.createVehicleByModel("MyBus Single Decker"));
+		vehicleService.saveVehicle(vehicleService.createVehicleObject("MyBus Single Decker", "SDF3", LocalDate.now()));
 		routeService.saveRoute(RouteModel.builder()
 				.routeNumber("M2")
 				.stopNames(List.of("Heinersdorf", "Am Steinberg", "Alexanderplatz"))
@@ -161,7 +154,7 @@ public class FileServiceTest {
 		driverService.removeAllDrivers();
 		routeService.deleteAllRoutes();
 		messageService.deleteAllMessages();
-		vehicleRepository.deleteAll();
+		vehicleService.deleteAllVehicles();
 		journeyService.deleteAllJourneys();
 		journeyService.deleteAllStops();
 		journeyPatternService.deleteAllJourneyPatterns();

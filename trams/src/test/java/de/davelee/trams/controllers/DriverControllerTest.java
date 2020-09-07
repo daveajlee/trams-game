@@ -1,20 +1,18 @@
 package de.davelee.trams.controllers;
 
+import de.davelee.trams.TramsGameApplication;
 import de.davelee.trams.model.DriverModel;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDate;
 
-/**
- * Created by davelee on 20.09.16.
- */
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration("/de/davelee/trams/spring/test-context.xml")
+@SpringBootTest(classes= TramsGameApplication.class)
 public class DriverControllerTest {
 
     @Autowired

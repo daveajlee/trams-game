@@ -1,16 +1,19 @@
 package de.davelee.trams.controllers;
 
+import de.davelee.trams.TramsGameApplication;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.io.File;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration("/de/davelee/trams/spring/test-context.xml")
+@SpringBootTest(classes= TramsGameApplication.class)
 public class FileControllerTest {
 
     @Autowired
@@ -19,8 +22,12 @@ public class FileControllerTest {
     @Autowired
     private GameController gameController;
 
+    @Autowired
+    private ScenarioController scenarioController;
+
     @Test
     public void testSaveFile() {
+        assertNotNull(scenarioController);
         gameController.createGameModel("Dave Lee", "Landuff Transport Company");
         assertEquals("Dave Lee", gameController.getCurrentPlayerName());
         fileController.saveFile(new File("test-game.json"));

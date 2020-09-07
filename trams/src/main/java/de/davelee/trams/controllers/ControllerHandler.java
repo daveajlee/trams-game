@@ -1,6 +1,7 @@
 package de.davelee.trams.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 
 /**
  * This class exists to store the controllers and supply them to the GUI.
@@ -8,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * GUI classes can be more than once initialised.
  * Created by davelee on 27.03.17.
  */
+@Controller
 public class ControllerHandler {
 
     @Autowired

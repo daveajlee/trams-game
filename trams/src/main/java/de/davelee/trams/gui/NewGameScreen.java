@@ -112,34 +112,13 @@ public class NewGameScreen extends JFrame {
         scenarioLabel.setHorizontalAlignment(SwingConstants.CENTER);
         scenarioPanel.add(scenarioLabel, BorderLayout.NORTH);
 
-        final ScenarioModel[] scenarioModels = controllerHandler.getScenarioController().getAvailableScenarios();
+        final java.util.List<String> availableScenarios = controllerHandler.getScenarioController().getAvailableScenarios();
         
         //Create the actual scenario radio buttons.
-        JPanel scenarioRadioPanel = new JPanel(new GridLayout(3,1,5,5));
-        scenarioRadioPanel.setBackground(Color.WHITE);
-        ButtonGroup scenarioButtonGroup = new ButtonGroup();
-        scenarioButtons = new JRadioButton[scenarioModels.length];
-        JTextArea[] scenarioDescriptions = new JTextArea[scenarioModels.length];
-        //Scenarios.
-        for ( int i = 0; i < scenarioModels.length; i++ ) {
-        	JPanel scenarioTownPanel = new JPanel(new BorderLayout());
-        	scenarioTownPanel.setBackground(Color.WHITE);
-        	scenarioButtons[i] = new JRadioButton(scenarioModels[i].getName());
-        	if ( i == 0 ) { scenarioButtons[i].setSelected(true); }
-        	scenarioButtons[i].setBackground(Color.WHITE);
-        	scenarioButtons[i].setFont(new Font("Arial", Font.BOLD, 16));
-        	scenarioButtonGroup.add(scenarioButtons[i]);
-        	scenarioTownPanel.add(scenarioButtons[i], BorderLayout.NORTH);
-        	scenarioDescriptions[i] = new JTextArea(scenarioModels[i].getCityDescription());
-        	scenarioDescriptions[i].setRows(2);
-        	scenarioDescriptions[i].setLineWrap(true);
-        	scenarioDescriptions[i].setWrapStyleWord(true);
-        	scenarioDescriptions[i].setFont(new Font("Arial", Font.ITALIC, 14));
-        	scenarioTownPanel.add(scenarioDescriptions[i], BorderLayout.SOUTH);
-        	scenarioRadioPanel.add(scenarioTownPanel);
-        }
+        JComboBox<String> availableScenariosComboBox = new JComboBox<String>(controllerHandler.getScenarioController().getAvailableScenarios().toArray(new String[controllerHandler.getScenarioController().getAvailableScenarios().size()]));
         //Add scenarioRadioPanel to scenarioPanel.
-        scenarioPanel.add(scenarioRadioPanel, BorderLayout.SOUTH);
+        scenarioPanel.add(availableScenariosComboBox, BorderLayout.SOUTH);
+        //scenarioPanel.add(scenarioRadioPanel, BorderLayout.SOUTH);
         //Add scenarioPanel to screenPanel.
         screenPanel.add(scenarioPanel);
         
@@ -150,27 +129,20 @@ public class NewGameScreen extends JFrame {
         createGameButton.setEnabled(false);
         createGameButton.addActionListener ( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
-                //Get selected scenario.
-                int selectedPosition = 0;
-            	for ( int i = 0; i < scenarioButtons.length; i++ ) {
-            		if ( scenarioButtons[i].isSelected() ) {
-                        selectedPosition = i;
-            			break;
-            		}
-            	}
+                ScenarioModel scenarioModel = controllerHandler.getScenarioController().getScenario(availableScenariosComboBox.getSelectedItem().toString());
                 //Create Game
-                GameModel gameModel = controllerHandler.getGameController().createGameModel(playerNameField.getText(), scenarioModels[selectedPosition].getName());
+                GameModel gameModel = controllerHandler.getGameController().createGameModel(playerNameField.getText(), scenarioModel.getName());
                 //Create supplied vehicles.
-                controllerHandler.getVehicleController().createSuppliedVehicles(scenarioModels[selectedPosition], gameModel.getCurrentDateTime().toLocalDate());
+                controllerHandler.getVehicleController().createSuppliedVehicles(scenarioModel, gameModel.getCurrentDateTime().toLocalDate());
                 //Create supplied drivers.
-                controllerHandler.getDriverController().createSuppliedDrivers(scenarioModels[selectedPosition], gameModel.getCurrentDateTime().toLocalDate());
+                controllerHandler.getDriverController().createSuppliedDrivers(scenarioModel, gameModel.getCurrentDateTime().toLocalDate());
                 //Create welcome message.
-                String date = DateTimeFormatter.RFC_1123_DATE_TIME.format(gameModel.getCurrentDateTime());
+                String date = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm").format(gameModel.getCurrentDateTime());
                 controllerHandler.getMessageController().addMessage("Welcome Message", "Congratulations on your appointment as Managing Director of the " +
-                        scenarioModels[selectedPosition].getName() + "! \n\n Your targets for the coming days and months are: " +
-                        scenarioModels[selectedPosition].getTargets(),"Council","INBOX", date);
+                        scenarioModel.getName() + "! \n\n Your targets for the coming days and months are: " +
+                        scenarioModel.getTargets(),"Council","INBOX", date);
                 ScenarioDescriptionScreen scenarioDescriptionScreen = new ScenarioDescriptionScreen(controllerHandler);
-                scenarioDescriptionScreen.displayScreen(scenarioModels[selectedPosition]);
+                scenarioDescriptionScreen.displayScreen(scenarioModel);
                 dispose();
             }
         });
@@ -192,13 +164,13 @@ public class NewGameScreen extends JFrame {
         //Position the screen at the center of the screen.
         Toolkit tools = Toolkit.getDefaultToolkit();
         Dimension screenDim = tools.getScreenSize();
-        Dimension displayDim = new Dimension(650,500);
+        Dimension displayDim = new Dimension(650,300);
         this.setLocation ( (int) (screenDim.width/2)-(displayDim.width/2), (int) (screenDim.height/2)-(displayDim.height/2));
         
         //Display the front screen to the user.
         this.pack ();
         this.setVisible (true);
-        this.setSize ( new Dimension(650,500) );
+        this.setSize ( new Dimension(650,300) );
         
     }
     

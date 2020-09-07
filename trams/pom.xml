@@ -92,7 +92,7 @@
 					</descriptorRefs>
 					<archive>
 						<manifest>
-							<mainClass>de.davelee.trams.app.Application</mainClass>
+							<mainClass>de.davelee.trams.TramsGameApplication</mainClass>
 						</manifest>
 					</archive>
 				</configuration>

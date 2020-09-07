@@ -1,15 +1,24 @@
-package de.davelee.trams.app;
+package de.davelee.trams;
 
 import javax.swing.UIManager;
 
 import de.davelee.trams.controllers.ControllerHandler;
 import de.davelee.trams.gui.SplashScreen;
 import de.davelee.trams.gui.WelcomeScreen;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
 
 @SpringBootApplication
-public class Application {
+@Configuration
+@ComponentScan
+@EnableAutoConfiguration
+@EnableConfigurationProperties
+public class TramsGameApplication {
 	
 	public static void main ( String[] args ) {
 		try {
@@ -17,7 +26,11 @@ public class Application {
         }
         catch ( Exception e ) { }
         //Display splash screen to the user.
-        ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("de/davelee/trams/spring/trams-context.xml");
+        SpringApplicationBuilder builder = new SpringApplicationBuilder(TramsGameApplication.class);
+
+        builder.headless(false);
+
+        ConfigurableApplicationContext context = builder.run(args);
         ControllerHandler controllerHandler = context.getBean(ControllerHandler.class);
 		SplashScreen ss = new SplashScreen(controllerHandler);
         ss.displayScreen(false);

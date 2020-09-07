@@ -36,6 +36,8 @@ public class JourneyController {
 	@Autowired
 	private JourneyPatternController journeyPatternController;
 
+	@Autowired
+	private ScenarioController scenarioController;
 
 	public JourneyModel getCurrentJourney (final RouteScheduleModel routeScheduleModel, final LocalTime currentTime ) {
 		return journeyService.getCurrentJourney(journeyService.getJourneysByRouteScheduleNumberAndRouteNumber(routeScheduleModel.getScheduleNumber(), routeScheduleModel.getRouteNumber()), currentTime);
@@ -139,7 +141,7 @@ public class JourneyController {
 		TimetableModel currentTimetableModel = timetableController.getCurrentTimetable(routeModel, today);
 		JourneyPatternModel[] journeyPatternModels = journeyPatternController.getJourneyPatternModels(currentTimetableModel, routeModel.getRouteNumber());
 		//Generate journeys.
-		List<JourneyModel> journeyModels = journeyService.generateJourneyTimetables(journeyPatternModels, today, direction, routeModel.getStopNames(), scenarioName, journeyNumberToStart);
+		List<JourneyModel> journeyModels = journeyService.generateJourneyTimetables(journeyPatternModels, today, direction, routeModel.getStopNames(), scenarioController.getScenario(scenarioName).getStopDistances(), journeyNumberToStart);
 		//Sort all journeys.
 		Collections.sort(journeyModels, new SortedJourneyModels());
 		//Return the journeys.
@@ -147,7 +149,7 @@ public class JourneyController {
 	}
 
 	public int getDistance ( final String scenarioName, final String stop1, final String stop2 ) {
-		return journeyService.getDistance(scenarioName, stop1, stop2);
+		return journeyService.getDistance(scenarioController.getScenario(scenarioName).getStopDistances(), stop1, stop2);
 	}
 
 	/**

@@ -3,17 +3,18 @@ package de.davelee.trams.services;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+import de.davelee.trams.TramsGameApplication;
 import de.davelee.trams.model.GameModel;
 import de.davelee.trams.util.DifficultyLevel;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration("/de/davelee/trams/spring/test-context.xml")
+@SpringBootTest(classes= TramsGameApplication.class)
 public class GameServiceTest {
 	
 	@Autowired

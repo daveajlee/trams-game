@@ -3,7 +3,6 @@ package de.davelee.trams.services;
 import de.davelee.trams.data.Journey;
 import de.davelee.trams.data.Stop;
 import de.davelee.trams.data.StopTime;
-import de.davelee.trams.factory.ScenarioFactory;
 import de.davelee.trams.model.JourneyModel;
 import de.davelee.trams.model.JourneyPatternModel;
 import de.davelee.trams.model.RouteScheduleModel;
@@ -29,9 +28,6 @@ public class JourneyService {
 
     @Autowired
 	private StopRepository stopRepository;
-
-    @Autowired
-	private ScenarioFactory scenarioFactory;
 	
 	/**
      * Get the status of the journey based on the current time - either not yet run, running or finished.
@@ -413,7 +409,7 @@ public class JourneyService {
     }
 
     public List<JourneyModel> generateJourneyTimetables (final JourneyPatternModel[] journeyPatternModels,
-                                                         final LocalDate today, final int direction, final List<String> stops, final String scenarioName, final int journeyNumberToStart ) {
+                                                         final LocalDate today, final int direction, final List<String> stops, final List<String> scenarioStopDistances, final int journeyNumberToStart ) {
         int routeScheduleNumber = 0;
         if ( direction == TramsConstants.RETURN_DIRECTION ) { routeScheduleNumber = 1; }
         //Create a list to store journeys.
@@ -456,7 +452,7 @@ public class JourneyService {
                             .build());
                     for ( int i = 1; i < journeyStops.size(); i++ ) {
                         //Now add to journey time the difference between the two stops.
-                        LocalTime myStopTime = myCurrentTime.plusMinutes(getDistance(scenarioName, journeyStops.get(i-1), journeyStops.get(i)));
+                        LocalTime myStopTime = myCurrentTime.plusMinutes(getDistance(scenarioStopDistances, journeyStops.get(i-1), journeyStops.get(i)));
                         //Create stop.
                         newJourney.addStopTimeToList(StopTimeModel.builder()
                                 .journeyNumber(newJourney.getJourneyNumber())
@@ -532,21 +528,20 @@ public class JourneyService {
 
     /**
      * Get the distance between two stops.
-     * @param scenarioName a <code>String</code> with the name of the scenario.
+     * @param scenarioStopDistances a <code>List</code> of <code>String</code> objects with the distances between stops.
      * @param stop1 a <code>String</code> with the name of the first stop.
      * @param stop2 a <code>String</code> with the name of the second stop.
      * @return a <code>int</code> with the distance between two stops.
      */
-    public int getDistance ( final String scenarioName, final String stop1, final String stop2 ) {
+    public int getDistance ( final List<String> scenarioStopDistances, final String stop1, final String stop2 ) {
         int stop1Pos = -1; int stop2Pos = -1; int count = 0;
-        List<String> stopDistanceList = scenarioFactory.createScenarioByName(scenarioName).getStopDistances();
-        for ( String stopDistance : stopDistanceList ) {
+        for ( String stopDistance : scenarioStopDistances ) {
             String stopName = stopDistance.split(":")[0];
             if ( stopName.equalsIgnoreCase(stop1) ) { stop1Pos = count; }
             else if ( stopName.equalsIgnoreCase(stop2) ) { stop2Pos = count; }
             count++;
         }
-        return Integer.parseInt(stopDistanceList.get(stop1Pos).split(":")[1].split(",")[stop2Pos]);
+        return Integer.parseInt(scenarioStopDistances.get(stop1Pos).split(":")[1].split(",")[stop2Pos]);
     }
 
     public void assignRouteAndRouteSchedule ( final JourneyModel journeyModel, final RouteScheduleModel routeScheduleModel ) {
