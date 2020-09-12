@@ -8,8 +8,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import de.davelee.trams.TramsGameApplication;
-import org.junit.Ignore;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +30,7 @@ import de.davelee.trams.util.MessageFolder;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes= TramsGameApplication.class)
-@Ignore
+@Disabled
 public class FileServiceTest {
 	
 	@Autowired
