@@ -34,13 +34,9 @@ public class TramsGameApplication {
         ControllerHandler controllerHandler = context.getBean(ControllerHandler.class);
 		SplashScreen ss = new SplashScreen(controllerHandler);
         ss.displayScreen(false);
-        for ( int i = 12; i > -5; i-- ) {
-            try {
-                Thread.sleep(200);
-                ss.moveImage(10*(i+1),0);
-            }
-            catch ( InterruptedException ie ) { }
-        }
+        try {
+            Thread.sleep(2000);
+        } catch ( InterruptedException ie ) {}
         ss.dispose();
         WelcomeScreen welcomeScreen = new WelcomeScreen(controllerHandler);
         welcomeScreen.displayScreen();

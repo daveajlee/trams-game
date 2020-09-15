@@ -1,6 +1,7 @@
 package de.davelee.trams.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 
 /**
@@ -48,6 +49,7 @@ public class ControllerHandler {
     @Autowired
     private TipController tipController;
 
+    @Value("${trams.version}")
     private String version;
 
     public FileController getFileController() {

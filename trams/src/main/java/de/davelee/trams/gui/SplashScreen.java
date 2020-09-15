@@ -17,7 +17,6 @@ public class SplashScreen extends JFrame {
 
     private ControllerHandler controllerHandler;
 
-    private ImageDisplay busDisplay;
     private JLabel loadingLabel;
 
     public SplashScreen (final ControllerHandler controllerHandler ) {
@@ -53,28 +52,10 @@ public class SplashScreen extends JFrame {
         JPanel logoPanel = new JPanel();
         logoPanel.setBackground(Color.WHITE);
         ImageDisplay logoDisplay = new ImageDisplay("TraMSlogo.png", 0, 0);
-        logoDisplay.setSize(157,96);
+        logoDisplay.setSize(872,346);
         logoDisplay.setBackground(Color.WHITE);
         logoPanel.add(logoDisplay);
         centrePanel.add(logoPanel);
-        
-        //Construct title panel to add to the centre panel.
-        JPanel titlePanel = new JPanel();
-        titlePanel.setBackground(Color.WHITE);
-        JLabel titleLabel = new JLabel("TraMS - Transport Management Simulator");
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 25));
-        titlePanel.add(titleLabel);
-        centrePanel.add(titlePanel);
-        
-        //Construct graphics panel to add to the centre panel.
-        JPanel busPanel = new JPanel();
-        busPanel.setBackground(Color.WHITE);
-        if ( isAboutScreen ) { busDisplay = new ImageDisplay("abouttransparent.png",60,0); }
-        else { busDisplay = new ImageDisplay("loadingtransparent.png",120,0); }
-        busDisplay.setSize(450,340);
-        busDisplay.setBackground(Color.WHITE);
-        busPanel.add(busDisplay);
-        centrePanel.add(busPanel);
         
         //Construct loading panel to add to the centre panel.
         JPanel loadingPanel = new JPanel();
@@ -88,7 +69,7 @@ public class SplashScreen extends JFrame {
         //Construct copyright panel to add to the centre panel.
         JPanel copyrightPanel = new JPanel();
         copyrightPanel.setBackground(Color.WHITE);
-        JLabel copyrightLabel = new JLabel("Copyright 2014 Dr. David A J Lee. All rights reserved.");
+        JLabel copyrightLabel = new JLabel("Copyright 2014-2020 Dr. David A J Lee. All rights reserved.");
         copyrightLabel.setFont(new Font("Arial", Font.PLAIN, 10));
         copyrightPanel.add(copyrightLabel);
         centrePanel.add(copyrightPanel);
@@ -97,7 +78,7 @@ public class SplashScreen extends JFrame {
         
         //Mouse listeners if this is the about screen.
         if ( isAboutScreen ) {
-            this.getContentPane().addMouseListener ( new MouseListener () {
+            MouseListener closeMouseListener = new MouseListener () {
                 public void mouseClicked(MouseEvent e) {
                     dispose();
                 }
@@ -113,24 +94,9 @@ public class SplashScreen extends JFrame {
                 public void mouseExited(MouseEvent e) {
                     //Nothing happens when mouse exited.
                 }
-            });
-            busDisplay.addMouseListener ( new MouseListener () {
-                public void mouseClicked(MouseEvent e) {
-                    dispose();
-                }
-                public void mousePressed(MouseEvent e) {
-                    //Nothing happens when mouse pressed.
-                }
-                public void mouseReleased(MouseEvent e) {
-                    //Nothing happens when mouse released.
-                }
-                public void mouseEntered(MouseEvent e) {
-                    //Nothing happens when mouse entered.
-                }
-                public void mouseExited(MouseEvent e) {
-                    //Nothing happens when mouse exited.
-                }
-            });
+            };
+            logoDisplay.addMouseListener(closeMouseListener);
+            this.getContentPane().addMouseListener ( closeMouseListener);
         }
         
         //Position the screen at the center of the screen.
@@ -144,10 +110,6 @@ public class SplashScreen extends JFrame {
         this.setVisible (true);
         this.setSize ( getPreferredSize() );
         
-    }
-    
-    public void moveImage ( int width, int height ) {
-        busDisplay.moveImage(width, height);
     }
     
 }
