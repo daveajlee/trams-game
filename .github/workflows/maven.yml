@@ -5,9 +5,9 @@ name: Java CI with Maven
 
 on:
   push:
-    branches: [ master, development ]
+    branches: [ master, development, trams-platform ]
   pull_request:
-    branches: [ master, development ]
+    branches: [ master, development, trams-platform ]
 
 jobs:
   build:
