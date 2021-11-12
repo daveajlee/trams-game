@@ -5,21 +5,14 @@ import java.util.List;
 
 import de.davelee.trams.data.Game;
 import de.davelee.trams.model.GameModel;
-import de.davelee.trams.repository.GameRepository;
 import de.davelee.trams.util.DifficultyLevel;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class GameService {
 
-    @Autowired
-    private GameRepository gameRepository;
-
     public void saveGame ( final GameModel gameModel ) {
         Game game = convertToGame(gameModel);
-        game.getBalance();
         gameRepository.deleteAll(); //Only one game at a time.
         gameRepository.saveAndFlush(game);
     }
@@ -136,7 +129,6 @@ public class GameService {
         return null;
     }
 
-    @Transactional
     public GameModel[] getAllGames ( ) {
         List<Game> games = gameRepository.findAll();
         GameModel[] gameModels = new GameModel[games.size()];

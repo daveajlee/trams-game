@@ -5,15 +5,10 @@ import java.util.List;
 
 import de.davelee.trams.data.Driver;
 import de.davelee.trams.model.DriverModel;
-import de.davelee.trams.repository.DriverRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class DriverService {
-
-	@Autowired
-	private DriverRepository driverRepository;
 
 	/**
      * Check if the driver has started work or not.

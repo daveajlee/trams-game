@@ -7,11 +7,8 @@ import de.davelee.trams.model.JourneyModel;
 import de.davelee.trams.model.JourneyPatternModel;
 import de.davelee.trams.model.RouteScheduleModel;
 import de.davelee.trams.model.StopTimeModel;
-import de.davelee.trams.repository.JourneyRepository;
-import de.davelee.trams.repository.StopRepository;
 import de.davelee.trams.util.JourneyStatus;
 import de.davelee.trams.util.TramsConstants;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -22,12 +19,6 @@ import java.util.List;
 
 @Service
 public class JourneyService {
-
-    @Autowired
-	private JourneyRepository journeyRepository;
-
-    @Autowired
-	private StopRepository stopRepository;
 	
 	/**
      * Get the status of the journey based on the current time - either not yet run, running or finished.
@@ -127,13 +118,13 @@ public class JourneyService {
      * @return a <code>Stop</code> object representing the last stop in this journey.
      */
     public String getLastStopName ( final JourneyModel[] journeyModels, final LocalTime currentTime ) {
-        for (int i = 0; i < journeyModels.length; i++) {
-            if (checkJourneyStatus(journeyModels[i], currentTime) == JourneyStatus.RUNNING) {
-                StopTimeModel stopTime = journeyModels[i].getStopTimeModelList().get(journeyModels[i].getStopTimeModelList().size()-1);
+        for (JourneyModel journeyModel : journeyModels) {
+            if (checkJourneyStatus(journeyModel, currentTime) == JourneyStatus.RUNNING) {
+                StopTimeModel stopTime = journeyModel.getStopTimeModelList().get(journeyModel.getStopTimeModelList().size()-1);
                 return stopTime.getStopName();
             }
-            else if (checkJourneyStatus(journeyModels[i], currentTime) == JourneyStatus.YET_TO_RUN && journeyModels[i].getJourneyNumber() != 1) {
-                    StopTimeModel stopTime = journeyModels[i].getStopTimeModelList().get(journeyModels[i].getStopTimeModelList().size()-1);
+            else if (checkJourneyStatus(journeyModel, currentTime) == JourneyStatus.YET_TO_RUN && journeyModel.getJourneyNumber() != 1) {
+                    StopTimeModel stopTime = journeyModel.getStopTimeModelList().get(journeyModel.getStopTimeModelList().size()-1);
                     return stopTime.getStopName();
 
             }
@@ -148,9 +139,9 @@ public class JourneyService {
      * @return a <code>Service</code> object.
      */
     public JourneyModel getCurrentJourney ( final JourneyModel[] journeyModels, final LocalTime currentTime ) {
-        for ( int i = 0; i < journeyModels.length; i++ ) {
-            if ( checkJourneyStatus(journeyModels[i], currentTime) == JourneyStatus.RUNNING) {
-                return journeyModels[i];
+        for ( JourneyModel journeyModel : journeyModels ) {
+            if ( checkJourneyStatus(journeyModel, currentTime) == JourneyStatus.RUNNING) {
+                return journeyModel;
             }
         }
         return null;
@@ -261,7 +252,7 @@ public class JourneyService {
     }
 
     public Journey getJourneyById(long id) {
-        return journeyRepository.getOne(Long.valueOf(id));
+        return journeyRepository.getOne(id);
     }
 
     public void saveJourney ( final JourneyModel journeyModel ) {
@@ -274,7 +265,7 @@ public class JourneyService {
         journey.setRouteNumber(journeyModel.getRouteNumber());
         journey.setRouteScheduleNumber(journeyModel.getRouteScheduleNumber());
         List<StopTimeModel> stopTimeModelList = journeyModel.getStopTimeModelList();
-        List<StopTime> stopTimes = new ArrayList<StopTime>();
+        List<StopTime> stopTimes = new ArrayList<>();
         for ( StopTimeModel stopTimeModel : stopTimeModelList ) {
             stopTimes.add(convertToStopTime(stopTimeModel));
         }
@@ -291,11 +282,11 @@ public class JourneyService {
      */
     public JourneyModel[] getAllOutgoingJourneys (final RouteScheduleModel[] routeScheduleModels, final List<String> stops, final String day ) {
         //Initialise list to store the journeys.
-        List<Journey> outgoingJourneys = new ArrayList<Journey>();
+        List<Journey> outgoingJourneys = new ArrayList<>();
         //Get the route schedules for that day!
-        for ( int h = 0;  h < routeScheduleModels.length; h++ ) {
-            for ( int i = 0; i < journeyRepository.findByRouteScheduleNumberAndRouteNumber(routeScheduleModels[h].getScheduleNumber(), routeScheduleModels[h].getRouteNumber()).size(); i++ ) {
-                Journey myJourney = journeyRepository.findByRouteScheduleNumberAndRouteNumber(routeScheduleModels[h].getScheduleNumber(), routeScheduleModels[h].getRouteNumber()).get(i);
+        for ( RouteScheduleModel routeScheduleModel : routeScheduleModels) {
+            for ( int i = 0; i < journeyRepository.findByRouteScheduleNumberAndRouteNumber(routeScheduleModel.getScheduleNumber(), routeScheduleModel.getRouteNumber()).size(); i++ ) {
+                Journey myJourney = journeyRepository.findByRouteScheduleNumberAndRouteNumber(routeScheduleModel.getScheduleNumber(), routeScheduleModel.getRouteNumber()).get(i);
                 if ( isOutwardJourney(stops,
                         myJourney.getStopTimes().get(0).getStopName(),
                         myJourney.getStopTimes().get(1).getStopName()) ) {
@@ -320,11 +311,11 @@ public class JourneyService {
     public boolean isOutwardJourney ( final List<String> stops, final String stop1, final String stop2 ) {
         //Go through the stops - if we find the 1st one before the 2nd one - it is outward.
         //Otherwise it is inward.
-        for ( int i = 0; i < stops.size(); i++ ) {
-            if ( stops.get(i).equalsIgnoreCase(stop1) ) {
+        for ( String stop : stops ) {
+            if ( stop.equalsIgnoreCase(stop1) ) {
                 return true;
             }
-            else if ( stops.get(i).equalsIgnoreCase(stop2) ) {
+            else if ( stop.equalsIgnoreCase(stop2) ) {
                 return false;
             }
         }
@@ -340,11 +331,11 @@ public class JourneyService {
      */
     public JourneyModel[] getAllReturnJourneys ( final RouteScheduleModel[] scheduleModels, final List<String> stops, final String day ) {
         //Initialise list to store the journeys.
-        List<Journey> returnServices = new ArrayList<Journey>();
+        List<Journey> returnServices = new ArrayList<>();
         //Get the route schedules for that day!
-        for ( int h = 0; h < scheduleModels.length; h++ ) {
-            for ( int i = 0; i < journeyRepository.findByRouteScheduleNumberAndRouteNumber(scheduleModels[h].getScheduleNumber(), scheduleModels[h].getRouteNumber()).size(); i++ ) {
-                Journey myJourney = journeyRepository.findByRouteScheduleNumberAndRouteNumber(scheduleModels[h].getScheduleNumber(), scheduleModels[h].getRouteNumber()).get(i);
+        for ( RouteScheduleModel scheduleModel : scheduleModels ) {
+            for ( int i = 0; i < journeyRepository.findByRouteScheduleNumberAndRouteNumber(scheduleModel.getScheduleNumber(), scheduleModel.getRouteNumber()).size(); i++ ) {
+                Journey myJourney = journeyRepository.findByRouteScheduleNumberAndRouteNumber(scheduleModel.getScheduleNumber(), scheduleModel.getRouteNumber()).get(i);
                 if ( !isOutwardJourney(stops,
                         myJourney.getStopTimes().get(0).getStopName(),
                         myJourney.getStopTimes().get(1).getStopName()) ) {
@@ -413,7 +404,7 @@ public class JourneyService {
         int routeScheduleNumber = 0;
         if ( direction == TramsConstants.RETURN_DIRECTION ) { routeScheduleNumber = 1; }
         //Create a list to store journeys.
-        List<JourneyModel> allJourneys = new ArrayList<JourneyModel>();
+        List<JourneyModel> allJourneys = new ArrayList<>();
         //Now we need to go through the journey patterns.
         for ( JourneyPatternModel myJourneyPattern : journeyPatternModels ) {
             int journeyNumber = journeyNumberToStart;
@@ -423,7 +414,7 @@ public class JourneyService {
             LocalTime myCurrentTime = myJourneyPattern.getStartTime();
             int diffDurationFreq = myJourneyPattern.getDuration() % myJourneyPattern.getFrequency();
             if ( direction == TramsConstants.RETURN_DIRECTION && diffDurationFreq <= (myJourneyPattern.getFrequency()/2)) {
-                myCurrentTime.plusMinutes(myJourneyPattern.getFrequency()/2);
+                myCurrentTime = myCurrentTime.plusMinutes(myJourneyPattern.getFrequency()/2);
             }
             //Now repeat this loop until myTime is after the journey pattern end time.
             while ( true ) {
@@ -436,7 +427,7 @@ public class JourneyService {
                             .journeyNumber(journeyNumber)
                             .build();
                     //Add stops.
-                    List<String> journeyStops = new ArrayList<String>();
+                    List<String> journeyStops;
                     if ( direction == TramsConstants.OUTWARD_DIRECTION ) {
                         journeyStops = getStopsBetween(stops, myJourneyPattern.getOutgoingTerminus(), myJourneyPattern.getReturnTerminus(), direction);
                     }
@@ -477,7 +468,7 @@ public class JourneyService {
 
     private JourneyModel convertToJourneyModel ( final Journey journey ) {
         List<StopTime> stopTimes = journey.getStopTimes();
-        List<StopTimeModel> stopTimeModels = new ArrayList<StopTimeModel>();
+        List<StopTimeModel> stopTimeModels = new ArrayList<>();
         for ( StopTime stopTime : stopTimes ) {
             stopTimeModels.add(convertToStopTimeModel(stopTime));
         }
@@ -490,19 +481,19 @@ public class JourneyService {
     }
 
     private List<String> getStopsBetween ( final List<String> stops, final String startStop, final String endStop, final int direction ) {
-        List<String> relevantStops = new ArrayList<String>();
+        List<String> relevantStops = new ArrayList<>();
         if ( direction == TramsConstants.OUTWARD_DIRECTION ) {
             boolean foundStartStop = false;
-            for ( int i = 0; i < stops.size(); i++ ) {
-                if ( !foundStartStop & stops.get(i).contentEquals(startStop) ) {
+            for ( String stop : stops ) {
+                if ( !foundStartStop & stop.contentEquals(startStop) ) {
                     foundStartStop = true;
-                    relevantStops.add(stops.get(i));
+                    relevantStops.add(stop);
                 }
-                else if ( foundStartStop & !stops.get(i).contentEquals(endStop)) {
-                    relevantStops.add(stops.get(i));
+                else if ( foundStartStop & !stop.contentEquals(endStop)) {
+                    relevantStops.add(stop);
                 }
-                else if ( foundStartStop & stops.get(i).contentEquals(endStop)) {
-                    relevantStops.add(stops.get(i));
+                else if ( foundStartStop & stop.contentEquals(endStop)) {
+                    relevantStops.add(stop);
                     break;
                 }
             }

@@ -1,12 +1,8 @@
 package de.davelee.trams.data;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
 import de.davelee.trams.util.DifficultyLevel;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
@@ -14,34 +10,17 @@ import java.time.LocalDateTime;
  * Class representing a game in TraMS.
  * @author Dave Lee
  */
-@Entity
-@Table(name="GAME")
+@Getter
+@Setter
 public class Game {
-	
-	@Id
-	@GeneratedValue
-	@Column(nullable=false)
+
 	private int id;
-	
-	@Column
     private int passengerSatisfaction;
-	
-	@Column(unique=true)
     private String playerName;
-	
-	@Column
     private double balance;
-	
-	@Column
 	private DifficultyLevel difficultyLevel = DifficultyLevel.EASY; //Default to easy.
-	
-	@Column
 	private String scenarioName;
-
-    @Column
 	private LocalDateTime currentDateTime;
-
-    @Column
     private int timeIncrement;
     
     public int getId() {

@@ -4,16 +4,11 @@ import java.util.*;
 
 import de.davelee.trams.data.RouteSchedule;
 import de.davelee.trams.model.RouteScheduleModel;
-import de.davelee.trams.repository.RouteScheduleRepository;
 import de.davelee.trams.util.DifficultyLevel;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class RouteScheduleService {
-
-    @Autowired
-    private RouteScheduleRepository routeScheduleRepository;
 
     /**
      * Calculate a new random delay for this route schedule.
@@ -26,7 +21,7 @@ public class RouteScheduleService {
         Random randNumGen = new Random();
         int val = randNumGen.nextInt(100);
         //Create probability array.
-        int[] ratioArray = new int[0];
+        int[] ratioArray;
         //Set ratios according to difficulty level - default is easy.
         switch (difficultyLevel) {
         case INTERMEDIATE:
@@ -67,10 +62,8 @@ public class RouteScheduleService {
      * @param mins a <code>int</code> with the number of minutes.
      */
     public void reduceDelay(final RouteScheduleModel scheduleModel, final int mins) {
-        //If no delay, then can't reduce it so just return.
-        if (scheduleModel.getDelay() == 0) { return; }
-        //Otherwise, reduce delay by that number of minutes.
-        else {
+        //If vehicle has delay, decide randomly if we can reduce.
+        if (scheduleModel.getDelay() != 0) {
             RouteSchedule routeSchedule = routeScheduleRepository.findByScheduleNumberAndRouteNumber(scheduleModel.getScheduleNumber(),
                     scheduleModel.getRouteNumber());
             routeSchedule.setDelayInMins(scheduleModel.getDelay()-mins);

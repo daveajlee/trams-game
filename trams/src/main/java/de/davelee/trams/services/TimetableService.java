@@ -5,15 +5,10 @@ import java.util.List;
 
 import de.davelee.trams.data.Timetable;
 import de.davelee.trams.model.TimetableModel;
-import de.davelee.trams.repository.TimetableRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class TimetableService {
-
-    @Autowired
-    private TimetableRepository timetableRepository;
 
     public void saveTimetable ( final TimetableModel timetableModel ) {
         timetableRepository.saveAndFlush(convertToTimetable(timetableModel));

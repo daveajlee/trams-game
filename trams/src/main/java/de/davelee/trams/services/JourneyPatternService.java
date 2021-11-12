@@ -4,15 +4,10 @@ import java.util.List;
 
 import de.davelee.trams.data.JourneyPattern;
 import de.davelee.trams.model.JourneyPatternModel;
-import de.davelee.trams.repository.JourneyPatternRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class JourneyPatternService {
-
-    @Autowired
-    private JourneyPatternRepository journeyPatternRepository;
 
     public void saveJourneyPattern ( final JourneyPatternModel journeyPatternModel ) {
         journeyPatternRepository.saveAndFlush(convertToJourneyPattern(journeyPatternModel));

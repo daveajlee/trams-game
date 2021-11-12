@@ -8,10 +8,8 @@ import java.util.Random;
 
 import de.davelee.trams.data.Vehicle;
 import de.davelee.trams.model.VehicleModel;
-import de.davelee.trams.repository.VehicleRepository;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
@@ -22,10 +20,6 @@ import org.springframework.stereotype.Service;
 @Getter
 @Setter
 public class VehicleService {
-
-    @Autowired
-    private VehicleRepository vehicleRepository;
-
     private List<Vehicle> vehiclesList;
 
 	/**
@@ -116,12 +110,12 @@ public class VehicleService {
      */
     public ArrayList<String> getAllocations ( ) {
         //Allocations list.
-        ArrayList<String> allocations = new ArrayList<String>();
+        ArrayList<String> allocations = new ArrayList<>();
         //Now go through and add their allocation if they already have an allocation.
         VehicleModel[] vehicleModels = getVehicleModels();
-        for ( int i = 0; i < vehicleModels.length; i++ ) {
-            if ( vehicleModels[i].getRouteScheduleNumber() != 0 ) {
-                allocations.add(vehicleModels[i].getRouteNumber() + "/" + vehicleModels[i].getRouteScheduleNumber() + " & " + vehicleModels[i].getRegistrationNumber());
+        for ( VehicleModel vehicleModel : vehicleModels ) {
+            if ( vehicleModel.getRouteScheduleNumber() != 0 ) {
+                allocations.add(vehicleModel.getRouteNumber() + "/" + vehicleModel.getRouteScheduleNumber() + " & " + vehicleModel.getRegistrationNumber());
             }
         }
         //Return allocations list.
@@ -148,8 +142,8 @@ public class VehicleService {
             //Now check that random reg not been generated before.
             VehicleModel[] vehicleModels = getVehicleModels();
             if ( vehicleModels != null ) {
-                for ( int i = 0; i < vehicleModels.length; i++ ) {
-                    if ( vehicleModels[i].getRegistrationNumber().equalsIgnoreCase(randomReg) ) {
+                for ( VehicleModel vehicleModel : vehicleModels ) {
+                    if ( vehicleModel.getRegistrationNumber().equalsIgnoreCase(randomReg) ) {
             			isUniqueReg = false;
             			break;
             		}

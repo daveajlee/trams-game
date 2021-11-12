@@ -7,7 +7,6 @@ import java.util.List;
 
 import de.davelee.trams.TramsGameApplication;
 import de.davelee.trams.model.JourneyPatternModel;
-import de.davelee.trams.repository.JourneyPatternRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,9 +20,6 @@ public class JourneyPatternServiceTest {
 	
 	@Autowired
 	private JourneyPatternService journeyPatternService;
-	
-	@Autowired
-	private JourneyPatternRepository journeyPatternRepository;
 
 	@Test
 	public void testCreateJourneyPattern() {
@@ -54,7 +50,7 @@ public class JourneyPatternServiceTest {
 	
 	@Test
 	public void testGetJourneyPattern ( ) {
-		LocalTime startTime = LocalTime.of(5,00);
+		LocalTime startTime = LocalTime.of(5,0);
 		LocalTime endTime = LocalTime.of(19,30);
 		List<DayOfWeek> daysOfOperation = List.of(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY);
 		JourneyPatternModel journeyPatternModel = JourneyPatternModel.builder()
