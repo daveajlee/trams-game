@@ -161,15 +161,6 @@ public class JourneyService {
     }
     
     /**
-     * Get the number of stops belonging to this journey.
-     * @param journeyModel a <code>JourneyModel</code> with the journey details.
-     * @return a <code>int</code> with the number of stops.
-     */
-    public int getNumStops ( final JourneyModel journeyModel ) {
-        return journeyModel.getStopTimeModelList().size();
-    }
-    
-    /**
      * Remove stops between two stops.
      * @param journeyModel a <code>JourneyModel</code> with the journey details.
      * @param firstStop a <code>String</code> with the first stop.
@@ -199,18 +190,7 @@ public class JourneyService {
         //Now return time difference.
         return timeDiff;
     }
-    
-    /**
-     * Get the time difference between two stops.
-     * @param journeyModel a <code>JourneyModel</code> with the journey details.
-     * @param firstStop a <code>String</code> with the first stop.
-     * @param secondStop a <code>String</code> with the second stop.
-     * @return a <code>long</code> with the time difference.
-     */
-    public long getStopTimeDifference ( final JourneyModel journeyModel, final String firstStop, final String secondStop ) {
-        return checkTimeDiff(getStopTime(journeyModel, firstStop).getTime(), getStopTime(journeyModel, secondStop).getTime());
-    }
-    
+
     /**
      * Check if this is an outward journey.
      * @param journeyModel a <code>JourneyModel</code> with the journey details.
@@ -251,10 +231,6 @@ public class JourneyService {
         }
     }
 
-    public Journey getJourneyById(long id) {
-        return journeyRepository.getOne(id);
-    }
-
     public void saveJourney ( final JourneyModel journeyModel ) {
         journeyRepository.save(convertToJourney(journeyModel));
     }
@@ -273,83 +249,6 @@ public class JourneyService {
     	return journey;
     }
 
-    /**
-     * Return all outgoing journeys for a particular day.
-     * @param routeScheduleModels a <code>RouteScheduleModel</code> array with all available route schedules.
-     * @param stops a <code>String</code> list with the stops to be served.
-     * @param day a <code>String</code> with the day to get the outgoing journeys for.
-     * @return a <code>JourneyModel</code> list with all outgoing journeys.
-     */
-    public JourneyModel[] getAllOutgoingJourneys (final RouteScheduleModel[] routeScheduleModels, final List<String> stops, final String day ) {
-        //Initialise list to store the journeys.
-        List<Journey> outgoingJourneys = new ArrayList<>();
-        //Get the route schedules for that day!
-        for ( RouteScheduleModel routeScheduleModel : routeScheduleModels) {
-            for ( int i = 0; i < journeyRepository.findByRouteScheduleNumberAndRouteNumber(routeScheduleModel.getScheduleNumber(), routeScheduleModel.getRouteNumber()).size(); i++ ) {
-                Journey myJourney = journeyRepository.findByRouteScheduleNumberAndRouteNumber(routeScheduleModel.getScheduleNumber(), routeScheduleModel.getRouteNumber()).get(i);
-                if ( isOutwardJourney(stops,
-                        myJourney.getStopTimes().get(0).getStopName(),
-                        myJourney.getStopTimes().get(1).getStopName()) ) {
-                    outgoingJourneys.add(myJourney);
-                }
-            }
-        }
-        JourneyModel[] journeyModels = new JourneyModel[outgoingJourneys.size()];
-        for ( int i = 0; i < journeyModels.length; i++ ) {
-            journeyModels[i] = convertToJourneyModel(outgoingJourneys.get(i));
-        }
-        return journeyModels;
-    }
-
-    /**
-     * This method checks using two stops if the service is an outward or inward service.
-     * @param stops a <code>String</code> list with the stops to be served.
-     * @param stop1 a <code>String</code> containing the name of a stop.
-     * @param stop2 a <code>String</code> containing the name of another stop.
-     * @return a <code>boolean</code> which is true iff the service is an outward service.
-     */
-    public boolean isOutwardJourney ( final List<String> stops, final String stop1, final String stop2 ) {
-        //Go through the stops - if we find the 1st one before the 2nd one - it is outward.
-        //Otherwise it is inward.
-        for ( String stop : stops ) {
-            if ( stop.equalsIgnoreCase(stop1) ) {
-                return true;
-            }
-            else if ( stop.equalsIgnoreCase(stop2) ) {
-                return false;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Return all return services for a particular day.
-     * @param scheduleModels a <code>RouteScheduleModel</code> array with all available route schedules.
-     * @param stops a <code>String</code> list with the stops to be served.
-     * @param day a <code>String</code> with the day to get the outgoing journeys for.
-     * @return a <code>JourneyModel</code> list with all return journeys.
-     */
-    public JourneyModel[] getAllReturnJourneys ( final RouteScheduleModel[] scheduleModels, final List<String> stops, final String day ) {
-        //Initialise list to store the journeys.
-        List<Journey> returnServices = new ArrayList<>();
-        //Get the route schedules for that day!
-        for ( RouteScheduleModel scheduleModel : scheduleModels ) {
-            for ( int i = 0; i < journeyRepository.findByRouteScheduleNumberAndRouteNumber(scheduleModel.getScheduleNumber(), scheduleModel.getRouteNumber()).size(); i++ ) {
-                Journey myJourney = journeyRepository.findByRouteScheduleNumberAndRouteNumber(scheduleModel.getScheduleNumber(), scheduleModel.getRouteNumber()).get(i);
-                if ( !isOutwardJourney(stops,
-                        myJourney.getStopTimes().get(0).getStopName(),
-                        myJourney.getStopTimes().get(1).getStopName()) ) {
-                    returnServices.add(myJourney);
-                }
-            }
-        }
-        JourneyModel[] journeyModels = new JourneyModel[returnServices.size()];
-        for ( int i = 0; i < journeyModels.length; i++ ) {
-            journeyModels[i] = convertToJourneyModel(returnServices.get(i));
-        }
-        return journeyModels;
-    }
-
     public JourneyModel[] getJourneysByRouteScheduleNumberAndRouteNumber ( final int routeScheduleNumber, final String routeNumber ) {
         List<Journey> journeys = journeyRepository.findByRouteScheduleNumberAndRouteNumber(routeScheduleNumber, routeNumber);
         JourneyModel[] journeyModels = new JourneyModel[journeys.size()];
@@ -359,26 +258,10 @@ public class JourneyService {
         return journeyModels;
     }
 
-    public void saveStopTime ( final StopTimeModel stopTimeModel, final JourneyModel journeyModel) {
-        StopTime stopTime = new StopTime();
-        stopTime.setJourneyNumber(stopTimeModel.getJourneyNumber());
-        stopTime.setStopName(stopTimeModel.getStopName());
-        stopTime.setTime(stopTimeModel.getTime());
-        stopTime.setRouteNumber(stopTimeModel.getRouteNumber());
-        stopTime.setRouteScheduleNumber(stopTimeModel.getRouteScheduleNumber());
-        Journey journey = journeyRepository.findByJourneyNumberAndRouteScheduleNumberAndRouteNumber(journeyModel.getJourneyNumber(), journeyModel.getRouteScheduleNumber(), journeyModel.getRouteNumber());
-        journey.addStopTimeToList(stopTime);
-        journeyRepository.save(journey);
-    }
-
     public void saveStop ( final String stopName ) {
         Stop stop = new Stop();
         stop.setStopName(stopName);
         stopRepository.saveAndFlush(stop);
-    }
-
-    public Stop getStopByStopName ( final String stopName ) {
-        return stopRepository.findByStopName(stopName);
     }
 
     public JourneyModel[] getAllJourneys() {

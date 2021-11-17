@@ -121,14 +121,6 @@ public class GameService {
         return game.getCurrentDateTime();
     }
 
-    public String getCurrentPlayerName ( ) {
-        GameModel[] gameModels = getAllGames();
-        if ( gameModels.length > 0 ) {
-            return gameModels[0].getPlayerName();
-        }
-        return null;
-    }
-
     public GameModel[] getAllGames ( ) {
         List<Game> games = gameRepository.findAll();
         GameModel[] gameModels = new GameModel[games.size()];
