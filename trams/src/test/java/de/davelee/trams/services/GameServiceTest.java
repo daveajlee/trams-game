@@ -38,8 +38,8 @@ public class GameServiceTest {
 		gameService.incrementTime("Dave A J Lee");
 		gameModel2 = gameService.getGameByPlayerName("Dave A J Lee");
 		assertEquals(DateTimeFormatter.ofPattern("HH:mm").format(gameModel2.getCurrentDateTime()), "05:15");
-		gameService.withdrawBalance(100.0, "Dave A J Lee");
-		gameService.creditBalance(10.0, "Dave A J Lee");
+		gameService.withdrawOrCreditBalance(-100.0, "Dave A J Lee");
+		gameService.withdrawOrCreditBalance(10.0, "Dave A J Lee");
 		Assertions.assertEquals(gameService.computeAndReturnPassengerSatisfaction("Dave A J Lee", 4, 3, 2), 91);
 	}
 

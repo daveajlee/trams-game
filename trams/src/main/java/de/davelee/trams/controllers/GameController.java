@@ -38,7 +38,7 @@ public class GameController {
 	 * @param amount a <code>double</code> with the amount to withdraw from the balance.
 	 */
 	public void withdrawBalance ( final double amount ) {
-		gameService.withdrawBalance(amount, cachedGameModel.getPlayerName());
+		gameService.withdrawOrCreditBalance(-amount, cachedGameModel.getPlayerName());
 		//Update cache.
 		updateCache();
 	}
@@ -48,7 +48,7 @@ public class GameController {
 	 * @param amount a <code>double</code> with the amount to credit to the balance
 	 */
 	public void creditBalance ( final double amount ) {
-		gameService.creditBalance(amount, cachedGameModel.getPlayerName());
+		gameService.withdrawOrCreditBalance(amount, cachedGameModel.getPlayerName());
 		//Update cache.
 		updateCache();
 	}

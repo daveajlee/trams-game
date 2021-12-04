@@ -22,7 +22,6 @@
         <class>de.davelee.trams.data.Game</class>
         <class>de.davelee.trams.data.Journey</class>
         <class>de.davelee.trams.data.JourneyPattern</class>
-        <class>de.davelee.trams.data.Message</class>
         <class>de.davelee.trams.data.Route</class>
         <class>de.davelee.trams.data.RouteSchedule</class>
         <class>de.davelee.trams.data.Stop</class>

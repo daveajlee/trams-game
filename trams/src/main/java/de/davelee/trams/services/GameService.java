@@ -1,15 +1,31 @@
 package de.davelee.trams.services;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 
+import de.davelee.trams.api.request.AddTimeRequest;
+import de.davelee.trams.api.request.AdjustBalanceRequest;
+import de.davelee.trams.api.request.AdjustSatisfactionRequest;
+import de.davelee.trams.api.response.BalanceResponse;
+import de.davelee.trams.api.response.CompanyResponse;
+import de.davelee.trams.api.response.SatisfactionRateResponse;
+import de.davelee.trams.api.response.TimeResponse;
 import de.davelee.trams.data.Game;
 import de.davelee.trams.model.GameModel;
 import de.davelee.trams.util.DifficultyLevel;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 @Service
 public class GameService {
+
+    private final RestTemplate restTemplate = new RestTemplate();
+
+    @Value("${server.business.url}")
+    private String businessServerUrl;
 
     public void saveGame ( final GameModel gameModel ) {
         Game game = convertToGame(gameModel);
@@ -29,96 +45,92 @@ public class GameService {
         return game;
     }
 
-    public GameModel getGameByPlayerName ( final String playerName )  {
-        Game game = gameRepository.findByPlayerName(playerName);
-        if ( game != null ) {
-            return convertToGameModel(game);
+    public GameModel getGameByPlayerName ( final String company, final String playerName )  {
+        CompanyResponse companyResponse = restTemplate.getForObject(businessServerUrl + "company/?name=" + company + "&playerName=" + playerName, CompanyResponse.class);
+        if ( companyResponse != null ) {
+            return convertToGameModel(companyResponse);
         }
         return null;
     }
 
-     private GameModel convertToGameModel ( final Game game ) {
+     private GameModel convertToGameModel ( final CompanyResponse companyResponse ) {
         return GameModel.builder()
-                .playerName(game.getPlayerName())
-                .balance(game.getBalance())
-                .passengerSatisfaction(game.getPassengerSatisfaction())
+                .playerName(companyResponse.getPlayerName())
+                .balance(companyResponse.getBalance())
+                .passengerSatisfaction(companyResponse.getSatisfactionRate())
                 .scenarioName(game.getScenarioName())
                 .difficultyLevel(game.getDifficultyLevel())
-                .currentDateTime(game.getCurrentDateTime())
+                .currentDateTime(companyResponse.getTime())
                 .timeIncrement(game.getTimeIncrement())
                 .build();
     }
     
     /**
-     * Deduct money from the balance.
-     * @param amount a <code>double</code> with the amount to deduct from the balance.
-     * @param playerName a <code>String</code> with the player name.
+     * Deduct or add money to/from the balance.
+     * @param amount a <code>double</code> with the amount to deduct (negative) or credit (positive) from the balance.
+     * @param company a <code>String</code> with the company.
      */
-    public void withdrawBalance ( final double amount, final String playerName ) {
-        GameModel gameModel = getGameByPlayerName(playerName);
-        gameRepository.findByPlayerName(playerName).setBalance(gameModel.getBalance()-amount);
-    }
-    
-    /**
-     * Add money to the balance.
-     * @param amount a <code>double</code> with the amount to credit the balance.
-     * @param playerName a <code>String</code> with the player name.
-     */
-    public void creditBalance ( final double amount, final String playerName ) {
-        GameModel gameModel = getGameByPlayerName(playerName);
-        Game game = gameRepository.findByPlayerName(playerName);
-        game.setBalance(gameModel.getBalance()+amount);
-        gameRepository.save(game);
+    public void withdrawOrCreditBalance ( final double amount, final String company ) {
+        BalanceResponse balanceResponse = restTemplate.patchForObject(businessServerUrl + "company/balance",
+                AdjustBalanceRequest.builder()
+                        .company(company)
+                        .value(amount).build(),
+                BalanceResponse.class);
     }
 
     /**
      * Compute passenger satisfaction for the current time.
-     * @param playerName a <code>String</code> with the player name.
+     * @param company a <code>String</code> with the company.
+     * @param difficultyLevel a <code>DifficultyLevel</code> object with the difficulty level.
      * @param numSmallLateSchedules a <code>int</code> with the number of route schedules running marginally late.
      * @param numMediumLateSchedules a <code>int</code> with the number of route schedules running substantially late.
      * @param numLargeLateSchedules a <code>int</code> with the number of route schedules running very late.
-     * @return a <code>int</code> with the computed passenger satisfaction.
+     * @return a <code>double</code> with the computed passenger satisfaction.
      */
-    public int computeAndReturnPassengerSatisfaction ( final String playerName, final int numSmallLateSchedules, final int numMediumLateSchedules, final int numLargeLateSchedules ) {
+    public double computeAndReturnPassengerSatisfaction ( final String company, final DifficultyLevel difficultyLevel, final int numSmallLateSchedules, final int numMediumLateSchedules, final int numLargeLateSchedules ) {
         int totalSubtract = 0;
 
-        GameModel gameModel = getGameByPlayerName(playerName);
-
         //Easy: numSmallLateSchedules / 2 and numMediumLateSchedules and numLargeLateSchedules*2.
-        if ( gameModel.getDifficultyLevel() == DifficultyLevel.EASY ) {
+        if ( difficultyLevel == DifficultyLevel.EASY ) {
             totalSubtract = (numSmallLateSchedules/2) + numMediumLateSchedules + (numLargeLateSchedules*2);
         }
-        else if ( gameModel.getDifficultyLevel() == DifficultyLevel.INTERMEDIATE ) {
+        else if ( difficultyLevel == DifficultyLevel.INTERMEDIATE ) {
             totalSubtract = (numSmallLateSchedules) + (numMediumLateSchedules*2) + (numLargeLateSchedules*3);
         }
-        else if ( gameModel.getDifficultyLevel() == DifficultyLevel.MEDIUM ) {
+        else if ( difficultyLevel == DifficultyLevel.MEDIUM ) {
             totalSubtract = (numSmallLateSchedules*2) + (numMediumLateSchedules*3) + (numLargeLateSchedules*4);
         }
-        else if ( gameModel.getDifficultyLevel() == DifficultyLevel.HARD ) {
+        else if ( difficultyLevel == DifficultyLevel.HARD ) {
             totalSubtract = (numSmallLateSchedules*3) + (numMediumLateSchedules*4) + (numLargeLateSchedules*5);
         }
         //Subtract from passenger satisfaction.
-        Game game = gameRepository.findByPlayerName(playerName);
-        game.setPassengerSatisfaction(gameModel.getPassengerSatisfaction() - totalSubtract);
-        //After all of this check that passenger satisfaction is greater than 0.
-        if ( game.getPassengerSatisfaction() < 0 ) { game.setPassengerSatisfaction(0); }
-        gameRepository.save(game);
-        return game.getPassengerSatisfaction();
+        SatisfactionRateResponse satisfactionRateResponse = restTemplate.patchForObject(businessServerUrl + "company/satisfaction",
+                AdjustSatisfactionRequest.builder()
+                        .company(company)
+                        .satisfactionRate(totalSubtract).build(),
+                SatisfactionRateResponse.class);
+        return satisfactionRateResponse.getSatisfactionRate();
     }
 
     /**
      * Increment the current time.
-     * @param playerName a <code>String</code> with the player name.
+     * @param company a <code>String</code> with the company.
+     * @param timeIncrement a <code>int</code> with the number of minutes to increment.
      * @return a <code>LocalDateTime</code> containing the new time.
      */
-    public LocalDateTime incrementTime (final String playerName ) {
-        //Retrieve the game.
-        Game game = gameRepository.findByPlayerName(playerName);
-        //Increment time.
-        game.setCurrentDateTime(game.getCurrentDateTime().plusMinutes(game.getTimeIncrement()));
-        //Save game and return the new time.
-        gameRepository.save(game);
-        return game.getCurrentDateTime();
+    public LocalDateTime incrementTime (final String company, final int timeIncrement ) {
+        //Get data from API.
+        TimeResponse timeResponse = restTemplate.patchForObject(businessServerUrl + "company/time",
+                AddTimeRequest.builder()
+                        .company(company)
+                        .minutes(timeIncrement).build(),
+                TimeResponse.class);
+        //Convert time.
+        try {
+            return LocalDateTime.parse(timeResponse.getTime(), DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"));
+        } catch ( DateTimeParseException dateTimeParseException ) {
+            return null;
+        }
     }
 
     public GameModel[] getAllGames ( ) {
