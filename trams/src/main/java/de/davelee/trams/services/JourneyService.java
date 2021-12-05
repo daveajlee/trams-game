@@ -1,5 +1,9 @@
 package de.davelee.trams.services;
 
+import de.davelee.trams.api.request.AddStopRequest;
+import de.davelee.trams.api.request.MessageRequest;
+import de.davelee.trams.api.response.MessagesResponse;
+import de.davelee.trams.api.response.StopsResponse;
 import de.davelee.trams.data.Journey;
 import de.davelee.trams.data.Stop;
 import de.davelee.trams.data.StopTime;
@@ -9,7 +13,9 @@ import de.davelee.trams.model.RouteScheduleModel;
 import de.davelee.trams.model.StopTimeModel;
 import de.davelee.trams.util.JourneyStatus;
 import de.davelee.trams.util.TramsConstants;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -19,6 +25,11 @@ import java.util.List;
 
 @Service
 public class JourneyService {
+
+    private final RestTemplate restTemplate = new RestTemplate();
+
+    @Value("${server.operations.url}")
+    private String operationsServerUrl;
 	
 	/**
      * Get the status of the journey based on the current time - either not yet run, running or finished.
@@ -258,10 +269,13 @@ public class JourneyService {
         return journeyModels;
     }
 
-    public void saveStop ( final String stopName ) {
-        Stop stop = new Stop();
-        stop.setStopName(stopName);
-        stopRepository.saveAndFlush(stop);
+    public void saveStop ( final String stopName, final String company ) {
+        restTemplate.postForObject(operationsServerUrl + "stop/",
+                AddStopRequest.builder()
+                        .company(company)
+                        .name(stopName)
+                        .build(),
+                Void.class);
     }
 
     public JourneyModel[] getAllJourneys() {
@@ -273,11 +287,11 @@ public class JourneyService {
         return journeyModels;
     }
 
-    public String[] getAllStops() {
-        List<Stop> stops = stopRepository.findAll();
-        String[] stopNames = new String[stops.size()];
+    public String[] getAllStops(final String company) {
+        StopsResponse stopsResponse = restTemplate.getForObject(operationsServerUrl + "stops/?company=" + company, StopsResponse.class);
+        String[] stopNames = new String[stopsResponse.getStopResponses().length];
         for ( int i = 0; i < stopNames.length; i++ ) {
-            stopNames[i] = stops.get(i).getStopName();
+            stopNames[i] = stopsResponse.getStopResponses()[i].getName();
         }
         return stopNames;
     }
@@ -436,9 +450,10 @@ public class JourneyService {
 
     /**
      * Remove all existing stops (used only for the load function)
+     * @param company a <code>String</code> containing the name of the company to delete all stops for.
      */
-    public void deleteAllStops ( ) {
-        stopRepository.deleteAll();
+    public void deleteAllStops ( final String company ) {
+        restTemplate.delete(operationsServerUrl + "stops/?company=" + company);
     }
 
 }

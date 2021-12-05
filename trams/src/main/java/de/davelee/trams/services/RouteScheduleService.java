@@ -2,13 +2,22 @@ package de.davelee.trams.services;
 
 import java.util.*;
 
+import de.davelee.trams.api.request.AdjustVehicleDelayRequest;
+import de.davelee.trams.api.response.VehicleDelayResponse;
 import de.davelee.trams.data.RouteSchedule;
 import de.davelee.trams.model.RouteScheduleModel;
 import de.davelee.trams.util.DifficultyLevel;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 @Service
 public class RouteScheduleService {
+
+    private final RestTemplate restTemplate = new RestTemplate();
+
+    @Value("${server.operations.url}")
+    private String operationsServerUrl;
 
     /**
      * Calculate a new random delay for this route schedule.
@@ -60,18 +69,20 @@ public class RouteScheduleService {
      * Reduces the current delay by a certain number of minutes.
      * @param scheduleModel a <code>RouteScheduleModel</code> with the route schedule to determine delay for.
      * @param mins a <code>int</code> with the number of minutes.
+     * @param fleetNumber a <code>String</code> with the fleet number.
+     * @param company a <code>String</code> with the name of the company.
      */
-    public void reduceDelay(final RouteScheduleModel scheduleModel, final int mins) {
-        //If vehicle has delay, decide randomly if we can reduce.
+    public void reduceDelay(final RouteScheduleModel scheduleModel, final int mins, final String fleetNumber, final String company) {
+        //We can only reduce delay if delay is not currently 0.
         if (scheduleModel.getDelay() != 0) {
-            RouteSchedule routeSchedule = routeScheduleRepository.findByScheduleNumberAndRouteNumber(scheduleModel.getScheduleNumber(),
-                    scheduleModel.getRouteNumber());
-            routeSchedule.setDelayInMins(scheduleModel.getDelay()-mins);
-            //Now check if delay falls below 0, if it does then delay is 0.
-            if (routeSchedule.getDelayInMins() < 0) {
-                routeSchedule.setDelayInMins(0);
-            }
-            routeScheduleRepository.save(routeSchedule);
+            VehicleDelayResponse vehicleDelayResponse = restTemplate.patchForObject(operationsServerUrl + "vehicle/delay",
+                    AdjustVehicleDelayRequest.builder()
+                            .company(company)
+                            .delayInMinutes(-mins)
+                            .fleetNumber(fleetNumber)
+                            .build(),
+                    VehicleDelayResponse.class);
+            scheduleModel.setDelay(vehicleDelayResponse.getDelayInMinutes());
         }    
     }
 
@@ -79,13 +90,18 @@ public class RouteScheduleService {
      * Increases the vehicles current delay by a certain number of minutes.
      * @param scheduleModel a <code>RouteScheduleModel</code> with the route schedule to determine delay for.
      * @param mins a <code>int</code> with the number of minutes.
+     * @param fleetNumber a <code>String</code> with the fleet number.
+     * @param company a <code>String</code> with the name of the company.
      */
-    public void increaseDelay(final RouteScheduleModel scheduleModel, final int mins) {
-        //This is easy because increasing delay has no special processing!!!!
-        RouteSchedule routeSchedule = routeScheduleRepository.findByScheduleNumberAndRouteNumber(scheduleModel.getScheduleNumber(),
-                scheduleModel.getRouteNumber());
-        routeSchedule.setDelayInMins(routeSchedule.getDelayInMins() + mins);
-        routeScheduleRepository.save(routeSchedule);
+    public void increaseDelay(final RouteScheduleModel scheduleModel, final int mins, final String fleetNumber, final String company) {
+        VehicleDelayResponse vehicleDelayResponse = restTemplate.patchForObject(operationsServerUrl + "vehicle/delay",
+                AdjustVehicleDelayRequest.builder()
+                        .company(company)
+                        .delayInMinutes(mins)
+                        .fleetNumber(fleetNumber)
+                        .build(),
+                VehicleDelayResponse.class);
+        scheduleModel.setDelay(vehicleDelayResponse.getDelayInMinutes());
     }
 
     public RouteScheduleModel getRouteScheduleByScheduleNumberAndRouteNumber(final int scheduleNumber, final String routeNumber) {

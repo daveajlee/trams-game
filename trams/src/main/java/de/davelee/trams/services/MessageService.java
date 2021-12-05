@@ -89,7 +89,7 @@ public class MessageService {
 
     /**
      * Delete all messages (only used as part of load function)
-     * @param company a <code>String</code> containing the name of the company to save the message for.
+     * @param company a <code>String</code> containing the name of the company to delete all messages for.
      */
     public void deleteAllMessages(final String company) {
         restTemplate.delete(crmServerUrl + "messages/?company=" + company);
