@@ -17,8 +17,8 @@ public class VehicleModel {
 	
 	private String imagePath;
 	private String model;
-	private String seatingCapacity;
-	private String standingCapacity;
+	private int seatingCapacity;
+	private int standingCapacity;
 	private double purchasePrice;
 	private LocalDate deliveryDate;
 	private String registrationNumber;

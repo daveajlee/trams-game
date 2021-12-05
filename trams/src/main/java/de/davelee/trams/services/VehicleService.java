@@ -1,18 +1,22 @@
 package de.davelee.trams.services;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Random;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.*;
 
-import de.davelee.trams.data.Vehicle;
+import de.davelee.trams.api.request.AllocateVehicleRequest;
+import de.davelee.trams.api.request.PurchaseVehicleRequest;
+import de.davelee.trams.api.response.VehicleResponse;
+import de.davelee.trams.api.response.VehiclesResponse;
 import de.davelee.trams.model.VehicleModel;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 @Service
 @ConfigurationProperties(prefix="vehicles")
@@ -20,7 +24,11 @@ import org.springframework.stereotype.Service;
 @Getter
 @Setter
 public class VehicleService {
-    private List<Vehicle> vehiclesList;
+
+    private final RestTemplate restTemplate = new RestTemplate();
+
+    @Value("${server.operations.url}")
+    private String operationsServerUrl;
 
 	/**
      * Check if the vehicle has been delivered yet!
@@ -57,62 +65,55 @@ public class VehicleService {
         return (yearDiff * 12) + monthDiff;
     }
 
-    public VehicleModel[] getVehicleModels ( ) {
-        List<Vehicle> vehicles = vehicleRepository.findAll();
-        VehicleModel[] vehicleModels = new VehicleModel[vehicles.size()];
+    public VehicleModel[] getVehicleModels ( final String company ) {
+        VehiclesResponse vehiclesResponse = restTemplate.getForObject(operationsServerUrl + "vehicles/?company=" + company, VehiclesResponse.class);
+        VehicleModel[] vehicleModels = new VehicleModel[vehiclesResponse.getVehicleResponses().length];
         for ( int i = 0; i < vehicleModels.length; i++ ) {
-            vehicleModels[i] = convertToVehicleModel(vehicles.get(i));
+            vehicleModels[i] = convertToVehicleModel(vehiclesResponse.getVehicleResponses()[i]);
         }
         return vehicleModels;
     }
 
-    private Vehicle convertToVehicle ( final VehicleModel vehicleModel ) {
-    	Vehicle vehicle = new Vehicle();
-        vehicle.setRegistrationNumber(vehicleModel.getRegistrationNumber());
-        vehicle.setDeliveryDate(vehicleModel.getDeliveryDate());
-        vehicle.setDepreciationFactor(vehicleModel.getDepreciationFactor());
-        vehicle.setImagePath(vehicleModel.getImagePath());
-        vehicle.setModel(vehicleModel.getModel());
-        vehicle.setRouteNumber(vehicleModel.getRouteNumber());
-        vehicle.setRouteScheduleNumber(vehicleModel.getRouteScheduleNumber());
-        vehicle.setSeatingCapacity(Integer.parseInt(vehicleModel.getSeatingCapacity()));
-        vehicle.setStandingCapacity(Integer.parseInt(vehicleModel.getStandingCapacity()));
-        vehicle.setPurchasePrice(vehicleModel.getPurchasePrice());
-        return vehicle;
-    }
-
-    private VehicleModel convertToVehicleModel ( final Vehicle vehicle ) {
+    private VehicleModel convertToVehicleModel ( final VehicleResponse vehicleResponse ) {
         return VehicleModel.builder()
-                .registrationNumber(vehicle.getRegistrationNumber())
-                .deliveryDate(vehicle.getDeliveryDate())
-                .depreciationFactor(vehicle.getDepreciationFactor())
-                .imagePath(vehicle.getImagePath())
-                .model(vehicle.getModel())
-                .routeNumber(vehicle.getRouteNumber())
-                .routeScheduleNumber(vehicle.getRouteScheduleNumber())
-                .seatingCapacity("" + vehicle.getSeatingCapacity())
-                .standingCapacity("" + vehicle.getStandingCapacity())
-                .purchasePrice(vehicle.getPurchasePrice())
+                .registrationNumber(vehicleResponse.getAdditionalTypeInformationMap().get("Registration Number"))
+                .deliveryDate(convertDateToLocalDate(vehicleResponse.getDeliveryDate()))
+                .model(vehicleResponse.getModelName())
+                .routeScheduleNumber(Long.parseLong(vehicleResponse.getAllocatedTour()))
+                .seatingCapacity(vehicleResponse.getSeatingCapacity())
+                .standingCapacity(vehicleResponse.getStandingCapacity())
                 .build();
     }
 
-    public void saveVehicle ( final VehicleModel vehicle ) {
-        vehicleRepository.saveAndFlush(convertToVehicle(vehicle));
+    public void saveVehicle ( final VehicleModel vehicle, final String company, final String fleetNumber, final String livery ) {
+        restTemplate.postForObject(operationsServerUrl + "vehicle/",
+                PurchaseVehicleRequest.builder()
+                        .company(company)
+                        .fleetNumber(fleetNumber)
+                        .livery(livery)
+                        .vehicleType("BUS")
+                        .modelName(vehicle.getModel())
+                        .additionalTypeInformationMap(Map.of("Registration Number", vehicle.getRegistrationNumber()))
+                        .seatingCapacity(vehicle.getSeatingCapacity())
+                        .standingCapacity(vehicle.getStandingCapacity())
+                        .build(),
+                Void.class);
     }
 
-    public void removeVehicle ( final VehicleModel vehicleModel ) {
-        vehicleRepository.delete(vehicleRepository.findByRegistrationNumber(vehicleModel.getRegistrationNumber()));
+    public void removeVehicle ( final VehicleModel vehicleModel, final String company, final String fleetNumber ) {
+        restTemplate.delete(operationsServerUrl + "vehicle/?company=" + company + "&fleetNumber=" + fleetNumber);
     }
     
     /**
      * Get current allocations for the simulation.
+     * @param company a <code>String</code> with the name of the company.
      * @return a <code>LinkedList</code> of allocations.
      */
-    public ArrayList<String> getAllocations ( ) {
+    public ArrayList<String> getAllocations ( final String company ) {
         //Allocations list.
         ArrayList<String> allocations = new ArrayList<>();
         //Now go through and add their allocation if they already have an allocation.
-        VehicleModel[] vehicleModels = getVehicleModels();
+        VehicleModel[] vehicleModels = getVehicleModels(company);
         for ( VehicleModel vehicleModel : vehicleModels ) {
             if ( vehicleModel.getRouteScheduleNumber() != 0 ) {
                 allocations.add(vehicleModel.getRouteNumber() + "/" + vehicleModel.getRouteScheduleNumber() + " & " + vehicleModel.getRegistrationNumber());
@@ -125,9 +126,10 @@ public class VehicleService {
     /**
      * Helper method to generate random vehicle registration.
      * @param year a <code>String</code> with the current simulation year.
+     * @param company a <code>String</code> with the name of the company.
      * @return a <code>String</code> with the generated vehicle registration.
      */
-    public String generateRandomReg ( final int year ) {
+    public String generateRandomReg ( final int year, final String company ) {
         //Generate random registration - in form 2 digit year - then 5 random letters.
         String alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         //This is our loop - till we get unique reg.
@@ -140,7 +142,7 @@ public class VehicleService {
                 randomReg += alphabet.charAt(r.nextInt(alphabet.length()));
             }
             //Now check that random reg not been generated before.
-            VehicleModel[] vehicleModels = getVehicleModels();
+            VehicleModel[] vehicleModels = getVehicleModels(company);
             if ( vehicleModels != null ) {
                 for ( VehicleModel vehicleModel : vehicleModels ) {
                     if ( vehicleModel.getRegistrationNumber().equalsIgnoreCase(randomReg) ) {
@@ -161,77 +163,102 @@ public class VehicleService {
      * Method throws an exception if no vehicle is currently running this route and route schedule number.
      * @param routeNumber a <code>String</code> with the route number that the vehicle should be running.
      * @param routeScheduleNumber a <code>String</code> with the route schedule number that the vehicle should be running.
+     * @param company a <code>String</code> with the name of the company.
      * @return a <code>VehicleModel</code> which contains information about the vehicle found.
      */
-    public VehicleModel getVehicleByRouteNumberAndRouteScheduleNumber ( final String routeNumber, final long routeScheduleNumber ) {
-        Vehicle vehicle = vehicleRepository.findByRouteNumberAndRouteScheduleNumber(routeNumber, routeScheduleNumber);
-        if ( vehicle == null ) {
+    public VehicleModel getVehicleByRouteNumberAndRouteScheduleNumber ( final String routeNumber, final long routeScheduleNumber, final String company ) {
+        VehicleResponse vehicleResponse = restTemplate.getForObject(operationsServerUrl + "vehicle/allocate/?company=" + company + "&allocatedTour=" + routeScheduleNumber, VehicleResponse.class);
+        if ( vehicleResponse == null ) {
             throw new NoSuchElementException();
         }
-        return convertToVehicleModel(vehicle);
+        return convertToVehicleModel(vehicleResponse);
     }
 
-    public VehicleModel createVehicleObject ( final String model, final String registrationNumber, final LocalDate deliveryDate ) throws NoSuchElementException  {
-        for ( Vehicle vehicle : vehiclesList ) {
-            if ( vehicle.getModel().contentEquals(model) ) {
-                vehicle.setRegistrationNumber(registrationNumber);
-                vehicle.setDeliveryDate(deliveryDate);
-                return convertToVehicleModel(vehicle);
+    public VehicleModel createVehicleObject ( final String model, final String registrationNumber, final LocalDate deliveryDate, final String company ) throws NoSuchElementException  {
+        VehicleModel[] vehicleModels = getVehicleModels(company);
+        for ( VehicleModel vehicleModel : vehicleModels ) {
+            if ( vehicleModel.getModel().contentEquals(model) ) {
+                vehicleModel.setRegistrationNumber(registrationNumber);
+                vehicleModel.setDeliveryDate(deliveryDate);
+                return vehicleModel;
             }
         }
         throw new NoSuchElementException();
     }
 
-    public int getNumberVehicleTypes ( ) {
-        return vehiclesList.size();
+    public int getNumberVehicleTypes ( final String company ) {
+        return getVehicleModels(company).length;
     }
 
-    public VehicleModel getVehicleByRegistrationNumber ( final String registrationNumber ) {
-        Vehicle vehicle = vehicleRepository.findByRegistrationNumber(registrationNumber);
-        if ( vehicle != null ) {
-            return convertToVehicleModel(vehicle);
+    public VehicleModel getVehicleByRegistrationNumber ( final String registrationNumber, final String company ) {
+        VehicleModel[] vehicleModels = getVehicleModels(company);
+        for ( VehicleModel vehicleModel : vehicleModels ) {
+            if ( vehicleModel.getRegistrationNumber().contentEquals(registrationNumber) ) {
+                return vehicleModel;
+            }
         }
         return null;
     }
 
-    public String getFirstVehicleModel ( ) {
-        return vehiclesList.get(0).getModel();
+    public String getFirstVehicleModel ( final String company ) {
+        return getVehicleModels(company)[0].getModel();
     }
 
-    public String getLastVehicleModel ( ) {
-        return vehiclesList.get(vehiclesList.size()-1).getModel();
+    public String getLastVehicleModel ( final String company ) {
+        VehicleModel[] vehicleModels = getVehicleModels(company);
+        return vehicleModels[vehicleModels.length-1].getModel();
     }
 
-    public String getNextVehicleModel ( final String model ) {
-        for ( int i = 0; i < vehiclesList.size(); i++ ) {
-            if ( vehiclesList.get(i).getModel().contentEquals(model) ) {
-                return vehiclesList.get(i+1).getModel();
+    public String getNextVehicleModel ( final String model, final String company ) {
+        VehicleModel[] vehicleModels = getVehicleModels(company);
+        for ( int i = 0; i < vehicleModels.length; i++ ) {
+            if ( vehicleModels[i].getModel().contentEquals(model) ) {
+                return vehicleModels[i+1].getModel();
             }
         }
         return "";
     }
 
-    public String getPreviousVehicleModel ( final String model ) {
-        for ( int i = 0; i < vehiclesList.size(); i++ ) {
-            if ( vehiclesList.get(i).getModel().contentEquals(model) ) {
-                return vehiclesList.get(i-1).getModel();
+    public String getPreviousVehicleModel ( final String model, final String company ) {
+        VehicleModel[] vehicleModels = getVehicleModels(company);
+        for ( int i = 0; i < vehicleModels.length; i++ ) {
+            if ( vehicleModels[i].getModel().contentEquals(model) ) {
+                return vehicleModels[i-1].getModel();
             }
         }
         return "";
     }
 
-     public void assignVehicleToRouteScheduleNumber ( final VehicleModel vehicleModel, final String routeNumber, final String scheduleNumber ) {
-        Vehicle vehicle = vehicleRepository.findByRegistrationNumber(vehicleModel.getRegistrationNumber());
-        vehicle.setRouteNumber(routeNumber);
-        vehicle.setRouteScheduleNumber(Long.parseLong(scheduleNumber));
-        vehicleRepository.save(vehicle);
+     public void assignVehicleToRouteScheduleNumber ( final VehicleModel vehicleModel, final String routeNumber, final String scheduleNumber, final String company, final String fleetNumber ) {
+        restTemplate.patchForObject(operationsServerUrl + "vehicle/allocate/",
+                AllocateVehicleRequest.builder()
+                        .allocatedTour(routeNumber + "/" + scheduleNumber)
+                        .fleetNumber(fleetNumber)
+                        .company(company)
+                        .build(),
+                Void.class);
     }
 
     /**
      * Delete all vehicles (only used as part of load function)
+     * @param company a <code>String</code> with the name of the company.
      */
-    public void deleteAllVehicles() {
-        vehicleRepository.deleteAll();
+    public void deleteAllVehicles(final String company) {
+        restTemplate.delete(operationsServerUrl + "vehicles/?company=" + company);
+    }
+
+    /**
+     * This method converts a string date in the format dd-mm-yyyy to a LocalDate object. If the conversion is not
+     * successful then return null.
+     * @param date a <code>String</code> in the form dd-mm-yyyy
+     * @return a <code>LocaLDate</code> with the converted date or null if no conversion is possible.
+     */
+    private LocalDate convertDateToLocalDate ( final String date ) {
+        try {
+            return LocalDate.parse(date, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+        } catch ( DateTimeParseException dateTimeParseException ) {
+            return null;
+        }
     }
     
 }
