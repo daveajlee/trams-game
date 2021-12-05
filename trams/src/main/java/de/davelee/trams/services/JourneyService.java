@@ -1,11 +1,8 @@
 package de.davelee.trams.services;
 
 import de.davelee.trams.api.request.AddStopRequest;
-import de.davelee.trams.api.request.MessageRequest;
-import de.davelee.trams.api.response.MessagesResponse;
 import de.davelee.trams.api.response.StopsResponse;
 import de.davelee.trams.data.Journey;
-import de.davelee.trams.data.Stop;
 import de.davelee.trams.data.StopTime;
 import de.davelee.trams.model.JourneyModel;
 import de.davelee.trams.model.JourneyPatternModel;
