@@ -21,12 +21,11 @@ public class MessageService {
 	/**
      * Save a new message.
      * @param messageModel a <code>MessageModel</code> object representing the message to save.
-     * @param company a <code>String</code> containing the name of the company to save the message for.
      */
-    public void saveMessage ( final MessageModel messageModel, final String company ) {
+    public void saveMessage ( final MessageModel messageModel ) {
         restTemplate.postForObject(crmServerUrl + "message/",
                 MessageRequest.builder()
-                        .company(company)
+                        .company(messageModel.getCompany())
                         .subject(messageModel.getSubject())
                         .text(messageModel.getText())
                         .sender(messageModel.getSender())
@@ -56,11 +55,14 @@ public class MessageService {
      */
     public MessageModel[] getMessagesByFolderSenderDate ( final String company, final MessageFolder folder, final String date, final String sender ) {
         MessagesResponse messagesResponse = restTemplate.getForObject(crmServerUrl + "messages/?company=" + company + "&folder=" + folder + "&sender=" + sender + "&date=" + date, MessagesResponse.class);
-        MessageModel[] messageModels = new MessageModel[messagesResponse.getMessageResponses().length];
-        for ( int i = 0; i < messageModels.length; i++ ) {
-            messageModels[i] = convertToMessageModel(messagesResponse.getMessageResponses()[i]);
+        if ( messagesResponse != null && messagesResponse.getMessageResponses() != null ) {
+            MessageModel[] messageModels = new MessageModel[messagesResponse.getMessageResponses().length];
+            for (int i = 0; i < messageModels.length; i++) {
+                messageModels[i] = convertToMessageModel(messagesResponse.getMessageResponses()[i]);
+            }
+            return messageModels;
         }
-        return messageModels;
+        return null;
     }
 
     /**
@@ -71,20 +73,26 @@ public class MessageService {
      */
     public MessageModel[] getMessagesByFolder ( final String company, final MessageFolder folder ) {
         MessagesResponse messagesResponse = restTemplate.getForObject(crmServerUrl + "messages/?company=" + company + "&folder=" + folder, MessagesResponse.class);
-        MessageModel[] messageModels = new MessageModel[messagesResponse.getMessageResponses().length];
-        for ( int i = 0; i < messageModels.length; i++ ) {
-            messageModels[i] = convertToMessageModel(messagesResponse.getMessageResponses()[i]);
+        if ( messagesResponse != null && messagesResponse.getMessageResponses() != null ) {
+            MessageModel[] messageModels = new MessageModel[messagesResponse.getMessageResponses().length];
+            for ( int i = 0; i < messageModels.length; i++ ) {
+                messageModels[i] = convertToMessageModel(messagesResponse.getMessageResponses()[i]);
+            }
+            return messageModels;
         }
-        return messageModels;
+        return null;
     }
 
     public MessageModel[] getAllMessages(final String company) {
         MessagesResponse messagesResponse = restTemplate.getForObject(crmServerUrl + "messages/?company=" + company, MessagesResponse.class);
-        MessageModel[] messageModels = new MessageModel[messagesResponse.getMessageResponses().length];
-        for ( int i = 0; i < messageModels.length; i++ ) {
-            messageModels[i] = convertToMessageModel(messagesResponse.getMessageResponses()[i]);
+        if ( messagesResponse != null && messagesResponse.getMessageResponses() != null ) {
+            MessageModel[] messageModels = new MessageModel[messagesResponse.getMessageResponses().length];
+            for (int i = 0; i < messageModels.length; i++) {
+                messageModels[i] = convertToMessageModel(messagesResponse.getMessageResponses()[i]);
+            }
+            return messageModels;
         }
-        return messageModels;
+        return null;
     }
 
     /**

@@ -23,8 +23,10 @@ public class DriverController {
 	@Autowired
 	private GameController gameController;
 
-    public DriverModel[] getAllDrivers () {
-		return driverService.getAllDrivers();
+    private String token;
+
+    public DriverModel[] getAllDrivers (final String company) {
+		return driverService.getAllDrivers(company, token);
 	}
 	
 	/**
@@ -51,27 +53,31 @@ public class DriverController {
      * This method loads the supplied drivers list and deletes all previous drivers.
      * @param driverModels a <code>DriverModel</code> array containing the drivers to load.
      */
-    public void loadDrivers ( final DriverModel[] driverModels ) {
-        driverService.removeAllDrivers();
+    public void loadDrivers ( final DriverModel[] driverModels, final String company ) {
+        driverService.removeAllDrivers(company, token);
         for ( DriverModel driverModel : driverModels ) {
             driverService.saveDriver(driverModel);
         }
     }
     
-    public int getNumberDrivers ( ) {
-        return driverService.getAllDrivers().length;
+    public int getNumberDrivers ( final String company ) {
+        return driverService.getAllDrivers(company, token).length;
     }
 
     /**
      * This method checks if any employees have started working for the company!
      * @return a <code>boolean</code> which is true iff some drivers have started working.
      */
-    public boolean hasSomeDriversBeenEmployed ( ) {
-        if ( getNumberDrivers() == 0 ) { return false; }
-        DriverModel[] driverModels = driverService.getAllDrivers();
-        GameModel gameModel = gameController.getGameModel();
-        for ( int i = 0; i < driverModels.length; i++ ) {
-            if ( driverService.hasStartedWork(driverModels[i].getStartDate(), gameModel.getCurrentDateTime().toLocalDate()) ) { return true; }
+    public boolean hasSomeDriversBeenEmployed ( final String company ) {
+        DriverModel[] driverModels = driverService.getAllDrivers(company, token);
+        if (driverModels != null && driverModels.length > 0) {
+            GameModel gameModel = gameController.getGameModel();
+            for (int i = 0; i < driverModels.length; i++) {
+                if (driverService.hasStartedWork(driverModels[i].getStartDate(), gameModel.getCurrentDateTime().toLocalDate())) {
+                    return true;
+                }
+            }
+            return false;
         }
         return false;
     }
@@ -81,8 +87,8 @@ public class DriverController {
      * @param name a <code>String</code> with the name.
      * @return a <code>DriverModel</code> object.
      */
-    public DriverModel getDriverByName (final String name ) {
-        return driverService.getDriverByName(name);
+    public DriverModel getDriverByName (final String name, final String company ) {
+        return driverService.getDriverByName(name, company, token);
     }
 
     /**
@@ -90,7 +96,7 @@ public class DriverController {
      * @param driverModel a <code>DriverModel</code> object representing the driver to sack.
      */
     public void sackDriver ( final DriverModel driverModel ) {
-        driverService.removeDriver(driverModel);
+        driverService.removeDriver(driverModel, token);
     }
 
 }

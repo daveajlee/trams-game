@@ -57,7 +57,7 @@ public class GameController {
 	 * This method updates the cache by retrieving the current game model from the database after changes.
 	 */
 	private void updateCache() {
-		cachedGameModel = gameService.getGameByPlayerName(cachedGameModel.getPlayerName());
+		cachedGameModel = gameService.getGameByPlayerName(cachedGameModel.getCompany(), cachedGameModel.getPlayerName());
 	}
 
 	/**
@@ -152,7 +152,7 @@ public class GameController {
 	 * @return a <code>LocalDateTime</code> with the new time after incrementing it.
 	 */
 	public LocalDateTime incrementTime ( ) {
-		LocalDateTime newTime = gameService.incrementTime(cachedGameModel.getPlayerName());
+		LocalDateTime newTime = gameService.incrementTime(cachedGameModel.getCompany());
 		updateCache();
 		return newTime;
 	}
@@ -172,7 +172,7 @@ public class GameController {
 	 * Compute and return the passenger satisfaction for the current game.
 	 * @return a <code>int</code> with the current level of passenger satisfaction between 0 and 100.
 	 */
-	public int computeAndReturnPassengerSatisfaction ( ) {
+	public double computeAndReturnPassengerSatisfaction ( ) {
 		//Essentially satisfaction is determined by the route schedules that are running on time.
 		//Now count number of route schedules into three groups: 1 - 5 minutes late, 6 - 15 minutes late, 16+ minutes late.
 		int numSmallLateSchedules = 0; int numMediumLateSchedules = 0; int numLargeLateSchedules = 0;
@@ -193,7 +193,7 @@ public class GameController {
 				}
 			}
 		}
-		return gameService.computeAndReturnPassengerSatisfaction(cachedGameModel.getPlayerName(), numSmallLateSchedules, numMediumLateSchedules, numLargeLateSchedules);
+		return gameService.computeAndReturnPassengerSatisfaction(cachedGameModel.getPlayerName(), cachedGameModel.getDifficultyLevel(), numSmallLateSchedules, numMediumLateSchedules, numLargeLateSchedules);
 	}
 
 }

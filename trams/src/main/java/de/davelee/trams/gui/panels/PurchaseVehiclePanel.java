@@ -116,7 +116,7 @@ public class PurchaseVehiclePanel {
         seatingLabel.setFont(new Font("Arial", Font.ITALIC, 14));
         seatingLabelPanel.add(seatingLabel);
         gridPanel.add(seatingLabel);
-        JLabel seatingField = new JLabel(vehicleModel.getSeatingCapacity());
+        JLabel seatingField = new JLabel("" + vehicleModel.getSeatingCapacity());
         seatingField.setFont(new Font("Arial", Font.PLAIN, 12));
         gridPanel.add(seatingField);
         //Create label and field for standing capacity and add it to the standing panel.
@@ -126,7 +126,7 @@ public class PurchaseVehiclePanel {
         standingLabel.setFont(new Font("Arial", Font.ITALIC, 14));
         standingLabelPanel.add(standingLabel);
         gridPanel.add(standingLabel);
-        JLabel standingField = new JLabel(vehicleModel.getStandingCapacity());
+        JLabel standingField = new JLabel("" + vehicleModel.getStandingCapacity());
         standingField.setFont(new Font("Arial", Font.PLAIN, 12));
         gridPanel.add(standingField);
         //Create label and field for delivery date and add it to the delivery panel.

@@ -19,7 +19,9 @@ public class JourneyModel {
 	private int journeyNumber;
 	private int routeScheduleNumber;
 	private String routeNumber;
-	private List<StopTimeModel> stopTimeModelList = new ArrayList<StopTimeModel>();
+
+	@Builder.Default
+	private List<StopTimeModel> stopTimeModelList = new ArrayList<>();
 
 	public void removeStopTimeInList(final String stopName) {
 		for ( StopTimeModel stopTimeModel : stopTimeModelList ) {

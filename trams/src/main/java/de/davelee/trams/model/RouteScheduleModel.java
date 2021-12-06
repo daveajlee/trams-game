@@ -16,5 +16,7 @@ public class RouteScheduleModel {
 	private int delay;
 	private int scheduleNumber;
 	private String routeNumber;
+	private String company;
+	private String fleetNumber;
 
 }

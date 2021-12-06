@@ -20,12 +20,12 @@ public class MessageController {
      * @param sender a <code>String</code> with the sender.
      * @return a <code>LinkedList</code> with messages.
      */
-    public MessageModel[] getMessagesByFolderDateSender ( final String folder, final String date, final String sender ) {
+    public MessageModel[] getMessagesByFolderDateSender ( final String company, final String folder, final String date, final String sender ) {
         if ( date.equalsIgnoreCase("All Dates")) {
-            return getMessagesByFolder(folder);
+            return getMessagesByFolder(company, folder);
         }
         //Return a message list.
-        return messageService.getMessagesByFolderSenderDate(MessageFolder.getFolderEnum(folder), date, sender);
+        return messageService.getMessagesByFolderSenderDate(company, MessageFolder.getFolderEnum(folder), date, sender);
     }
 
     /**
@@ -33,17 +33,9 @@ public class MessageController {
      * @param folder a <code>String</code> with the name of the folder.
      * @return a <code>LinkedList</code> with messages.
      */
-    public MessageModel[] getMessagesByFolder ( final String folder ) {
+    public MessageModel[] getMessagesByFolder ( final String company, final String folder ) {
         //Return a message list.
-        return messageService.getMessagesByFolder(MessageFolder.getFolderEnum(folder));
-    }
-    
-    /**
-     * Get the number of messages.
-     * @return a <code>int</code> with the number of messages.
-     */
-    public int getNumberMessages ( ) {
-        return messageService.getAllMessages().length;
+        return messageService.getMessagesByFolder(company, MessageFolder.getFolderEnum(folder));
     }
     
     /**
@@ -54,8 +46,9 @@ public class MessageController {
      * @param folder a <code>String</code> with the name of the folder to save the message to.
      * @param date a <code>LocalDate</code> object representing the date the message was sent.
      */
-    public void addMessage ( final String subject, final String text, final String sender, final String folder, final String date) {
+    public void addMessage ( final String company, final String subject, final String text, final String sender, final String folder, final String date) {
         messageService.saveMessage(MessageModel.builder()
+                .company(company)
                 .subject(subject)
                 .text(text)
                 .sender(sender)
@@ -64,15 +57,15 @@ public class MessageController {
                 .build());
     }
 
-    public MessageModel[] getAllMessages ( ) { return messageService.getAllMessages();
+    public MessageModel[] getAllMessages ( final String company ) { return messageService.getAllMessages(company);
     }
 
     /**
      * Load Messages.
      * @param messageModels an array of <code>MessageModel</code> objects with messages to store and delete all other messages.
      */
-    public void loadMessages ( final MessageModel[] messageModels ) {
-        messageService.deleteAllMessages();
+    public void loadMessages ( final MessageModel[] messageModels, final String company ) {
+        messageService.deleteAllMessages(company);
         for ( MessageModel messageModel : messageModels ) {
             messageService.saveMessage(messageModel);
         }

@@ -19,5 +19,6 @@ public class MessageModel {
 	private String sender;
 	private String date;
 	private MessageFolder messageFolder;
+	private String company;
 
 }

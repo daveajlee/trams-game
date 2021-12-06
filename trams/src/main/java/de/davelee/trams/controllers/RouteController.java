@@ -16,14 +16,14 @@ public class RouteController {
 	@Autowired
 	private RouteService routeService;
 
-	public RouteModel[] getRouteModels ( ) {
-		RouteModel[] routeModels = routeService.getAllRoutes();
+	public RouteModel[] getRouteModels ( final String company ) {
+		RouteModel[] routeModels = routeService.getAllRoutes(company);
 		Arrays.sort(routeModels, new SortedRouteModels());
 		return routeModels;
 	}
 
-	public int getNumberRoutes ( ) {
-		return routeService.getAllRoutes().length;
+	public int getNumberRoutes ( final String company ) {
+		return routeService.getAllRoutes(company).length;
 	}
 
 	/**
@@ -31,8 +31,8 @@ public class RouteController {
 	 * @param routeNumber a <code>String</code> with the string representation of the route.
 	 * @return a <code>RouteModel</code> object matching the string representation.
 	 */
-	public RouteModel getRoute ( final String routeNumber ) {
-		return routeService.getRoute(routeNumber);
+	public RouteModel getRoute ( final String routeNumber, final String company ) {
+		return routeService.getRoute(routeNumber, company);
 	}
 
 	/**
@@ -40,8 +40,9 @@ public class RouteController {
 	 * @param routeNumber a <code>String</code> with the number for this route.
 	 * @param stopNames a <code>String</code> list with the stops served by this route.
 	 */
-	public void addNewRoute ( final String routeNumber, final List<String> stopNames ) {
+	public void addNewRoute ( final String routeNumber, final List<String> stopNames, final String company ) {
 		routeService.saveRoute(RouteModel.builder()
+				.company(company)
 				.routeNumber(routeNumber)
 				.stopNames(stopNames)
 				.build());
@@ -65,15 +66,15 @@ public class RouteController {
 		//Delete old route.
 		deleteRoute(oldRouteModel);
 		//Add new route.
-		addNewRoute(routeNumber, stopNames);
+		addNewRoute(routeNumber, stopNames, oldRouteModel.getCompany());
 	}
 
 	/**
 	 * Load Routes.
 	 * @param routeModels an array of <code>RouteModel</code> objects with routes to store and delete all other routes.
 	 */
-	public void loadRoutes ( final RouteModel[] routeModels ) {
-		routeService.deleteAllRoutes();
+	public void loadRoutes ( final RouteModel[] routeModels, final String company ) {
+		routeService.deleteAllRoutes(company);
 		for ( RouteModel routeModel : routeModels ) {
 			routeService.saveRoute(routeModel);
 		}

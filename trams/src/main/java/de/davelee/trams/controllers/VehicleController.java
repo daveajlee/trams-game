@@ -23,13 +23,13 @@ public class VehicleController {
 	@Autowired
 	private GameController gameController;
 
-	public void assignVehicleToRouteSchedule ( final String registrationNumber, final String routeNumber, final String scheduleNumber ) {
-		VehicleModel vehicleModel = vehicleService.getVehicleByRegistrationNumber(registrationNumber);
-		vehicleService.assignVehicleToRouteScheduleNumber(vehicleModel, routeNumber, scheduleNumber);
+	public void assignVehicleToRouteSchedule ( final String registrationNumber, final String routeNumber, final String scheduleNumber, final String company ) {
+		VehicleModel vehicleModel = vehicleService.getVehicleByRegistrationNumber(registrationNumber, company);
+		vehicleService.assignVehicleToRouteScheduleNumber(vehicleModel, routeNumber, scheduleNumber, company);
 	}
 
-	public VehicleModel[] getAllCreatedVehicles ( ) {
-		VehicleModel[] vehicleModels = vehicleService.getVehicleModels();
+	public VehicleModel[] getAllCreatedVehicles ( final String company ) {
+		VehicleModel[] vehicleModels = vehicleService.getVehicleModels(company);
 		Arrays.sort(vehicleModels, new SortedVehicleModels());
 		return vehicleModels;
 	}
@@ -42,8 +42,8 @@ public class VehicleController {
 	 * This method checks if any vehicles have been delivered to the company yet!
 	 * @return a <code>boolean</code> which is true iff some vehicles have been delivered!
 	 */
-	public boolean hasSomeVehiclesBeenDelivered ( ) {
-		VehicleModel[] vehicleModels = getAllCreatedVehicles();
+	public boolean hasSomeVehiclesBeenDelivered ( final String company) {
+		VehicleModel[] vehicleModels = getAllCreatedVehicles(company);
 		GameModel gameModel = gameController.getGameModel();
 		if ( vehicleModels.length == 0 ) { return false; }
 		for ( int i = 0; i < vehicleModels.length; i++ ) {
@@ -57,8 +57,8 @@ public class VehicleController {
 	 * @param registrationNumber a <code>String</code> with the registration number.
 	 * @return a <code>VehicleModel</code> object.
 	 */
-	public VehicleModel getVehicleByRegistrationNumber ( final String registrationNumber ) {
-		return vehicleService.getVehicleByRegistrationNumber(registrationNumber);
+	public VehicleModel getVehicleByRegistrationNumber ( final String registrationNumber, final String company ) {
+		return vehicleService.getVehicleByRegistrationNumber(registrationNumber, company);
 	}
 
 	public int getAge (final LocalDate deliveryDate, final LocalDate currentDate ) {
@@ -85,70 +85,70 @@ public class VehicleController {
 	 * @param type a <code>String</code> with the vehicle type.
 	 * @param deliveryDate a <code>LocalDate</code> with the delivery date.
 	 */
-	public void purchaseVehicle ( final String type, final LocalDate deliveryDate ) {
+	public void purchaseVehicle ( final String type, final LocalDate deliveryDate, final String company ) {
 		GameModel gameModel = gameController.getGameModel();
 		VehicleModel vehicle = vehicleService.createVehicleObject(type, vehicleService.generateRandomReg(
-		gameModel.getCurrentDateTime().getYear()), deliveryDate);
+		gameModel.getCurrentDateTime().getYear(), company), deliveryDate, company);
 		gameController.withdrawBalance(vehicle.getPurchasePrice());
 		vehicleService.saveVehicle(vehicle);
 	}
 
-	public VehicleModel getVehicleByRouteNumberAndRouteScheduleNumber ( final String routeNumber, final String scheduleNumber ) {
-		return vehicleService.getVehicleByRouteNumberAndRouteScheduleNumber(routeNumber, Long.parseLong(scheduleNumber));
+	public VehicleModel getVehicleByRouteNumberAndRouteScheduleNumber ( final String routeNumber, final String scheduleNumber, final String company ) {
+		return vehicleService.getVehicleByRouteNumberAndRouteScheduleNumber(routeNumber, Long.parseLong(scheduleNumber), company);
 	}
 
-	public int createSuppliedVehicles(final ScenarioModel scenarioModel, LocalDate currentDate) {
+	public int createSuppliedVehicles(final ScenarioModel scenarioModel, LocalDate currentDate, final String company) {
 		Iterator<String> vehicleModels = scenarioModel.getSuppliedVehicles().keySet().iterator();
 		int numCreatedVehicles = 0;
 		while (vehicleModels.hasNext()) {
 			String vehicleModel = vehicleModels.next();
 			for ( int i = 0; i < scenarioModel.getSuppliedVehicles().get(vehicleModel); i++ )  {
 				vehicleService.saveVehicle(vehicleService.createVehicleObject(vehicleModel, vehicleService.generateRandomReg(
-						currentDate.getYear()), currentDate));
+						currentDate.getYear(), company), currentDate, company));
 				numCreatedVehicles++;
 			}
 		}
 		return numCreatedVehicles;
 	}
 
-	public VehicleModel[] getVehicleModels ( ) {
-		return vehicleService.getVehicleModels();
+	public VehicleModel[] getVehicleModels ( final String company ) {
+		return vehicleService.getVehicleModels(company);
 	}
 
-	public List<String> getAllocations ( ) {
-		return vehicleService.getAllocations();
+	public List<String> getAllocations ( final String company ) {
+		return vehicleService.getAllocations(company);
 	}
 
-    public int getNumberVehicleTypes ( ) {
-		return vehicleService.getNumberVehicleTypes();
+    public int getNumberVehicleTypes ( final String company ) {
+		return vehicleService.getNumberVehicleTypes(company);
 	}
 
-	public VehicleModel getVehicleByModel ( final String model ) {
-		return vehicleService.createVehicleObject(model, vehicleService.generateRandomReg(LocalDate.now().getYear()), LocalDate.now());
+	public VehicleModel getVehicleByModel ( final String model, final String company ) {
+		return vehicleService.createVehicleObject(model, vehicleService.generateRandomReg(LocalDate.now().getYear(), company), LocalDate.now(), company);
 	}
 
-	public String getFirstVehicleModel ( ) {
-		return vehicleService.getFirstVehicleModel();
+	public String getFirstVehicleModel ( final String company ) {
+		return vehicleService.getFirstVehicleModel(company);
 	}
 
-	public String getLastVehicleModel ( ) {
-		return vehicleService.getLastVehicleModel();
+	public String getLastVehicleModel ( final String company ) {
+		return vehicleService.getLastVehicleModel(company);
 	}
 
-	public String getPreviousVehicleModel ( final String model ) {
-		return vehicleService.getPreviousVehicleModel(model);
+	public String getPreviousVehicleModel ( final String model, final String company ) {
+		return vehicleService.getPreviousVehicleModel(model, company);
 	}
 
-	public String getNextVehicleModel ( final String model) {
-		return vehicleService.getNextVehicleModel(model);
+	public String getNextVehicleModel ( final String model, final String company) {
+		return vehicleService.getNextVehicleModel(model, company);
 	}
 
 	/**
 	 * Load Vehicles.
 	 * @param vehicleModels an array of <code>VehicleModel</code> objects with vehicles to store and delete all other vehicles.
 	 */
-	public void loadVehicles ( final VehicleModel[] vehicleModels ) {
-		vehicleService.deleteAllVehicles();
+	public void loadVehicles ( final VehicleModel[] vehicleModels, final String company ) {
+		vehicleService.deleteAllVehicles(company);
 		for ( VehicleModel vehicleModel : vehicleModels ) {
 			vehicleService.saveVehicle(vehicleModel);
 		}

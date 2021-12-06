@@ -122,8 +122,8 @@ public class JourneyController {
 		return journeyService.getJourneysByRouteScheduleNumberAndRouteNumber(routeScheduleNumber, routeNumber);
 	}
 
-	public String[] getAllStops ( ) {
-        return journeyService.getAllStops();
+	public String[] getAllStops ( final String company ) {
+        return journeyService.getAllStops(company);
     }
 
 	/**
@@ -165,12 +165,12 @@ public class JourneyController {
 
 	/**
 	 * Load Stops.
-	 * @param stopModels an array of <code>String</code> objects with stops to store and delete all other stops.
+	 * @param stopNames an array of <code>String</code> objects with stop names to store and delete all other stops.
 	 */
-	public void loadStops ( final String[] stopModels ) {
-		journeyService.deleteAllStops();
-		for ( String stopModel : stopModels ) {
-			journeyService.saveStop(stopModel);
+	public void loadStops ( final String[] stopNames, final String company ) {
+		journeyService.deleteAllStops(company);
+		for ( String stopName : stopNames ) {
+			journeyService.saveStop(stopName, company);
 		}
 	}
 	

@@ -18,5 +18,7 @@ public class DriverModel {
 	private String name;
 	private int contractedHours;
 	private LocalDate startDate;
+	private String company;
+	private int leaveEntitlementPerYear;
 
 }

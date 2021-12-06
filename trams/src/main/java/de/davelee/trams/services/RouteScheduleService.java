@@ -69,17 +69,15 @@ public class RouteScheduleService {
      * Reduces the current delay by a certain number of minutes.
      * @param scheduleModel a <code>RouteScheduleModel</code> with the route schedule to determine delay for.
      * @param mins a <code>int</code> with the number of minutes.
-     * @param fleetNumber a <code>String</code> with the fleet number.
-     * @param company a <code>String</code> with the name of the company.
      */
-    public void reduceDelay(final RouteScheduleModel scheduleModel, final int mins, final String fleetNumber, final String company) {
+    public void reduceDelay(final RouteScheduleModel scheduleModel, final int mins) {
         //We can only reduce delay if delay is not currently 0.
         if (scheduleModel.getDelay() != 0) {
             VehicleDelayResponse vehicleDelayResponse = restTemplate.patchForObject(operationsServerUrl + "vehicle/delay",
                     AdjustVehicleDelayRequest.builder()
-                            .company(company)
+                            .company(scheduleModel.getCompany())
                             .delayInMinutes(-mins)
-                            .fleetNumber(fleetNumber)
+                            .fleetNumber(scheduleModel.getFleetNumber())
                             .build(),
                     VehicleDelayResponse.class);
             scheduleModel.setDelay(vehicleDelayResponse.getDelayInMinutes());
@@ -90,15 +88,13 @@ public class RouteScheduleService {
      * Increases the vehicles current delay by a certain number of minutes.
      * @param scheduleModel a <code>RouteScheduleModel</code> with the route schedule to determine delay for.
      * @param mins a <code>int</code> with the number of minutes.
-     * @param fleetNumber a <code>String</code> with the fleet number.
-     * @param company a <code>String</code> with the name of the company.
      */
-    public void increaseDelay(final RouteScheduleModel scheduleModel, final int mins, final String fleetNumber, final String company) {
+    public void increaseDelay(final RouteScheduleModel scheduleModel, final int mins) {
         VehicleDelayResponse vehicleDelayResponse = restTemplate.patchForObject(operationsServerUrl + "vehicle/delay",
                 AdjustVehicleDelayRequest.builder()
-                        .company(company)
+                        .company(scheduleModel.getCompany())
                         .delayInMinutes(mins)
-                        .fleetNumber(fleetNumber)
+                        .fleetNumber(scheduleModel.getFleetNumber())
                         .build(),
                 VehicleDelayResponse.class);
         scheduleModel.setDelay(vehicleDelayResponse.getDelayInMinutes());

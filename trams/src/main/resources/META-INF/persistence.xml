@@ -17,8 +17,7 @@
             <property name="jadira.usertype.autoRegisterUserTypes" value="true" /> 1
             <property name="jadira.usertype.databaseZone" value="jvm" />
         </properties>
-        
-        <class>de.davelee.trams.data.Driver</class>
+
         <class>de.davelee.trams.data.Game</class>
         <class>de.davelee.trams.data.Journey</class>
         <class>de.davelee.trams.data.JourneyPattern</class>

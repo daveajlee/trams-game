@@ -17,5 +17,6 @@ public class RouteModel {
 	
 	private String routeNumber;
 	private List<String> stopNames;
+	private String company;
 
 }

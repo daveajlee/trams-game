@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 public class Game {
 
 	private int id;
-    private int passengerSatisfaction;
+    private double passengerSatisfaction;
     private String playerName;
     private double balance;
 	private DifficultyLevel difficultyLevel = DifficultyLevel.EASY; //Default to easy.
@@ -65,9 +65,9 @@ public class Game {
 
     /**
      * Get the passenger satisfaction without recalculating it.
-     * @return a <code>int</code> with the passenger satisfaction.
+     * @return a <code>double</code> with the passenger satisfaction.
      */
-    public int getPassengerSatisfaction ( ) {
+    public double getPassengerSatisfaction ( ) {
         return passengerSatisfaction;
     }
     

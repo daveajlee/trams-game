@@ -16,10 +16,10 @@ public class RouteService {
     @Value("${server.operations.url}")
     private String operationsServerUrl;
 
-    public void saveRoute ( final RouteModel routeModel, final String company ) {
+    public void saveRoute ( final RouteModel routeModel ) {
         restTemplate.postForObject(operationsServerUrl + "route/",
                 AddRouteRequest.builder()
-                        .company(company)
+                        .company(routeModel.getCompany())
                         .routeNumber(routeModel.getRouteNumber())
                         .build(),
                 Void.class);
@@ -43,17 +43,20 @@ public class RouteService {
 
     public RouteModel[] getAllRoutes ( final String company ) {
         RoutesResponse routesResponse = restTemplate.getForObject(operationsServerUrl + "routes/?company=" + company, RoutesResponse.class);
-        RouteModel[] routeModels = new RouteModel[routesResponse.getRouteResponses().length];
-        for ( int i = 0; i < routesResponse.getRouteResponses().length; i++ ) {
-            routeModels[i] = RouteModel.builder()
-                    .routeNumber(routesResponse.getRouteResponses()[i].getRouteNumber())
-                    .build();
+        if ( routesResponse != null && routesResponse.getRouteResponses() != null ) {
+            RouteModel[] routeModels = new RouteModel[routesResponse.getRouteResponses().length];
+            for (int i = 0; i < routesResponse.getRouteResponses().length; i++) {
+                routeModels[i] = RouteModel.builder()
+                        .routeNumber(routesResponse.getRouteResponses()[i].getRouteNumber())
+                        .build();
+            }
+            return routeModels;
         }
-        return routeModels;
+        return null;
     }
 
-    public void removeRoute ( final RouteModel routeModel, final String company ) {
-        restTemplate.delete(operationsServerUrl + "route/?company=" + company + "&routeNumber=" + routeModel.getRouteNumber());
+    public void removeRoute ( final RouteModel routeModel ) {
+        restTemplate.delete(operationsServerUrl + "route/?company=" + routeModel.getCompany() + "&routeNumber=" + routeModel.getRouteNumber());
     }
 
     /**

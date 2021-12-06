@@ -85,12 +85,12 @@ public class VehicleService {
                 .build();
     }
 
-    public void saveVehicle ( final VehicleModel vehicle, final String company, final String fleetNumber, final String livery ) {
+    public void saveVehicle ( final VehicleModel vehicle ) {
         restTemplate.postForObject(operationsServerUrl + "vehicle/",
                 PurchaseVehicleRequest.builder()
-                        .company(company)
-                        .fleetNumber(fleetNumber)
-                        .livery(livery)
+                        .company(vehicle.getCompany())
+                        .fleetNumber(vehicle.getFleetNumber())
+                        .livery(vehicle.getLivery())
                         .vehicleType("BUS")
                         .modelName(vehicle.getModel())
                         .additionalTypeInformationMap(Map.of("Registration Number", vehicle.getRegistrationNumber()))
@@ -100,8 +100,8 @@ public class VehicleService {
                 Void.class);
     }
 
-    public void removeVehicle ( final VehicleModel vehicleModel, final String company, final String fleetNumber ) {
-        restTemplate.delete(operationsServerUrl + "vehicle/?company=" + company + "&fleetNumber=" + fleetNumber);
+    public void removeVehicle ( final VehicleModel vehicleModel ) {
+        restTemplate.delete(operationsServerUrl + "vehicle/?company=" + vehicleModel.getCompany() + "&fleetNumber=" + vehicleModel.getFleetNumber());
     }
     
     /**
@@ -229,11 +229,11 @@ public class VehicleService {
         return "";
     }
 
-     public void assignVehicleToRouteScheduleNumber ( final VehicleModel vehicleModel, final String routeNumber, final String scheduleNumber, final String company, final String fleetNumber ) {
+     public void assignVehicleToRouteScheduleNumber ( final VehicleModel vehicleModel, final String routeNumber, final String scheduleNumber, final String company ) {
         restTemplate.patchForObject(operationsServerUrl + "vehicle/allocate/",
                 AllocateVehicleRequest.builder()
                         .allocatedTour(routeNumber + "/" + scheduleNumber)
-                        .fleetNumber(fleetNumber)
+                        .fleetNumber(vehicleModel.getFleetNumber())
                         .company(company)
                         .build(),
                 Void.class);

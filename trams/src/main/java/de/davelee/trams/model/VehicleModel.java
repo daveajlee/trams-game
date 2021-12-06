@@ -25,5 +25,8 @@ public class VehicleModel {
 	private double depreciationFactor;
 	private String routeNumber;
 	private long routeScheduleNumber;
+	private String fleetNumber;
+	private String company;
+	private String livery;
 
 }

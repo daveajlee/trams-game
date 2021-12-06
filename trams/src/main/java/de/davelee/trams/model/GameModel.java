@@ -17,7 +17,8 @@ import java.time.LocalDateTime;
 public class GameModel {
 	
 	private String playerName;
-	private int passengerSatisfaction;
+	private String company;
+	private double passengerSatisfaction;
 	private double balance;
 	private DifficultyLevel difficultyLevel;
 	private String scenarioName;
