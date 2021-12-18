@@ -55,7 +55,7 @@ public class PurchaseVehiclePanel {
         vehicleScreenPanel.add(textLabelPanel);
         
         //Create vehicle object so that we can pull information from it.
-        final VehicleModel vehicleModel = controllerHandler.getVehicleController().getVehicleByModel(vehicleType);
+        final VehicleModel vehicleModel = controllerHandler.getVehicleController().getVehicleByModel(controllerHandler.getGameController().getGameModel().getCompany(), vehicleType);
         
         final GameModel gameModel = controllerHandler.getGameController().getGameModel();
         
@@ -66,10 +66,10 @@ public class PurchaseVehiclePanel {
         JPanel previousButtonPanel = new JPanel(new GridBagLayout());
         previousButtonPanel.setBackground(Color.WHITE);
         JButton previousVehicleTypeButton = new JButton("< Previous Vehicle Type");
-        if ( vehicleType.contentEquals(controllerHandler.getVehicleController().getFirstVehicleModel()) ) { previousVehicleTypeButton.setEnabled(false); }
+        if ( vehicleType.contentEquals(controllerHandler.getVehicleController().getFirstVehicleModel(controllerHandler.getGameController().getGameModel().getCompany())) ) { previousVehicleTypeButton.setEnabled(false); }
         previousVehicleTypeButton.addActionListener( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
-                    controlScreen.redrawManagement(createPanel(controllerHandler.getVehicleController().getPreviousVehicleModel(vehicleType), controlScreen, displayPanel), gameModel);
+                    controlScreen.redrawManagement(createPanel(controllerHandler.getVehicleController().getPreviousVehicleModel(controllerHandler.getGameController().getGameModel().getCompany(), vehicleType), controlScreen, displayPanel), gameModel);
             }
         });
         previousButtonPanel.add(previousVehicleTypeButton);
@@ -86,10 +86,10 @@ public class PurchaseVehiclePanel {
         JPanel nextButtonPanel = new JPanel(new GridBagLayout());
         nextButtonPanel.setBackground(Color.WHITE);
         JButton nextVehicleTypeButton = new JButton("Next Vehicle Type >");
-        if ( vehicleType.contentEquals(controllerHandler.getVehicleController().getLastVehicleModel()))  { nextVehicleTypeButton.setEnabled(false); }
+        if ( vehicleType.contentEquals(controllerHandler.getVehicleController().getLastVehicleModel(controllerHandler.getGameController().getGameModel().getCompany())))  { nextVehicleTypeButton.setEnabled(false); }
         nextVehicleTypeButton.addActionListener( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
-                    controlScreen.redrawManagement(createPanel(controllerHandler.getVehicleController().getNextVehicleModel(vehicleType), controlScreen, displayPanel), gameModel);
+                    controlScreen.redrawManagement(createPanel(controllerHandler.getVehicleController().getNextVehicleModel(controllerHandler.getGameController().getGameModel().getCompany(), vehicleType), controlScreen, displayPanel), gameModel);
             }
         });
         nextButtonPanel.add(nextVehicleTypeButton);

@@ -28,7 +28,7 @@ public class GameThread extends Thread implements Runnable {
         while ( !gameController.stillRunning() ) {
             //Increment time and update passenger satisfaction.
 			controlScreen.updateDateTime(gameController.incrementTime(), gameController.getGameModel().getDifficultyLevel());
-			controlScreen.updatePassengerBar(gameController.computeAndReturnPassengerSatisfaction());
+			controlScreen.updatePassengerBar((int) Math.round(gameController.computeAndReturnPassengerSatisfaction()));
             //Now sleep!
             try { this.sleep(simulationSpeed); } catch (InterruptedException ie) {}
         }

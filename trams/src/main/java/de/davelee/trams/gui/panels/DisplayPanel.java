@@ -44,7 +44,8 @@ public class DisplayPanel {
         JPanel informationPanel = new JPanel();
         informationPanel.setBackground(Color.WHITE);
         ImageDisplay infoDisplay = null;
-        if ( controllerHandler.getRouteController().getNumberRoutes() == 0 || (controllerHandler.getVehicleController().getAllCreatedVehicles() != null && controllerHandler.getVehicleController().getAllCreatedVehicles().length == 0) || (controllerHandler.getVehicleController().getAllocations() != null && controllerHandler.getVehicleController().getAllocations().size() == 0 )) {
+        String company = controllerHandler.getGameController().getGameModel().getCompany();
+        if ( controllerHandler.getRouteController().getNumberRoutes(company) == 0 || (controllerHandler.getVehicleController().getAllCreatedVehicles(company) != null && controllerHandler.getVehicleController().getAllCreatedVehicles(company).length == 0) || (controllerHandler.getVehicleController().getAllocations(company) != null && controllerHandler.getVehicleController().getAllocations(company).size() == 0 )) {
             infoDisplay = new ImageDisplay("xpic.png",0,0);
         }
         else {
@@ -55,17 +56,17 @@ public class DisplayPanel {
         informationPanel.add(infoDisplay, BorderLayout.WEST);
         JTextArea informationArea = new JTextArea();
         informationArea.setFont(new Font("Arial", Font.PLAIN, 14));
-        if ( controllerHandler.getRouteController().getNumberRoutes() == 0 ) {
+        if ( controllerHandler.getRouteController().getNumberRoutes(company) == 0 ) {
             informationArea.setText("WARNING: No routes have been devised yet. Click 'Create Route' to define a route.");
         }
-        else if ( controllerHandler.getVehicleController().getAllCreatedVehicles().length == 0 ) {
+        else if ( controllerHandler.getVehicleController().getAllCreatedVehicles(company).length == 0 ) {
             informationArea.setText("WARNING: You can't run routes without vehicles. Click 'Purchase Vehicle' to buy a vehicle");
         }
-        else if ( controllerHandler.getVehicleController().getAllocations().size() == 0 ) {
+        else if ( controllerHandler.getVehicleController().getAllocations(company).size() == 0 ) {
             informationArea.setText("WARNING: To successfully run journeys, you must assign vehicles to route schedules. Click 'Allocations' to match vehicles to route schedules");
         }
         else {
-            logger.debug("The allocations size was " + controllerHandler.getVehicleController().getAllocations().size() + " which is " + controllerHandler.getVehicleController().getAllocations().toString());
+            logger.debug("The allocations size was " + controllerHandler.getVehicleController().getAllocations(company).size() + " which is " + controllerHandler.getVehicleController().getAllocations(company).toString());
             informationArea.setText(controllerHandler.getTipController().getRandomTipMessage());
         }
         informationArea.setRows(4);
@@ -170,13 +171,13 @@ public class DisplayPanel {
         JPanel timetableButtonPanel = new JPanel(new GridBagLayout());
         timetableButtonPanel.setBackground(Color.WHITE);
         final JButton routeTimetableButton = new JButton("View Route Info");
-        if ( controllerHandler.getRouteController().getNumberRoutes() == 0 ) { routeTimetableButton.setEnabled(false); }
+        if ( controllerHandler.getRouteController().getNumberRoutes(company) == 0 ) { routeTimetableButton.setEnabled(false); }
         routeTimetableButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 RoutePanel myRoutePanel = new RoutePanel(controllerHandler);
                 ViewTimetablePanel myViewTimetablePanel = new ViewTimetablePanel(controllerHandler);
                 //Show the actual screen!
-                controlScreen.redrawManagement(myViewTimetablePanel.createPanel(controllerHandler.getRouteController().getRouteModels()[0].getRouteNumber(), 0, 0, controlScreen, myRoutePanel, DisplayPanel.this), controllerHandler.getGameController().getGameModel());
+                controlScreen.redrawManagement(myViewTimetablePanel.createPanel(controllerHandler.getRouteController().getRouteModels(company)[0].getRouteNumber(), 0, 0, controlScreen, myRoutePanel, DisplayPanel.this), controllerHandler.getGameController().getGameModel());
             }
         });
         timetableButtonPanel.add(routeTimetableButton);
@@ -216,7 +217,7 @@ public class DisplayPanel {
             public void actionPerformed(ActionEvent e) {
                 PurchaseVehiclePanel myPurchaseVehiclePanel = new PurchaseVehiclePanel(controllerHandler);
                 //Show the actual screen!
-                controlScreen.redrawManagement(myPurchaseVehiclePanel.createPanel(controllerHandler.getVehicleController().getFirstVehicleModel(), controlScreen, DisplayPanel.this), controllerHandler.getGameController().getGameModel());
+                controlScreen.redrawManagement(myPurchaseVehiclePanel.createPanel(controllerHandler.getVehicleController().getFirstVehicleModel(company), controlScreen, DisplayPanel.this), controllerHandler.getGameController().getGameModel());
             }
         });
         purchaseVehicleButtonPanel.add(purchaseVehicleScreenButton);
@@ -225,7 +226,7 @@ public class DisplayPanel {
         JPanel viewDepotButtonPanel = new JPanel(new GridBagLayout());
         viewDepotButtonPanel.setBackground(Color.WHITE);
         final JButton viewDepotButton = new JButton("View Depot");
-        if ( !controllerHandler.getVehicleController().hasSomeVehiclesBeenDelivered() ) { viewDepotButton.setEnabled(false); }
+        if ( !controllerHandler.getVehicleController().hasSomeVehiclesBeenDelivered(company) ) { viewDepotButton.setEnabled(false); }
         viewDepotButton.addActionListener( new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 VehicleDepotPanel vehicleDepotPanel = new VehicleDepotPanel(controllerHandler);
@@ -279,7 +280,7 @@ public class DisplayPanel {
         JPanel viewDriversButtonPanel = new JPanel(new GridBagLayout());
         viewDriversButtonPanel.setBackground(Color.WHITE);
         final JButton viewDriversButton = new JButton("View Drivers");
-        if ( !controllerHandler.getDriverController().hasSomeDriversBeenEmployed() ) { viewDriversButton.setEnabled(false); }
+        if ( !controllerHandler.getDriverController().hasSomeDriversBeenEmployed(company) ) { viewDriversButton.setEnabled(false); }
         viewDriversButton.addActionListener( new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 //Show the actual screen!

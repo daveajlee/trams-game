@@ -31,19 +31,19 @@ public class DriverControllerTest {
         GameController gameControllerMock = mock(GameController.class);
         when(gameControllerMock.getGameModel()).thenReturn(GameModel.builder().currentDateTime(LocalDateTime.now()).build());
         driverController.setGameController(gameControllerMock);
-        assertFalse(driverController.hasSomeDriversBeenEmployed());
+        assertFalse(driverController.hasSomeDriversBeenEmployed("Mustermann GmbH"));
         driverController.employDriver(DriverModel.builder()
                 .name("Max Mustermann")
                 .contractedHours(20)
                 .startDate(LocalDate.now())
                 .build());
-        assertTrue(driverController.hasSomeDriversBeenEmployed());
+        assertTrue(driverController.hasSomeDriversBeenEmployed("Mustermann GmbH"));
         LocalDate startDate = LocalDate.of(2013,4,20);
         driverController.employDriver(DriverModel.builder()
                 .name("Micha Mustermann")
                 .contractedHours(20)
                 .startDate(startDate).build());
-        assertTrue(driverController.hasSomeDriversBeenEmployed());
+        assertTrue(driverController.hasSomeDriversBeenEmployed("Mustermann GmbH"));
     }
 
 }

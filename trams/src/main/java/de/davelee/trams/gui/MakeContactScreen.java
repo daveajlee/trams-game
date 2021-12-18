@@ -52,7 +52,7 @@ public class MakeContactScreen extends JFrame {
         this.routeScheduleModel = routeScheduleModel;
 
         //Retrieve vehicle model.
-        final VehicleModel vehicleModel = vehicleController.getVehicleByRouteNumberAndRouteScheduleNumber(routeScheduleModel.getRouteNumber(), "" + routeScheduleModel.getScheduleNumber());
+        final VehicleModel vehicleModel = vehicleController.getVehicleByRouteNumberAndRouteScheduleNumber(routeScheduleModel.getRouteNumber(), "" + routeScheduleModel.getScheduleNumber(), gameController.getGameModel().getCompany());
         
         //Set image icon.
         Image img = Toolkit.getDefaultToolkit().getImage(MakeContactScreen.class.getResource("/TraMSlogo.png"));

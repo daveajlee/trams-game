@@ -97,7 +97,7 @@ public class VehicleController {
 		return vehicleService.getVehicleByRouteNumberAndRouteScheduleNumber(routeNumber, Long.parseLong(scheduleNumber), company);
 	}
 
-	public int createSuppliedVehicles(final ScenarioModel scenarioModel, LocalDate currentDate, final String company) {
+	public int createSuppliedVehicles(final ScenarioModel scenarioModel, final LocalDate currentDate, final String company) {
 		Iterator<String> vehicleModels = scenarioModel.getSuppliedVehicles().keySet().iterator();
 		int numCreatedVehicles = 0;
 		while (vehicleModels.hasNext()) {

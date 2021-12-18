@@ -41,7 +41,7 @@ public class BusInfoScreen extends JFrame {
     public BusInfoScreen ( final RouteScheduleModel routeScheduleModel ) {
 
         //Retrieve vehicle model.
-        VehicleModel vehicleModel = vehicleController.getVehicleByRouteNumberAndRouteScheduleNumber(routeScheduleModel.getRouteNumber(), "" + routeScheduleModel.getScheduleNumber());
+        VehicleModel vehicleModel = vehicleController.getVehicleByRouteNumberAndRouteScheduleNumber(routeScheduleModel.getRouteNumber(), "" + routeScheduleModel.getScheduleNumber(), gameController.getGameModel().getCompany());
 
         //Set image icon.
         Image img = Toolkit.getDefaultToolkit().getImage(BusInfoScreen.class.getResource("/TraMSlogo.png"));

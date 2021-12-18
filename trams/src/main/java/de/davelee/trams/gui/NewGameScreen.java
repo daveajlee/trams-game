@@ -17,6 +17,8 @@ public class NewGameScreen extends JFrame {
     
 	private static final long serialVersionUID = 1L;
 
+    private JTextField companyNameField;
+
     private JTextField playerNameField;
 
     private JButton createGameButton;
@@ -74,6 +76,34 @@ public class NewGameScreen extends JFrame {
         logoPanel.add(logoDisplay);
         welcomePanel.add(logoPanel);
         screenPanel.add(welcomePanel);
+
+        //Create a new company name panel.
+        JPanel newCompanyPanel = new JPanel();
+        newCompanyPanel.setBackground(Color.WHITE);
+        JLabel companyNameLabel = new JLabel("Company Name:");
+        companyNameLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        companyNameField = new JTextField("");
+        companyNameField.setFont(new Font("Arial", Font.PLAIN, 18));
+        companyNameField.setColumns(25);
+        companyNameField.addKeyListener( new KeyListener() {
+            public void keyReleased(KeyEvent e) {
+                if ( companyNameField.getText().length() > 0 ) {
+                    createGameButton.setEnabled(true);
+                }
+                else {
+                    createGameButton.setEnabled(false);
+                }
+            }
+            public void keyTyped(KeyEvent e) {
+                //Nothing happens when key typed.
+            }
+            public void keyPressed(KeyEvent e) {
+                //Nothing happens when key pressed.
+            }
+        });
+        newCompanyPanel.add(companyNameLabel);
+        newCompanyPanel.add(companyNameField);
+        screenPanel.add(newCompanyPanel);
         
         //Create a new player name panel.
         JPanel newPlayerPanel = new JPanel();
@@ -130,12 +160,12 @@ public class NewGameScreen extends JFrame {
                 //Create Game
                 GameModel gameModel = controllerHandler.getGameController().createGameModel(playerNameField.getText(), scenarioModel.getName());
                 //Create supplied vehicles.
-                controllerHandler.getVehicleController().createSuppliedVehicles(scenarioModel, gameModel.getCurrentDateTime().toLocalDate());
+                controllerHandler.getVehicleController().createSuppliedVehicles(scenarioModel, gameModel.getCurrentDateTime().toLocalDate(), companyNameField.getText());
                 //Create supplied drivers.
                 controllerHandler.getDriverController().createSuppliedDrivers(scenarioModel, gameModel.getCurrentDateTime().toLocalDate());
                 //Create welcome message.
                 String date = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm").format(gameModel.getCurrentDateTime());
-                controllerHandler.getMessageController().addMessage("Welcome Message", "Congratulations on your appointment as Managing Director of the " +
+                controllerHandler.getMessageController().addMessage(companyNameField.getText(), "Welcome Message", "Congratulations on your appointment as Managing Director of the " +
                         scenarioModel.getName() + "! \n\n Your targets for the coming days and months are: " +
                         scenarioModel.getTargets(),"Council","INBOX", date);
                 ScenarioDescriptionScreen scenarioDescriptionScreen = new ScenarioDescriptionScreen(controllerHandler);

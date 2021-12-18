@@ -108,12 +108,12 @@ public class AllocationPanel {
         final JList routesList = new JList(routesModel);
         routesList.setFixedCellWidth(270);
         routesList.setFont(new Font("Arial", Font.PLAIN, 15));
-        RouteModel[] routeModels = controllerHandler.getRouteController().getRouteModels();
+        RouteModel[] routeModels = controllerHandler.getRouteController().getRouteModels(gameModel.getCompany());
         for ( int i = 0; i < routeModels.length; i++ ) {
         	RouteScheduleModel[] routeScheduleModels = controllerHandler.getRouteScheduleController().getRouteSchedulesByRouteNumber(routeModels[i].getRouteNumber());
         	for ( int j = 0; j < routeScheduleModels.length; j++ ) {
         	    try {
-        	        controllerHandler.getVehicleController().getVehicleByRouteNumberAndRouteScheduleNumber(routeModels[i].getRouteNumber(), "" + routeScheduleModels[j].getScheduleNumber());
+        	        controllerHandler.getVehicleController().getVehicleByRouteNumberAndRouteScheduleNumber(routeModels[i].getRouteNumber(), "" + routeScheduleModels[j].getScheduleNumber(), gameModel.getCompany());
                 } catch ( NoSuchElementException ex ) {
                     routesModel.addElement(routeModels[i].getRouteNumber() + "/" + routeScheduleModels[j].getScheduleNumber());
                 }
@@ -128,7 +128,7 @@ public class AllocationPanel {
         JPanel modelPanel = new JPanel();
         modelPanel.setBackground(Color.WHITE);
         final DefaultListModel vehiclesModel = new DefaultListModel();
-        VehicleModel[] vehicleModels = controllerHandler.getVehicleController().getAllCreatedVehicles();
+        VehicleModel[] vehicleModels = controllerHandler.getVehicleController().getAllCreatedVehicles(gameModel.getCompany());
         for ( int i = 0; i < vehicleModels.length; i++ ) {
             if ( vehicleModels[i].getRouteScheduleNumber() == 0 ) {
                 vehiclesModel.addElement(vehicleModels[i].getRegistrationNumber() + " (" + vehicleModels[i].getModel() + ")");
@@ -177,7 +177,7 @@ public class AllocationPanel {
                     allocationsModel.removeElement(allocationsList.getSelectedValue());
                     String[] textParts = text.split("&");
                     routesModel.addElement(textParts[0].trim());
-                    VehicleModel vehicleModel = controllerHandler.getVehicleController().getVehicleByRegistrationNumber(textParts[1].trim());
+                    VehicleModel vehicleModel = controllerHandler.getVehicleController().getVehicleByRegistrationNumber(textParts[1].trim(), gameModel.getCompany());
                     vehiclesModel.addElement(vehicleModel.getRegistrationNumber() +
                     		" (" + vehicleModel.getModel() + ")");
                     //Remove this from the interface as well.
@@ -189,14 +189,14 @@ public class AllocationPanel {
                     }*/
                     //Find vehicle object position.
                     int vehiclePos = -1;
-                    VehicleModel[] vehicleModels = controllerHandler.getVehicleController().getAllCreatedVehicles();
+                    VehicleModel[] vehicleModels = controllerHandler.getVehicleController().getAllCreatedVehicles(gameModel.getCompany());
                     for ( int j = 0; j < vehicleModels.length; j++ ) {
                         if ( vehicleModels[j].getRegistrationNumber().equalsIgnoreCase(textParts[1].trim())) {
                             vehiclePos = j;
                         }
                     }
                     //TODO: Set route and route schedule number.
-                    controllerHandler.getVehicleController().assignVehicleToRouteSchedule(vehicleModels[vehiclePos].getRegistrationNumber(), "0", "0");
+                    controllerHandler.getVehicleController().assignVehicleToRouteSchedule(vehicleModels[vehiclePos].getRegistrationNumber(), "0", "0", gameModel.getCompany());
                 }
             }
         });
@@ -266,7 +266,7 @@ public class AllocationPanel {
                         String[] allocationSplit = allocationsModel.get(i).toString().split("&");
                         //Store route detail object.
                         String routeNumber = allocationSplit[0].split("/")[0]; int routeDetailPos = -1;
-                        RouteScheduleModel[] scheduleModels = controllerHandler.getRouteScheduleController().getRouteSchedulesByRouteNumber(controllerHandler.getRouteController().getRoute(routeNumber).getRouteNumber());
+                        RouteScheduleModel[] scheduleModels = controllerHandler.getRouteScheduleController().getRouteSchedulesByRouteNumber(controllerHandler.getRouteController().getRoute(routeNumber, gameModel.getCompany()).getRouteNumber());
                         for ( int k = 0; k < scheduleModels.length; k++ ) {
                             if ( scheduleModels[k].getScheduleNumber() == Integer.parseInt(allocationSplit[0].split("/")[1].trim()) ) {
                                 routeDetailPos = k;
@@ -274,7 +274,7 @@ public class AllocationPanel {
                         }
                         //Find vehicle object position.
                         int vehiclePos = -1;
-                        VehicleModel[] vehicleModels = controllerHandler.getVehicleController().getAllCreatedVehicles();
+                        VehicleModel[] vehicleModels = controllerHandler.getVehicleController().getAllCreatedVehicles(gameModel.getCompany());
                         for ( int j = 0; j < vehicleModels.length; j++ ) {
                             if ( vehicleModels[j].getRegistrationNumber().equalsIgnoreCase(allocationSplit[1].trim())) {
 
@@ -283,7 +283,7 @@ public class AllocationPanel {
                             }
                         }
                         //Now assign route detail to vehicle.
-                        controllerHandler.getVehicleController().assignVehicleToRouteSchedule(vehicleModels[vehiclePos].getRegistrationNumber(), scheduleModels[routeDetailPos].getRouteNumber(), "" + scheduleModels[routeDetailPos].getScheduleNumber());
+                        controllerHandler.getVehicleController().assignVehicleToRouteSchedule(vehicleModels[vehiclePos].getRegistrationNumber(), scheduleModels[routeDetailPos].getRouteNumber(), "" + scheduleModels[routeDetailPos].getScheduleNumber(), gameModel.getCompany());
                     }
                     //Now return to previous screen.
                     controlScreen.redrawManagement(displayPanel.createPanel(controlScreen), gameModel);

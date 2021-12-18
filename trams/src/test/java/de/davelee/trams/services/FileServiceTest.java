@@ -72,7 +72,7 @@ public class FileServiceTest {
 				.name("Chris Lee")
 				.contractedHours(40)
 				.startDate(LocalDate.of(2014,4,20)).build());
-		vehicleService.saveVehicle(vehicleService.createVehicleObject("MyBus Single Decker", "SDF3", LocalDate.now()));
+		vehicleService.saveVehicle(vehicleService.createVehicleObject("MyBus Single Decker", "SDF3", LocalDate.now(), "Mustermann GmbH"));
 		routeService.saveRoute(RouteModel.builder()
 				.routeNumber("M2")
 				.stopNames(List.of("Heinersdorf", "Am Steinberg", "Alexanderplatz"))
@@ -84,7 +84,7 @@ public class FileServiceTest {
 				.text("This is a test message")
 				.date(DateTimeFormatter.ofPattern("dd-MM-yyyy").format(LocalDate.now()))
 				.build());
-		journeyService.saveStop("Danziger Strasse");
+		journeyService.saveStop("Danziger Strasse", "Mustermann GmbH");
 		journeyPatternService.saveJourneyPattern(JourneyPatternModel.builder()
 				.name("Mon-Fri")
 				.daysOfOperation(List.of(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY))
@@ -125,16 +125,16 @@ public class FileServiceTest {
 				.build());
 		
 		TramsFile tramsFile = TramsFile.builder()
-				.driverModels(driverService.getAllDrivers())
+				.driverModels(driverService.getAllDrivers("Mustermann GmbH", "mmustermann-ghgkg"))
 				.gameModel(gameService.getAllGames())
 				.journeyModels(journeyService.getAllJourneys())
 				.journeyPatternModels(journeyPatternService.getAllJourneyPatterns())
-				.messageModels(messageService.getAllMessages())
-				.routeModels(routeService.getAllRoutes())
+				.messageModels(messageService.getAllMessages("Mustermann GmbH"))
+				.routeModels(routeService.getAllRoutes("Mustermann GmbH"))
 				.routeScheduleModels(routeScheduleService.getAllRouteSchedules())
-				.stops(journeyService.getAllStops())
+				.stops(journeyService.getAllStops("Mustermann GmbH"))
 				.timetableModels(timetableService.getAllTimetableModels())
-				.vehicleModels(vehicleService.getVehicleModels())
+				.vehicleModels(vehicleService.getVehicleModels("Mustermann GmbH"))
 				.build();
 		
 		assertNotNull(tramsFile.getDriverModels());
@@ -153,12 +153,12 @@ public class FileServiceTest {
 
 	private void deleteTemporaryContent ( ) {
 		//Delete temporary content.
-		driverService.removeAllDrivers();
-		routeService.deleteAllRoutes();
-		messageService.deleteAllMessages();
-		vehicleService.deleteAllVehicles();
+		driverService.removeAllDrivers("Mustermann GmbH", "mmustermann-ghgkg");
+		routeService.deleteAllRoutes("Mustermann GmbH");
+		messageService.deleteAllMessages("Mustermann GmbH");
+		vehicleService.deleteAllVehicles("Mustermann GmbH");
 		journeyService.deleteAllJourneys();
-		journeyService.deleteAllStops();
+		journeyService.deleteAllStops("Mustermann GmbH");
 		journeyPatternService.deleteAllJourneyPatterns();
 		timetableService.deleteAllTimetables();
 		routeScheduleService.deleteAllRouteSchedules();

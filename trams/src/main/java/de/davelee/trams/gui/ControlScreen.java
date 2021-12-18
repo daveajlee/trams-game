@@ -134,7 +134,7 @@ public class ControlScreen extends ButtonBar {
         tabbedPane = new JTabbedPane();
         tabbedPane.setBackground(Color.WHITE);
         //Create Live Situation tab.
-        if ( super.getControllerHandler().getRouteController().getNumberRoutes() > 0 ) {
+        if ( super.getControllerHandler().getRouteController().getNumberRoutes(gameModel.getCompany()) > 0 ) {
             drawVehicles(gameModel);
             updateVehicleStatus(gameModel.getCurrentDateTime(), gameModel.getDifficultyLevel());
             tabbedPane.addTab("Live Situation", graphicsPanel);
@@ -145,7 +145,7 @@ public class ControlScreen extends ButtonBar {
             tabbedPane.addTab("Live Situation", graphicsPanel);
         }
         //Create Messages tab.
-        drawMessages();
+        drawMessages(gameModel.getCompany());
         tabbedPane.addTab("Messages", messagesPanel);
         /*if ( userInterface.getMessageScreen() ) {
             topPanel.getComponent(1).setVisible(false);
@@ -182,7 +182,7 @@ public class ControlScreen extends ButtonBar {
                 else {
                     logger.debug("You just selected live screen");
                     redrawOnRouteChange = false;
-                    populateRouteList();
+                    populateRouteList(ControlScreen.super.getControllerHandler().getGameController().getGameModel().getCompany());
                     redrawOnRouteChange = true;
                     logger.debug("Route list has been re-populated!");
                     //topPanel.getComponent(1).setVisible(true);
@@ -200,7 +200,7 @@ public class ControlScreen extends ButtonBar {
             tabbedPane.setSelectedIndex(2);
         }*/
         //Disable the live situation tab if appropriate.
-        if ( super.getControllerHandler().getRouteController().getNumberRoutes() > 0 ) {
+        if ( super.getControllerHandler().getRouteController().getNumberRoutes(gameModel.getCompany()) > 0 ) {
             tabbedPane.setEnabledAt(0, true);
         } else {
             tabbedPane.setSelectedIndex(2);
@@ -236,7 +236,7 @@ public class ControlScreen extends ButtonBar {
         JPanel passengerSatisfactionPanel = new JPanel();
         passengerSatisfactionPanel.setBackground(Color.WHITE);
         passengerSatisfactionBar = new JProgressBar(0, 100);
-        passengerSatisfactionBar.setValue(super.getControllerHandler().getGameController().computeAndReturnPassengerSatisfaction());
+        passengerSatisfactionBar.setValue((int) Math.round(super.getControllerHandler().getGameController().computeAndReturnPassengerSatisfaction()));
         passengerSatisfactionBar.setString("Passenger Satisfaction Rating - " + passengerSatisfactionBar.getValue() + "%");
         passengerSatisfactionBar.setFont(new Font("Arial", Font.ITALIC, 20));
         passengerSatisfactionBar.setStringPainted(true);
@@ -350,9 +350,9 @@ public class ControlScreen extends ButtonBar {
         if ( isPastMidnight(gameModel.getCurrentDateTime(), gameModel.getTimeIncrement()) && !doneAllocations ) {
             //Now add a message to summarise days events!!!
             String date = DateTimeFormatter.RFC_1123_DATE_TIME.format(gameModel.getCurrentDateTime());
-            super.getControllerHandler().getMessageController().addMessage("Passenger Satisfaction for " + DateFormats.FULL_FORMAT.getFormat().format(getPreviousDateTime(gameModel.getCurrentDateTime(), gameModel.getTimeIncrement())), "Congratulations you have successfully completed transport operations for " + gameModel.getScenarioName() + " on " + DateFormats.FULL_FORMAT.getFormat().format(getPreviousDateTime(gameModel.getCurrentDateTime(), gameModel.getTimeIncrement())) + " with a passenger satisfaction of " + super.getControllerHandler().getGameController().computeAndReturnPassengerSatisfaction() + "%.\n\nNow you need to allocate vehicles to routes for " + DateFormats.FULL_FORMAT.getFormat().format(gameModel.getCurrentDateTime()) + " and keep the passenger satisfaction up! Click on the Management tab and then choose Allocations. Good luck!", "Council", "INBOX", date);
+            super.getControllerHandler().getMessageController().addMessage(gameModel.getCompany(),"Passenger Satisfaction for " + DateFormats.FULL_FORMAT.getFormat().format(getPreviousDateTime(gameModel.getCurrentDateTime(), gameModel.getTimeIncrement())), "Congratulations you have successfully completed transport operations for " + gameModel.getScenarioName() + " on " + DateFormats.FULL_FORMAT.getFormat().format(getPreviousDateTime(gameModel.getCurrentDateTime(), gameModel.getTimeIncrement())) + " with a passenger satisfaction of " + super.getControllerHandler().getGameController().computeAndReturnPassengerSatisfaction() + "%.\n\nNow you need to allocate vehicles to routes for " + DateFormats.FULL_FORMAT.getFormat().format(gameModel.getCurrentDateTime()) + " and keep the passenger satisfaction up! Click on the Management tab and then choose Allocations. Good luck!", "Council", "INBOX", date);
             //Refresh messages.
-            MessageModel[] messageModels = super.getControllerHandler().getMessageController().getMessagesByFolderDateSender(foldersBox.getSelectedItem().toString(),dateBox.getSelectedItem().toString(),"Council");
+            MessageModel[] messageModels = super.getControllerHandler().getMessageController().getMessagesByFolderDateSender(gameModel.getCompany(), foldersBox.getSelectedItem().toString(),dateBox.getSelectedItem().toString(),"Council");
             messagesModel.removeAllElements();
             for ( int i = 0; i < messageModels.length; i++ ) {
                 messagesModel.addElement(messageModels[i].getSubject());
@@ -376,7 +376,7 @@ public class ControlScreen extends ButtonBar {
             tabbedPane.setSelectedIndex(1);
             //Now here we need to update satisfaction bar.
             timeLabel.setText(DateTimeFormatter.RFC_1123_DATE_TIME.format(gameModel.getCurrentDateTime()));
-            int satValue = super.getControllerHandler().getGameController().computeAndReturnPassengerSatisfaction();
+            int satValue = (int) Math.round(super.getControllerHandler().getGameController().computeAndReturnPassengerSatisfaction());
             ScenarioModel scenarioModel = super.getControllerHandler().getScenarioController().getScenario(gameModel.getScenarioName());
             if ( satValue < scenarioModel.getMinimumSatisfaction() ) {
                 super.getControllerHandler().getGameController().pauseSimulation();
@@ -406,8 +406,9 @@ public class ControlScreen extends ButtonBar {
     
     /**
      * Draw the messages panel.
+     * @param company a <code>String</code> with the name of the company.
      */
-    public void drawMessages ( ) {
+    public void drawMessages ( final String company ) {
         //Create theMessages panel.
         messagesPanel = new JPanel(new BorderLayout());
         messagesPanel.setBackground(Color.WHITE);
@@ -425,7 +426,7 @@ public class ControlScreen extends ButtonBar {
         //Create combo box with date.
         dateModel = new DefaultComboBoxModel();
         dateModel.addElement("All Dates");
-        final MessageModel[] allMessageModels = super.getControllerHandler().getMessageController().getAllMessages();
+        final MessageModel[] allMessageModels = super.getControllerHandler().getMessageController().getAllMessages(company);
         for ( int i = 0; i < allMessageModels.length; i++ ) {
             logger.debug("Index of " + dateModel.getIndexOf(allMessageModels[i].getDate()));
             if ( dateModel.getIndexOf(allMessageModels[i].getDate()) == -1 ) {
@@ -448,7 +449,7 @@ public class ControlScreen extends ButtonBar {
         dateBox.setFont(new Font("Arial", Font.PLAIN, 12));
         dateBox.addItemListener( new ItemListener() {
             public void itemStateChanged ( ItemEvent e ) {
-                MessageModel[] messageModels = ControlScreen.super.getControllerHandler().getMessageController().getMessagesByFolderDateSender(foldersBox.getSelectedItem().toString(),dateBox.getSelectedItem().toString(), "Council");
+                MessageModel[] messageModels = ControlScreen.super.getControllerHandler().getMessageController().getMessagesByFolderDateSender(company, foldersBox.getSelectedItem().toString(),dateBox.getSelectedItem().toString(), "Council");
                 messagesModel.removeAllElements();
                 for ( int i = 0; i < messageModels.length; i++ ) {
                     messagesModel.addElement(messageModels[i].getSubject());
@@ -479,7 +480,7 @@ public class ControlScreen extends ButtonBar {
         foldersBox.setFont(new Font("Arial", Font.PLAIN, 12));
         foldersBox.addItemListener ( new ItemListener() {
             public void itemStateChanged ( ItemEvent e ) {
-                MessageModel[] messageModels = ControlScreen.super.getControllerHandler().getMessageController().getMessagesByFolderDateSender(foldersBox.getSelectedItem().toString(),dateBox.getSelectedItem().toString(), "Council");
+                MessageModel[] messageModels = ControlScreen.super.getControllerHandler().getMessageController().getMessagesByFolderDateSender(company, foldersBox.getSelectedItem().toString(),dateBox.getSelectedItem().toString(), "Council");
                 messagesModel.removeAllElements();
                 for ( int i = 0; i < messageModels.length; i++ ) {
                     messagesModel.addElement(messageModels[i].getSubject());
@@ -502,7 +503,7 @@ public class ControlScreen extends ButtonBar {
         //Add west panel to messages panel.
         messagesPanel.add(westPanel, BorderLayout.WEST);
         //Initialise the messages list now.
-        MessageModel[] myMessageModels = super.getControllerHandler().getMessageController().getMessagesByFolder(foldersBox.getSelectedItem().toString());
+        MessageModel[] myMessageModels = super.getControllerHandler().getMessageController().getMessagesByFolder(company, foldersBox.getSelectedItem().toString());
         for ( int i = 0; i < myMessageModels.length; i++ ) {
             messagesModel.addElement(myMessageModels[i].getSubject());
         }
@@ -518,10 +519,10 @@ public class ControlScreen extends ButtonBar {
         //Message subject.
         final MessageModel[] messageModels;
         if ( foldersBox.getSelectedItem() != null  && (dateBox.getSelectedItem() != null ) ) {
-            messageModels = super.getControllerHandler().getMessageController().getMessagesByFolderDateSender(foldersBox.getSelectedItem().toString(),dateBox.getSelectedItem().toString(),"Council");
+            messageModels = super.getControllerHandler().getMessageController().getMessagesByFolderDateSender(company, foldersBox.getSelectedItem().toString(),dateBox.getSelectedItem().toString(),"Council");
         }
         else {
-            messageModels = super.getControllerHandler().getMessageController().getAllMessages();
+            messageModels = super.getControllerHandler().getMessageController().getAllMessages(company);
         }
         messagesList.addListSelectionListener( new ListSelectionListener() {
             public void valueChanged ( ListSelectionEvent lse ) {
@@ -561,7 +562,7 @@ public class ControlScreen extends ButtonBar {
      */
     public void redrawManagement ( JPanel newManagePanel, final GameModel gameModel ) {
         //Disable the live situation tab if appropriate.
-        if ( super.getControllerHandler().getRouteController().getNumberRoutes() == 0 ) {
+        if ( super.getControllerHandler().getRouteController().getNumberRoutes(gameModel.getCompany()) == 0 ) {
             tabbedPane.setEnabledAt(0, false);
         }
         //Otherwise, re-enable live panel.
@@ -633,9 +634,9 @@ public class ControlScreen extends ButtonBar {
         super.getControllerHandler().getGameController().pauseSimulation();
     }
 
-    public void populateRouteList ( ) {
+    public void populateRouteList ( final String company ) {
         routeModel.clear();
-        RouteModel[] routeModels = super.getControllerHandler().getRouteController().getRouteModels();
+        RouteModel[] routeModels = super.getControllerHandler().getRouteController().getRouteModels(company);
         for ( int i = 0; i < routeModels.length; i++ ) {
             routeModel.addElement(routeModels[i].getRouteNumber() + ":" + routeModels[i].getStopNames().get(0) + " - " + routeModels[i].getStopNames().get(routeModels[i].getStopNames().size()-1));
         }
@@ -657,8 +658,8 @@ public class ControlScreen extends ButtonBar {
         optionsPanel.setBackground(Color.WHITE);
         optionsPanel.setLayout(new BorderLayout());
         //Construct route listing box!
-        if ( super.getControllerHandler().getRouteController().getNumberRoutes() != 0 ) {
-            populateRouteList();
+        if ( super.getControllerHandler().getRouteController().getNumberRoutes(gameModel.getCompany()) != 0 ) {
+            populateRouteList(super.getControllerHandler().getGameController().getGameModel().getCompany());
         }
         routeList.addListSelectionListener(new ListSelectionListener() {
             public void valueChanged (ListSelectionEvent ie ) {

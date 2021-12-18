@@ -31,16 +31,16 @@ public class GameServiceTest {
 				.difficultyLevel(DifficultyLevel.EASY)
 				.passengerSatisfaction(100)
 				.build());
-		Assertions.assertNotNull(gameService.getGameByPlayerName("Dave A J Lee"));
-		Assertions.assertNull(gameService.getGameByPlayerName("My First Name"));
-		GameModel gameModel2 = gameService.getGameByPlayerName("Dave A J Lee");
+		Assertions.assertNotNull(gameService.getGameByPlayerName("Mustermann GmbH", "Dave A J Lee"));
+		Assertions.assertNull(gameService.getGameByPlayerName("Mustermann GmbH", "My First Name"));
+		GameModel gameModel2 = gameService.getGameByPlayerName("Mustermann GmbH", "Dave A J Lee");
 		assertEquals(DateTimeFormatter.ofPattern("HH:mm").format(gameModel2.getCurrentDateTime()), "05:00");
-		gameService.incrementTime("Dave A J Lee");
-		gameModel2 = gameService.getGameByPlayerName("Dave A J Lee");
+		gameService.incrementTime("Mustermann GmbH", 15);
+		gameModel2 = gameService.getGameByPlayerName("Mustermann GmbH", "Dave A J Lee");
 		assertEquals(DateTimeFormatter.ofPattern("HH:mm").format(gameModel2.getCurrentDateTime()), "05:15");
 		gameService.withdrawOrCreditBalance(-100.0, "Dave A J Lee");
 		gameService.withdrawOrCreditBalance(10.0, "Dave A J Lee");
-		Assertions.assertEquals(gameService.computeAndReturnPassengerSatisfaction("Dave A J Lee", 4, 3, 2), 91);
+		Assertions.assertEquals(gameService.computeAndReturnPassengerSatisfaction("Mustermann GmbH", DifficultyLevel.EASY, 4, 3, 2), 91);
 	}
 
 	private void assertEquals ( final String expected, final String actual ) {

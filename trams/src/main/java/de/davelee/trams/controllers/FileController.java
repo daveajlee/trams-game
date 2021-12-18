@@ -64,7 +64,7 @@ public class FileController {
 		}
 		//Load drivers.
 		if ( myFile.getDriverModels() != null ) {
-			driverController.loadDrivers(myFile.getDriverModels());
+			driverController.loadDrivers(myFile.getDriverModels(), myFile.getGameModel()[0].getCompany());
 		}
     	//Load journeys.
 		if ( myFile.getJourneyModels() != null ) {
@@ -76,11 +76,11 @@ public class FileController {
 		}
     	//Load messages.
 		if ( myFile.getMessageModels() != null ) {
-			messageController.loadMessages(myFile.getMessageModels());
+			messageController.loadMessages(myFile.getMessageModels(), myFile.getGameModel()[0].getCompany());
 		}
     	//Load routes.
 		if ( myFile.getRouteModels() != null ) {
-			routeController.loadRoutes(myFile.getRouteModels());
+			routeController.loadRoutes(myFile.getRouteModels(), myFile.getGameModel()[0].getCompany());
 		}
     	//Load route schedules.
 		if ( myFile.getRouteScheduleModels() != null ) {
@@ -92,7 +92,7 @@ public class FileController {
 		}
     	//Load vehicles.
 		if ( myFile.getVehicleModels() != null ) {
-			vehicleController.loadVehicles(myFile.getVehicleModels());
+			vehicleController.loadVehicles(myFile.getVehicleModels(), myFile.getGameModel()[0].getCompany());
 		}
     }
     
@@ -107,16 +107,16 @@ public class FileController {
     
     public TramsFile prepareTramsFile ( ) {
     	return TramsFile.builder()
-				.driverModels(driverController.getAllDrivers())
+				.driverModels(driverController.getAllDrivers(gameController.getGameModel().getCompany()))
 				.gameModel(new GameModel[] { gameController.getGameModel() })
 				.journeyModels(journeyController.getAllJourneys())
 				.journeyPatternModels(journeyPatternController.getAllJourneyPatterns())
-				.messageModels(messageController.getAllMessages())
-				.routeModels(routeController.getRouteModels())
+				.messageModels(messageController.getAllMessages(gameController.getGameModel().getCompany()))
+				.routeModels(routeController.getRouteModels(gameController.getGameModel().getCompany()))
 				.routeScheduleModels(routeScheduleController.getAllRouteSchedules())
-				.stops(journeyController.getAllStops())
+				.stops(journeyController.getAllStops(gameController.getGameModel().getCompany()))
 				.timetableModels(timetableController.getAllTimetableModels())
-				.vehicleModels(vehicleController.getVehicleModels())
+				.vehicleModels(vehicleController.getVehicleModels(gameController.getGameModel().getCompany()))
 				.build();
     }
 

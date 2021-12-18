@@ -21,13 +21,13 @@ public class DriverServiceTest {
 	
 	@Test
 	public void testCreateDriver() {
-		driverService.removeAllDrivers();
+		driverService.removeAllDrivers("Mustermann GmbH", "mmustermann-ghgkg");
 		DriverModel driverModel = DriverModel.builder()
 				.name("Dave Lee")
 				.contractedHours(40)
 				.startDate(LocalDate.of(2014,4,20)).build();
 		driverService.saveDriver(driverModel);
-		DriverModel driverModel2 = driverService.getDriverByName("Dave Lee");
+		DriverModel driverModel2 = driverService.getDriverByName("Dave Lee", "Mustermann GmbH", "mmustermann-ghgkg");
 		assertEquals(driverModel2.getName(), "Dave Lee");
 		Assertions.assertEquals(driverModel2.getContractedHours(), 40);
 		Assertions.assertEquals(driverModel2.getStartDate().getYear(), 2014);
@@ -76,9 +76,9 @@ public class DriverServiceTest {
 		driverService.saveDriver(driverModel);
 		driverService.saveDriver(driverModel2);
 		driverService.saveDriver(driverModel3);
-		Assertions.assertNotNull(driverService.getDriverByName("Brian Lee"));
-		assertEquals(driverService.getDriverByName("Brian Lee").getName(), "Brian Lee");
-		Assertions.assertNull(driverService.getDriverByName("Stephan Lee"));
+		Assertions.assertNotNull(driverService.getDriverByName("Brian Lee", "Mustermann GmbH", "mmustermann-ghgkg"));
+		assertEquals(driverService.getDriverByName("Brian Lee", "Nustermann GmbH", "mmustermann-ghgkg").getName(), "Brian Lee");
+		Assertions.assertNull(driverService.getDriverByName("Stephan Lee", "Mustermann GmbH", "mmustermann-ghgkg"));
 	}
 
 	private void assertEquals ( final String expected, final String actual ) {

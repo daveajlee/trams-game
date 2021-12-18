@@ -135,13 +135,13 @@ public class RouteScheduleController {
 		//logger.debug("Max vehicles starts at " + max + " - routeDetails size is " + routeDetails.size());
 		logger.debug("Min is " + min + " & Max is " + max);
 		if ( min == max ) {
-			if ( vehicleController.getVehicleByRouteNumberAndRouteScheduleNumber(routeNumber, "" + routeScheduleModels[min].getScheduleNumber()) == null ) {
+			if ( vehicleController.getVehicleByRouteNumberAndRouteScheduleNumber(routeNumber, "" + routeScheduleModels[min].getScheduleNumber(), gameModel.getCompany()) == null ) {
 				logger.debug("A schedule was null");
 			}
 			if ( getCurrentStopName(getRouteSchedulesByRouteNumber(routeNumber)[min], gameModel.getCurrentDateTime(), gameModel.getDifficultyLevel()).equalsIgnoreCase("Depot") ) {
 				logger.debug("Vehicle in depot!");
 			}
-			if ( vehicleController.getVehicleByRouteNumberAndRouteScheduleNumber(routeNumber, "" + routeScheduleModels[min].getScheduleNumber()) != null && !getCurrentStopName( getRouteSchedulesByRouteNumber(routeNumber)[min], gameModel.getCurrentDateTime(), gameModel.getDifficultyLevel()).equalsIgnoreCase("Depot") ) {
+			if ( vehicleController.getVehicleByRouteNumberAndRouteScheduleNumber(routeNumber, "" + routeScheduleModels[min].getScheduleNumber(), gameModel.getCompany()) != null && !getCurrentStopName( getRouteSchedulesByRouteNumber(routeNumber)[min], gameModel.getCurrentDateTime(), gameModel.getDifficultyLevel()).equalsIgnoreCase("Depot") ) {
 				//logger.debug("Adding Route Detail " + routeDetails.get(i).getId());
 				routeDetailPos.add(0);
 			}
@@ -153,13 +153,13 @@ public class RouteScheduleController {
 			}
 		}
 		for ( int i = 0; i < routeScheduleModels.length; i++ ) { //Changed from i = 0; i < routeDetails.size().
-			if ( vehicleController.getVehicleByRouteNumberAndRouteScheduleNumber(routeNumber, "" + routeScheduleModels[i].getScheduleNumber()) == null ) {
+			if ( vehicleController.getVehicleByRouteNumberAndRouteScheduleNumber(routeNumber, "" + routeScheduleModels[i].getScheduleNumber(), gameModel.getCompany()) == null ) {
 				logger.debug("A schedule was null");
 			}
 			if ( getCurrentStopName(getRouteSchedulesByRouteNumber(routeNumber)[i], gameModel.getCurrentDateTime(), gameModel.getDifficultyLevel()).equalsIgnoreCase("Depot") ) {
 				logger.debug("Vehicle in depot!");
 			}
-			if ( vehicleController.getVehicleByRouteNumberAndRouteScheduleNumber(routeNumber, "" + routeScheduleModels[i].getScheduleNumber()) != null && !getCurrentStopName(getRouteSchedulesByRouteNumber(routeNumber)[i], gameModel.getCurrentDateTime(), gameModel.getDifficultyLevel()).equalsIgnoreCase("Depot") ) {
+			if ( vehicleController.getVehicleByRouteNumberAndRouteScheduleNumber(routeNumber, "" + routeScheduleModels[i].getScheduleNumber(), gameModel.getCompany()) != null && !getCurrentStopName(getRouteSchedulesByRouteNumber(routeNumber)[i], gameModel.getCurrentDateTime(), gameModel.getDifficultyLevel()).equalsIgnoreCase("Depot") ) {
 				//logger.debug("Adding Route Detail " + routeDetails.get(i).getId());
 				routeDetailPos.add(i);
 			}

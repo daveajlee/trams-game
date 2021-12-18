@@ -152,7 +152,7 @@ public class GameController {
 	 * @return a <code>LocalDateTime</code> with the new time after incrementing it.
 	 */
 	public LocalDateTime incrementTime ( ) {
-		LocalDateTime newTime = gameService.incrementTime(cachedGameModel.getCompany());
+		LocalDateTime newTime = gameService.incrementTime(cachedGameModel.getCompany(), 15);
 		updateCache();
 		return newTime;
 	}
@@ -177,7 +177,7 @@ public class GameController {
 		//Now count number of route schedules into three groups: 1 - 5 minutes late, 6 - 15 minutes late, 16+ minutes late.
 		int numSmallLateSchedules = 0; int numMediumLateSchedules = 0; int numLargeLateSchedules = 0;
 		//Now go through all routes.
-		for ( RouteModel myRoute : routeController.getRouteModels() ) {
+		for ( RouteModel myRoute : routeController.getRouteModels(cachedGameModel.getCompany()) ) {
 			for ( RouteScheduleModel mySchedule : routeScheduleController.getRouteSchedulesByRouteNumber(myRoute.getRouteNumber())) {
 				//Running... 1 - 5 minutes late.
 				if ( mySchedule.getDelay() > 0 && mySchedule.getDelay() < 6 ) {
