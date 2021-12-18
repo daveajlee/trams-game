@@ -20,5 +20,7 @@ public class StopTimeModel {
 	private int routeScheduleNumber;
 	private String stopName;
 	private LocalTime time;
+	private String company;
+
 
 }
