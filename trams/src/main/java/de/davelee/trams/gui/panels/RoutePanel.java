@@ -262,7 +262,7 @@ public class RoutePanel {
                for ( int i = 0; i < routeStopModel.size(); i++ ) {
                     selectedOutwardStops.add(routeStopModel.getElementAt(i).toString());
                }
-               controllerHandler.getRouteController().addNewRoute( routeNumberField.getText(), selectedOutwardStops);
+               controllerHandler.getRouteController().addNewRoute( routeNumberField.getText(), selectedOutwardStops, gameModel.getCompany());
                //Now return to previous screen.
                 controlScreen.redrawManagement(displayPanel.createPanel(controlScreen), gameModel);
             }

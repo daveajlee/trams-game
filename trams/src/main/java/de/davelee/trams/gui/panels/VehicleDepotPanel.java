@@ -64,7 +64,7 @@ public class VehicleDepotPanel {
         
         //Get vehicle data now so that we can used to compile first!
         DefaultListModel vehiclesModel = new DefaultListModel();
-        VehicleModel[] vehicleModels = controllerHandler.getVehicleController().getAllCreatedVehicles();
+        VehicleModel[] vehicleModels = controllerHandler.getVehicleController().getAllCreatedVehicles(gameModel.getCompany());
         for ( int i = 0; i < vehicleModels.length; i++ ) {
             if ( controllerHandler.getVehicleController().hasVehicleBeenDelivered(vehicleModels[i].getDeliveryDate(), gameModel.getCurrentDateTime().toLocalDate()) ) {
                 vehiclesModel.addElement(vehicleModels[i].getRegistrationNumber());
@@ -74,9 +74,9 @@ public class VehicleDepotPanel {
         //Create vehicle object so that we can pull information from it.
         final VehicleModel vehicleModel;
         if ( !registrationNumber.equalsIgnoreCase("") ) {
-            vehicleModel = controllerHandler.getVehicleController().getVehicleByRegistrationNumber(registrationNumber);
+            vehicleModel = controllerHandler.getVehicleController().getVehicleByRegistrationNumber(registrationNumber, gameModel.getCompany());
         } else {
-        	vehicleModel = controllerHandler.getVehicleController().getVehicleByRegistrationNumber(vehiclesModel.get(0).toString());
+        	vehicleModel = controllerHandler.getVehicleController().getVehicleByRegistrationNumber(vehiclesModel.get(0).toString(), gameModel.getCompany());
         }
         
         //Create picture panel.

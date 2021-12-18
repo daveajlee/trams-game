@@ -220,8 +220,7 @@ public class AllocationPanel {
         allocationListPanel.setBackground(Color.WHITE);
         allocationsModel = new DefaultListModel();
         List<String> allocations;
-        String currentDate = gameModel.getCurrentDateTime().getYear() + "-" + gameModel.getCurrentDateTime().getMonth() + "-" + gameModel.getCurrentDateTime().getDayOfMonth();
-        allocations = controllerHandler.getRouteScheduleController().getTodayAllocations(currentDate);
+        allocations = controllerHandler.getRouteScheduleController().getAllocations(gameModel.getCompany());
         for ( int i = 0; i < allocations.size(); i++ ) {
             allocationsModel.addElement(allocations.get(i).toString());
             //For each allocation, remove route and vehicle from list.

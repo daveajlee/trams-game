@@ -28,7 +28,7 @@ public class VehicleControllerTest {
 		suppliedVehicles.put("MyBus Single Decker", Integer.valueOf(1));
 		scenarioModel.setSuppliedVehicles(suppliedVehicles);
 		LocalDate currentDate = LocalDate.of(2014,1,1);
-		assertEquals(1, vehicleController.createSuppliedVehicles(scenarioModel, currentDate));
+		assertEquals(1, vehicleController.createSuppliedVehicles(scenarioModel, currentDate, "Mustermann GmbH"));
 	}
 
 	private void assertEquals ( final int expected, final int actual ) {

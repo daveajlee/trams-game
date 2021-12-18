@@ -32,8 +32,8 @@ public class VehicleServiceTest {
 		vehicleModel.setModel("Mercedes");
 		vehicleModel.setRouteNumber("155");
 		vehicleModel.setRouteScheduleNumber(1);
-		vehicleModel.setSeatingCapacity("45");
-		vehicleModel.setStandingCapacity("20");
+		vehicleModel.setSeatingCapacity(45);
+		vehicleModel.setStandingCapacity(20);
 		vehicleModel.setPurchasePrice(20000.00);
 		assertEquals(vehicleModel.getRegistrationNumber(), "CV58 2DX");
 		Assertions.assertEquals(vehicleModel.getDeliveryDate().getYear(), 2014);
@@ -43,8 +43,8 @@ public class VehicleServiceTest {
 		assertEquals(vehicleModel.getImagePath(), "singledecker.png");
 		assertEquals(vehicleModel.getModel(), "Mercedes");
 		Assertions.assertEquals(vehicleModel.getRouteScheduleNumber(), 1);
-		assertEquals(vehicleModel.getSeatingCapacity(), "45");
-		assertEquals(vehicleModel.getStandingCapacity(), "20");
+		assertEquals(vehicleModel.getSeatingCapacity(), 45);
+		assertEquals(vehicleModel.getStandingCapacity(), 20);
 		Assertions.assertEquals(vehicleModel.getPurchasePrice(), 20000.00, 0.0001);
 	}
 	
@@ -116,33 +116,33 @@ public class VehicleServiceTest {
 		vehicleModel.setModel("Mercedes");
 		vehicleModel.setRouteNumber("155");
 		vehicleModel.setRouteScheduleNumber(1);
-		vehicleModel.setSeatingCapacity("45");
-		vehicleModel.setStandingCapacity("20");
+		vehicleModel.setSeatingCapacity(45);
+		vehicleModel.setStandingCapacity(20);
 		vehicleModel.setPurchasePrice(20000.00);
 		//Test begins here.
-		vehicleService.deleteAllVehicles();
+		vehicleService.deleteAllVehicles("Mustermann GmbH");
 		vehicleService.saveVehicle(vehicleModel);
-		assertEquals(1, vehicleService.getVehicleModels().length);
-		Assertions.assertNotNull(vehicleService.getVehicleByRegistrationNumber("CV58 2DX"));
-		assertEquals(vehicleService.getVehicleByRegistrationNumber("CV58 2DX").getImagePath(), "singledecker.png");
-		Assertions.assertNull(vehicleService.getVehicleByRegistrationNumber("2013-001"));
+		assertEquals(1, vehicleService.getVehicleModels("Mustermann GmbH").length);
+		Assertions.assertNotNull(vehicleService.getVehicleByRegistrationNumber("CV58 2DX", "Mustermann GmbH"));
+		assertEquals(vehicleService.getVehicleByRegistrationNumber("CV58 2DX", "Mustermann GmbH").getImagePath(), "singledecker.png");
+		Assertions.assertNull(vehicleService.getVehicleByRegistrationNumber("2013-001", "Mustermann GmbH"));
 	}
 
 	@Test
 	public void testCreateVehicleObject() {
-		assertNotNull(vehicleService.createVehicleObject("MyBus Single Decker", "CV58 2DD", LocalDate.now()));
-		Assertions.assertThrows(NoSuchElementException.class, () -> vehicleService.createVehicleObject("MyTrain", "123", LocalDate.now()));
+		assertNotNull(vehicleService.createVehicleObject("MyBus Single Decker", "CV58 2DD", LocalDate.now(), "Mustermann GmbH"));
+		Assertions.assertThrows(NoSuchElementException.class, () -> vehicleService.createVehicleObject("MyTrain", "123", LocalDate.now(), "Mustermann GmbH"));
 	}
 
 	@Test
 	public void testGetModel() {
-		Assertions.assertNotNull(vehicleService.getFirstVehicleModel());
-		assertEquals(vehicleService.getFirstVehicleModel(), "MyBus Single Decker");
+		Assertions.assertNotNull(vehicleService.getFirstVehicleModel("Mustermann GmbH"));
+		assertEquals(vehicleService.getFirstVehicleModel("Mustermann GmbH"), "MyBus Single Decker");
 	}
 
 	@Test
 	public void testVehicleSize() {
-		assertEquals(vehicleService.getNumberVehicleTypes(), 4);
+		assertEquals(vehicleService.getNumberVehicleTypes("Mustermann GmbH"), 4);
 	}
 
 	private void assertEquals ( final double expected, final double actual, final double delta ) {

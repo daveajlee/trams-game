@@ -286,12 +286,12 @@ public class RouteScheduleController {
 	}
 
 	/**
-	 * Get list of today's allocations.
-	 * @param currentDate a <code>String</code> with the current date.
+	 * Get list of allocations for the specified company.
+	 * @param company a <code>String</code> with the name of the company.
 	 * @return a <code>LinkedList</code> of allocations.
 	 */
-	public List<String> getTodayAllocations ( final String currentDate ) {
-		return vehicleController.getAllocations();
+	public List<String> getAllocations ( final String company ) {
+		return vehicleController.getAllocations(company);
 	}
 
 	/**

@@ -49,7 +49,7 @@ public class ViewDriverPanel {
 
         //Get driver data now so that we can used to compile first!
         DefaultListModel driversModel = new DefaultListModel();
-        DriverModel[] driverModels = controllerHandler.getDriverController().getAllDrivers();
+        DriverModel[] driverModels = controllerHandler.getDriverController().getAllDrivers(gameModel.getCompany());
         for ( int i = 0; i < driverModels.length; i++ ) {
             driversModel.addElement(driverModels[i].getName());
         }
@@ -57,9 +57,9 @@ public class ViewDriverPanel {
         //Create driver object so that we can pull information from it.
         final DriverModel driverModel;
         if ( !driverName.equalsIgnoreCase("") ) {
-            driverModel = controllerHandler.getDriverController().getDriverByName(driverName);
+            driverModel = controllerHandler.getDriverController().getDriverByName(driverName, gameModel.getCompany());
         } else {
-            driverModel = controllerHandler.getDriverController().getDriverByName(driversModel.get(0).toString());
+            driverModel = controllerHandler.getDriverController().getDriverByName(driversModel.get(0).toString(), gameModel.getCompany());
         }
 
         //Create panel for information fields.

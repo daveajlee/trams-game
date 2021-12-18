@@ -37,7 +37,7 @@ public class GameService {
         Game game = new Game();
         game.setPlayerName(gameModel.getPlayerName());
         game.setBalance(gameModel.getBalance());
-        game.setPassengerSatisfaction(gameModel.getPassengerSatisfaction());
+        game.setPassengerSatisfaction((int) Math.round(gameModel.getPassengerSatisfaction()));
         game.setScenarioName(gameModel.getScenarioName());
         game.setDifficultyLevel(gameModel.getDifficultyLevel());
         game.setCurrentDateTime(gameModel.getCurrentDateTime());

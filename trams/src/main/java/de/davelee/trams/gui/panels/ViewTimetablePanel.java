@@ -42,7 +42,7 @@ public class ViewTimetablePanel {
         routeScreenPanel.setLayout( new BoxLayout(routeScreenPanel, BoxLayout.PAGE_AXIS));
         routeScreenPanel.setBackground(Color.WHITE);
      
-        final RouteModel routeModel = controllerHandler.getRouteController().getRoute(route);
+        final RouteModel routeModel = controllerHandler.getRouteController().getRoute(route, controlScreen.getControllerHandler().getGameController().getGameModel().getCompany());
         final GameModel gameModel = controllerHandler.getGameController().getGameModel();
             
         //Create an overall screen panel.
@@ -63,7 +63,7 @@ public class ViewTimetablePanel {
         routeSelectionLabel.setFont(new Font("Arial", Font.BOLD, 16));
         selectionPanel.add(routeSelectionLabel);
         final DefaultComboBoxModel routeSelectionModel = new DefaultComboBoxModel();
-        RouteModel[] routeModels = controllerHandler.getRouteController().getRouteModels();
+        RouteModel[] routeModels = controllerHandler.getRouteController().getRouteModels(gameModel.getCompany());
         for ( int i = 0; i < routeModels.length; i++ ) {
             routeSelectionModel.addElement(routeModels[i].getRouteNumber());
         }

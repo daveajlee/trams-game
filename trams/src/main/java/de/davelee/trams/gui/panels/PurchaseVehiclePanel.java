@@ -203,7 +203,7 @@ public class PurchaseVehiclePanel {
             public void actionPerformed ( ActionEvent e ) {
                 int quantity = Integer.parseInt(quantitySpinner.getValue().toString());
                 for ( int i = 0; i < quantity; i++ ) {
-                    controllerHandler.getVehicleController().purchaseVehicle(vehicleModel.getModel(), deliveryDate);
+                    controllerHandler.getVehicleController().purchaseVehicle(vehicleModel.getModel(), deliveryDate, gameModel.getCompany());
                 }
                 controlScreen.redrawManagement(displayPanel.createPanel(controlScreen), gameModel);
             }
