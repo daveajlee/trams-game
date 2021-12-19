@@ -110,12 +110,12 @@ public class AllocationPanel {
         routesList.setFont(new Font("Arial", Font.PLAIN, 15));
         RouteModel[] routeModels = controllerHandler.getRouteController().getRouteModels(gameModel.getCompany());
         for ( int i = 0; i < routeModels.length; i++ ) {
-        	RouteScheduleModel[] routeScheduleModels = controllerHandler.getRouteScheduleController().getRouteSchedulesByRouteNumber(routeModels[i].getRouteNumber());
-        	for ( int j = 0; j < routeScheduleModels.length; j++ ) {
+        	VehicleModel[] vehicleModels = controllerHandler.getVehicleController().getVehicleModels(gameModel.getCompany(), routeModels[i].getRouteNumber());
+        	for ( int j = 0; j < vehicleModels.length; j++ ) {
         	    try {
-        	        controllerHandler.getVehicleController().getVehicleByRouteNumberAndRouteScheduleNumber(routeModels[i].getRouteNumber(), "" + routeScheduleModels[j].getScheduleNumber(), gameModel.getCompany());
+        	        controllerHandler.getVehicleController().getVehicleByRouteNumberAndRouteScheduleNumber(routeModels[i].getRouteNumber(), "" + vehicleModels[j].getScheduleNumber(), gameModel.getCompany());
                 } catch ( NoSuchElementException ex ) {
-                    routesModel.addElement(routeModels[i].getRouteNumber() + "/" + routeScheduleModels[j].getScheduleNumber());
+                    routesModel.addElement(routeModels[i].getRouteNumber() + "/" + vehicleModels[j].getScheduleNumber());
                 }
             }
         }
@@ -265,24 +265,22 @@ public class AllocationPanel {
                         String[] allocationSplit = allocationsModel.get(i).toString().split("&");
                         //Store route detail object.
                         String routeNumber = allocationSplit[0].split("/")[0]; int routeDetailPos = -1;
-                        RouteScheduleModel[] scheduleModels = controllerHandler.getRouteScheduleController().getRouteSchedulesByRouteNumber(controllerHandler.getRouteController().getRoute(routeNumber, gameModel.getCompany()).getRouteNumber());
-                        for ( int k = 0; k < scheduleModels.length; k++ ) {
-                            if ( scheduleModels[k].getScheduleNumber() == Integer.parseInt(allocationSplit[0].split("/")[1].trim()) ) {
+                        VehicleModel[] vehicleModels = controllerHandler.getVehicleController().getVehicleModels(gameModel.getCompany(), controllerHandler.getRouteController().getRoute(routeNumber, gameModel.getCompany()).getRouteNumber());
+                        for ( int k = 0; k < vehicleModels.length; k++ ) {
+                            if ( vehicleModels[k].getScheduleNumber() == Integer.parseInt(allocationSplit[0].split("/")[1].trim()) ) {
                                 routeDetailPos = k;
                             }
                         }
                         //Find vehicle object position.
                         int vehiclePos = -1;
-                        VehicleModel[] vehicleModels = controllerHandler.getVehicleController().getAllCreatedVehicles(gameModel.getCompany());
                         for ( int j = 0; j < vehicleModels.length; j++ ) {
                             if ( vehicleModels[j].getRegistrationNumber().equalsIgnoreCase(allocationSplit[1].trim())) {
-
                                 vehiclePos = j;
                                 vehiclePoses.add(vehiclePos);
                             }
                         }
                         //Now assign route detail to vehicle.
-                        controllerHandler.getVehicleController().assignVehicleToRouteSchedule(vehicleModels[vehiclePos].getRegistrationNumber(), scheduleModels[routeDetailPos].getRouteNumber(), "" + scheduleModels[routeDetailPos].getScheduleNumber(), gameModel.getCompany());
+                        controllerHandler.getVehicleController().assignVehicleToRouteSchedule(vehicleModels[vehiclePos].getRegistrationNumber(), vehicleModels[routeDetailPos].getRouteNumber(), "" + vehicleModels[routeDetailPos].getScheduleNumber(), gameModel.getCompany());
                     }
                     //Now return to previous screen.
                     controlScreen.redrawManagement(displayPanel.createPanel(controlScreen), gameModel);

@@ -25,9 +25,6 @@ public class FileController {
 	private JourneyController journeyController;
 	
 	@Autowired
-	private JourneyPatternController journeyPatternController;
-	
-	@Autowired
 	private MessageController messageController;
 	
 	@Autowired
@@ -35,9 +32,6 @@ public class FileController {
 	
 	@Autowired
 	private RouteScheduleController routeScheduleController;
-	
-	@Autowired
-	private TimetableController timetableController;
 	
 	@Autowired
 	private VehicleController vehicleController;
@@ -66,14 +60,6 @@ public class FileController {
 		if ( myFile.getDriverModels() != null ) {
 			driverController.loadDrivers(myFile.getDriverModels(), myFile.getGameModel()[0].getCompany());
 		}
-    	//Load journeys.
-		if ( myFile.getJourneyModels() != null ) {
-			journeyController.loadJourneys(myFile.getJourneyModels());
-		}
-		//Load journey patterns.
-		if ( myFile.getJourneyPatternModels() != null ) {
-			journeyPatternController.loadJourneyPatterns(myFile.getJourneyPatternModels());
-		}
     	//Load messages.
 		if ( myFile.getMessageModels() != null ) {
 			messageController.loadMessages(myFile.getMessageModels(), myFile.getGameModel()[0].getCompany());
@@ -81,14 +67,6 @@ public class FileController {
     	//Load routes.
 		if ( myFile.getRouteModels() != null ) {
 			routeController.loadRoutes(myFile.getRouteModels(), myFile.getGameModel()[0].getCompany());
-		}
-    	//Load route schedules.
-		if ( myFile.getRouteScheduleModels() != null ) {
-			routeScheduleController.loadRouteSchedules(myFile.getRouteScheduleModels());
-		}
-    	//Load timetables.
-		if ( myFile.getTimetableModels() != null ) {
-			timetableController.loadTimetables(myFile.getTimetableModels());
 		}
     	//Load vehicles.
 		if ( myFile.getVehicleModels() != null ) {
@@ -109,13 +87,9 @@ public class FileController {
     	return TramsFile.builder()
 				.driverModels(driverController.getAllDrivers(gameController.getGameModel().getCompany()))
 				.gameModel(new GameModel[] { gameController.getGameModel() })
-				.journeyModels(journeyController.getAllJourneys())
-				.journeyPatternModels(journeyPatternController.getAllJourneyPatterns())
 				.messageModels(messageController.getAllMessages(gameController.getGameModel().getCompany()))
 				.routeModels(routeController.getRouteModels(gameController.getGameModel().getCompany()))
-				.routeScheduleModels(routeScheduleController.getAllRouteSchedules())
 				.stops(journeyController.getAllStops(gameController.getGameModel().getCompany()))
-				.timetableModels(timetableController.getAllTimetableModels())
 				.vehicleModels(vehicleController.getVehicleModels(gameController.getGameModel().getCompany()))
 				.build();
     }

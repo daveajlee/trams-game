@@ -46,15 +46,6 @@ public class FileServiceTest {
 	private JourneyService journeyService;
 	
 	@Autowired
-	private TimetableService timetableService;
-	
-	@Autowired
-	private JourneyPatternService journeyPatternService;
-	
-	@Autowired
-	private RouteScheduleService routeScheduleService;
-	
-	@Autowired
 	private VehicleService vehicleService;
 	
 	@Autowired
@@ -85,29 +76,6 @@ public class FileServiceTest {
 				.date(DateTimeFormatter.ofPattern("dd-MM-yyyy").format(LocalDate.now()))
 				.build());
 		journeyService.saveStop("Danziger Strasse", "Mustermann GmbH");
-		journeyPatternService.saveJourneyPattern(JourneyPatternModel.builder()
-				.name("Mon-Fri")
-				.daysOfOperation(List.of(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY))
-				.outgoingTerminus("S+U Pankow")
-				.returnTerminus("Rathaus Pankow")
-				.startTime(LocalTime.now())
-				.endTime(LocalTime.now())
-				.frequency(15)
-				.duration(3)
-				.timetableName("Mon-Fri Times")
-				.routeNumber("155")
-				.build());
-		timetableService.saveTimetable(TimetableModel.builder()
-				.name("Test")
-				.validFromDate(LocalDate.of(2014,4,20))
-				.validToDate(LocalDate.of(2014,4,20))
-				.routeNumber("M1")
-				.build());
-		routeScheduleService.saveRouteSchedule(RouteScheduleModel.builder()
-				.delay(10)
-				.routeNumber("M1")
-				.scheduleNumber(1)
-				.build());
 		JourneyModel journeyModel = JourneyModel.builder()
 				.journeyNumber(1)
 				.routeNumber("M2")
@@ -118,7 +86,6 @@ public class FileServiceTest {
 				.stopName("Heinersdorf")
 				.time(LocalTime.now())
 				.build());
-		journeyService.saveJourney(journeyModel);
 		gameService.saveGame(GameModel.builder()
 				.playerName("Dave Lee")
 				.scenarioName("Landuff Transport Company")
@@ -126,14 +93,9 @@ public class FileServiceTest {
 		
 		TramsFile tramsFile = TramsFile.builder()
 				.driverModels(driverService.getAllDrivers("Mustermann GmbH", "mmustermann-ghgkg"))
-				.gameModel(gameService.getAllGames())
-				.journeyModels(journeyService.getAllJourneys())
-				.journeyPatternModels(journeyPatternService.getAllJourneyPatterns())
 				.messageModels(messageService.getAllMessages("Mustermann GmbH"))
 				.routeModels(routeService.getAllRoutes("Mustermann GmbH"))
-				.routeScheduleModels(routeScheduleService.getAllRouteSchedules())
 				.stops(journeyService.getAllStops("Mustermann GmbH"))
-				.timetableModels(timetableService.getAllTimetableModels())
 				.vehicleModels(vehicleService.getVehicleModels("Mustermann GmbH"))
 				.build();
 		
@@ -157,11 +119,7 @@ public class FileServiceTest {
 		routeService.deleteAllRoutes("Mustermann GmbH");
 		messageService.deleteAllMessages("Mustermann GmbH");
 		vehicleService.deleteAllVehicles("Mustermann GmbH");
-		journeyService.deleteAllJourneys();
 		journeyService.deleteAllStops("Mustermann GmbH");
-		journeyPatternService.deleteAllJourneyPatterns();
-		timetableService.deleteAllTimetables();
-		routeScheduleService.deleteAllRouteSchedules();
 	}
 	
 	@Test

@@ -38,16 +38,13 @@ public class ControllerHandler {
     private RouteScheduleController routeScheduleController;
 
     @Autowired
-    private JourneyPatternController journeyPatternController;
-
-    @Autowired
-    private TimetableController timetableController;
-
-    @Autowired
     private DriverController driverController;
 
     @Autowired
     private TipController tipController;
+
+    @Autowired
+    private StopTimeController stopTimeController;
 
     @Value("${trams.version}")
     private String version;
@@ -88,22 +85,6 @@ public class ControllerHandler {
         return routeScheduleController;
     }
 
-    public JourneyPatternController getJourneyPatternController() {
-        return journeyPatternController;
-    }
-
-    public void setJourneyPatternController(JourneyPatternController journeyPatternController) {
-        this.journeyPatternController = journeyPatternController;
-    }
-
-    public TimetableController getTimetableController() {
-        return timetableController;
-    }
-
-    public void setTimetableController(TimetableController timetableController) {
-        this.timetableController = timetableController;
-    }
-
     public DriverController getDriverController() {
         return driverController;
     }
@@ -118,6 +99,14 @@ public class ControllerHandler {
 
     public void setTipController(TipController tipController) {
         this.tipController = tipController;
+    }
+
+    public StopTimeController getStopTimeController() {
+        return stopTimeController;
+    }
+
+    public void setStopTimeController(StopTimeController stopTimeController) {
+        this.stopTimeController = stopTimeController;
     }
 
     public String getVersion() {

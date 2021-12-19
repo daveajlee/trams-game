@@ -28,10 +28,10 @@ public class FileControllerTest {
     @Test
     public void testSaveFile() {
         assertNotNull(scenarioController);
-        gameController.createGameModel("Dave Lee", "Landuff Transport Company");
+        gameController.createGameModel("Dave Lee", "Landuff Transport Company", "Mustermann GmbH");
         assertEquals("Dave Lee", gameController.getCurrentPlayerName());
         fileController.saveFile(new File("test-game.json"));
-        gameController.createGameModel("Bob Smith", "Landuff Transport Company");
+        gameController.createGameModel("Bob Smith", "Landuff Transport Company", "Mustermann GmbH");
         assertEquals("Bob Smith", gameController.getCurrentPlayerName());
         fileController.loadFile(new File("test-game.json"));
         assertEquals("Dave Lee", gameController.getCurrentPlayerName());

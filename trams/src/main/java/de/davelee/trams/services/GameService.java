@@ -3,16 +3,12 @@ package de.davelee.trams.services;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.List;
 
-import de.davelee.trams.api.request.AddTimeRequest;
-import de.davelee.trams.api.request.AdjustBalanceRequest;
-import de.davelee.trams.api.request.AdjustSatisfactionRequest;
+import de.davelee.trams.api.request.*;
 import de.davelee.trams.api.response.BalanceResponse;
 import de.davelee.trams.api.response.CompanyResponse;
 import de.davelee.trams.api.response.SatisfactionRateResponse;
 import de.davelee.trams.api.response.TimeResponse;
-import de.davelee.trams.data.Game;
 import de.davelee.trams.model.GameModel;
 import de.davelee.trams.util.DifficultyLevel;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,21 +24,14 @@ public class GameService {
     private String businessServerUrl;
 
     public void saveGame ( final GameModel gameModel ) {
-        Game game = convertToGame(gameModel);
-        gameRepository.deleteAll(); //Only one game at a time.
-        gameRepository.saveAndFlush(game);
-    }
-
-    private Game convertToGame ( final GameModel gameModel ) {
-        Game game = new Game();
-        game.setPlayerName(gameModel.getPlayerName());
-        game.setBalance(gameModel.getBalance());
-        game.setPassengerSatisfaction((int) Math.round(gameModel.getPassengerSatisfaction()));
-        game.setScenarioName(gameModel.getScenarioName());
-        game.setDifficultyLevel(gameModel.getDifficultyLevel());
-        game.setCurrentDateTime(gameModel.getCurrentDateTime());
-        game.setTimeIncrement(gameModel.getTimeIncrement());
-        return game;
+        restTemplate.postForObject(businessServerUrl + "company/",
+                CompanyRequest.builder()
+                        .name(gameModel.getCompany())
+                        .startingBalance(gameModel.getBalance())
+                        .startingTime(gameModel.getCurrentDateTime().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm")))
+                        .playerName(gameModel.getPlayerName())
+                        .build(),
+                Void.class);
     }
 
     public GameModel getGameByPlayerName ( final String company, final String playerName )  {
@@ -131,19 +120,6 @@ public class GameService {
         } catch ( DateTimeParseException dateTimeParseException ) {
             return null;
         }
-    }
-
-    public GameModel[] getAllGames ( ) {
-        List<Game> games = gameRepository.findAll();
-        GameModel[] gameModels = new GameModel[games.size()];
-        for ( int i = 0; i < gameModels.length; i++ ) {
-            gameModels[i] = convertToGameModel(games.get(i));
-        }
-        return gameModels;
-    }
-
-    public void deleteAllGames ( ) {
-        gameRepository.deleteAll();
     }
     
 }

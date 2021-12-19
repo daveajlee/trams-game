@@ -22,13 +22,11 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
-import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 
 import de.davelee.trams.gui.ControlScreen;
 import de.davelee.trams.model.GameModel;
 import de.davelee.trams.model.RouteModel;
-import de.davelee.trams.model.TimetableModel;
 
 import de.davelee.trams.controllers.ControllerHandler;
 
@@ -37,9 +35,7 @@ public class RoutePanel {
     private ControllerHandler controllerHandler;
     private DefaultListModel availableStopModel;
 	private DefaultListModel routeStopModel;
-	private DefaultListModel timetableModel;
 	private JButton createRouteButton;
-	private JButton createTimetableButton;
 	private JTextField routeNumberField;
 
     public RoutePanel ( final ControllerHandler controllerHandler ) {
@@ -157,96 +153,6 @@ public class RoutePanel {
         routeScreenPanel.add(stopGridPanel);
         routeScreenPanel.add(Box.createRigidArea(new Dimension(0,10))); //Spacer.
         
-        //Create the timetable list panel and three buttons.
-        JPanel timetableListPanel = new JPanel(new BorderLayout());
-        timetableListPanel.setBackground(Color.WHITE);
-        JPanel routeDetailsLabelPanel = new JPanel();
-        routeDetailsLabelPanel.setBackground(Color.WHITE);
-        JLabel routeTimetableLabel = new JLabel("Route Timetable:");
-        routeTimetableLabel.setFont(new Font("Arial", Font.ITALIC, 17));
-        routeDetailsLabelPanel.add(routeTimetableLabel);
-        timetableListPanel.add(routeDetailsLabelPanel, BorderLayout.NORTH);
-        //Here is the actual timetable list.
-        JPanel centreTimetableListPanel = new JPanel(new GridBagLayout());
-        centreTimetableListPanel.setBackground(Color.WHITE);
-        timetableModel = new DefaultListModel();
-        //Now get all the timetables which we have at the moment.
-        try {
-            TimetableModel[] timetables = controllerHandler.getTimetableController().getRouteTimetables(routeModel);
-            for ( TimetableModel timetable : timetables) {
-                timetableModel.addElement(timetable.getName());
-            }
-        } 
-        catch (NullPointerException npe) { }
-        final JList timetableList = new JList(timetableModel);
-        if ( timetableModel.getSize() != 0 ) {
-            timetableList.setSelectedIndex(0);
-        }
-        timetableList.setVisibleRowCount(3);
-        timetableList.setFixedCellWidth(450);
-        timetableList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        JScrollPane timetablePane = new JScrollPane(timetableList);
-        centreTimetableListPanel.add(timetablePane);
-        timetableListPanel.add(centreTimetableListPanel, BorderLayout.CENTER);
-        //Now the three create, modify and delete button.
-        JPanel timetableButtonPanel = new JPanel();
-        timetableButtonPanel.setBackground(Color.WHITE);
-        createTimetableButton = new JButton("Create");
-        createTimetableButton.setEnabled(false);
-        createTimetableButton.addActionListener(new ActionListener() {
-            public void actionPerformed ( ActionEvent e ) {
-                //First of all, set the selected route.
-                RouteModel displayRouteModel = routeModel;
-                if ( routeModel == null && timetableModel.getSize() == 0 ) {
-                    List<String> selectedOutwardStops = new ArrayList<String>();
-                    for ( int i = 0; i < routeStopModel.size(); i++ ) {
-                        selectedOutwardStops.add(routeStopModel.getElementAt(i).toString());
-                    }
-                    displayRouteModel = RouteModel.builder()
-                            .routeNumber((routeNumberField.getText()))
-                            .stopNames(selectedOutwardStops)
-                            .build();
-                    //Show the actual screen!
-
-
-                }
-                //Show the actual screen!
-                TimetablePanel myTimetablePanel = new TimetablePanel(controllerHandler);
-                controlScreen.redrawManagement(myTimetablePanel.createPanel(null, displayRouteModel, controlScreen, RoutePanel.this, displayPanel), controllerHandler.getGameController().getGameModel());
-            }
-        });
-        timetableButtonPanel.add(createTimetableButton);
-        final JButton modifyTimetableButton = new JButton("Modify");
-        if ( timetableModel.getSize() == 0 ) { modifyTimetableButton.setEnabled(false); }
-        modifyTimetableButton.addActionListener ( new ActionListener() {
-            public void actionPerformed (ActionEvent e ) {
-                TimetablePanel myTimetablePanel = new TimetablePanel(controllerHandler);
-                controlScreen.redrawManagement(myTimetablePanel.createPanel(controllerHandler.getTimetableController().getRouteTimetable(routeModel, timetableList.getSelectedValue().toString()), routeModel, controlScreen, RoutePanel.this, displayPanel), controllerHandler.getGameController().getGameModel());
-            }
-        });
-        timetableButtonPanel.add(modifyTimetableButton);
-        final JButton deleteTimetableButton = new JButton("Delete");
-        if ( timetableModel.getSize() == 0 ) { deleteTimetableButton.setEnabled(false); }
-        deleteTimetableButton.addActionListener( new ActionListener() {
-            public void actionPerformed ( ActionEvent e ) {
-            	controllerHandler.getTimetableController().deleteTimetable(routeModel, timetableList.getSelectedValue().toString());
-                timetableModel.removeElement(timetableList.getSelectedValue());
-                if ( timetableModel.getSize() == 0 ) {
-                    deleteTimetableButton.setEnabled(false);
-                    modifyTimetableButton.setEnabled(false);
-                }
-                else {
-                    timetableList.setSelectedIndex(0);
-                }
-            }
-        });
-        timetableButtonPanel.add(deleteTimetableButton);
-        timetableListPanel.add(timetableButtonPanel, BorderLayout.SOUTH);
-        
-        //Add the timetableList panel to the screen panel.
-        routeScreenPanel.add(timetableListPanel);
-        routeScreenPanel.add(Box.createRigidArea(new Dimension(0,10))); //Spacer.
-        
         //Create bottom button panel for next two buttons.
         JPanel bottomButtonPanel = new JPanel();
         bottomButtonPanel.setBackground(Color.WHITE);
@@ -257,14 +163,19 @@ public class RoutePanel {
         createRouteButton.addActionListener ( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
                final GameModel gameModel = controllerHandler.getGameController().getGameModel();
-               controllerHandler.getRouteScheduleController().generateRouteSchedules(routeModel, gameModel.getCurrentDateTime().toLocalDate(), gameModel.getScenarioName());
                List<String> selectedOutwardStops = new ArrayList<String>();
                for ( int i = 0; i < routeStopModel.size(); i++ ) {
                     selectedOutwardStops.add(routeStopModel.getElementAt(i).toString());
                }
                controllerHandler.getRouteController().addNewRoute( routeNumberField.getText(), selectedOutwardStops, gameModel.getCompany());
-               //Now return to previous screen.
-                controlScreen.redrawManagement(displayPanel.createPanel(controlScreen), gameModel);
+               RouteModel displayRouteModel = RouteModel.builder()
+                       .company(gameModel.getCompany())
+                       .routeNumber(routeNumberField.getText())
+                       .stopNames(selectedOutwardStops)
+                       .build();
+               //Now move to timetable screen.
+               TimetablePanel myTimetablePanel = new TimetablePanel(controllerHandler);
+               controlScreen.redrawManagement(myTimetablePanel.createPanel(null, displayRouteModel, controlScreen, RoutePanel.this, displayPanel), controllerHandler.getGameController().getGameModel());
             }
         });
         bottomButtonPanel.add(createRouteButton);
@@ -291,11 +202,7 @@ public class RoutePanel {
 	private void enableCreateButtons ( ) {
         //To enable create timetable button we need the selected item in stop1Box and stop2Box to not be -.
         if ( routeStopModel.getSize() > 1 && !routeNumberField.getText().equalsIgnoreCase("") ) {
-            createTimetableButton.setEnabled(true);
-            //In addition, the timetable model must not be 0 to create a route.
-            if ( timetableModel.getSize() > 0 ) {
-                createRouteButton.setEnabled(true);
-            }
+            createRouteButton.setEnabled(true);
         }
     }
 

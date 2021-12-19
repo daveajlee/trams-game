@@ -9,11 +9,7 @@ import javax.swing.event.*;
 
 import de.davelee.trams.controllers.ControllerHandler;
 import de.davelee.trams.gui.panels.DisplayPanel;
-import de.davelee.trams.model.GameModel;
-import de.davelee.trams.model.MessageModel;
-import de.davelee.trams.model.RouteScheduleModel;
-import de.davelee.trams.model.RouteModel;
-import de.davelee.trams.model.ScenarioModel;
+import de.davelee.trams.model.*;
 import de.davelee.trams.util.DifficultyLevel;
 import de.davelee.trams.util.MessageFolder;
 import org.slf4j.Logger;
@@ -323,13 +319,13 @@ public class ControlScreen extends ButtonBar {
         updateVehicleStatus(currentDateTime, difficultyLevel);
     }
 
-    public void updateVehicleStatus ( final LocalDateTime currentDateTime, final DifficultyLevel difficultyLevel ) {
+    public void updateVehicleStatus ( final LocalDateTime currentDateTime, final DifficultyLevel difficultyLevel, final String company ) {
         String vehicleStatus = "";
 
-        RouteScheduleModel[] routeScheduleModels = super.getControllerHandler().getRouteScheduleController().getRouteSchedulesByRouteNumber(routeList.getSelectedValue().toString().split(":")[0]);
-        for (int i = 0; i < routeScheduleModels.length; i++) {
-            String vehiclePos = super.getControllerHandler().getRouteScheduleController().getCurrentStopName(routeScheduleModels[i], currentDateTime, difficultyLevel);
-            vehicleStatus += "Schedule " + routeScheduleModels[i].getScheduleNumber() + " is at " + vehiclePos + " with a delay of " + routeScheduleModels[i].getDelay() + " minutes.\n";
+        VehicleModel[] vehicleModels = super.getControllerHandler().getVehicleController().getVehicleModels(company, routeList.getSelectedValue().toString().split(":")[0]);
+        for (int i = 0; i < vehicleModels.length; i++) {
+            String vehiclePos = super.getControllerHandler().getVehicleController().getCurrentStopName(routeScheduleModels[i], currentDateTime, difficultyLevel);
+            vehicleStatus += "Schedule " + vehicleModels[i].getAllocatedTour() + " is at " + vehiclePos + " with a delay of " + vehicleModels[i].getDelay() + " minutes.\n";
         }
 
         vehiclesStatusArea.setText(vehicleStatus);
@@ -714,7 +710,7 @@ public class ControlScreen extends ButtonBar {
         int totalPages;
         final int routeScheduleModelsLength;
         if ( routeList.getModel().getSize() > 0 ) {
-            routeScheduleModelsLength = super.getControllerHandler().getRouteScheduleController().getRouteSchedulesByRouteNumber(routeList.getSelectedValue().toString()).length;
+            routeScheduleModelsLength = super.getControllerHandler().getVehicleController().getVehicleModels(gameModel.getCompany(), routeList.getSelectedValue().toString()).length;
             totalPages = (routeScheduleModelsLength/4); if ((routeScheduleModelsLength%4) !=0 || totalPages == 0 ) { totalPages++; }
         }
         else {

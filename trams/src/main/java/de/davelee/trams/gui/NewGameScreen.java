@@ -158,7 +158,7 @@ public class NewGameScreen extends JFrame {
             public void actionPerformed ( ActionEvent e ) {
                 ScenarioModel scenarioModel = controllerHandler.getScenarioController().getScenario(availableScenariosComboBox.getSelectedItem().toString());
                 //Create Game
-                GameModel gameModel = controllerHandler.getGameController().createGameModel(playerNameField.getText(), scenarioModel.getName());
+                GameModel gameModel = controllerHandler.getGameController().createGameModel(playerNameField.getText(), scenarioModel.getName(), companyNameField.getText());
                 //Create supplied vehicles.
                 controllerHandler.getVehicleController().createSuppliedVehicles(scenarioModel, gameModel.getCurrentDateTime().toLocalDate(), companyNameField.getText());
                 //Create supplied drivers.

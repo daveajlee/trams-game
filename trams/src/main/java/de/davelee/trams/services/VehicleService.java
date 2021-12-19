@@ -5,11 +5,15 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.*;
 
+import de.davelee.trams.api.request.AdjustVehicleDelayRequest;
 import de.davelee.trams.api.request.AllocateVehicleRequest;
 import de.davelee.trams.api.request.PurchaseVehicleRequest;
+import de.davelee.trams.api.response.VehicleDelayResponse;
 import de.davelee.trams.api.response.VehicleResponse;
 import de.davelee.trams.api.response.VehiclesResponse;
+import de.davelee.trams.model.RouteScheduleModel;
 import de.davelee.trams.model.VehicleModel;
+import de.davelee.trams.util.DifficultyLevel;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
@@ -82,6 +86,7 @@ public class VehicleService {
                 .routeScheduleNumber(Long.parseLong(vehicleResponse.getAllocatedTour()))
                 .seatingCapacity(vehicleResponse.getSeatingCapacity())
                 .standingCapacity(vehicleResponse.getStandingCapacity())
+                .delay(vehicleResponse.getDelay())
                 .build();
     }
 
@@ -245,6 +250,87 @@ public class VehicleService {
      */
     public void deleteAllVehicles(final String company) {
         restTemplate.delete(operationsServerUrl + "vehicles/?company=" + company);
+    }
+
+    /**
+     * Reduces the current delay by a certain number of minutes.
+     * @param scheduleModel a <code>RouteScheduleModel</code> with the route schedule to determine delay for.
+     * @param mins a <code>int</code> with the number of minutes.
+     */
+    public void reduceDelay(final RouteScheduleModel scheduleModel, final int mins) {
+        //We can only reduce delay if delay is not currently 0.
+        if (scheduleModel.getDelay() != 0) {
+            VehicleDelayResponse vehicleDelayResponse = restTemplate.patchForObject(operationsServerUrl + "vehicle/delay",
+                    AdjustVehicleDelayRequest.builder()
+                            .company(scheduleModel.getCompany())
+                            .delayInMinutes(-mins)
+                            .fleetNumber(scheduleModel.getFleetNumber())
+                            .build(),
+                    VehicleDelayResponse.class);
+            scheduleModel.setDelay(vehicleDelayResponse.getDelayInMinutes());
+        }
+    }
+
+    /**
+     * Increases the vehicles current delay by a certain number of minutes.
+     * @param scheduleModel a <code>RouteScheduleModel</code> with the route schedule to determine delay for.
+     * @param mins a <code>int</code> with the number of minutes.
+     */
+    public void increaseDelay(final RouteScheduleModel scheduleModel, final int mins) {
+        VehicleDelayResponse vehicleDelayResponse = restTemplate.patchForObject(operationsServerUrl + "vehicle/delay",
+                AdjustVehicleDelayRequest.builder()
+                        .company(scheduleModel.getCompany())
+                        .delayInMinutes(mins)
+                        .fleetNumber(scheduleModel.getFleetNumber())
+                        .build(),
+                VehicleDelayResponse.class);
+        scheduleModel.setDelay(vehicleDelayResponse.getDelayInMinutes());
+    }
+
+    /**
+     * Calculate a new random delay for this route schedule.
+     * @param scheduleModel a <code>RouteScheduleModel</code> object representing the route schedule to calculate the delay for.
+     * @param difficultyLevel a <code>DifficultyLevel</code> object representing the difficulty level.
+     */
+    public void calculateNewDelay (final RouteScheduleModel scheduleModel, final DifficultyLevel difficultyLevel ) {
+
+        //Generate a random number between 0 and 1.
+        Random randNumGen = new Random();
+        int val = randNumGen.nextInt(100);
+        //Create probability array.
+        int[] ratioArray;
+        //Set ratios according to difficulty level - default is easy.
+        switch (difficultyLevel) {
+            case INTERMEDIATE:
+                ratioArray = new int[] { 20, 85, 95 };
+                break;
+            case MEDIUM:
+                ratioArray = new int[] { 20, 75, 90 };
+                break;
+            case HARD:
+                ratioArray = new int[] { 30, 60, 85 };
+                break;
+            default: //easy
+                ratioArray = new int[] { 25, 85, 95 };
+                break;
+        }
+        //With ratioArray[0] probability no delay change.
+        if ( val < ratioArray[0] ) { return; }
+        //With ratioArray[1] probability - reduce delay by 1-5 mins.
+        if ( val >= ratioArray[0] && val < ratioArray[1] ) {
+            int delayReduction = randNumGen.nextInt(5) + 1;
+            reduceDelay(scheduleModel, delayReduction);
+            return;
+        }
+        //With 10% probability - increase delay by 1-5 mins.
+        if ( val >= ratioArray[1] && val < ratioArray[2] ) {
+            int delayIncrease = randNumGen.nextInt(5) + 1;
+            increaseDelay(scheduleModel, delayIncrease);
+            return;
+        }
+        //Remaining probability - generate delay between 5 and 20 mins.
+        int delayIncrease = randNumGen.nextInt(15) + 6;
+        increaseDelay(scheduleModel, delayIncrease);
     }
 
     /**

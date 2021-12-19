@@ -28,5 +28,6 @@ public class VehicleModel {
 	private String fleetNumber;
 	private String company;
 	private String livery;
+	private int delay;
 
 }

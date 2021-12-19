@@ -4,7 +4,9 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Locale;
 import java.util.NoSuchElementException;
 
 import javax.swing.*;
@@ -116,7 +118,7 @@ public class ViewTimetablePanel {
         timetableSelectionLabel.setFont(new Font("Arial", Font.BOLD, 16));
         selectionPanel.add(timetableSelectionLabel);
         final DefaultComboBoxModel timetableSelectionModel = new DefaultComboBoxModel();
-        TimetableModel[] timetableModels = controllerHandler.getTimetableController().getRouteTimetables(routeModel);
+        TimetableModel[] timetableModels = controllerHandler.getStopTimeController().getRouteTimetables(routeModel);
         for ( int i = 0; i < timetableModels.length; i++ ) {
             timetableSelectionModel.addElement(timetableModels[i].getName());
         }
@@ -128,10 +130,11 @@ public class ViewTimetablePanel {
         //Show valid information.
         JPanel validityPanel = new JPanel(new BorderLayout());
         validityPanel.setBackground(Color.WHITE);
-        JLabel validFromDateLabel = new JLabel("Valid From: " + controllerHandler.getTimetableController().getDateInfo(controllerHandler.getTimetableController().getCurrentTimetable(routeModel, gameModel.getCurrentDateTime().toLocalDate()).getValidFromDate()));
+        TimetableModel currentTimetable = controllerHandler.getStopTimeController().getCurrentTimetable(routeModel, gameModel.getCurrentDateTime().toLocalDate());
+        JLabel validFromDateLabel = new JLabel("Valid From: " + DateTimeFormatter.ofPattern("EEEE, d MMMM y", Locale.ENGLISH).format(currentTimetable.getValidFromDate()));
         validFromDateLabel.setFont(new Font("Arial", Font.ITALIC, 14));
         validityPanel.add(validFromDateLabel, BorderLayout.NORTH);
-        JLabel validToDateLabel = new JLabel("Valid To: " + controllerHandler.getTimetableController().getDateInfo(controllerHandler.getTimetableController().getCurrentTimetable(routeModel, gameModel.getCurrentDateTime().toLocalDate()).getValidToDate()));
+        JLabel validToDateLabel = new JLabel("Valid To: " + DateTimeFormatter.ofPattern("EEEE, d MMMM y", Locale.ENGLISH).format(currentTimetable.getValidToDate()));
         validToDateLabel.setFont(new Font("Arial", Font.ITALIC, 14));
         validityPanel.add(validToDateLabel, BorderLayout.SOUTH);
         topPanel.add(validityPanel, BorderLayout.SOUTH);
@@ -186,7 +189,7 @@ public class ViewTimetablePanel {
         String[][] data = new String[24][4];
         //TODO: Preprocessing necessary?
         //TODO: Add multiple route schedules.
-        JourneyModel[] journeyModels = controllerHandler.getJourneyController().getJourneysByRouteScheduleNumberAndRouteNumber(direction, routeNumber);
+        JourneyModel[] journeyModels = controllerHandler.getStopTimeController().getStopTimes(direction, routeNumber);
         for ( int i = 0; i < journeyModels.length; i++ ) {
             try {
                 LocalTime myTime = controllerHandler.getJourneyController().getStopTime(journeyModels[i], stopName);

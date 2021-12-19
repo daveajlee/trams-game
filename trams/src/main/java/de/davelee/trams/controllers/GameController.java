@@ -7,6 +7,7 @@ import de.davelee.trams.gui.ControlScreen;
 import de.davelee.trams.model.GameModel;
 import de.davelee.trams.model.RouteModel;
 import de.davelee.trams.model.RouteScheduleModel;
+import de.davelee.trams.model.VehicleModel;
 import de.davelee.trams.util.DifficultyLevel;
 import de.davelee.trams.util.GameThread;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,9 @@ public class GameController {
 
 	@Autowired
 	private RouteScheduleController routeScheduleController;
+
+	@Autowired
+	private VehicleController vehicleController;
 
 	private boolean end = false;
     private Thread runningThread;
@@ -64,15 +68,15 @@ public class GameController {
 	 * Create a new game for the specified player running the specified scenario.
 	 * @param playerName a <code>String</code> with the player name for this new game.
 	 * @param scenarioName a <code>String</code> with the scenario to use for this new game.
+	 * @param company a <code>String</code> with the name of the company to use for this new game.
 	 * @return a <code>GameModel</code> representing the new game which was created.
 	 */
-	public GameModel createGameModel ( final String playerName, final String scenarioName ) {
-		//There can only be one game!
-		gameService.deleteAllGames();
+	public GameModel createGameModel ( final String playerName, final String scenarioName, final String company ) {
 		//Create game.
 		LocalDateTime startDateTime = LocalDateTime.of(2017, Month.MARCH,1,4,0);
 		GameModel gameModel = GameModel.builder()
 				.balance(80000.00)
+				.company(company)
 				.currentDateTime(startDateTime)
 				.difficultyLevel(DifficultyLevel.EASY)
 				.playerName(playerName)
@@ -91,8 +95,6 @@ public class GameController {
 	 * @param gameModel a <code>GameModel</code> containing the game to load.
 	 */
 	public void loadGameModel ( final GameModel gameModel ) {
-		//There can only be one game!
-		gameService.deleteAllGames();
 		//Save game to db and update cache.
 		gameService.saveGame(gameModel);
 		cachedGameModel = gameModel;
@@ -176,21 +178,19 @@ public class GameController {
 		//Essentially satisfaction is determined by the route schedules that are running on time.
 		//Now count number of route schedules into three groups: 1 - 5 minutes late, 6 - 15 minutes late, 16+ minutes late.
 		int numSmallLateSchedules = 0; int numMediumLateSchedules = 0; int numLargeLateSchedules = 0;
-		//Now go through all routes.
-		for ( RouteModel myRoute : routeController.getRouteModels(cachedGameModel.getCompany()) ) {
-			for ( RouteScheduleModel mySchedule : routeScheduleController.getRouteSchedulesByRouteNumber(myRoute.getRouteNumber())) {
-				//Running... 1 - 5 minutes late.
-				if ( mySchedule.getDelay() > 0 && mySchedule.getDelay() < 6 ) {
-					numSmallLateSchedules++;
-				}
-				//Running... 6 - 15 minutes late.
-				else if ( mySchedule.getDelay() > 5 && mySchedule.getDelay() < 16 ) {
-					numMediumLateSchedules++;
-				}
-				//Running... 16+ minutes late.
-				else if ( mySchedule.getDelay() > 15 ) {
-					numLargeLateSchedules++;
-				}
+		//Now go through all vehicles.
+		for ( VehicleModel vehicleModel : vehicleController.getVehicleModels(cachedGameModel.getCompany()) ) {
+			//Running... 1 - 5 minutes late.
+			if ( vehicleModel.getDelay() > 0 && vehicleModel.getDelay() < 6 ) {
+				numSmallLateSchedules++;
+			}
+			//Running... 6 - 15 minutes late.
+			else if ( vehicleModel.getDelay() > 5 && vehicleModel.getDelay() < 16 ) {
+				numMediumLateSchedules++;
+			}
+			//Running... 16+ minutes late.
+			else if ( vehicleModel.getDelay() > 15 ) {
+				numLargeLateSchedules++;
 			}
 		}
 		return gameService.computeAndReturnPassengerSatisfaction(cachedGameModel.getPlayerName(), cachedGameModel.getDifficultyLevel(), numSmallLateSchedules, numMediumLateSchedules, numLargeLateSchedules);
