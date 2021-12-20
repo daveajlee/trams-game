@@ -16,14 +16,11 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
 import de.davelee.trams.controllers.ControllerHandler;
-import de.davelee.trams.model.TimetableModel;
+import de.davelee.trams.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.davelee.trams.gui.ControlScreen;
-import de.davelee.trams.model.GameModel;
-import de.davelee.trams.model.JourneyModel;
-import de.davelee.trams.model.RouteModel;
 
 public class ViewTimetablePanel {
 
@@ -113,28 +110,16 @@ public class ViewTimetablePanel {
             }
         });
         selectionPanel.add(directionSelectionBox);
-        //Choose timetable.
-        JLabel timetableSelectionLabel = new JLabel("Timetable:");
-        timetableSelectionLabel.setFont(new Font("Arial", Font.BOLD, 16));
-        selectionPanel.add(timetableSelectionLabel);
-        final DefaultComboBoxModel timetableSelectionModel = new DefaultComboBoxModel();
-        TimetableModel[] timetableModels = controllerHandler.getStopTimeController().getRouteTimetables(routeModel);
-        for ( int i = 0; i < timetableModels.length; i++ ) {
-            timetableSelectionModel.addElement(timetableModels[i].getName());
-        }
-        final JComboBox timetableSelectionBox = new JComboBox(timetableSelectionModel);
-        timetableSelectionBox.setFont(new Font("Arial", Font.PLAIN, 15));
-        selectionPanel.add(timetableSelectionBox);
         //Add to top panel.
         topPanel.add(selectionPanel, BorderLayout.NORTH);
         //Show valid information.
         JPanel validityPanel = new JPanel(new BorderLayout());
         validityPanel.setBackground(Color.WHITE);
-        TimetableModel currentTimetable = controllerHandler.getStopTimeController().getCurrentTimetable(routeModel, gameModel.getCurrentDateTime().toLocalDate());
-        JLabel validFromDateLabel = new JLabel("Valid From: " + DateTimeFormatter.ofPattern("EEEE, d MMMM y", Locale.ENGLISH).format(currentTimetable.getValidFromDate()));
+        StopTimeModel[] stopTimeModels = controllerHandler.getStopTimeController().getCurrentTimetable(routeModel, gameModel.getCurrentDateTime().toLocalDate());
+        JLabel validFromDateLabel = new JLabel("Valid From: " + stopTimeModels[0].getValidFromDate());
         validFromDateLabel.setFont(new Font("Arial", Font.ITALIC, 14));
         validityPanel.add(validFromDateLabel, BorderLayout.NORTH);
-        JLabel validToDateLabel = new JLabel("Valid To: " + DateTimeFormatter.ofPattern("EEEE, d MMMM y", Locale.ENGLISH).format(currentTimetable.getValidToDate()));
+        JLabel validToDateLabel = new JLabel("Valid To: " + stopTimeModels[0].getValidToDate());
         validToDateLabel.setFont(new Font("Arial", Font.ITALIC, 14));
         validityPanel.add(validToDateLabel, BorderLayout.SOUTH);
         topPanel.add(validityPanel, BorderLayout.SOUTH);
@@ -189,10 +174,10 @@ public class ViewTimetablePanel {
         String[][] data = new String[24][4];
         //TODO: Preprocessing necessary?
         //TODO: Add multiple route schedules.
-        JourneyModel[] journeyModels = controllerHandler.getStopTimeController().getStopTimes(direction, routeNumber);
-        for ( int i = 0; i < journeyModels.length; i++ ) {
+        StopTimeModel[] stopTimeModels = controllerHandler.getStopTimeController().getStopTimes(direction, routeNumber);
+        for ( int i = 0; i < stopTimeModels.length; i++ ) {
             try {
-                LocalTime myTime = controllerHandler.getJourneyController().getStopTime(journeyModels[i], stopName);
+                LocalTime myTime = stopTimeModels[i].getTime();
                 String minuteStr = "";
                 if ( myTime.getMinute() < 10 ) { minuteStr = "0" + myTime.getMinute(); } else { minuteStr = "" + myTime.getMinute(); }
                 int displayPos = 1;
@@ -204,7 +189,7 @@ public class ViewTimetablePanel {
                     data[myTime.getHour()][displayPos] = data[myTime.getHour()][displayPos] + " " + minuteStr;
                 }
             } catch (NoSuchElementException ex) {
-                logger.debug("No stop time found for " + journeyModels[i] + " and stop name " + stopName);
+                logger.debug("No stop time found for " + stopTimeModels[i] + " and stop name " + stopName);
             }
         }
         //Null check.

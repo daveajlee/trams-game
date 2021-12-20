@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class JourneyServiceTest {
 
 	@Autowired
-	private JourneyService journeyService;
+	private StopService journeyService;
 
 	@Autowired
 	private ScenarioController scenarioController;

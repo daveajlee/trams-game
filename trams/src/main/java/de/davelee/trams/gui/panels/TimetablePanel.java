@@ -19,7 +19,6 @@ import de.davelee.trams.controllers.ControllerHandler;
 import de.davelee.trams.gui.ControlScreen;
 import de.davelee.trams.model.GameModel;
 import de.davelee.trams.model.RouteModel;
-import de.davelee.trams.model.TimetableModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,7 +38,7 @@ public class TimetablePanel {
         this.controllerHandler = controllerHandler;
     }
 	
-	public JPanel createPanel ( final TimetableModel timetableModel, final RouteModel routeModel, final ControlScreen controlScreen, final RoutePanel routePanel, final DisplayPanel displayPanel ) {
+	public JPanel createPanel ( final RouteModel routeModel, final ControlScreen controlScreen, final RoutePanel routePanel, final DisplayPanel displayPanel ) {
 		final GameModel gameModel = controllerHandler.getGameController().getGameModel();
         
         //Create timetableScreen panel to add things to.
@@ -187,9 +186,6 @@ public class TimetablePanel {
             validFromDayModel.addElement(i);
         }
         JComboBox validFromDayBox = new JComboBox(validFromDayModel);
-        if ( timetableModel != null ) {
-            validFromDayBox.setSelectedItem(timetableModel.getValidFromDate().getDayOfMonth());
-        }
         validFromDayBox.setFont(new Font("Arial", Font.PLAIN, 14));
         validityPanel.add(validFromDayBox);
         //Valid From Month.
@@ -198,9 +194,6 @@ public class TimetablePanel {
         for ( int i = 0; i < 4; i++ ) {
             validFromMonthBox.addItem(monthNames.getMonth() + " " + monthNames.getYear());
             monthNames.plusMonths(1);
-        }
-        if ( timetableModel != null ) {
-            validFromMonthBox.setSelectedItem(timetableModel.getValidFromDate().getMonth() + " " + timetableModel.getValidFromDate().getYear());
         }
         validFromMonthBox.setFont(new Font("Arial", Font.PLAIN, 14));
         validFromMonthBox.addActionListener( new ActionListener() {
@@ -238,9 +231,6 @@ public class TimetablePanel {
             validToDayModel.addElement(i);
         }
         JComboBox validToDayBox = new JComboBox(validToDayModel);
-        if ( timetableModel != null ) {
-            validToDayBox.setSelectedItem(timetableModel.getValidToDate().getDayOfMonth());
-        }
         validToDayBox.setFont(new Font("Arial", Font.PLAIN, 14));
         validityPanel.add(validToDayBox);
         //Valid To Month.
@@ -248,9 +238,6 @@ public class TimetablePanel {
         for ( int i = 0; i < 25; i++ ) {
             validToMonthBox.addItem(defaultValidToDate.getMonth() + " " + defaultValidToDate.getYear());
             defaultValidToDate.plusMonths(1);
-        }
-        if ( timetableModel != null ) {
-            validToMonthBox.setSelectedItem(timetableModel.getValidToDate().getMonth() + " " + timetableModel.getValidToDate().getYear());
         }
         validToMonthBox.setFont(new Font("Arial", Font.PLAIN, 14));
         validToMonthBox.addActionListener( new ActionListener() {

@@ -29,5 +29,6 @@ public class VehicleModel {
 	private String company;
 	private String livery;
 	private int delay;
+	private String allocatedTour;
 
 }

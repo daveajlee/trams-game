@@ -6,10 +6,8 @@ import java.awt.event.*;
 import javax.swing.*;
 
 import de.davelee.trams.controllers.GameController;
-import de.davelee.trams.controllers.RouteScheduleController;
 import de.davelee.trams.controllers.VehicleController;
 import de.davelee.trams.model.GameModel;
-import de.davelee.trams.model.RouteScheduleModel;
 import de.davelee.trams.model.VehicleModel;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -29,19 +27,17 @@ public class BusInfoScreen extends JFrame {
     private GameController gameController;
 
     @Autowired
-    private RouteScheduleController routeScheduleController;
-
-    @Autowired
     private VehicleController vehicleController;
     
     /**
      * Create a new bus information screen.
-     * @param routeScheduleModel a <code>RouteScheduleModel</code> object with the current route schedule being run by the vehicle.
+     * @param routeNumber a <code>String</code> with the route number.
+     * @param scheduleNumber a <code>String</code> with the schedule number.
      */
-    public BusInfoScreen ( final RouteScheduleModel routeScheduleModel ) {
+    public BusInfoScreen ( final String routeNumber, final String scheduleNumber ) {
 
         //Retrieve vehicle model.
-        VehicleModel vehicleModel = vehicleController.getVehicleByRouteNumberAndRouteScheduleNumber(routeScheduleModel.getRouteNumber(), "" + routeScheduleModel.getScheduleNumber(), gameController.getGameModel().getCompany());
+        VehicleModel vehicleModel = vehicleController.getVehicleByAllocatedTour(routeNumber + "/" + scheduleNumber, gameController.getGameModel().getCompany());
 
         //Set image icon.
         Image img = Toolkit.getDefaultToolkit().getImage(BusInfoScreen.class.getResource("/TraMSlogo.png"));
@@ -82,7 +78,7 @@ public class BusInfoScreen extends JFrame {
         GameModel gameModel = gameController.getGameModel();
 
         //Add current status panel to screen panel.
-        screenPanel.add(createCurrentStatusPanel(routeScheduleModel, vehicleModel, gameModel), BorderLayout.CENTER);
+        screenPanel.add(createCurrentStatusPanel(scheduleNumber, vehicleModel, gameModel), BorderLayout.CENTER);
         
         //Create south panel - two buttons - make contact and close.
         JPanel southPanel = new JPanel();
@@ -91,7 +87,7 @@ public class BusInfoScreen extends JFrame {
         JButton makeContactButton = new JButton("Make Contact");
         makeContactButton.addActionListener( new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                new MakeContactScreen(routeScheduleModel);
+                new MakeContactScreen(routeNumber, scheduleNumber);
                 dispose();
             }
         });
@@ -124,11 +120,11 @@ public class BusInfoScreen extends JFrame {
         
     }
 
-    public JPanel createCurrentStatusPanel ( final RouteScheduleModel routeScheduleModel, final VehicleModel vehicleModel, final GameModel gameModel ) {
+    public JPanel createCurrentStatusPanel ( final String scheduleNumber, final VehicleModel vehicleModel, final GameModel gameModel ) {
         JPanel eastPanel = new JPanel(new GridLayout(6,1,5,5));
         eastPanel.setBackground(Color.WHITE);
         //Timetable id.
-        JLabel timetableIDLabel = new JLabel("Timetable ID: " + routeScheduleModel.getScheduleNumber());
+        JLabel timetableIDLabel = new JLabel("Timetable ID: " + scheduleNumber);
         timetableIDLabel.setFont(new Font("Arial", Font.BOLD, 15));
         eastPanel.add(timetableIDLabel);
         //Vehicle id.
@@ -136,15 +132,15 @@ public class BusInfoScreen extends JFrame {
         vehicleIDLabel.setFont(new Font("Arial", Font.BOLD, 15));
         eastPanel.add(vehicleIDLabel);
         //Location.
-        JLabel locationLabel = new JLabel("Location: " + vehicleController.getCurrentStopName(routeScheduleModel, gameModel.getCurrentDateTime(), gameModel.getDifficultyLevel()));
+        JLabel locationLabel = new JLabel("Location: " + vehicleController.getCurrentStopName(vehicleModel, gameModel.getCurrentDateTime(), gameModel.getDifficultyLevel()));
         locationLabel.setFont(new Font("Arial", Font.BOLD, 15));
         eastPanel.add(locationLabel);
         //Destination.
-        JLabel destinationLabel = new JLabel("Destination: " + vehicleController.getLastStopName(routeScheduleModel, gameModel.getCurrentDateTime(), gameModel.getDifficultyLevel()));
+        JLabel destinationLabel = new JLabel("Destination: " + vehicleController.getLastStopName(vehicleModel, gameModel.getCurrentDateTime(), gameModel.getDifficultyLevel()));
         destinationLabel.setFont(new Font("Arial", Font.BOLD, 15));
         eastPanel.add(destinationLabel);
         //Delay.
-        JLabel delayLabel = new JLabel("Delay: " + routeScheduleModel.getDelay() + " mins");
+        JLabel delayLabel = new JLabel("Delay: " + vehicleModel.getDelay() + " mins");
         delayLabel.setFont(new Font("Arial", Font.BOLD, 15));
         eastPanel.add(delayLabel);
         return eastPanel;

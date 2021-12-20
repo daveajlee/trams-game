@@ -132,7 +132,7 @@ public class ControlScreen extends ButtonBar {
         //Create Live Situation tab.
         if ( super.getControllerHandler().getRouteController().getNumberRoutes(gameModel.getCompany()) > 0 ) {
             drawVehicles(gameModel);
-            updateVehicleStatus(gameModel.getCurrentDateTime(), gameModel.getDifficultyLevel());
+            updateVehicleStatus(gameModel.getCurrentDateTime(), gameModel.getDifficultyLevel(), gameModel.getCompany());
             tabbedPane.addTab("Live Situation", graphicsPanel);
             tabbedPane.setSelectedIndex(0);
         }
@@ -314,17 +314,17 @@ public class ControlScreen extends ButtonBar {
         
     }
 
-    public void updateDateTime (final LocalDateTime currentDateTime, final DifficultyLevel difficultyLevel ) {
+    public void updateDateTime (final LocalDateTime currentDateTime, final DifficultyLevel difficultyLevel, final String company ) {
         timeLabel.setText(DateTimeFormatter.RFC_1123_DATE_TIME.format(currentDateTime));
-        updateVehicleStatus(currentDateTime, difficultyLevel);
+        updateVehicleStatus(currentDateTime, difficultyLevel, company);
     }
 
     public void updateVehicleStatus ( final LocalDateTime currentDateTime, final DifficultyLevel difficultyLevel, final String company ) {
         String vehicleStatus = "";
 
-        VehicleModel[] vehicleModels = super.getControllerHandler().getVehicleController().getVehicleModels(company, routeList.getSelectedValue().toString().split(":")[0]);
+        VehicleModel[] vehicleModels = super.getControllerHandler().getVehicleController().getVehicleModelsForRoute(company, routeList.getSelectedValue().toString().split(":")[0]);
         for (int i = 0; i < vehicleModels.length; i++) {
-            String vehiclePos = super.getControllerHandler().getVehicleController().getCurrentStopName(routeScheduleModels[i], currentDateTime, difficultyLevel);
+            String vehiclePos = super.getControllerHandler().getVehicleController().getCurrentStopName(vehicleModels[i], currentDateTime, difficultyLevel);
             vehicleStatus += "Schedule " + vehicleModels[i].getAllocatedTour() + " is at " + vehiclePos + " with a delay of " + vehicleModels[i].getDelay() + " minutes.\n";
         }
 
@@ -710,7 +710,7 @@ public class ControlScreen extends ButtonBar {
         int totalPages;
         final int routeScheduleModelsLength;
         if ( routeList.getModel().getSize() > 0 ) {
-            routeScheduleModelsLength = super.getControllerHandler().getVehicleController().getVehicleModels(gameModel.getCompany(), routeList.getSelectedValue().toString()).length;
+            routeScheduleModelsLength = super.getControllerHandler().getVehicleController().getVehicleModelsForRoute(gameModel.getCompany(), routeList.getSelectedValue().toString()).length;
             totalPages = (routeScheduleModelsLength/4); if ((routeScheduleModelsLength%4) !=0 || totalPages == 0 ) { totalPages++; }
         }
         else {
@@ -747,7 +747,7 @@ public class ControlScreen extends ButtonBar {
         nextVehiclesButton.addActionListener( new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 //Add 4 to the min and max.
-                minVehicle = ControlScreen.super.getControllerHandler().getRouteScheduleController().getCurrentMinSchedule() + 4; maxVehicle = ControlScreen.super.getControllerHandler().getRouteScheduleController().getCurrentMaxSchedule() + 5;
+                minVehicle += 4; maxVehicle += 5;
                 //Now check if max vehicle is bigger than display vehicles - if it is then set it to display vehicles.
                 if ( maxVehicle > routeScheduleModelsLength ) {
                     maxVehicle = routeScheduleModelsLength;

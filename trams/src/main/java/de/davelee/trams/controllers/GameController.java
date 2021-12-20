@@ -5,8 +5,6 @@ import java.time.Month;
 
 import de.davelee.trams.gui.ControlScreen;
 import de.davelee.trams.model.GameModel;
-import de.davelee.trams.model.RouteModel;
-import de.davelee.trams.model.RouteScheduleModel;
 import de.davelee.trams.model.VehicleModel;
 import de.davelee.trams.util.DifficultyLevel;
 import de.davelee.trams.util.GameThread;
@@ -20,12 +18,6 @@ public class GameController {
 	
 	@Autowired
 	private GameService gameService;
-
-	@Autowired
-	private RouteController routeController;
-
-	@Autowired
-	private RouteScheduleController routeScheduleController;
 
 	@Autowired
 	private VehicleController vehicleController;

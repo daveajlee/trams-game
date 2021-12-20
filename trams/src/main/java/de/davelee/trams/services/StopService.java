@@ -2,8 +2,6 @@ package de.davelee.trams.services;
 
 import de.davelee.trams.api.request.AddStopRequest;
 import de.davelee.trams.api.response.StopsResponse;
-import de.davelee.trams.model.JourneyModel;
-import de.davelee.trams.model.StopTimeModel;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -11,27 +9,12 @@ import org.springframework.web.client.RestTemplate;
 import java.util.List;
 
 @Service
-public class JourneyService {
+public class StopService {
 
     private final RestTemplate restTemplate = new RestTemplate();
 
     @Value("${server.operations.url}")
     private String operationsServerUrl;
-    
-    /**
-     * Get stop object based on stop name.
-     * @param journeyModel a <code>JourneyModel</code> with the journey details.
-     * @param name a <code>String</code> with the stop name.
-     * @return a <code>Stop</code> object.
-     */
-    public StopTimeModel getStopTime ( final JourneyModel journeyModel, final String name ) {
-        for ( StopTimeModel stopTimeModel : journeyModel.getStopTimeModelList()) {
-            if ( stopTimeModel.getStopName().equalsIgnoreCase(name) ) {
-                return stopTimeModel;
-            }
-        }
-        return null;
-    }
 
     public void saveStop ( final String stopName, final String company ) {
         restTemplate.postForObject(operationsServerUrl + "stop/",

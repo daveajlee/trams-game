@@ -1,9 +1,7 @@
 package de.davelee.trams.services;
 
 import java.io.File;
-import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
@@ -19,13 +17,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import de.davelee.trams.beans.TramsFile;
 import de.davelee.trams.model.DriverModel;
 import de.davelee.trams.model.GameModel;
-import de.davelee.trams.model.JourneyModel;
-import de.davelee.trams.model.JourneyPatternModel;
 import de.davelee.trams.model.MessageModel;
 import de.davelee.trams.model.RouteModel;
-import de.davelee.trams.model.RouteScheduleModel;
-import de.davelee.trams.model.StopTimeModel;
-import de.davelee.trams.model.TimetableModel;
 import de.davelee.trams.util.MessageFolder;
 
 @ExtendWith(SpringExtension.class)
@@ -43,7 +36,7 @@ public class FileServiceTest {
 	private MessageService messageService;
 	
 	@Autowired
-	private JourneyService journeyService;
+	private StopService journeyService;
 	
 	@Autowired
 	private VehicleService vehicleService;
@@ -76,16 +69,6 @@ public class FileServiceTest {
 				.date(DateTimeFormatter.ofPattern("dd-MM-yyyy").format(LocalDate.now()))
 				.build());
 		journeyService.saveStop("Danziger Strasse", "Mustermann GmbH");
-		JourneyModel journeyModel = JourneyModel.builder()
-				.journeyNumber(1)
-				.routeNumber("M2")
-				.routeScheduleNumber(1)
-				.build();
-		journeyModel.addStopTimeToList(StopTimeModel.builder()
-				.journeyNumber(1)
-				.stopName("Heinersdorf")
-				.time(LocalTime.now())
-				.build());
 		gameService.saveGame(GameModel.builder()
 				.playerName("Dave Lee")
 				.scenarioName("Landuff Transport Company")
@@ -104,10 +87,6 @@ public class FileServiceTest {
 		assertNotNull(tramsFile.getRouteModels());
 		assertNotNull(tramsFile.getMessageModels());
 		assertNotNull(tramsFile.getStops());
-		assertNotNull(tramsFile.getJourneyPatternModels());
-		assertNotNull(tramsFile.getTimetableModels());
-		assertNotNull(tramsFile.getRouteScheduleModels());
-		assertNotNull(tramsFile.getJourneyModels());
 		assertNotNull(tramsFile.getGameModel());
 		
 		fileService.saveFile(new File("test-game-service.json"), tramsFile);
@@ -129,7 +108,6 @@ public class FileServiceTest {
 		Assertions.assertEquals(tramsFile2.getDriverModels().length, 1);
 		assertEquals(tramsFile2.getDriverModels()[0].getName(), "Chris Lee");
 		Assertions.assertEquals(tramsFile2.getVehicleModels().length, 1);
-		Assertions.assertEquals(tramsFile2.getRouteScheduleModels().length, 1);
 		Assertions.assertEquals(tramsFile2.getGameModel().length, 1);
 	}
 

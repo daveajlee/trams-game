@@ -11,7 +11,6 @@ import de.davelee.trams.api.request.PurchaseVehicleRequest;
 import de.davelee.trams.api.response.VehicleDelayResponse;
 import de.davelee.trams.api.response.VehicleResponse;
 import de.davelee.trams.api.response.VehiclesResponse;
-import de.davelee.trams.model.RouteScheduleModel;
 import de.davelee.trams.model.VehicleModel;
 import de.davelee.trams.util.DifficultyLevel;
 import lombok.Getter;
@@ -86,7 +85,8 @@ public class VehicleService {
                 .routeScheduleNumber(Long.parseLong(vehicleResponse.getAllocatedTour()))
                 .seatingCapacity(vehicleResponse.getSeatingCapacity())
                 .standingCapacity(vehicleResponse.getStandingCapacity())
-                .delay(vehicleResponse.getDelay())
+                .delay(vehicleResponse.getDelayInMinutes())
+                .allocatedTour(vehicleResponse.getAllocatedTour())
                 .build();
     }
 
@@ -166,13 +166,12 @@ public class VehicleService {
     /**
      * This method retrieves a vehicle running on a particular route and with a particular route schedule number.
      * Method throws an exception if no vehicle is currently running this route and route schedule number.
-     * @param routeNumber a <code>String</code> with the route number that the vehicle should be running.
-     * @param routeScheduleNumber a <code>String</code> with the route schedule number that the vehicle should be running.
+     * @param allocatedTour a <code>String</code> with the tour name that the vehicle should be running.
      * @param company a <code>String</code> with the name of the company.
      * @return a <code>VehicleModel</code> which contains information about the vehicle found.
      */
-    public VehicleModel getVehicleByRouteNumberAndRouteScheduleNumber ( final String routeNumber, final long routeScheduleNumber, final String company ) {
-        VehicleResponse vehicleResponse = restTemplate.getForObject(operationsServerUrl + "vehicle/allocate/?company=" + company + "&allocatedTour=" + routeScheduleNumber, VehicleResponse.class);
+    public VehicleModel getVehicleByAllocatedTour ( final String allocatedTour, final String company ) {
+        VehicleResponse vehicleResponse = restTemplate.getForObject(operationsServerUrl + "vehicle/allocate/?company=" + company + "&allocatedTour=" + allocatedTour, VehicleResponse.class);
         if ( vehicleResponse == null ) {
             throw new NoSuchElementException();
         }
@@ -234,10 +233,10 @@ public class VehicleService {
         return "";
     }
 
-     public void assignVehicleToRouteScheduleNumber ( final VehicleModel vehicleModel, final String routeNumber, final String scheduleNumber, final String company ) {
+     public void assignVehicleToTour ( final VehicleModel vehicleModel, final String allocatedTour, final String company ) {
         restTemplate.patchForObject(operationsServerUrl + "vehicle/allocate/",
                 AllocateVehicleRequest.builder()
-                        .allocatedTour(routeNumber + "/" + scheduleNumber)
+                        .allocatedTour(allocatedTour)
                         .fleetNumber(vehicleModel.getFleetNumber())
                         .company(company)
                         .build(),
@@ -254,46 +253,45 @@ public class VehicleService {
 
     /**
      * Reduces the current delay by a certain number of minutes.
-     * @param scheduleModel a <code>RouteScheduleModel</code> with the route schedule to determine delay for.
+     * @param vehicleModel a <code>VehicleModel</code> with the vehicle to determine delay for.
      * @param mins a <code>int</code> with the number of minutes.
      */
-    public void reduceDelay(final RouteScheduleModel scheduleModel, final int mins) {
+    public void reduceDelay(final VehicleModel vehicleModel, final int mins) {
         //We can only reduce delay if delay is not currently 0.
-        if (scheduleModel.getDelay() != 0) {
+        if (vehicleModel.getDelay() != 0) {
             VehicleDelayResponse vehicleDelayResponse = restTemplate.patchForObject(operationsServerUrl + "vehicle/delay",
                     AdjustVehicleDelayRequest.builder()
-                            .company(scheduleModel.getCompany())
+                            .company(vehicleModel.getCompany())
                             .delayInMinutes(-mins)
-                            .fleetNumber(scheduleModel.getFleetNumber())
+                            .fleetNumber(vehicleModel.getFleetNumber())
                             .build(),
                     VehicleDelayResponse.class);
-            scheduleModel.setDelay(vehicleDelayResponse.getDelayInMinutes());
+            vehicleModel.setDelay(vehicleDelayResponse.getDelayInMinutes());
         }
     }
 
     /**
      * Increases the vehicles current delay by a certain number of minutes.
-     * @param scheduleModel a <code>RouteScheduleModel</code> with the route schedule to determine delay for.
+     * @param vehicleModel a <code>VehicleModel</code> with the vehicle to determine delay for.
      * @param mins a <code>int</code> with the number of minutes.
      */
-    public void increaseDelay(final RouteScheduleModel scheduleModel, final int mins) {
+    public void increaseDelay(final VehicleModel vehicleModel, final int mins) {
         VehicleDelayResponse vehicleDelayResponse = restTemplate.patchForObject(operationsServerUrl + "vehicle/delay",
                 AdjustVehicleDelayRequest.builder()
-                        .company(scheduleModel.getCompany())
+                        .company(vehicleModel.getCompany())
                         .delayInMinutes(mins)
-                        .fleetNumber(scheduleModel.getFleetNumber())
+                        .fleetNumber(vehicleModel.getFleetNumber())
                         .build(),
                 VehicleDelayResponse.class);
-        scheduleModel.setDelay(vehicleDelayResponse.getDelayInMinutes());
+        vehicleModel.setDelay(vehicleDelayResponse.getDelayInMinutes());
     }
 
     /**
      * Calculate a new random delay for this route schedule.
-     * @param scheduleModel a <code>RouteScheduleModel</code> object representing the route schedule to calculate the delay for.
+     * @param vehicleModel a <code>VehicleModel</code> with the vehicle to calculate the delay for.
      * @param difficultyLevel a <code>DifficultyLevel</code> object representing the difficulty level.
      */
-    public void calculateNewDelay (final RouteScheduleModel scheduleModel, final DifficultyLevel difficultyLevel ) {
-
+    public void calculateNewDelay (final VehicleModel vehicleModel, final DifficultyLevel difficultyLevel ) {
         //Generate a random number between 0 and 1.
         Random randNumGen = new Random();
         int val = randNumGen.nextInt(100);
@@ -319,18 +317,18 @@ public class VehicleService {
         //With ratioArray[1] probability - reduce delay by 1-5 mins.
         if ( val >= ratioArray[0] && val < ratioArray[1] ) {
             int delayReduction = randNumGen.nextInt(5) + 1;
-            reduceDelay(scheduleModel, delayReduction);
+            reduceDelay(vehicleModel, delayReduction);
             return;
         }
         //With 10% probability - increase delay by 1-5 mins.
         if ( val >= ratioArray[1] && val < ratioArray[2] ) {
             int delayIncrease = randNumGen.nextInt(5) + 1;
-            increaseDelay(scheduleModel, delayIncrease);
+            increaseDelay(vehicleModel, delayIncrease);
             return;
         }
         //Remaining probability - generate delay between 5 and 20 mins.
         int delayIncrease = randNumGen.nextInt(15) + 6;
-        increaseDelay(scheduleModel, delayIncrease);
+        increaseDelay(vehicleModel, delayIncrease);
     }
 
     /**

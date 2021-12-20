@@ -22,16 +22,13 @@ public class FileController {
 	private GameController gameController;
 	
 	@Autowired
-	private JourneyController journeyController;
+	private StopController journeyController;
 	
 	@Autowired
 	private MessageController messageController;
 	
 	@Autowired
 	private RouteController routeController;
-	
-	@Autowired
-	private RouteScheduleController routeScheduleController;
 	
 	@Autowired
 	private VehicleController vehicleController;

@@ -64,6 +64,8 @@ public class StopTimeService {
                         .journeyNumber(Integer.parseInt(stopTimesResponse.getStopTimeResponses()[i].getJourneyNumber()))
                         .routeNumber(stopTimesResponse.getStopTimeResponses()[i].getRouteNumber())
                         .stopName(stopTimesResponse.getStopTimeResponses()[i].getStopName())
+                        .validFromDate(stopTimesResponse.getStopTimeResponses()[i].getValidFromDate())
+                        .validToDate(stopTimesResponse.getStopTimeResponses()[i].getValidToDate())
                         .build();
             }
             return stopTimesModels;

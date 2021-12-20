@@ -70,6 +70,11 @@ public class VehicleResponse {
     private String allocatedTour;
 
     /**
+     * The current delay of this vehicle in minutes.
+     */
+    private int delayInMinutes;
+
+    /**
      * The current status of inspection for this vehicle.
      */
     private String inspectionStatus;

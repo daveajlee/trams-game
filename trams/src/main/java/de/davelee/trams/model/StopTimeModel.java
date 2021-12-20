@@ -21,6 +21,8 @@ public class StopTimeModel {
 	private String stopName;
 	private LocalTime time;
 	private String company;
+	private String validFromDate;
+	private String validToDate;
 
 
 }

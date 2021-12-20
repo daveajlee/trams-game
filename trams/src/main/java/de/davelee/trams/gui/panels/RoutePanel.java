@@ -175,7 +175,7 @@ public class RoutePanel {
                        .build();
                //Now move to timetable screen.
                TimetablePanel myTimetablePanel = new TimetablePanel(controllerHandler);
-               controlScreen.redrawManagement(myTimetablePanel.createPanel(null, displayRouteModel, controlScreen, RoutePanel.this, displayPanel), controllerHandler.getGameController().getGameModel());
+               controlScreen.redrawManagement(myTimetablePanel.createPanel(displayRouteModel, controlScreen, RoutePanel.this, displayPanel), controllerHandler.getGameController().getGameModel());
             }
         });
         bottomButtonPanel.add(createRouteButton);

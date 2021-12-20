@@ -29,13 +29,10 @@ public class ControllerHandler {
     private MessageController messageController;
 
     @Autowired
-    private JourneyController journeyController;
+    private StopController journeyController;
 
     @Autowired
     private RouteController routeController;
-
-    @Autowired
-    private RouteScheduleController routeScheduleController;
 
     @Autowired
     private DriverController driverController;
@@ -73,16 +70,12 @@ public class ControllerHandler {
         return messageController;
     }
 
-    public JourneyController getJourneyController() {
+    public StopController getJourneyController() {
         return journeyController;
     }
 
     public RouteController getRouteController() {
         return routeController;
-    }
-
-    public RouteScheduleController getRouteScheduleController() {
-        return routeScheduleController;
     }
 
     public DriverController getDriverController() {

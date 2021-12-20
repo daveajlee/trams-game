@@ -23,9 +23,9 @@ public class VehicleController {
 	@Autowired
 	private GameController gameController;
 
-	public void assignVehicleToRouteSchedule ( final String registrationNumber, final String routeNumber, final String scheduleNumber, final String company ) {
+	public void assignVehicleToTour ( final String registrationNumber, final String allocatedTour, final String company ) {
 		VehicleModel vehicleModel = vehicleService.getVehicleByRegistrationNumber(registrationNumber, company);
-		vehicleService.assignVehicleToRouteScheduleNumber(vehicleModel, routeNumber, scheduleNumber, company);
+		vehicleService.assignVehicleToTour(vehicleModel, allocatedTour, company);
 	}
 
 	public VehicleModel[] getAllCreatedVehicles ( final String company ) {
@@ -93,8 +93,8 @@ public class VehicleController {
 		vehicleService.saveVehicle(vehicle);
 	}
 
-	public VehicleModel getVehicleByRouteNumberAndRouteScheduleNumber ( final String routeNumber, final String scheduleNumber, final String company ) {
-		return vehicleService.getVehicleByRouteNumberAndRouteScheduleNumber(routeNumber, Long.parseLong(scheduleNumber), company);
+	public VehicleModel getVehicleByAllocatedTour ( final String allocatedTour, final String company ) {
+		return vehicleService.getVehicleByAllocatedTour(allocatedTour, company);
 	}
 
 	public int createSuppliedVehicles(final ScenarioModel scenarioModel, final LocalDate currentDate, final String company) {
@@ -115,12 +115,12 @@ public class VehicleController {
 		return vehicleService.getVehicleModels(company);
 	}
 
-	public List<String> getAllocations ( final String company ) {
-		return vehicleService.getAllocations(company);
+	public VehicleModel[] getVehicleModelsForRoute ( final String company, final String routeNumber ) {
+
 	}
 
-    public int getNumberVehicleTypes ( final String company ) {
-		return vehicleService.getNumberVehicleTypes(company);
+	public List<String> getAllocations ( final String company ) {
+		return vehicleService.getAllocations(company);
 	}
 
 	public VehicleModel getVehicleByModel ( final String model, final String company ) {

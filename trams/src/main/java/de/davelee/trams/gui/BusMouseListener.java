@@ -3,7 +3,6 @@ package de.davelee.trams.gui;
 import java.awt.event.*;
 
 import de.davelee.trams.controllers.GameController;
-import de.davelee.trams.model.RouteScheduleModel;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -12,17 +11,20 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class BusMouseListener implements MouseListener {
 
-    private RouteScheduleModel routeScheduleModel;
-
     @Autowired
     private GameController gameController;
+
+    private String routeNumber;
+    private String scheduleNumber;
     
     /**
      * Create a new BusMouseListener.
-     * @param routeScheduleModel a <code>RouteScheduleModel</code> with route schedule id being run.
+     * @param routeNumber a <code>String</code> with the route number.
+     * @param scheduleNumber a <code>String</code> with the schedule number.
      */
-    public BusMouseListener(final RouteScheduleModel routeScheduleModel) {
-        this.routeScheduleModel = routeScheduleModel;
+    public BusMouseListener(final String routeNumber, final String scheduleNumber) {
+        this.routeNumber = routeNumber;
+        this.scheduleNumber = scheduleNumber;
     }
     
     /**
@@ -64,7 +66,7 @@ public class BusMouseListener implements MouseListener {
      */
     public void mouseClicked(MouseEvent e) {
         gameController.pauseSimulation();
-        new BusInfoScreen(routeScheduleModel );
+        new BusInfoScreen(routeNumber, scheduleNumber);
     }
     
 }
