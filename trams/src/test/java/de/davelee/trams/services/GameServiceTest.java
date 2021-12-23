@@ -27,7 +27,6 @@ public class GameServiceTest {
 				.scenarioName("Landuff Transport Company")
 				.balance(80000.0)
 				.currentDateTime(LocalDateTime.of(2009,8,20,5,0,0))
-				.timeIncrement(15)
 				.difficultyLevel(DifficultyLevel.EASY)
 				.passengerSatisfaction(100)
 				.build());

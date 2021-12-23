@@ -3,11 +3,14 @@ package de.davelee.trams.gui.panels;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableColumnModel;
@@ -26,7 +29,7 @@ public class ViewTimetablePanel {
 
     private ControllerHandler controllerHandler;
     private JTable myTable = new JTable();
-	private JComboBox directionSelectionBox;
+	private JComboBox<Direction> directionSelectionBox;
 	
 	private static final Logger logger = LoggerFactory.getLogger(ViewTimetablePanel.class);
 
@@ -88,7 +91,7 @@ public class ViewTimetablePanel {
         stopSelectionBox.addActionListener ( new ActionListener()  {
         public void actionPerformed ( ActionEvent e ) {
             logger.debug("You chose stop " + stopSelectionBox.getSelectedItem().toString());
-            myTable.setModel(createTableModel(routeModel.getRouteNumber(), stopSelectionBox.getSelectedItem().toString(), directionSelectionBox.getSelectedIndex()));
+            myTable.setModel(createTableModel(routeModel.getRouteNumber(), stopSelectionBox.getSelectedItem().toString(), (Direction) directionSelectionBox.getSelectedItem(), gameModel.getCurrentDateTime().toLocalDate()));
             autoResizeColWidth(myTable, (DefaultTableModel) myTable.getModel());
             }
         });
@@ -97,15 +100,15 @@ public class ViewTimetablePanel {
         JLabel directionSelectionLabel = new JLabel("Direction:");
         directionSelectionLabel.setFont(new Font("Arial", Font.BOLD, 16));
         selectionPanel.add(directionSelectionLabel);
-        final DefaultComboBoxModel directionSelectionModel = new DefaultComboBoxModel();
-        directionSelectionModel.addElement(routeStopNames.get(routeStopNames.size()-1));
-        directionSelectionModel.addElement(routeStopNames.get(0));
+        final DefaultComboBoxModel<Direction> directionSelectionModel = new DefaultComboBoxModel();
+        directionSelectionModel.addElement(Direction.OUTGOING);
+        directionSelectionModel.addElement(Direction.RETURN);
         directionSelectionBox = new JComboBox(directionSelectionModel);
         directionSelectionBox.setFont(new Font("Arial", Font.PLAIN, 15));
         directionSelectionBox.addActionListener(new ActionListener() {
         public void actionPerformed ( ActionEvent e ) {
             logger.debug("You chose direction " + directionSelectionBox.getSelectedIndex());
-            myTable.setModel(createTableModel(routeModel.getRouteNumber(), stopSelectionBox.getSelectedItem().toString(), directionSelectionBox.getSelectedIndex()));
+            myTable.setModel(createTableModel(routeModel.getRouteNumber(), stopSelectionBox.getSelectedItem().toString(), (Direction) directionSelectionBox.getSelectedItem(), gameModel.getCurrentDateTime().toLocalDate()));
             autoResizeColWidth(myTable, (DefaultTableModel) myTable.getModel());
             }
         });
@@ -115,7 +118,7 @@ public class ViewTimetablePanel {
         //Show valid information.
         JPanel validityPanel = new JPanel(new BorderLayout());
         validityPanel.setBackground(Color.WHITE);
-        StopTimeModel[] stopTimeModels = controllerHandler.getStopTimeController().getCurrentTimetable(routeModel, gameModel.getCurrentDateTime().toLocalDate());
+        StopTimeModel[] stopTimeModels = controllerHandler.getStopTimeController().getStopTimes(Optional.empty(), routeModel.getRouteNumber(), gameModel.getCurrentDateTime().toLocalDate());
         JLabel validFromDateLabel = new JLabel("Valid From: " + stopTimeModels[0].getValidFromDate());
         validFromDateLabel.setFont(new Font("Arial", Font.ITALIC, 14));
         validityPanel.add(validFromDateLabel, BorderLayout.NORTH);
@@ -132,7 +135,7 @@ public class ViewTimetablePanel {
         tablePanel.setBackground(Color.WHITE);
 
         //Display it!
-        myTable.setModel(createTableModel(routeModel.getRouteNumber(), stopSelectionBox.getSelectedItem().toString(), 0));
+        myTable.setModel(createTableModel(routeModel.getRouteNumber(), stopSelectionBox.getSelectedItem().toString(), Direction.OUTGOING, gameModel.getCurrentDateTime().toLocalDate()));
         myTable.setFont(new Font("Arial", Font.PLAIN, 12));
         JScrollPane tableScrollPane = new JScrollPane(autoResizeColWidth(myTable, (DefaultTableModel) myTable.getModel()));
         tablePanel.add(tableScrollPane, BorderLayout.CENTER);
@@ -169,12 +172,13 @@ public class ViewTimetablePanel {
 	}
 
 
-	private DefaultTableModel createTableModel ( final String routeNumber, final String stopName, final int direction ) {
+	private DefaultTableModel createTableModel ( final String routeNumber, final String stopName, final Direction direction,
+                                                 final LocalDate date) {
         String[] columnNames = new String[] { "", "Monday - Friday", "Saturday", "Sunday" };
         String[][] data = new String[24][4];
         //TODO: Preprocessing necessary?
         //TODO: Add multiple route schedules.
-        StopTimeModel[] stopTimeModels = controllerHandler.getStopTimeController().getStopTimes(direction, routeNumber);
+        StopTimeModel[] stopTimeModels = controllerHandler.getStopTimeController().getStopTimes(Optional.of(direction), routeNumber, date);
         for ( int i = 0; i < stopTimeModels.length; i++ ) {
             try {
                 LocalTime myTime = stopTimeModels[i].getTime();

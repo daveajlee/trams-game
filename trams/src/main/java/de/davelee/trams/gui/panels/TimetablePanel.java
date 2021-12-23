@@ -7,7 +7,9 @@ import java.awt.Font;
 import java.awt.GridBagLayout;
 import java.awt.event.*;
 import java.time.*;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.swing.*;
@@ -278,22 +280,27 @@ public class TimetablePanel {
                 String[] validToMonthYear = validToMonthBox.getSelectedItem().toString().split(" ");
                 LocalDate validToDate = LocalDate.of(Integer.parseInt(validToMonthYear[1]), Month.valueOf(validToMonthYear[0]).getValue(), validToDayBox.getSelectedIndex());
                 //Create a linked list of days selected.
-                List<DayOfWeek> operatingDays = new ArrayList<DayOfWeek>();
-                if ( daysBox[0].isSelected() ) { operatingDays.add(DayOfWeek.SUNDAY); }
-                if ( daysBox[1].isSelected() ) { operatingDays.add(DayOfWeek.MONDAY); }
-                if ( daysBox[2].isSelected() ) { operatingDays.add(DayOfWeek.TUESDAY); }
-                if ( daysBox[3].isSelected() ) { operatingDays.add(DayOfWeek.WEDNESDAY); }
-                if ( daysBox[4].isSelected() ) { operatingDays.add(DayOfWeek.THURSDAY); }
-                if ( daysBox[5].isSelected() ) { operatingDays.add(DayOfWeek.FRIDAY); }
-                if ( daysBox[6].isSelected() ) { operatingDays.add(DayOfWeek.SATURDAY); }
+                String operatingDays = "";
+                if ( daysBox[0].isSelected() ) { operatingDays += DayOfWeek.SUNDAY.name(); }
+                if ( daysBox[1].isSelected() ) { operatingDays += DayOfWeek.MONDAY.name(); }
+                if ( daysBox[2].isSelected() ) { operatingDays += DayOfWeek.TUESDAY.name(); }
+                if ( daysBox[3].isSelected() ) { operatingDays += DayOfWeek.WEDNESDAY.name(); }
+                if ( daysBox[4].isSelected() ) { operatingDays += DayOfWeek.THURSDAY.name(); }
+                if ( daysBox[5].isSelected() ) { operatingDays += DayOfWeek.FRIDAY.name(); }
+                if ( daysBox[6].isSelected() ) { operatingDays += DayOfWeek.SATURDAY.name(); }
                 //Create time from.
                 LocalTime timeFrom = LocalTime.of(Integer.parseInt(fromHourSpinner.getValue().toString()), Integer.parseInt(fromMinuteSpinner.getValue().toString()));
                 //Create time to.
                 LocalTime timeTo = LocalTime.of(Integer.parseInt(toHourSpinner.getValue().toString()), Integer.parseInt(toMinuteSpinner.getValue().toString()));
                 //Generate timetable as a series of stop times.
+                //TODO: implement the stoppingTimes and distances arrays in the GUI correctly instead of arrays of 0.
+                int[] stoppingTimes = new int[stopNames.size()];
+                int[] distances = new int[stopNames.size()-1];
                 controllerHandler.getStopTimeController().generateStopTimes(gameModel.getCompany(), stoppingTimes,
-                        stopNames, routeModel.getRouteNumber(), distances, timeFrom, timeTo, (Integer) everyMinuteSpinner.getValue(), validFromDate,
-                        validToDate, operatingDays);
+                        stopNames.toArray(new String[0]), routeModel.getRouteNumber(), distances, timeFrom.format(DateTimeFormatter.ofPattern("HH:mm")),
+                        timeTo.format(DateTimeFormatter.ofPattern("HH:mm")), (Integer) everyMinuteSpinner.getValue(),
+                        validFromDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")), validToDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")),
+                        operatingDays);
                 //Return to management screen.
                 controlScreen.redrawManagement(displayPanel.createPanel(controlScreen), gameModel);
             }

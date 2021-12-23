@@ -46,6 +46,9 @@ public class ControllerHandler {
     @Value("${trams.version}")
     private String version;
 
+    @Value("${simulation.speed}")
+    private int simulationSpeed;
+
     public FileController getFileController() {
         return fileController;
     }
@@ -110,4 +113,11 @@ public class ControllerHandler {
         this.version = version;
     }
 
+    public int getSimulationSpeed() {
+        return simulationSpeed;
+    }
+
+    public void setSimulationSpeed(final int simulationSpeed) {
+        this.simulationSpeed = simulationSpeed;
+    }
 }

@@ -39,4 +39,15 @@ public class CompanyResponse {
      */
     private double satisfactionRate;
 
+    /**
+     * The scenario which this company was generated for (can be empty).
+     */
+    private String scenarioName;
+
+    /**
+     * The difficulty level which this company should be run at (can be EASY, MEDIUM or HARD)
+     */
+    private String difficultyLevel;
+
+
 }

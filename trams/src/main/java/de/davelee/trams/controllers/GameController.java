@@ -73,7 +73,6 @@ public class GameController {
 				.difficultyLevel(DifficultyLevel.EASY)
 				.playerName(playerName)
 				.scenarioName(scenarioName)
-				.timeIncrement(15)
 				.passengerSatisfaction(100)
 				.build();
 		//Save game to db, update cache and return it.

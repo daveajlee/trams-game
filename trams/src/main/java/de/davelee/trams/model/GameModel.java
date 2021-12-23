@@ -23,6 +23,5 @@ public class GameModel {
 	private DifficultyLevel difficultyLevel;
 	private String scenarioName;
 	private LocalDateTime currentDateTime;
-	private int timeIncrement;
 
 }

@@ -99,7 +99,7 @@ public class MakeContactScreen extends JFrame {
                         "\n\n Control: Vehicle " + vehicleModel.getRegistrationNumber() + ", please terminate at " + stopBox.getSelectedItem().toString() + " and proceed in service in the reverse direction. Over!" +
                         "\n\n Vehicle " + vehicleModel.getRegistrationNumber() + ": Message acknowledeged. Thanks. Over!");
                 //Ask vehicle to shorten current route to the specified destination.
-                vehicleController.shortenSchedule(vehicleModel, stopBox.getSelectedItem().toString(), gameModel.getCurrentDateTime().toLocalTime());
+                vehicleController.shortenSchedule(vehicleModel, stopBox.getSelectedItem().toString(), gameModel.getCurrentDateTime());
             }
         });
         alterButtonPanel.add(shortenRouteButton);
@@ -110,7 +110,7 @@ public class MakeContactScreen extends JFrame {
                         "\n\n Control: Vehicle " + vehicleModel.getRegistrationNumber() + ", please go out of service until " + stopBox.getSelectedItem().toString() + ". Over!" +
                         "\n\n Vehicle " + vehicleModel.getRegistrationNumber() + ": Message acknowledeged. Thanks. Over!");
                 //Request vehicle to go out of service.
-                vehicleController.outOfService(vehicleModel, vehicleController.getCurrentStopName(vehicleModel, gameModel.getCurrentDateTime(), gameModel.getDifficultyLevel()), stopBox.getSelectedItem().toString(), gameModel.getCurrentDateTime().toLocalTime());
+                vehicleController.outOfService(vehicleModel, stopBox.getSelectedItem().toString(), gameModel.getCurrentDateTime(), gameModel.getDifficultyLevel());
             }
         });
         alterButtonPanel.add(goOutOfServiceButton);

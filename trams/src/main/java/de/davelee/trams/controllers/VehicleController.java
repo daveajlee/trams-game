@@ -3,6 +3,7 @@ package de.davelee.trams.controllers;
 import de.davelee.trams.model.GameModel;
 import de.davelee.trams.model.ScenarioModel;
 import de.davelee.trams.model.VehicleModel;
+import de.davelee.trams.util.DifficultyLevel;
 import de.davelee.trams.util.SortedVehicleModels;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -10,6 +11,7 @@ import de.davelee.trams.services.VehicleService;
 import org.springframework.stereotype.Controller;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -116,7 +118,27 @@ public class VehicleController {
 	}
 
 	public VehicleModel[] getVehicleModelsForRoute ( final String company, final String routeNumber ) {
+		//TODO: implement call to REST service to return the vehicles.
+		return new VehicleModel[0];
+	}
 
+	public String getCurrentStopName (final VehicleModel vehicleModel, final LocalDateTime currentDateTime, final DifficultyLevel difficultyLevel ) {
+		//TODO: implement method completely.
+		return "";
+	}
+
+	public String getDestination ( final VehicleModel vehicleModel, final LocalDateTime currentDateTime, final DifficultyLevel difficultyLevel ) {
+		//TODO: implement method completely.
+		return "";
+	}
+
+	public void shortenSchedule ( final VehicleModel vehicleModel, final String newDestination, final LocalDateTime currentDateTime ) {
+		//TODO: implement shorten schedule correctly.
+	}
+
+	public void outOfService ( final VehicleModel vehicleModel, final String restartStop, final LocalDateTime currentDateTime,
+							   final DifficultyLevel difficultyLevel ) {
+		final String currentStopName = getCurrentStopName(vehicleModel, currentDateTime, difficultyLevel);
 	}
 
 	public List<String> getAllocations ( final String company ) {

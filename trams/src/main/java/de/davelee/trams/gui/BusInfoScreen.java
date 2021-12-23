@@ -136,7 +136,7 @@ public class BusInfoScreen extends JFrame {
         locationLabel.setFont(new Font("Arial", Font.BOLD, 15));
         eastPanel.add(locationLabel);
         //Destination.
-        JLabel destinationLabel = new JLabel("Destination: " + vehicleController.getLastStopName(vehicleModel, gameModel.getCurrentDateTime(), gameModel.getDifficultyLevel()));
+        JLabel destinationLabel = new JLabel("Destination: " + vehicleController.getDestination(vehicleModel, gameModel.getCurrentDateTime(), gameModel.getDifficultyLevel()));
         destinationLabel.setFont(new Font("Arial", Font.BOLD, 15));
         eastPanel.add(destinationLabel);
         //Delay.

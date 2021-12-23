@@ -30,6 +30,8 @@ public class GameService {
                         .startingBalance(gameModel.getBalance())
                         .startingTime(gameModel.getCurrentDateTime().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm")))
                         .playerName(gameModel.getPlayerName())
+                        .difficultyLevel(gameModel.getDifficultyLevel().name())
+                        .scenarioName(gameModel.getScenarioName())
                         .build(),
                 Void.class);
     }
@@ -47,10 +49,9 @@ public class GameService {
                 .playerName(companyResponse.getPlayerName())
                 .balance(companyResponse.getBalance())
                 .passengerSatisfaction(companyResponse.getSatisfactionRate())
-                .scenarioName(game.getScenarioName())
-                .difficultyLevel(game.getDifficultyLevel())
-                .currentDateTime(companyResponse.getTime())
-                .timeIncrement(game.getTimeIncrement())
+                .scenarioName(companyResponse.getScenarioName())
+                .difficultyLevel(DifficultyLevel.valueOf(companyResponse.getDifficultyLevel()))
+                .currentDateTime(LocalDateTime.parse(companyResponse.getTime(), DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm")))
                 .build();
     }
     
