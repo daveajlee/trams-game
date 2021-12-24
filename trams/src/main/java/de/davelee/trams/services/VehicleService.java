@@ -15,6 +15,7 @@ import de.davelee.trams.model.VehicleModel;
 import de.davelee.trams.util.DifficultyLevel;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.PropertySource;
@@ -28,7 +29,8 @@ import org.springframework.web.client.RestTemplate;
 @Setter
 public class VehicleService {
 
-    private final RestTemplate restTemplate = new RestTemplate();
+    @Autowired
+    private RestTemplate restTemplate;
 
     @Value("${server.operations.url}")
     private String operationsServerUrl;
@@ -82,7 +84,7 @@ public class VehicleService {
                 .registrationNumber(vehicleResponse.getAdditionalTypeInformationMap().get("Registration Number"))
                 .deliveryDate(convertDateToLocalDate(vehicleResponse.getDeliveryDate()))
                 .model(vehicleResponse.getModelName())
-                .routeScheduleNumber(Long.parseLong(vehicleResponse.getAllocatedTour()))
+                .allocatedTour(vehicleResponse.getAllocatedTour())
                 .seatingCapacity(vehicleResponse.getSeatingCapacity())
                 .standingCapacity(vehicleResponse.getStandingCapacity())
                 .delay(vehicleResponse.getDelayInMinutes())

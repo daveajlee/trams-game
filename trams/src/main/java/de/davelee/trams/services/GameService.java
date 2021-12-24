@@ -11,6 +11,7 @@ import de.davelee.trams.api.response.SatisfactionRateResponse;
 import de.davelee.trams.api.response.TimeResponse;
 import de.davelee.trams.model.GameModel;
 import de.davelee.trams.util.DifficultyLevel;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -18,7 +19,8 @@ import org.springframework.web.client.RestTemplate;
 @Service
 public class GameService {
 
-    private final RestTemplate restTemplate = new RestTemplate();
+    @Autowired
+    private RestTemplate restTemplate;
 
     @Value("${server.business.url}")
     private String businessServerUrl;

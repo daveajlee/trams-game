@@ -2,23 +2,32 @@ package de.davelee.trams.services;
 
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.Map;
 import java.util.NoSuchElementException;
 
-import de.davelee.trams.TramsGameApplication;
+import de.davelee.trams.TestTramsGameApplication;
+import de.davelee.trams.api.response.VehicleResponse;
+import de.davelee.trams.api.response.VehiclesResponse;
 import de.davelee.trams.model.VehicleModel;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.web.client.RestTemplate;
 
-@ExtendWith(SpringExtension.class)
-@SpringBootTest(classes= TramsGameApplication.class)
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+
+@SpringBootTest(classes = TestTramsGameApplication.class)
 public class VehicleServiceTest {
-	
-	@Autowired
-	private VehicleService vehicleService;
+
+	@Mock
+	private RestTemplate restTemplate;
+
+	@InjectMocks
+	private VehicleService vehicleService = new VehicleService();
 	
 	@Test
 	public void testCreateVehicle() {
@@ -120,29 +129,56 @@ public class VehicleServiceTest {
 		vehicleModel.setStandingCapacity(20);
 		vehicleModel.setPurchasePrice(20000.00);
 		//Test begins here.
+		Mockito.doNothing().when(restTemplate).delete(anyString());
 		vehicleService.deleteAllVehicles("Mustermann GmbH");
 		vehicleService.saveVehicle(vehicleModel);
+		Mockito.when(restTemplate.getForObject(anyString(), eq(VehiclesResponse.class))).
+				thenReturn(VehiclesResponse.builder()
+						.vehicleResponses(new VehicleResponse[] { VehicleResponse.builder().company("Mustermann GmbH")
+								.additionalTypeInformationMap(Map.of("Registration Number", "DDD2 HJK"))
+								.deliveryDate("24-12-2020").build() })
+						.build());
 		assertEquals(1, vehicleService.getVehicleModels("Mustermann GmbH").length);
-		Assertions.assertNotNull(vehicleService.getVehicleByRegistrationNumber("CV58 2DX", "Mustermann GmbH"));
-		assertEquals(vehicleService.getVehicleByRegistrationNumber("CV58 2DX", "Mustermann GmbH").getImagePath(), "singledecker.png");
+		Assertions.assertNotNull(vehicleService.getVehicleByRegistrationNumber("DDD2 HJK", "Mustermann GmbH"));
 		Assertions.assertNull(vehicleService.getVehicleByRegistrationNumber("2013-001", "Mustermann GmbH"));
 	}
 
 	@Test
 	public void testCreateVehicleObject() {
-		assertNotNull(vehicleService.createVehicleObject("MyBus Single Decker", "CV58 2DD", LocalDate.now(), "Mustermann GmbH"));
+		Mockito.when(restTemplate.getForObject(anyString(), eq(VehiclesResponse.class))).
+				thenReturn(VehiclesResponse.builder()
+						.vehicleResponses(new VehicleResponse[] { VehicleResponse.builder().company("Mustermann GmbH")
+								.additionalTypeInformationMap(Map.of("Registration Number", "DDD2 HJK"))
+								.deliveryDate("24-12-2020")
+								.modelName("MyBus Single Decker").build() })
+						.build());
+		assertNotNull(vehicleService.createVehicleObject("MyBus Single Decker", "DDD2 HJK", LocalDate.now(), "Mustermann GmbH"));
 		Assertions.assertThrows(NoSuchElementException.class, () -> vehicleService.createVehicleObject("MyTrain", "123", LocalDate.now(), "Mustermann GmbH"));
 	}
 
 	@Test
 	public void testGetModel() {
+		Mockito.when(restTemplate.getForObject(anyString(), eq(VehiclesResponse.class))).
+				thenReturn(VehiclesResponse.builder()
+						.vehicleResponses(new VehicleResponse[] { VehicleResponse.builder().company("Mustermann GmbH")
+								.additionalTypeInformationMap(Map.of("Registration Number", "DDD2 HJK"))
+								.deliveryDate("24-12-2020")
+								.modelName("MyBus Single Decker").build() })
+						.build());
 		Assertions.assertNotNull(vehicleService.getFirstVehicleModel("Mustermann GmbH"));
 		assertEquals(vehicleService.getFirstVehicleModel("Mustermann GmbH"), "MyBus Single Decker");
 	}
 
 	@Test
 	public void testVehicleSize() {
-		assertEquals(vehicleService.getNumberVehicleTypes("Mustermann GmbH"), 4);
+		Mockito.when(restTemplate.getForObject(anyString(), eq(VehiclesResponse.class))).
+				thenReturn(VehiclesResponse.builder()
+						.vehicleResponses(new VehicleResponse[] { VehicleResponse.builder().company("Mustermann GmbH")
+								.additionalTypeInformationMap(Map.of("Registration Number", "DDD2 HJK"))
+								.deliveryDate("24-12-2020")
+								.modelName("MyBus Single Decker").build() })
+						.build());
+		assertEquals(vehicleService.getNumberVehicleTypes("Mustermann GmbH"), 1);
 	}
 
 	private void assertEquals ( final double expected, final double actual, final double delta ) {
