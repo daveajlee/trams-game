@@ -6,6 +6,7 @@ import java.time.format.DateTimeFormatter;
 import de.davelee.trams.TramsGameApplication;
 import de.davelee.trams.api.request.AddTimeRequest;
 import de.davelee.trams.api.response.CompanyResponse;
+import de.davelee.trams.api.response.SatisfactionRateResponse;
 import de.davelee.trams.api.response.TimeResponse;
 import de.davelee.trams.model.GameModel;
 import de.davelee.trams.util.DifficultyLevel;
@@ -52,7 +53,7 @@ public class GameServiceTest {
 		Assertions.assertNotNull(gameService.getGameByPlayerName("Mustermann GmbH", "Dave A J Lee"));
 		GameModel gameModel2 = gameService.getGameByPlayerName("Mustermann GmbH", "Dave A J Lee");
 		assertEquals(DateTimeFormatter.ofPattern("HH:mm").format(gameModel2.getCurrentDateTime()), "11:58");
-		Mockito.when(restTemplate.patchForObject(anyString(), eq(AddTimeRequest.class), eq(TimeResponse.class))).thenReturn(
+		Mockito.when(restTemplate.patchForObject(anyString(), any(), eq(TimeResponse.class))).thenReturn(
 				TimeResponse.builder()
 						.company("Mustermann GmbH")
 						.time("24-12-2020 12:13")
@@ -62,6 +63,12 @@ public class GameServiceTest {
 		assertEquals(DateTimeFormatter.ofPattern("HH:mm").format(localDateTime), "12:13");
 		gameService.withdrawOrCreditBalance(-100.0, "Dave A J Lee");
 		gameService.withdrawOrCreditBalance(10.0, "Dave A J Lee");
+		Mockito.when(restTemplate.patchForObject(anyString(), any(), eq(SatisfactionRateResponse.class))).thenReturn(
+				SatisfactionRateResponse.builder()
+						.company("Mustermann GmbH")
+						.satisfactionRate(91)
+						.build()
+		);
 		Assertions.assertEquals(gameService.computeAndReturnPassengerSatisfaction("Mustermann GmbH", DifficultyLevel.EASY, 4, 3, 2), 91);
 	}
 

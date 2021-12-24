@@ -8,6 +8,7 @@ import de.davelee.trams.api.request.UserRequest;
 import de.davelee.trams.api.response.UserResponse;
 import de.davelee.trams.api.response.UsersResponse;
 import de.davelee.trams.model.DriverModel;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -15,7 +16,8 @@ import org.springframework.web.client.RestTemplate;
 @Service
 public class DriverService {
 
-	private final RestTemplate restTemplate = new RestTemplate();
+	@Autowired
+	private RestTemplate restTemplate;
 
 	@Value("${server.personalman.url}")
 	private String personalManServerUrl;

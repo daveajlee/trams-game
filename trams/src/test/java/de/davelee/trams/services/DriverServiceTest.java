@@ -3,30 +3,50 @@ package de.davelee.trams.services;
 import java.time.LocalDate;
 import java.time.Month;
 
+import de.davelee.trams.TestTramsGameApplication;
 import de.davelee.trams.TramsGameApplication;
+import de.davelee.trams.api.response.UserResponse;
 import de.davelee.trams.model.DriverModel;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.web.client.RestTemplate;
 
-@ExtendWith(SpringExtension.class)
-@SpringBootTest(classes= TramsGameApplication.class)
+import static org.mockito.ArgumentMatchers.*;
+
+@SpringBootTest(classes= TestTramsGameApplication.class)
 public class DriverServiceTest {
 
-	@Autowired
+	@Mock
+	private RestTemplate restTemplate;
+
+	@InjectMocks
 	private DriverService driverService;
 	
 	@Test
 	public void testCreateDriver() {
+		Mockito.doNothing().when(restTemplate).delete(anyString());
 		driverService.removeAllDrivers("Mustermann GmbH", "mmustermann-ghgkg");
 		DriverModel driverModel = DriverModel.builder()
 				.name("Dave Lee")
 				.contractedHours(40)
 				.startDate(LocalDate.of(2014,4,20)).build();
+		Mockito.when(restTemplate.postForObject(anyString(), any(), eq(Void.class))).thenReturn(null);
 		driverService.saveDriver(driverModel);
+		Mockito.when(restTemplate.getForObject(anyString(), eq(UserResponse.class))).thenReturn(
+			UserResponse.builder()
+					.firstName("Dave")
+					.surname("Lee")
+					.contractedHoursPerWeek(40)
+					.startDate("20-04-2014")
+					.build()
+		);
 		DriverModel driverModel2 = driverService.getDriverByName("Dave Lee", "Mustermann GmbH", "mmustermann-ghgkg");
 		assertEquals(driverModel2.getName(), "Dave Lee");
 		Assertions.assertEquals(driverModel2.getContractedHours(), 40);
@@ -73,11 +93,21 @@ public class DriverServiceTest {
 				.name("Rachel Lee")
 				.contractedHours(30)
 				.startDate(LocalDate.of(2014,6,20)).build();
+		Mockito.when(restTemplate.postForObject(anyString(), any(), eq(Void.class))).thenReturn(null);
 		driverService.saveDriver(driverModel);
 		driverService.saveDriver(driverModel2);
 		driverService.saveDriver(driverModel3);
+		Mockito.when(restTemplate.getForObject(anyString(), eq(UserResponse.class))).thenReturn(
+				UserResponse.builder()
+						.firstName("Brian")
+						.surname("Lee")
+						.contractedHoursPerWeek(40)
+						.startDate("20-04-2014")
+						.build()
+		);
 		Assertions.assertNotNull(driverService.getDriverByName("Brian Lee", "Mustermann GmbH", "mmustermann-ghgkg"));
 		assertEquals(driverService.getDriverByName("Brian Lee", "Nustermann GmbH", "mmustermann-ghgkg").getName(), "Brian Lee");
+		Mockito.when(restTemplate.getForObject(anyString(), eq(UserResponse.class))).thenReturn(null);
 		Assertions.assertNull(driverService.getDriverByName("Stephan Lee", "Mustermann GmbH", "mmustermann-ghgkg"));
 	}
 

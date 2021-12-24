@@ -81,13 +81,14 @@ public class FileController {
     }
     
     public TramsFile prepareTramsFile ( ) {
+		//TODO: rebuild the trams file with all classes in a suitable structure.
     	return TramsFile.builder()
-				.driverModels(driverController.getAllDrivers(gameController.getGameModel().getCompany()))
+				/*.driverModels(driverController.getAllDrivers(gameController.getGameModel().getCompany()))
 				.gameModel(new GameModel[] { gameController.getGameModel() })
 				.messageModels(messageController.getAllMessages(gameController.getGameModel().getCompany()))
 				.routeModels(routeController.getRouteModels(gameController.getGameModel().getCompany()))
 				.stops(journeyController.getAllStops(gameController.getGameModel().getCompany()))
-				.vehicleModels(vehicleController.getVehicleModels(gameController.getGameModel().getCompany()))
+				.vehicleModels(vehicleController.getVehicleModels(gameController.getGameModel().getCompany()))*/
 				.build();
     }
 
