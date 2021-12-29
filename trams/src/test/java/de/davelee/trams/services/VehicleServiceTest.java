@@ -5,7 +5,7 @@ import java.time.Month;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
-import de.davelee.trams.TestTramsGameApplication;
+import de.davelee.trams.TramsGameApplication;
 import de.davelee.trams.api.response.VehicleResponse;
 import de.davelee.trams.api.response.VehiclesResponse;
 import de.davelee.trams.model.VehicleModel;
@@ -20,7 +20,7 @@ import org.springframework.web.client.RestTemplate;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 
-@SpringBootTest(classes = TestTramsGameApplication.class)
+@SpringBootTest(classes= TramsGameApplication.class)
 public class VehicleServiceTest {
 
 	@Mock

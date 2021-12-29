@@ -17,8 +17,6 @@ import org.springframework.web.client.RestTemplate;
 
 @SpringBootApplication
 @Configuration
-@ComponentScan
-@EnableAutoConfiguration
 @EnableConfigurationProperties
 public class TramsGameApplication {
 
