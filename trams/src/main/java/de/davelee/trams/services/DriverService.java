@@ -11,6 +11,7 @@ import de.davelee.trams.model.DriverModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 @Service
@@ -49,15 +50,20 @@ public class DriverService {
 	}
 
 	public DriverModel[] getAllDrivers (final String company, final String token) {
-		UsersResponse usersResponse = restTemplate.getForObject(personalManServerUrl + "user/?company=" + company + "&token=" + token, UsersResponse.class);
-		if ( usersResponse != null && usersResponse.getUserResponses() != null ) {
-			DriverModel[] driverModels = new DriverModel[usersResponse.getUserResponses().length];
-			for (int i = 0; i < driverModels.length; i++) {
-				driverModels[i] = convertToDriverModel(usersResponse.getUserResponses()[i]);
+		try {
+			UsersResponse usersResponse = restTemplate.getForObject(personalManServerUrl + "user/?company=" + company + "&username=mmustermann&token=" + token, UsersResponse.class);
+			if (usersResponse != null && usersResponse.getUserResponses() != null) {
+				DriverModel[] driverModels = new DriverModel[usersResponse.getUserResponses().length];
+				for (int i = 0; i < driverModels.length; i++) {
+					driverModels[i] = convertToDriverModel(usersResponse.getUserResponses()[i]);
+				}
+				return driverModels;
 			}
-			return driverModels;
+			return null;
+		} catch ( HttpClientErrorException exception ) {
+			//If forbidden then return null.
+			return null;
 		}
-		return null;
 	}
 
 	public void saveDriver ( final DriverModel driverModel ) {

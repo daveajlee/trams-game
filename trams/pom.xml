@@ -59,6 +59,13 @@
 		  <artifactId>lombok</artifactId>
 		  <version>1.18.22</version>
 	  </dependency>
+
+	  <!-- Enable httpclient for PATCH method -->
+	  <dependency>
+		  <groupId>org.apache.httpcomponents</groupId>
+		  <artifactId>httpclient</artifactId>
+		  <version>4.4.1</version>
+	  </dependency>
   </dependencies>
   
   <build>

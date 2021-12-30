@@ -23,7 +23,8 @@ public class RouteController {
 	}
 
 	public int getNumberRoutes ( final String company ) {
-		return routeService.getAllRoutes(company).length;
+		RouteModel[] routeModels = routeService.getAllRoutes(company);
+		return routeModels != null ? routeService.getAllRoutes(company).length : 0;
 	}
 
 	/**

@@ -500,10 +500,12 @@ public class ControlScreen extends ButtonBar {
         messagesPanel.add(westPanel, BorderLayout.WEST);
         //Initialise the messages list now.
         MessageModel[] myMessageModels = super.getControllerHandler().getMessageController().getMessagesByFolder(company, foldersBox.getSelectedItem().toString());
-        for ( int i = 0; i < myMessageModels.length; i++ ) {
-            messagesModel.addElement(myMessageModels[i].getSubject());
+        if ( myMessageModels != null ) {
+            for (int i = 0; i < myMessageModels.length; i++) {
+                messagesModel.addElement(myMessageModels[i].getSubject());
+            }
+            messagesList.setSelectedIndex(0);
         }
-        messagesList.setSelectedIndex(0);
         
         //theMessagesPanel.add(makeOptionsPanel(), BorderLayout.NORTH);
         //BoxLayout layout = new BoxLayout(theMessagesPanel, BoxLayout.Y_AXIS);
@@ -530,7 +532,7 @@ public class ControlScreen extends ButtonBar {
         messageAndButtonPanel.add(messagesList, BorderLayout.NORTH);
 
         JScrollPane messagesPane = new JScrollPane();
-        if ( myMessageModels.length == 0 && dateBox.getSelectedItem().toString().equalsIgnoreCase("All Dates") ) {
+        if ( myMessageModels == null || (myMessageModels.length == 0 && dateBox.getSelectedItem().toString().equalsIgnoreCase("All Dates") )) {
             messagesArea.setText("There are no messages in the " + foldersBox.getSelectedItem().toString() + " folder.");
         }
         else if ( myMessageModels.length == 0 ) {

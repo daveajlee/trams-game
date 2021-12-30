@@ -184,7 +184,7 @@ public class GameController {
 				numLargeLateSchedules++;
 			}
 		}
-		return gameService.computeAndReturnPassengerSatisfaction(cachedGameModel.getPlayerName(), cachedGameModel.getDifficultyLevel(), numSmallLateSchedules, numMediumLateSchedules, numLargeLateSchedules);
+		return gameService.computeAndReturnPassengerSatisfaction(cachedGameModel.getCompany(), cachedGameModel.getDifficultyLevel(), numSmallLateSchedules, numMediumLateSchedules, numLargeLateSchedules);
 	}
 
 }

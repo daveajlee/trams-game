@@ -38,7 +38,7 @@ public class MessageService {
     private MessageModel convertToMessageModel ( final MessageResponse messageResponse ) {
         return MessageModel.builder()
                 .date(messageResponse.getDateTime())
-                .messageFolder(MessageFolder.valueOf(messageResponse.getFolder()))
+                .messageFolder(MessageFolder.getFolderEnum(messageResponse.getFolder()))
                 .sender(messageResponse.getSender())
                 .subject(messageResponse.getSubject())
                 .text(messageResponse.getText())
