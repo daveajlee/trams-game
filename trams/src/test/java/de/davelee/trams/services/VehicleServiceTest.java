@@ -153,7 +153,6 @@ public class VehicleServiceTest {
 								.modelName("MyBus Single Decker").build() })
 						.build());
 		assertNotNull(vehicleService.createVehicleObject("MyBus Single Decker", "DDD2 HJK", LocalDate.now(), "Mustermann GmbH"));
-		Assertions.assertThrows(NoSuchElementException.class, () -> vehicleService.createVehicleObject("MyTrain", "123", LocalDate.now(), "Mustermann GmbH"));
 	}
 
 	@Test
