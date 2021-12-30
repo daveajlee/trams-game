@@ -63,17 +63,17 @@ public class DriverService {
 	public void saveDriver ( final DriverModel driverModel ) {
 		restTemplate.postForObject(personalManServerUrl + "user/",
 				UserRequest.builder()
-						.dateOfBirth("")
+						.dateOfBirth("01-01-1990")
 						.firstName(driverModel.getName().split(" ")[0])
 						.surname(driverModel.getName().split(" ")[1])
 						.leaveEntitlementPerYear(driverModel.getLeaveEntitlementPerYear())
 						.company(driverModel.getCompany())
-						.password("")
-						.position("")
-						.role("")
-						.username("")
-						.workingDays("")
-						.startDate(LocalDate.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")))
+						.password("test")
+						.position("Tester")
+						.role("ADMIN")
+						.username(driverModel.getName().split(" ")[0].substring(0,1) + driverModel.getName().split(" ")[1])
+						.workingDays("Monday,Tuesday")
+						.startDate(driverModel.getStartDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")))
 						.build(),
 				Void.class);
 	}

@@ -162,7 +162,7 @@ public class NewGameScreen extends JFrame {
                 //Create supplied vehicles.
                 controllerHandler.getVehicleController().createSuppliedVehicles(scenarioModel, gameModel.getCurrentDateTime().toLocalDate(), companyNameField.getText());
                 //Create supplied drivers.
-                controllerHandler.getDriverController().createSuppliedDrivers(scenarioModel, gameModel.getCurrentDateTime().toLocalDate());
+                controllerHandler.getDriverController().createSuppliedDrivers(scenarioModel, gameModel.getCurrentDateTime().toLocalDate(), companyNameField.getText());
                 //Create welcome message.
                 String date = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm").format(gameModel.getCurrentDateTime());
                 controllerHandler.getMessageController().addMessage(companyNameField.getText(), "Welcome Message", "Congratulations on your appointment as Managing Director of the " +

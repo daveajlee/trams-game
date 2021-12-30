@@ -105,8 +105,19 @@ public class VehicleController {
 		while (vehicleModels.hasNext()) {
 			String vehicleModel = vehicleModels.next();
 			for ( int i = 0; i < scenarioModel.getSuppliedVehicles().get(vehicleModel); i++ )  {
-				vehicleService.saveVehicle(vehicleService.createVehicleObject(vehicleModel, vehicleService.generateRandomReg(
-						currentDate.getYear(), company), currentDate, company));
+				int fleetNumber = 100 + i;
+				vehicleService.saveVehicle(
+						VehicleModel.builder()
+								.company(company)
+								.deliveryDate(currentDate)
+								.registrationNumber(vehicleService.generateRandomReg(
+										currentDate.getYear(), company))
+								.fleetNumber("" + fleetNumber)
+								.model(vehicleModel)
+								.livery("Green with Red text")
+								.seatingCapacity(50)
+								.standingCapacity(95)
+								.build());
 				numCreatedVehicles++;
 			}
 		}

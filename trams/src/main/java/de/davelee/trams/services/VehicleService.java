@@ -72,11 +72,14 @@ public class VehicleService {
 
     public VehicleModel[] getVehicleModels ( final String company ) {
         VehiclesResponse vehiclesResponse = restTemplate.getForObject(operationsServerUrl + "vehicles/?company=" + company, VehiclesResponse.class);
-        VehicleModel[] vehicleModels = new VehicleModel[vehiclesResponse.getVehicleResponses().length];
-        for ( int i = 0; i < vehicleModels.length; i++ ) {
-            vehicleModels[i] = convertToVehicleModel(vehiclesResponse.getVehicleResponses()[i]);
+        if ( vehiclesResponse != null && vehiclesResponse.getVehicleResponses() != null ) {
+            VehicleModel[] vehicleModels = new VehicleModel[vehiclesResponse.getVehicleResponses().length];
+            for (int i = 0; i < vehicleModels.length; i++) {
+                vehicleModels[i] = convertToVehicleModel(vehiclesResponse.getVehicleResponses()[i]);
+            }
+            return vehicleModels;
         }
-        return vehicleModels;
+        return null;
     }
 
     private VehicleModel convertToVehicleModel ( final VehicleResponse vehicleResponse ) {
@@ -181,15 +184,12 @@ public class VehicleService {
     }
 
     public VehicleModel createVehicleObject ( final String model, final String registrationNumber, final LocalDate deliveryDate, final String company ) throws NoSuchElementException  {
-        VehicleModel[] vehicleModels = getVehicleModels(company);
-        for ( VehicleModel vehicleModel : vehicleModels ) {
-            if ( vehicleModel.getModel().contentEquals(model) ) {
-                vehicleModel.setRegistrationNumber(registrationNumber);
-                vehicleModel.setDeliveryDate(deliveryDate);
-                return vehicleModel;
-            }
-        }
-        throw new NoSuchElementException();
+        return VehicleModel.builder()
+                .model(model)
+                .registrationNumber(registrationNumber)
+                .deliveryDate(deliveryDate)
+                .company(company)
+                .build();
     }
 
     public int getNumberVehicleTypes ( final String company ) {

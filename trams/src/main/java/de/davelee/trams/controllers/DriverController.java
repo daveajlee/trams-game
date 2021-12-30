@@ -39,11 +39,13 @@ public class DriverController {
         driverService.saveDriver(driverModel);
     }
 
-    public void createSuppliedDrivers(final ScenarioModel scenarioModel, LocalDate startDate) {
+    public void createSuppliedDrivers(final ScenarioModel scenarioModel, final LocalDate startDate, final String company ) {
         for ( String suppliedDriver : scenarioModel.getSuppliedDrivers()) {
             driverService.saveDriver(DriverModel.builder()
+                    .company(company)
                     .contractedHours(35)
                     .name(suppliedDriver)
+                    .leaveEntitlementPerYear(25)
                     .startDate(startDate)
                     .build());
         }
