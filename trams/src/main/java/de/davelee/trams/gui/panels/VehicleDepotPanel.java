@@ -175,7 +175,8 @@ public class VehicleDepotPanel {
         JButton sellVehicleButton = new JButton("Sell Vehicle");
         sellVehicleButton.addActionListener ( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
-                controllerHandler.getVehicleController().sellVehicle(vehicleModel);
+                double sellingPrice = controllerHandler.getVehicleController().sellVehicle(vehicleModel, gameModel.getCurrentDateTime().toLocalDate());
+                controllerHandler.getGameController().creditBalance(sellingPrice);
                 controlScreen.redrawManagement(createPanel("", controlScreen, displayPanel), controllerHandler.getGameController().getGameModel());
             }
         });

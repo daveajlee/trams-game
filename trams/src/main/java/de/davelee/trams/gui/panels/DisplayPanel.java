@@ -226,7 +226,7 @@ public class DisplayPanel {
         JPanel viewDepotButtonPanel = new JPanel(new GridBagLayout());
         viewDepotButtonPanel.setBackground(Color.WHITE);
         final JButton viewDepotButton = new JButton("View Depot");
-        if ( !controllerHandler.getVehicleController().hasSomeVehiclesBeenDelivered(company) ) { viewDepotButton.setEnabled(false); }
+        if ( !controllerHandler.getVehicleController().hasSomeVehiclesBeenDelivered(company, controllerHandler.getGameController().getGameModel().getCurrentDateTime().toLocalDate()) ) { viewDepotButton.setEnabled(false); }
         viewDepotButton.addActionListener( new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 VehicleDepotPanel vehicleDepotPanel = new VehicleDepotPanel(controllerHandler);

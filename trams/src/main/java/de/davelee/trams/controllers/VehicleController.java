@@ -1,6 +1,5 @@
 package de.davelee.trams.controllers;
 
-import de.davelee.trams.model.GameModel;
 import de.davelee.trams.model.ScenarioModel;
 import de.davelee.trams.model.VehicleModel;
 import de.davelee.trams.util.DifficultyLevel;
@@ -22,9 +21,6 @@ public class VehicleController {
 	@Autowired
 	private VehicleService vehicleService;
 
-	@Autowired
-	private GameController gameController;
-
 	public void assignVehicleToTour ( final String registrationNumber, final String allocatedTour, final String company ) {
 		VehicleModel vehicleModel = vehicleService.getVehicleByRegistrationNumber(registrationNumber, company);
 		vehicleService.assignVehicleToTour(vehicleModel, allocatedTour, company);
@@ -44,12 +40,11 @@ public class VehicleController {
 	 * This method checks if any vehicles have been delivered to the company yet!
 	 * @return a <code>boolean</code> which is true iff some vehicles have been delivered!
 	 */
-	public boolean hasSomeVehiclesBeenDelivered ( final String company) {
+	public boolean hasSomeVehiclesBeenDelivered ( final String company, final LocalDate currentDate) {
 		VehicleModel[] vehicleModels = getAllCreatedVehicles(company);
-		GameModel gameModel = gameController.getGameModel();
 		if ( vehicleModels.length == 0 ) { return false; }
 		for ( int i = 0; i < vehicleModels.length; i++ ) {
-			if ( hasVehicleBeenDelivered(vehicleModels[i].getDeliveryDate(), gameModel.getCurrentDateTime().toLocalDate()) ) { return true; }
+			if ( hasVehicleBeenDelivered(vehicleModels[i].getDeliveryDate(), currentDate) ) { return true; }
 		}
 		return false;
 	}
@@ -76,23 +71,22 @@ public class VehicleController {
 	 * Sell a vehicle.
 	 * @param vehicleModel a <code>VehicleModel</code> object representing the vehicle to sell.
 	 */
-	public void sellVehicle ( final VehicleModel vehicleModel ) {
-		GameModel gameModel = gameController.getGameModel();
-		gameController.creditBalance(vehicleService.getValue(vehicleModel.getPurchasePrice(), vehicleModel.getDepreciationFactor(), vehicleModel.getDeliveryDate(), gameModel.getCurrentDateTime().toLocalDate()));
+	public double sellVehicle ( final VehicleModel vehicleModel, final LocalDate currentDate ) {
 		vehicleService.removeVehicle(vehicleModel);
+		return vehicleService.getValue(vehicleModel.getPurchasePrice(), vehicleModel.getDepreciationFactor(), vehicleModel.getDeliveryDate(), currentDate);
 	}
 
 	/**
 	 * Purchase a new vehicle.
 	 * @param type a <code>String</code> with the vehicle type.
 	 * @param deliveryDate a <code>LocalDate</code> with the delivery date.
+	 * @return a <code>double</code> with the purchase price of the vehicle.
 	 */
-	public void purchaseVehicle ( final String type, final LocalDate deliveryDate, final String company ) {
-		GameModel gameModel = gameController.getGameModel();
+	public double purchaseVehicle ( final String type, final LocalDate deliveryDate, final String company, final int year ) {
 		VehicleModel vehicle = vehicleService.createVehicleObject(type, vehicleService.generateRandomReg(
-		gameModel.getCurrentDateTime().getYear(), company), deliveryDate, company);
-		gameController.withdrawBalance(vehicle.getPurchasePrice());
+		year, company), deliveryDate, company);
 		vehicleService.saveVehicle(vehicle);
+		return vehicle.getPurchasePrice();
 	}
 
 	public VehicleModel getVehicleByAllocatedTour ( final String allocatedTour, final String company ) {
