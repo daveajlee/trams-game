@@ -67,7 +67,7 @@ public class FileController {
 		}
     	//Load vehicles.
 		if ( myFile.getVehicleModels() != null ) {
-			vehicleController.loadVehicles(myFile.getVehicleModels(), myFile.getGameModel()[0].getCompany());
+			vehicleController.loadVehicles(myFile.getVehicleModels(), myFile.getGameModel()[0].getCompany(), myFile.getGameModel()[0].getCurrentDateTime().toLocalDate());
 		}
     }
     

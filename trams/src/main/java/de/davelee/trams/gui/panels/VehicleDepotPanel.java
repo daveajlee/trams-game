@@ -8,6 +8,8 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
@@ -21,6 +23,7 @@ import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import de.davelee.trams.api.response.VehicleResponse;
 import de.davelee.trams.controllers.ControllerHandler;
 import de.davelee.trams.gui.ControlScreen;
 import de.davelee.trams.gui.ImageDisplay;
@@ -64,15 +67,15 @@ public class VehicleDepotPanel {
         
         //Get vehicle data now so that we can used to compile first!
         DefaultListModel vehiclesModel = new DefaultListModel();
-        VehicleModel[] vehicleModels = controllerHandler.getVehicleController().getAllCreatedVehicles(gameModel.getCompany());
+        VehicleResponse[] vehicleModels = controllerHandler.getVehicleController().getAllCreatedVehicles(gameModel.getCompany());
         for ( int i = 0; i < vehicleModels.length; i++ ) {
-            if ( controllerHandler.getVehicleController().hasVehicleBeenDelivered(vehicleModels[i].getDeliveryDate(), gameModel.getCurrentDateTime().toLocalDate()) ) {
-                vehiclesModel.addElement(vehicleModels[i].getRegistrationNumber());
+            if ( controllerHandler.getVehicleController().hasVehicleBeenDelivered(LocalDate.parse(vehicleModels[i].getDeliveryDate(), DateTimeFormatter.ofPattern("dd-MM-yyyy")), gameModel.getCurrentDateTime().toLocalDate()) ) {
+                vehiclesModel.addElement(vehicleModels[i].getAdditionalTypeInformationMap().get("Registration Number"));
             }
         }
         
         //Create vehicle object so that we can pull information from it.
-        final VehicleModel vehicleModel;
+        final VehicleResponse vehicleModel;
         if ( !registrationNumber.equalsIgnoreCase("") ) {
             vehicleModel = controllerHandler.getVehicleController().getVehicleByRegistrationNumber(registrationNumber, gameModel.getCompany());
         } else {
@@ -82,10 +85,11 @@ public class VehicleDepotPanel {
         //Create picture panel.
         JPanel picturePanel = new JPanel(new GridBagLayout());
         picturePanel.setBackground(Color.WHITE);
-        ImageDisplay busDisplay = new ImageDisplay(vehicleModel.getImagePath(),0,0);
+        //TODO: Add a mapping of images to model names.
+        /*ImageDisplay busDisplay = new ImageDisplay(vehicleModel.getImagePath(),0,0);
         busDisplay.setSize(220,200);
         busDisplay.setBackground(Color.WHITE);
-        picturePanel.add(busDisplay);
+        picturePanel.add(busDisplay);*/
         centrePanel.add(picturePanel);
             
         //Create panel for information fields.
@@ -98,7 +102,7 @@ public class VehicleDepotPanel {
         idLabel.setFont(new Font("Arial", Font.ITALIC, 14));
         idLabelPanel.add(idLabel);
         gridPanel.add(idLabel);
-        JLabel idField = new JLabel(vehicleModel.getRegistrationNumber());
+        JLabel idField = new JLabel(vehicleModel.getAdditionalTypeInformationMap().get("Registration Number"));
         idField.setFont(new Font("Arial", Font.PLAIN, 12));
         gridPanel.add(idField);
         //Create label and field for vehicle type and add it to the type panel.
@@ -108,7 +112,7 @@ public class VehicleDepotPanel {
         typeLabel.setFont(new Font("Arial", Font.ITALIC, 14));
         typeLabelPanel.add(typeLabel);
         gridPanel.add(typeLabel);
-        JLabel typeField = new JLabel(vehicleModel.getModel());
+        JLabel typeField = new JLabel(vehicleModel.getModelName());
         typeField.setFont(new Font("Arial", Font.PLAIN, 12));
         gridPanel.add(typeField);
         //Create label and field for age and add it to the age panel.
@@ -118,7 +122,7 @@ public class VehicleDepotPanel {
         ageLabel.setFont(new Font("Arial", Font.ITALIC, 14));
         ageLabelPanel.add(ageLabel);
         gridPanel.add(ageLabel);
-        JLabel ageField = new JLabel(controllerHandler.getVehicleController().getAge(vehicleModel.getDeliveryDate(),
+        JLabel ageField = new JLabel(controllerHandler.getVehicleController().getAge(LocalDate.parse(vehicleModel.getDeliveryDate(), DateTimeFormatter.ofPattern("dd-MM-yyyy")),
         		gameModel.getCurrentDateTime().toLocalDate()) + " months");
         ageField.setFont(new Font("Arial", Font.PLAIN, 12));
         gridPanel.add(ageField);
@@ -206,7 +210,7 @@ public class VehicleDepotPanel {
         final JList vehiclesList = new JList(vehiclesModel);
         vehiclesList.setFixedCellWidth(100);
         vehiclesList.setVisibleRowCount(25);
-        vehiclesList.setSelectedValue(vehicleModel.getRegistrationNumber(), true);
+        vehiclesList.setSelectedValue(vehicleModel.getAdditionalTypeInformationMap().get("Registration Number"), true);
         vehiclesList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         vehiclesList.setFont(new Font("Arial", Font.PLAIN, 15));
         vehiclesList.addListSelectionListener(new ListSelectionListener() {
@@ -228,9 +232,9 @@ public class VehicleDepotPanel {
         return vehicleScreenPanel;
 	}
 
-	private String displayAssignedRoute ( final VehicleModel vehicleModel ) {
-	    if ( vehicleModel.getRouteNumber() != null ) {
-            return "" + vehicleModel.getRouteNumber() + "/" + vehicleModel.getRouteScheduleNumber();
+	private String displayAssignedRoute ( final VehicleResponse vehicleModel ) {
+	    if ( vehicleModel.getAllocatedTour() != null ) {
+            return "" + vehicleModel.getAllocatedTour();
         } else {
 	        return "Not Assigned";
         }

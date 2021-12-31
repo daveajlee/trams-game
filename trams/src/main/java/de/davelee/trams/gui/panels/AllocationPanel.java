@@ -11,7 +11,6 @@ import java.awt.event.ActionListener;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
@@ -24,6 +23,7 @@ import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 
+import de.davelee.trams.api.response.VehicleResponse;
 import de.davelee.trams.controllers.ControllerHandler;
 
 import de.davelee.trams.gui.ControlScreen;
@@ -120,10 +120,11 @@ public class AllocationPanel {
         JPanel modelPanel = new JPanel();
         modelPanel.setBackground(Color.WHITE);
         final DefaultListModel vehiclesModel = new DefaultListModel();
-        VehicleModel[] vehicleModels = controllerHandler.getVehicleController().getAllCreatedVehicles(gameModel.getCompany());
+        VehicleResponse[] vehicleModels = controllerHandler.getVehicleController().getAllCreatedVehicles(gameModel.getCompany());
         for ( int i = 0; i < vehicleModels.length; i++ ) {
-            if ( vehicleModels[i].getRouteScheduleNumber() == 0 ) {
-                vehiclesModel.addElement(vehicleModels[i].getRegistrationNumber() + " (" + vehicleModels[i].getModel() + ")");
+            if ( vehicleModels[i].getAllocatedTour() != null ) {
+                vehiclesModel.addElement(vehicleModels[i].getAdditionalTypeInformationMap().get("Registration Number")
+                        + " (" + vehicleModels[i].getModelName() + ")");
             }
         }
         final JList vehiclesList = new JList(vehiclesModel);
@@ -169,9 +170,9 @@ public class AllocationPanel {
                     allocationsModel.removeElement(allocationsList.getSelectedValue());
                     String[] textParts = text.split("&");
                     routesModel.addElement(textParts[0].trim());
-                    VehicleModel vehicleModel = controllerHandler.getVehicleController().getVehicleByRegistrationNumber(textParts[1].trim(), gameModel.getCompany());
-                    vehiclesModel.addElement(vehicleModel.getRegistrationNumber() +
-                    		" (" + vehicleModel.getModel() + ")");
+                    VehicleResponse vehicleModel = controllerHandler.getVehicleController().getVehicleByRegistrationNumber(textParts[1].trim(), gameModel.getCompany());
+                    vehiclesModel.addElement(vehicleModel.getAdditionalTypeInformationMap().get("Registration Number") +
+                    		" (" + vehicleModel.getModelName() + ")");
                     //Remove this from the interface as well.
                     /*String routeNumber = textParts[0].split("/")[0]; int routeDetailPos = -1;
                     for ( int k = 0; k < theInterface.getRoute(routeNumber).getNumRouteSchedules(); k++ ) {
@@ -181,14 +182,14 @@ public class AllocationPanel {
                     }*/
                     //Find vehicle object position.
                     int vehiclePos = -1;
-                    VehicleModel[] vehicleModels = controllerHandler.getVehicleController().getAllCreatedVehicles(gameModel.getCompany());
+                    VehicleResponse[] vehicleModels = controllerHandler.getVehicleController().getAllCreatedVehicles(gameModel.getCompany());
                     for ( int j = 0; j < vehicleModels.length; j++ ) {
-                        if ( vehicleModels[j].getRegistrationNumber().equalsIgnoreCase(textParts[1].trim())) {
+                        if ( vehicleModels[j].getAdditionalTypeInformationMap().get("Registration Number").equalsIgnoreCase(textParts[1].trim())) {
                             vehiclePos = j;
                         }
                     }
                     //TODO: Set route and route schedule number.
-                    controllerHandler.getVehicleController().assignVehicleToTour(vehicleModels[vehiclePos].getRegistrationNumber(), "0/0", gameModel.getCompany());
+                    controllerHandler.getVehicleController().assignVehicleToTour(vehicleModels[vehiclePos].getAdditionalTypeInformationMap().get("Registration Number"), "0/0", gameModel.getCompany());
                 }
             }
         });
@@ -257,7 +258,7 @@ public class AllocationPanel {
                         String[] allocationSplit = allocationsModel.get(i).toString().split("&");
                         //Store route detail object.
                         String routeNumber = allocationSplit[0].split("/")[0]; int routeDetailPos = -1;
-                        VehicleModel[] vehicleModels = controllerHandler.getVehicleController().getVehicleModelsForRoute(gameModel.getCompany(), controllerHandler.getRouteController().getRoute(routeNumber, gameModel.getCompany()).getRouteNumber());
+                        VehicleResponse[] vehicleModels = controllerHandler.getVehicleController().getVehicleModelsForRoute(gameModel.getCompany(), controllerHandler.getRouteController().getRoute(routeNumber, gameModel.getCompany()).getRouteNumber());
                         for ( int k = 0; k < vehicleModels.length; k++ ) {
                             if ( vehicleModels[k].getAllocatedTour().contentEquals(allocationSplit[0]) ) {
                                 routeDetailPos = k;
@@ -266,13 +267,13 @@ public class AllocationPanel {
                         //Find vehicle object position.
                         int vehiclePos = -1;
                         for ( int j = 0; j < vehicleModels.length; j++ ) {
-                            if ( vehicleModels[j].getRegistrationNumber().equalsIgnoreCase(allocationSplit[1].trim())) {
+                            if ( vehicleModels[j].getAdditionalTypeInformationMap().get("Registration Number").equalsIgnoreCase(allocationSplit[1].trim())) {
                                 vehiclePos = j;
                                 vehiclePoses.add(vehiclePos);
                             }
                         }
                         //Now assign route detail to vehicle.
-                        controllerHandler.getVehicleController().assignVehicleToTour(vehicleModels[vehiclePos].getRegistrationNumber(), vehicleModels[routeDetailPos].getRouteNumber() + "/" + "0", gameModel.getCompany());
+                        controllerHandler.getVehicleController().assignVehicleToTour(vehicleModels[vehiclePos].getAdditionalTypeInformationMap().get("Registration Number"), vehicleModels[routeDetailPos].getAllocatedTour(), gameModel.getCompany());
                     }
                     //Now return to previous screen.
                     controlScreen.redrawManagement(displayPanel.createPanel(controlScreen), gameModel);

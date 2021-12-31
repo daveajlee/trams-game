@@ -1,10 +1,10 @@
 package de.davelee.trams.beans;
 
+import de.davelee.trams.api.response.VehicleResponse;
 import de.davelee.trams.model.DriverModel;
 import de.davelee.trams.model.GameModel;
 import de.davelee.trams.model.MessageModel;
 import de.davelee.trams.model.RouteModel;
-import de.davelee.trams.model.VehicleModel;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
@@ -23,6 +23,6 @@ public class TramsFile {
     private MessageModel[] messageModels;
     private RouteModel[] routeModels;
 	private String[] stops;
-    private VehicleModel[] vehicleModels;
+    private VehicleResponse[] vehicleModels;
 
 }

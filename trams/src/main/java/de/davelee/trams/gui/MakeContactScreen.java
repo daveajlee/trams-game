@@ -5,6 +5,7 @@ import java.awt.event.*;
 
 import javax.swing.*;
 
+import de.davelee.trams.api.response.VehicleResponse;
 import de.davelee.trams.controllers.*;
 import de.davelee.trams.model.GameModel;
 import de.davelee.trams.model.VehicleModel;
@@ -41,14 +42,14 @@ public class MakeContactScreen extends JFrame {
     public MakeContactScreen ( final String routeNumber, final String scheduleNumber ) {
 
         //Retrieve vehicle model.
-        final VehicleModel vehicleModel = vehicleController.getVehicleByAllocatedTour(routeNumber + "/" + scheduleNumber, gameController.getGameModel().getCompany());
+        final VehicleResponse vehicleModel = vehicleController.getVehicleByAllocatedTour(routeNumber + "/" + scheduleNumber, gameController.getGameModel().getCompany());
         
         //Set image icon.
         Image img = Toolkit.getDefaultToolkit().getImage(MakeContactScreen.class.getResource("/TraMSlogo.png"));
         setIconImage(img);
         
         //Initialise GUI with title and close attributes.
-        this.setTitle ("Contact With " + vehicleModel.getRegistrationNumber() + " On Route " + routeNumber);
+        this.setTitle ("Contact With " + vehicleModel.getAdditionalTypeInformationMap().get("Registration Number") + " On Route " + routeNumber);
         this.setResizable (false);
         this.setDefaultCloseOperation (DO_NOTHING_ON_CLOSE);
         this.setBackground(Color.WHITE);
@@ -75,10 +76,11 @@ public class MakeContactScreen extends JFrame {
         //Create panel for west - picture of bus.
         JPanel westPanel = new JPanel(new BorderLayout());
         westPanel.setBackground(Color.WHITE);
-        ImageDisplay busDisplay = new ImageDisplay(vehicleModel.getImagePath(),0,0);
+        //TODO: Add a mapping from model to image name.
+        /*ImageDisplay busDisplay = new ImageDisplay(vehicleModel.getImagePath(),0,0);
         busDisplay.setSize(210,190);
         busDisplay.setBackground(Color.WHITE);
-        westPanel.add(busDisplay, BorderLayout.CENTER);
+        westPanel.add(busDisplay, BorderLayout.CENTER);*/
         //Button panel.
         JPanel alterButtonPanel = new JPanel(new GridLayout(3,1,5,5));
         alterButtonPanel.setBackground(Color.WHITE);
@@ -96,8 +98,8 @@ public class MakeContactScreen extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 //Acknowledge control message!
                 communicationArea.setText(communicationArea.getText() +
-                        "\n\n Control: Vehicle " + vehicleModel.getRegistrationNumber() + ", please terminate at " + stopBox.getSelectedItem().toString() + " and proceed in service in the reverse direction. Over!" +
-                        "\n\n Vehicle " + vehicleModel.getRegistrationNumber() + ": Message acknowledeged. Thanks. Over!");
+                        "\n\n Control: Vehicle " + vehicleModel.getAdditionalTypeInformationMap().get("Registration Number") + ", please terminate at " + stopBox.getSelectedItem().toString() + " and proceed in service in the reverse direction. Over!" +
+                        "\n\n Vehicle " + vehicleModel.getAdditionalTypeInformationMap().get("Registration Number") + ": Message acknowledeged. Thanks. Over!");
                 //Ask vehicle to shorten current route to the specified destination.
                 vehicleController.shortenSchedule(vehicleModel, stopBox.getSelectedItem().toString(), gameModel.getCurrentDateTime());
             }
@@ -107,8 +109,8 @@ public class MakeContactScreen extends JFrame {
         goOutOfServiceButton.addActionListener( new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 communicationArea.setText(communicationArea.getText() +
-                        "\n\n Control: Vehicle " + vehicleModel.getRegistrationNumber() + ", please go out of service until " + stopBox.getSelectedItem().toString() + ". Over!" +
-                        "\n\n Vehicle " + vehicleModel.getRegistrationNumber() + ": Message acknowledeged. Thanks. Over!");
+                        "\n\n Control: Vehicle " + vehicleModel.getAdditionalTypeInformationMap().get("Registration Number") + ", please go out of service until " + stopBox.getSelectedItem().toString() + ". Over!" +
+                        "\n\n Vehicle " + vehicleModel.getAdditionalTypeInformationMap().get("Registration Number") + ": Message acknowledeged. Thanks. Over!");
                 //Request vehicle to go out of service.
                 vehicleController.outOfService(vehicleModel, stopBox.getSelectedItem().toString(), gameModel.getCurrentDateTime(), gameModel.getDifficultyLevel());
             }
@@ -123,8 +125,8 @@ public class MakeContactScreen extends JFrame {
         //Communication Area.
         communicationArea = new JTextArea(3,5);
         communicationArea.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-        communicationArea.setText("Control: Vehicle " + vehicleModel.getRegistrationNumber() + ", please state your current position. Over!");
-        communicationArea.setText(communicationArea.getText() + "\n\n Vehicle " + vehicleModel.getRegistrationNumber() + ": At " + vehicleController.getCurrentStopName(vehicleModel, gameModel.getCurrentDateTime(), gameModel.getDifficultyLevel()) + " heading towards " + getCurrentDestination(routeNumber, gameModel) + " with delay of " + vehicleModel.getDelay() + " mins. Over!");
+        communicationArea.setText("Control: Vehicle " + vehicleModel.getAdditionalTypeInformationMap().get("Registration Number") + ", please state your current position. Over!");
+        communicationArea.setText(communicationArea.getText() + "\n\n Vehicle " + vehicleModel.getAdditionalTypeInformationMap().get("Registration Number") + ": At " + vehicleController.getCurrentStopName(vehicleModel, gameModel.getCurrentDateTime(), gameModel.getDifficultyLevel()) + " heading towards " + getCurrentDestination(routeNumber, gameModel) + " with delay of " + vehicleModel.getDelayInMinutes() + " mins. Over!");
         communicationArea.setFont(new Font("Arial", Font.ITALIC, 12));
         communicationArea.setEditable(false);
         communicationArea.setLineWrap(true);

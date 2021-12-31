@@ -3,6 +3,7 @@ package de.davelee.trams.controllers;
 import java.time.LocalDateTime;
 import java.time.Month;
 
+import de.davelee.trams.api.response.VehicleResponse;
 import de.davelee.trams.gui.ControlScreen;
 import de.davelee.trams.model.GameModel;
 import de.davelee.trams.model.VehicleModel;
@@ -170,17 +171,17 @@ public class GameController {
 		//Now count number of route schedules into three groups: 1 - 5 minutes late, 6 - 15 minutes late, 16+ minutes late.
 		int numSmallLateSchedules = 0; int numMediumLateSchedules = 0; int numLargeLateSchedules = 0;
 		//Now go through all vehicles.
-		for ( VehicleModel vehicleModel : vehicleController.getVehicleModels(cachedGameModel.getCompany()) ) {
+		for ( VehicleResponse vehicleModel : vehicleController.getVehicleModels(cachedGameModel.getCompany()) ) {
 			//Running... 1 - 5 minutes late.
-			if ( vehicleModel.getDelay() > 0 && vehicleModel.getDelay() < 6 ) {
+			if ( vehicleModel.getDelayInMinutes() > 0 && vehicleModel.getDelayInMinutes() < 6 ) {
 				numSmallLateSchedules++;
 			}
 			//Running... 6 - 15 minutes late.
-			else if ( vehicleModel.getDelay() > 5 && vehicleModel.getDelay() < 16 ) {
+			else if ( vehicleModel.getDelayInMinutes() > 5 && vehicleModel.getDelayInMinutes() < 16 ) {
 				numMediumLateSchedules++;
 			}
 			//Running... 16+ minutes late.
-			else if ( vehicleModel.getDelay() > 15 ) {
+			else if ( vehicleModel.getDelayInMinutes() > 15 ) {
 				numLargeLateSchedules++;
 			}
 		}

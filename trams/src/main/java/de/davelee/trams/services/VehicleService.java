@@ -8,6 +8,7 @@ import java.util.*;
 import de.davelee.trams.api.request.AdjustVehicleDelayRequest;
 import de.davelee.trams.api.request.AllocateVehicleRequest;
 import de.davelee.trams.api.request.PurchaseVehicleRequest;
+import de.davelee.trams.api.response.PurchaseVehicleResponse;
 import de.davelee.trams.api.response.VehicleDelayResponse;
 import de.davelee.trams.api.response.VehicleResponse;
 import de.davelee.trams.api.response.VehiclesResponse;
@@ -70,48 +71,24 @@ public class VehicleService {
         return (yearDiff * 12) + monthDiff;
     }
 
-    public VehicleModel[] getVehicleModels ( final String company ) {
+    public VehicleResponse[] getVehicleModels ( final String company ) {
         VehiclesResponse vehiclesResponse = restTemplate.getForObject(operationsServerUrl + "vehicles/?company=" + company, VehiclesResponse.class);
         if ( vehiclesResponse != null && vehiclesResponse.getVehicleResponses() != null ) {
-            VehicleModel[] vehicleModels = new VehicleModel[vehiclesResponse.getVehicleResponses().length];
-            for (int i = 0; i < vehicleModels.length; i++) {
-                vehicleModels[i] = convertToVehicleModel(vehiclesResponse.getVehicleResponses()[i]);
-            }
-            return vehicleModels;
+            return vehiclesResponse.getVehicleResponses();
         }
         return null;
     }
 
-    private VehicleModel convertToVehicleModel ( final VehicleResponse vehicleResponse ) {
-        return VehicleModel.builder()
-                .registrationNumber(vehicleResponse.getAdditionalTypeInformationMap().get("Registration Number"))
-                .deliveryDate(convertDateToLocalDate(vehicleResponse.getDeliveryDate()))
-                .model(vehicleResponse.getModelName())
-                .allocatedTour(vehicleResponse.getAllocatedTour())
-                .seatingCapacity(vehicleResponse.getSeatingCapacity())
-                .standingCapacity(vehicleResponse.getStandingCapacity())
-                .delay(vehicleResponse.getDelayInMinutes())
-                .allocatedTour(vehicleResponse.getAllocatedTour())
-                .build();
+    public double saveVehicle ( final PurchaseVehicleRequest purchaseVehicleRequest ) {
+        PurchaseVehicleResponse purchaseVehicleResponse = restTemplate.postForObject(operationsServerUrl + "vehicle/", purchaseVehicleRequest, PurchaseVehicleResponse.class);
+        if ( purchaseVehicleResponse != null && purchaseVehicleResponse.isPurchased() ) {
+            return purchaseVehicleResponse.getPurchasePrice();
+        }
+        return 0.0;
     }
 
-    public void saveVehicle ( final VehicleModel vehicle ) {
-        restTemplate.postForObject(operationsServerUrl + "vehicle/",
-                PurchaseVehicleRequest.builder()
-                        .company(vehicle.getCompany())
-                        .fleetNumber(vehicle.getFleetNumber())
-                        .livery(vehicle.getLivery())
-                        .vehicleType("BUS")
-                        .modelName(vehicle.getModel())
-                        .additionalTypeInformationMap(Map.of("Registration Number", vehicle.getRegistrationNumber()))
-                        .seatingCapacity(vehicle.getSeatingCapacity())
-                        .standingCapacity(vehicle.getStandingCapacity())
-                        .build(),
-                Void.class);
-    }
-
-    public void removeVehicle ( final VehicleModel vehicleModel ) {
-        restTemplate.delete(operationsServerUrl + "vehicle/?company=" + vehicleModel.getCompany() + "&fleetNumber=" + vehicleModel.getFleetNumber());
+    public void removeVehicle ( final String company, final String fleetNumber ) {
+        restTemplate.delete(operationsServerUrl + "vehicle/?company=" + company + "&fleetNumber=" + fleetNumber);
     }
     
     /**
@@ -123,10 +100,10 @@ public class VehicleService {
         //Allocations list.
         ArrayList<String> allocations = new ArrayList<>();
         //Now go through and add their allocation if they already have an allocation.
-        VehicleModel[] vehicleModels = getVehicleModels(company);
-        for ( VehicleModel vehicleModel : vehicleModels ) {
-            if ( vehicleModel.getRouteScheduleNumber() != 0 ) {
-                allocations.add(vehicleModel.getRouteNumber() + "/" + vehicleModel.getRouteScheduleNumber() + " & " + vehicleModel.getRegistrationNumber());
+        VehicleResponse[] vehicleModels = getVehicleModels(company);
+        for ( VehicleResponse vehicleModel : vehicleModels ) {
+            if ( vehicleModel.getAllocatedTour() != null ) {
+                allocations.add(vehicleModel.getAllocatedTour() + " & " + vehicleModel.getAdditionalTypeInformationMap().get("Registration Number"));
             }
         }
         //Return allocations list.
@@ -152,10 +129,10 @@ public class VehicleService {
                 randomReg += alphabet.charAt(r.nextInt(alphabet.length()));
             }
             //Now check that random reg not been generated before.
-            VehicleModel[] vehicleModels = getVehicleModels(company);
+            VehicleResponse[] vehicleModels = getVehicleModels(company);
             if ( vehicleModels != null ) {
-                for ( VehicleModel vehicleModel : vehicleModels ) {
-                    if ( vehicleModel.getRegistrationNumber().equalsIgnoreCase(randomReg) ) {
+                for ( VehicleResponse vehicleModel : vehicleModels ) {
+                    if ( vehicleModel.getAdditionalTypeInformationMap().get("Registration Number").equalsIgnoreCase(randomReg) ) {
             			isUniqueReg = false;
             			break;
             		}
@@ -175,12 +152,8 @@ public class VehicleService {
      * @param company a <code>String</code> with the name of the company.
      * @return a <code>VehicleModel</code> which contains information about the vehicle found.
      */
-    public VehicleModel getVehicleByAllocatedTour ( final String allocatedTour, final String company ) {
-        VehicleResponse vehicleResponse = restTemplate.getForObject(operationsServerUrl + "vehicle/allocate/?company=" + company + "&allocatedTour=" + allocatedTour, VehicleResponse.class);
-        if ( vehicleResponse == null ) {
-            throw new NoSuchElementException();
-        }
-        return convertToVehicleModel(vehicleResponse);
+    public VehicleResponse getVehicleByAllocatedTour ( final String allocatedTour, final String company ) {
+        return restTemplate.getForObject(operationsServerUrl + "vehicle/allocate/?company=" + company + "&allocatedTour=" + allocatedTour, VehicleResponse.class);
     }
 
     public VehicleModel createVehicleObject ( final String model, final String registrationNumber, final LocalDate deliveryDate, final String company ) throws NoSuchElementException  {
@@ -192,14 +165,10 @@ public class VehicleService {
                 .build();
     }
 
-    public int getNumberVehicleTypes ( final String company ) {
-        return getVehicleModels(company).length;
-    }
-
-    public VehicleModel getVehicleByRegistrationNumber ( final String registrationNumber, final String company ) {
-        VehicleModel[] vehicleModels = getVehicleModels(company);
-        for ( VehicleModel vehicleModel : vehicleModels ) {
-            if ( vehicleModel.getRegistrationNumber().contentEquals(registrationNumber) ) {
+    public VehicleResponse getVehicleByRegistrationNumber ( final String registrationNumber, final String company ) {
+        VehicleResponse[] vehicleModels = getVehicleModels(company);
+        for ( VehicleResponse vehicleModel : vehicleModels ) {
+            if ( vehicleModel.getAdditionalTypeInformationMap().get("Registration Number").contentEquals(registrationNumber) ) {
                 return vehicleModel;
             }
         }
@@ -207,39 +176,39 @@ public class VehicleService {
     }
 
     public String getFirstVehicleModel ( final String company ) {
-        return getVehicleModels(company)[0].getModel();
+        return getVehicleModels(company)[0].getModelName();
     }
 
     public String getLastVehicleModel ( final String company ) {
-        VehicleModel[] vehicleModels = getVehicleModels(company);
-        return vehicleModels[vehicleModels.length-1].getModel();
+        VehicleResponse[] vehicleModels = getVehicleModels(company);
+        return vehicleModels[vehicleModels.length-1].getModelName();
     }
 
     public String getNextVehicleModel ( final String model, final String company ) {
-        VehicleModel[] vehicleModels = getVehicleModels(company);
+        VehicleResponse[] vehicleModels = getVehicleModels(company);
         for ( int i = 0; i < vehicleModels.length; i++ ) {
-            if ( vehicleModels[i].getModel().contentEquals(model) ) {
-                return vehicleModels[i+1].getModel();
+            if ( vehicleModels[i].getModelName().contentEquals(model) ) {
+                return vehicleModels[i+1].getModelName();
             }
         }
         return "";
     }
 
     public String getPreviousVehicleModel ( final String model, final String company ) {
-        VehicleModel[] vehicleModels = getVehicleModels(company);
+        VehicleResponse[] vehicleModels = getVehicleModels(company);
         for ( int i = 0; i < vehicleModels.length; i++ ) {
-            if ( vehicleModels[i].getModel().contentEquals(model) ) {
-                return vehicleModels[i-1].getModel();
+            if ( vehicleModels[i].getModelName().contentEquals(model) ) {
+                return vehicleModels[i-1].getModelName();
             }
         }
         return "";
     }
 
-     public void assignVehicleToTour ( final VehicleModel vehicleModel, final String allocatedTour, final String company ) {
+     public void assignVehicleToTour ( final String fleetNumber, final String allocatedTour, final String company ) {
         restTemplate.patchForObject(operationsServerUrl + "vehicle/allocate/",
                 AllocateVehicleRequest.builder()
                         .allocatedTour(allocatedTour)
-                        .fleetNumber(vehicleModel.getFleetNumber())
+                        .fleetNumber(fleetNumber)
                         .company(company)
                         .build(),
                 Void.class);

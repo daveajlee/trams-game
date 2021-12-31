@@ -4,8 +4,10 @@ import java.io.File;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
 
 import de.davelee.trams.TramsGameApplication;
+import de.davelee.trams.api.request.PurchaseVehicleRequest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -56,7 +58,16 @@ public class FileServiceTest {
 				.name("Chris Lee")
 				.contractedHours(40)
 				.startDate(LocalDate.of(2014,4,20)).build());
-		vehicleService.saveVehicle(vehicleService.createVehicleObject("MyBus Single Decker", "SDF3", LocalDate.now(), "Mustermann GmbH"));
+		vehicleService.saveVehicle(PurchaseVehicleRequest.builder()
+				.company("Mustermann GmbH")
+				.fleetNumber("101")
+				.livery("Green with Red text")
+				.vehicleType("BUS")
+				.modelName("MyBus Single Decker")
+				.additionalTypeInformationMap(Map.of("Registration Number", "SDF3"))
+				.seatingCapacity(50)
+				.standingCapacity(95)
+				.build());
 		routeService.saveRoute(RouteModel.builder()
 				.routeNumber("M2")
 				.stopNames(List.of("Heinersdorf", "Am Steinberg", "Alexanderplatz"))

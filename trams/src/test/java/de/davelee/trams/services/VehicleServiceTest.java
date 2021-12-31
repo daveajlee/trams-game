@@ -3,9 +3,9 @@ package de.davelee.trams.services;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.Map;
-import java.util.NoSuchElementException;
 
 import de.davelee.trams.TramsGameApplication;
+import de.davelee.trams.api.request.PurchaseVehicleRequest;
 import de.davelee.trams.api.response.VehicleResponse;
 import de.davelee.trams.api.response.VehiclesResponse;
 import de.davelee.trams.model.VehicleModel;
@@ -116,22 +116,20 @@ public class VehicleServiceTest {
 	
 	@Test
 	public void testGetVehicleById ( ) {
-		//Add a dummy first one in case of running junits tests together instead of apart.
-		VehicleModel vehicleModel = new VehicleModel();
-		vehicleModel.setRegistrationNumber("CV58 2DX");
-		vehicleModel.setDeliveryDate(LocalDate.of(2014,4,20));
-		vehicleModel.setDepreciationFactor(0.06);
-		vehicleModel.setImagePath("singledecker.png");
-		vehicleModel.setModel("Mercedes");
-		vehicleModel.setRouteNumber("155");
-		vehicleModel.setRouteScheduleNumber(1);
-		vehicleModel.setSeatingCapacity(45);
-		vehicleModel.setStandingCapacity(20);
-		vehicleModel.setPurchasePrice(20000.00);
 		//Test begins here.
 		Mockito.doNothing().when(restTemplate).delete(anyString());
 		vehicleService.deleteAllVehicles("Mustermann GmbH");
-		vehicleService.saveVehicle(vehicleModel);
+		vehicleService.saveVehicle(PurchaseVehicleRequest.builder()
+				.company("Mustermann GmbH")
+				.fleetNumber("101")
+				.livery("Green with Red text")
+				.vehicleType("BUS")
+				.modelName("Mercedes")
+				.additionalTypeInformationMap(Map.of("Registration Number", vehicleService.generateRandomReg(
+						2014, "Mustermann GmbH")))
+				.seatingCapacity(50)
+				.standingCapacity(95)
+				.build());
 		Mockito.when(restTemplate.getForObject(anyString(), eq(VehiclesResponse.class))).
 				thenReturn(VehiclesResponse.builder()
 						.vehicleResponses(new VehicleResponse[] { VehicleResponse.builder().company("Mustermann GmbH")
@@ -177,7 +175,7 @@ public class VehicleServiceTest {
 								.deliveryDate("24-12-2020")
 								.modelName("MyBus Single Decker").build() })
 						.build());
-		assertEquals(vehicleService.getNumberVehicleTypes("Mustermann GmbH"), 1);
+		assertEquals(vehicleService.getVehicleModels("Mustermann GmbH").length, 1);
 	}
 
 	private void assertEquals ( final double expected, final double actual, final double delta ) {

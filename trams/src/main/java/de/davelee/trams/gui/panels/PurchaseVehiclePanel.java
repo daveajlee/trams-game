@@ -11,6 +11,7 @@ import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -204,7 +205,7 @@ public class PurchaseVehiclePanel {
                 int quantity = Integer.parseInt(quantitySpinner.getValue().toString());
                 for ( int i = 0; i < quantity; i++ ) {
                     double purchasePrice = controllerHandler.getVehicleController().purchaseVehicle(
-                            vehicleModel.getModel(), deliveryDate, gameModel.getCompany(), gameModel.getCurrentDateTime().getYear());
+                            vehicleModel.getModel(), gameModel.getCompany(), gameModel.getCurrentDateTime().getYear(), Optional.empty());
                     controllerHandler.getGameController().withdrawBalance(purchasePrice);
                 }
                 controlScreen.redrawManagement(displayPanel.createPanel(controlScreen), gameModel);

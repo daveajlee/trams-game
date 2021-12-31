@@ -7,6 +7,7 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
 
+import de.davelee.trams.api.response.VehicleResponse;
 import de.davelee.trams.controllers.ControllerHandler;
 import de.davelee.trams.gui.panels.DisplayPanel;
 import de.davelee.trams.model.*;
@@ -322,10 +323,10 @@ public class ControlScreen extends ButtonBar {
     public void updateVehicleStatus ( final LocalDateTime currentDateTime, final DifficultyLevel difficultyLevel, final String company ) {
         String vehicleStatus = "";
 
-        VehicleModel[] vehicleModels = super.getControllerHandler().getVehicleController().getVehicleModelsForRoute(company, routeList.getSelectedValue().toString().split(":")[0]);
+        VehicleResponse[] vehicleModels = super.getControllerHandler().getVehicleController().getVehicleModelsForRoute(company, routeList.getSelectedValue().toString().split(":")[0]);
         for (int i = 0; i < vehicleModels.length; i++) {
             String vehiclePos = super.getControllerHandler().getVehicleController().getCurrentStopName(vehicleModels[i], currentDateTime, difficultyLevel);
-            vehicleStatus += "Schedule " + vehicleModels[i].getAllocatedTour() + " is at " + vehiclePos + " with a delay of " + vehicleModels[i].getDelay() + " minutes.\n";
+            vehicleStatus += "Schedule " + vehicleModels[i].getAllocatedTour() + " is at " + vehiclePos + " with a delay of " + vehicleModels[i].getDelayInMinutes() + " minutes.\n";
         }
 
         vehiclesStatusArea.setText(vehicleStatus);

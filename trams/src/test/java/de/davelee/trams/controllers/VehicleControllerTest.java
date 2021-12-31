@@ -45,7 +45,7 @@ public class VehicleControllerTest {
 					.company("Mustermann GmbH")
 					.build()
 		);
-		Mockito.doNothing().when(vehicleService).saveVehicle(any());
+		Mockito.when(vehicleService.saveVehicle(any())).thenReturn(10000.0);
 		assertEquals(1, vehicleController.createSuppliedVehicles(scenarioModel, currentDate, "Mustermann GmbH"));
 	}
 

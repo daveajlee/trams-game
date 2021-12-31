@@ -5,6 +5,7 @@ import java.awt.event.*;
 
 import javax.swing.*;
 
+import de.davelee.trams.api.response.VehicleResponse;
 import de.davelee.trams.controllers.GameController;
 import de.davelee.trams.controllers.VehicleController;
 import de.davelee.trams.model.GameModel;
@@ -37,7 +38,7 @@ public class BusInfoScreen extends JFrame {
     public BusInfoScreen ( final String routeNumber, final String scheduleNumber ) {
 
         //Retrieve vehicle model.
-        VehicleModel vehicleModel = vehicleController.getVehicleByAllocatedTour(routeNumber + "/" + scheduleNumber, gameController.getGameModel().getCompany());
+        VehicleResponse vehicleModel = vehicleController.getVehicleByAllocatedTour(routeNumber + "/" + scheduleNumber, gameController.getGameModel().getCompany());
 
         //Set image icon.
         Image img = Toolkit.getDefaultToolkit().getImage(BusInfoScreen.class.getResource("/TraMSlogo.png"));
@@ -69,10 +70,11 @@ public class BusInfoScreen extends JFrame {
         //Create panel for west - picture of bus.
         JPanel westPanel = new JPanel(new BorderLayout());
         westPanel.setBackground(Color.WHITE);
-        ImageDisplay busDisplay = new ImageDisplay(vehicleModel.getImagePath(),0,0);
+        //TODO: Add a mapping from model name to images.
+        /*ImageDisplay busDisplay = new ImageDisplay(vehicleModel.getImagePath(),0,0);
         busDisplay.setSize(220,200);
         busDisplay.setBackground(Color.WHITE);
-        westPanel.add(busDisplay);
+        westPanel.add(busDisplay);*/
         screenPanel.add(westPanel, BorderLayout.WEST);
 
         GameModel gameModel = gameController.getGameModel();
@@ -120,7 +122,7 @@ public class BusInfoScreen extends JFrame {
         
     }
 
-    public JPanel createCurrentStatusPanel ( final String scheduleNumber, final VehicleModel vehicleModel, final GameModel gameModel ) {
+    public JPanel createCurrentStatusPanel ( final String scheduleNumber, final VehicleResponse vehicleModel, final GameModel gameModel ) {
         JPanel eastPanel = new JPanel(new GridLayout(6,1,5,5));
         eastPanel.setBackground(Color.WHITE);
         //Timetable id.
@@ -128,7 +130,7 @@ public class BusInfoScreen extends JFrame {
         timetableIDLabel.setFont(new Font("Arial", Font.BOLD, 15));
         eastPanel.add(timetableIDLabel);
         //Vehicle id.
-        JLabel vehicleIDLabel = new JLabel("Vehicle ID: " + vehicleModel.getRegistrationNumber());
+        JLabel vehicleIDLabel = new JLabel("Vehicle ID: " + vehicleModel.getAdditionalTypeInformationMap().get("Registration Number"));
         vehicleIDLabel.setFont(new Font("Arial", Font.BOLD, 15));
         eastPanel.add(vehicleIDLabel);
         //Location.
@@ -140,7 +142,7 @@ public class BusInfoScreen extends JFrame {
         destinationLabel.setFont(new Font("Arial", Font.BOLD, 15));
         eastPanel.add(destinationLabel);
         //Delay.
-        JLabel delayLabel = new JLabel("Delay: " + vehicleModel.getDelay() + " mins");
+        JLabel delayLabel = new JLabel("Delay: " + vehicleModel.getDelayInMinutes() + " mins");
         delayLabel.setFont(new Font("Arial", Font.BOLD, 15));
         eastPanel.add(delayLabel);
         return eastPanel;
