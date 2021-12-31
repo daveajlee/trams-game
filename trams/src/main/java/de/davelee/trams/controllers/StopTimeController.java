@@ -1,7 +1,6 @@
 package de.davelee.trams.controllers;
 
 import de.davelee.trams.model.Direction;
-import de.davelee.trams.model.RouteModel;
 import de.davelee.trams.model.StopTimeModel;
 import de.davelee.trams.services.StopTimeService;
 import org.springframework.beans.factory.annotation.Autowired;

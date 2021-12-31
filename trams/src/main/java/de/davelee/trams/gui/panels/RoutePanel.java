@@ -24,9 +24,9 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
+import de.davelee.trams.api.response.RouteResponse;
 import de.davelee.trams.gui.ControlScreen;
 import de.davelee.trams.model.GameModel;
-import de.davelee.trams.model.RouteModel;
 
 import de.davelee.trams.controllers.ControllerHandler;
 
@@ -42,7 +42,7 @@ public class RoutePanel {
         this.controllerHandler = controllerHandler;
     }
 	
-	public JPanel createPanel ( final RouteModel routeModel, final ControlScreen controlScreen, final DisplayPanel displayPanel ) {
+	public JPanel createPanel (final RouteResponse routeResponse, final ControlScreen controlScreen, final DisplayPanel displayPanel ) {
         
         //Create routeScreen panel to add things to.
         JPanel routeScreenPanel = new JPanel();
@@ -53,7 +53,7 @@ public class RoutePanel {
         JPanel topLabelPanel = new JPanel(new BorderLayout());
         topLabelPanel.setBackground(Color.WHITE);
         JLabel topLabel = new JLabel("Create New Route", SwingConstants.CENTER);
-        if ( routeModel != null ) { topLabel.setText("Amend Route"); }
+        if ( routeResponse != null ) { topLabel.setText("Amend Route"); }
         topLabel.setFont(new Font("Arial", Font.BOLD, 36));
         topLabel.setVerticalAlignment(JLabel.CENTER);
         topLabelPanel.add(topLabel, BorderLayout.CENTER);
@@ -67,7 +67,7 @@ public class RoutePanel {
         routeNumberPanel.add(routeNumberLabel);
         routeNumberField = new JTextField(10);
         routeNumberField.setFont(new Font("Arial", Font.PLAIN, 14));
-        if ( routeModel != null ) { routeNumberField.setText(routeModel.getRouteNumber()); }
+        if ( routeResponse != null ) { routeNumberField.setText(routeResponse.getRouteNumber()); }
         routeNumberField.addKeyListener(new KeyListener()  {
             public void keyReleased(KeyEvent e) {
                 enableCreateButtons();
@@ -87,8 +87,9 @@ public class RoutePanel {
 
         //Create the route stop panel.
         routeStopModel = new DefaultListModel();
-        if ( routeModel != null ) {
-            List<String> currentStopNames = routeModel.getStopNames();
+        if ( routeResponse != null ) {
+            //TODO: Add each stop served by this route in a drop down.
+            List<String> currentStopNames = /*routeResponse.getStopNames()*/ new ArrayList<>();
             for ( int i = 0; i < currentStopNames.size(); i++ ) {
                 routeStopModel.addElement(currentStopNames.get(i));
             }
@@ -168,14 +169,10 @@ public class RoutePanel {
                     selectedOutwardStops.add(routeStopModel.getElementAt(i).toString());
                }
                controllerHandler.getRouteController().addNewRoute( routeNumberField.getText(), selectedOutwardStops, gameModel.getCompany());
-               RouteModel displayRouteModel = RouteModel.builder()
-                       .company(gameModel.getCompany())
-                       .routeNumber(routeNumberField.getText())
-                       .stopNames(selectedOutwardStops)
-                       .build();
+               RouteResponse routeResponse1 = controllerHandler.getRouteController().getRoute(routeNumberField.getText(), gameModel.getCompany());
                //Now move to timetable screen.
                TimetablePanel myTimetablePanel = new TimetablePanel(controllerHandler);
-               controlScreen.redrawManagement(myTimetablePanel.createPanel(displayRouteModel, controlScreen, RoutePanel.this, displayPanel), controllerHandler.getGameController().getGameModel());
+               controlScreen.redrawManagement(myTimetablePanel.createPanel(routeResponse1, controlScreen, RoutePanel.this, displayPanel), controllerHandler.getGameController().getGameModel());
             }
         });
         bottomButtonPanel.add(createRouteButton);

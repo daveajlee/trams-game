@@ -3,7 +3,6 @@ package de.davelee.trams.services;
 import de.davelee.trams.api.request.AddRouteRequest;
 import de.davelee.trams.api.response.RouteResponse;
 import de.davelee.trams.api.response.RoutesResponse;
-import de.davelee.trams.model.RouteModel;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -16,13 +15,8 @@ public class RouteService {
     @Value("${server.operations.url}")
     private String operationsServerUrl;
 
-    public void saveRoute ( final RouteModel routeModel ) {
-        restTemplate.postForObject(operationsServerUrl + "route/",
-                AddRouteRequest.builder()
-                        .company(routeModel.getCompany())
-                        .routeNumber(routeModel.getRouteNumber())
-                        .build(),
-                Void.class);
+    public void saveRoute ( final AddRouteRequest addRouteRequest ) {
+        restTemplate.postForObject(operationsServerUrl + "route/", addRouteRequest, Void.class);
     }
     
     /**
@@ -31,32 +25,20 @@ public class RouteService {
      * @param company a <code>String</code> with the name of the company.
      * @return a <code>RouteModel</code> object.
      */
-    public RouteModel getRoute ( final String routeNumber, final String company ) {
-        RouteResponse routeResponse = restTemplate.getForObject(operationsServerUrl + "route/?company=" + company + "&routeNumber=" + routeNumber, RouteResponse.class);
-        if ( routeResponse != null ) {
-            RouteModel.builder()
-                    .routeNumber(routeNumber)
-                    .build();
-        }
-        return null;
+    public RouteResponse getRoute ( final String routeNumber, final String company ) {
+        return restTemplate.getForObject(operationsServerUrl + "route/?company=" + company + "&routeNumber=" + routeNumber, RouteResponse.class);
     }
 
-    public RouteModel[] getAllRoutes ( final String company ) {
+    public RouteResponse[] getAllRoutes ( final String company ) {
         RoutesResponse routesResponse = restTemplate.getForObject(operationsServerUrl + "routes/?company=" + company, RoutesResponse.class);
         if ( routesResponse != null && routesResponse.getRouteResponses() != null ) {
-            RouteModel[] routeModels = new RouteModel[routesResponse.getRouteResponses().length];
-            for (int i = 0; i < routesResponse.getRouteResponses().length; i++) {
-                routeModels[i] = RouteModel.builder()
-                        .routeNumber(routesResponse.getRouteResponses()[i].getRouteNumber())
-                        .build();
-            }
-            return routeModels;
+            return routesResponse.getRouteResponses();
         }
         return null;
     }
 
-    public void removeRoute ( final RouteModel routeModel ) {
-        restTemplate.delete(operationsServerUrl + "route/?company=" + routeModel.getCompany() + "&routeNumber=" + routeModel.getRouteNumber());
+    public void removeRoute ( final String company, final String routeNumber ) {
+        restTemplate.delete(operationsServerUrl + "route/?company=" + company + "&routeNumber=" + routeNumber);
     }
 
     /**

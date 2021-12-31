@@ -7,10 +7,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.*;
 import java.util.List;
-import java.util.Locale;
-import java.util.NoSuchElementException;
-import java.util.Optional;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableColumnModel;
@@ -18,6 +16,7 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
+import de.davelee.trams.api.response.RouteResponse;
 import de.davelee.trams.controllers.ControllerHandler;
 import de.davelee.trams.model.*;
 import org.slf4j.Logger;
@@ -44,7 +43,7 @@ public class ViewTimetablePanel {
         routeScreenPanel.setLayout( new BoxLayout(routeScreenPanel, BoxLayout.PAGE_AXIS));
         routeScreenPanel.setBackground(Color.WHITE);
      
-        final RouteModel routeModel = controllerHandler.getRouteController().getRoute(route, controlScreen.getControllerHandler().getGameController().getGameModel().getCompany());
+        final RouteResponse routeModel = controllerHandler.getRouteController().getRoute(route, controlScreen.getControllerHandler().getGameController().getGameModel().getCompany());
         final GameModel gameModel = controllerHandler.getGameController().getGameModel();
             
         //Create an overall screen panel.
@@ -65,7 +64,7 @@ public class ViewTimetablePanel {
         routeSelectionLabel.setFont(new Font("Arial", Font.BOLD, 16));
         selectionPanel.add(routeSelectionLabel);
         final DefaultComboBoxModel routeSelectionModel = new DefaultComboBoxModel();
-        RouteModel[] routeModels = controllerHandler.getRouteController().getRouteModels(gameModel.getCompany());
+        RouteResponse[] routeModels = controllerHandler.getRouteController().getRoutes(gameModel.getCompany());
         for ( int i = 0; i < routeModels.length; i++ ) {
             routeSelectionModel.addElement(routeModels[i].getRouteNumber());
         }
@@ -82,7 +81,8 @@ public class ViewTimetablePanel {
         stopSelectionLabel.setFont(new Font("Arial", Font.BOLD, 16));
         selectionPanel.add(stopSelectionLabel);
         final DefaultComboBoxModel stopSelectionModel = new DefaultComboBoxModel();
-        List<String> routeStopNames = routeModel.getStopNames();
+        //TODO: Add a list of stop names served by this route.
+        List<String> routeStopNames = /*routeModel.getStopNames();*/ new ArrayList<>();
         for ( int i = 0; i < routeStopNames.size(); i++ ) {
             stopSelectionModel.addElement(routeStopNames.get(i));
         }

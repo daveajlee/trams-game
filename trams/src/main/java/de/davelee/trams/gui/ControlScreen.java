@@ -8,6 +8,7 @@ import javax.swing.*;
 import javax.swing.event.*;
 
 import de.davelee.trams.api.response.MessageResponse;
+import de.davelee.trams.api.response.RouteResponse;
 import de.davelee.trams.api.response.VehicleResponse;
 import de.davelee.trams.controllers.ControllerHandler;
 import de.davelee.trams.gui.panels.DisplayPanel;
@@ -636,9 +637,10 @@ public class ControlScreen extends ButtonBar {
 
     public void populateRouteList ( final String company ) {
         routeModel.clear();
-        RouteModel[] routeModels = super.getControllerHandler().getRouteController().getRouteModels(company);
+        RouteResponse[] routeModels = super.getControllerHandler().getRouteController().getRoutes(company);
         for ( int i = 0; i < routeModels.length; i++ ) {
-            routeModel.addElement(routeModels[i].getRouteNumber() + ":" + routeModels[i].getStopNames().get(0) + " - " + routeModels[i].getStopNames().get(routeModels[i].getStopNames().size()-1));
+            //TODO: Add stops to the display of the route text
+            routeModel.addElement(routeModels[i].getRouteNumber() /*+ ":" + routeModels[i].getStopNames().get(0) + " - " + routeModels[i].getStopNames().get(routeModels[i].getStopNames().size()-1)*/);
         }
         //theRouteList = new JList(allRouteStr);
         logger.debug("Route number in control screen is " + routeNumber);

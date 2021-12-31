@@ -2,6 +2,7 @@ package de.davelee.trams.gui;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.util.ArrayList;
 
 import javax.swing.*;
 
@@ -89,7 +90,8 @@ public class MakeContactScreen extends JFrame {
         JLabel stopLabel = new JLabel("Stop");
         stopLabel.setFont(new Font("Arial", Font.BOLD, 12));
         stopPanel.add(stopLabel);
-        stopBox = new JComboBox(routeController.getRoute(routeNumber, gameModel.getCompany()).getStopNames().toArray(new String[0]));
+        //TODO: Add a list of stops served by this route.
+        stopBox = new JComboBox(/*routeController.getRoute(routeNumber, gameModel.getCompany()).getStopNames().toArray(new String[0])*/);
         stopPanel.add(stopBox);
         alterButtonPanel.add(stopPanel);
         JButton shortenRouteButton = new JButton("Terminate At Stop");
@@ -176,7 +178,9 @@ public class MakeContactScreen extends JFrame {
      * @return a <code>String</code> with the current destination.
      */
     public String getCurrentDestination ( final String routeNumber, final GameModel gameModel ) {
-        java.util.List<String> stopNames = routeController.getRoute(routeNumber, gameModel.getCompany()).getStopNames();
+        java.util.List<String> stopNames = new ArrayList<>();
+        //TODO: Print the last stop in the list of stops served by this route.
+        //java.util.List<String> stopNames = routeController.getRoute(routeNumber, gameModel.getCompany()).getStopNames();
         return stopNames.get(stopNames.size()-1);
     }
     

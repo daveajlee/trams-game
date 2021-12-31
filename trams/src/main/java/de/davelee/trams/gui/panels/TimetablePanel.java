@@ -9,18 +9,17 @@ import java.awt.event.*;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import de.davelee.trams.api.response.RouteResponse;
 import de.davelee.trams.controllers.ControllerHandler;
 
 import de.davelee.trams.gui.ControlScreen;
 import de.davelee.trams.model.GameModel;
-import de.davelee.trams.model.RouteModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,7 +39,7 @@ public class TimetablePanel {
         this.controllerHandler = controllerHandler;
     }
 	
-	public JPanel createPanel ( final RouteModel routeModel, final ControlScreen controlScreen, final RoutePanel routePanel, final DisplayPanel displayPanel ) {
+	public JPanel createPanel (final RouteResponse routeResponse, final ControlScreen controlScreen, final RoutePanel routePanel, final DisplayPanel displayPanel ) {
 		final GameModel gameModel = controllerHandler.getGameController().getGameModel();
         
         //Create timetableScreen panel to add things to.
@@ -131,7 +130,8 @@ public class TimetablePanel {
         betweenLabel.setFont(new Font("Arial", Font.ITALIC, 16));
         betweenStopsPanel.add(betweenLabel);
         //Save the stop names to a variable.
-        List<String> stopNames = routeModel.getStopNames();
+        //TODO: Add a list of the names of stops served by this route.
+        List<String> stopNames = /*routeResponse.getStopNames();*/ new ArrayList<>();
         //Terminus 1 Combo box.
         terminus1Box = new JComboBox();
         for ( int i = 0; i < stopNames.size()-1; i++ ) {
@@ -297,7 +297,7 @@ public class TimetablePanel {
                 int[] stoppingTimes = new int[stopNames.size()];
                 int[] distances = new int[stopNames.size()-1];
                 controllerHandler.getStopTimeController().generateStopTimes(gameModel.getCompany(), stoppingTimes,
-                        stopNames.toArray(new String[0]), routeModel.getRouteNumber(), distances, timeFrom.format(DateTimeFormatter.ofPattern("HH:mm")),
+                        stopNames.toArray(new String[0]), routeResponse.getRouteNumber(), distances, timeFrom.format(DateTimeFormatter.ofPattern("HH:mm")),
                         timeTo.format(DateTimeFormatter.ofPattern("HH:mm")), (Integer) everyMinuteSpinner.getValue(),
                         validFromDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")), validToDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")),
                         operatingDays);
@@ -310,7 +310,7 @@ public class TimetablePanel {
         previousScreenButton.addActionListener ( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
                 //Cancel addition.
-                controlScreen.redrawManagement(routePanel.createPanel(routeModel, controlScreen, displayPanel), gameModel);
+                controlScreen.redrawManagement(routePanel.createPanel(routeResponse, controlScreen, displayPanel), gameModel);
             }
         });
         bottomButtonPanel.add(previousScreenButton);

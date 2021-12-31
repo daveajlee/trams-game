@@ -177,7 +177,7 @@ public class DisplayPanel {
                 RoutePanel myRoutePanel = new RoutePanel(controllerHandler);
                 ViewTimetablePanel myViewTimetablePanel = new ViewTimetablePanel(controllerHandler);
                 //Show the actual screen!
-                controlScreen.redrawManagement(myViewTimetablePanel.createPanel(controllerHandler.getRouteController().getRouteModels(company)[0].getRouteNumber(), 0, 0, controlScreen, myRoutePanel, DisplayPanel.this), controllerHandler.getGameController().getGameModel());
+                controlScreen.redrawManagement(myViewTimetablePanel.createPanel(controllerHandler.getRouteController().getRoutes(company)[0].getRouteNumber(), 0, 0, controlScreen, myRoutePanel, DisplayPanel.this), controllerHandler.getGameController().getGameModel());
             }
         });
         timetableButtonPanel.add(routeTimetableButton);

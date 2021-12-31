@@ -23,12 +23,12 @@ import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 
+import de.davelee.trams.api.response.RouteResponse;
 import de.davelee.trams.api.response.VehicleResponse;
 import de.davelee.trams.controllers.ControllerHandler;
 
 import de.davelee.trams.gui.ControlScreen;
 import de.davelee.trams.model.GameModel;
-import de.davelee.trams.model.RouteModel;
 
 public class AllocationPanel {
 	
@@ -106,7 +106,7 @@ public class AllocationPanel {
         final JList routesList = new JList(routesModel);
         routesList.setFixedCellWidth(270);
         routesList.setFont(new Font("Arial", Font.PLAIN, 15));
-        RouteModel[] routeModels = controllerHandler.getRouteController().getRouteModels(gameModel.getCompany());
+        RouteResponse[] routeModels = controllerHandler.getRouteController().getRoutes(gameModel.getCompany());
         for ( int i = 0; i < routeModels.length; i++ ) {
             routesModel.addElement(routeModels[i].getRouteNumber());
         }

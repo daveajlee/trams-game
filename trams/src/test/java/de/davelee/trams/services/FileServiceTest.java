@@ -3,10 +3,10 @@ package de.davelee.trams.services;
 import java.io.File;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 import java.util.Map;
 
 import de.davelee.trams.TramsGameApplication;
+import de.davelee.trams.api.request.AddRouteRequest;
 import de.davelee.trams.api.request.MessageRequest;
 import de.davelee.trams.api.request.PurchaseVehicleRequest;
 import de.davelee.trams.api.request.UserRequest;
@@ -20,7 +20,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import de.davelee.trams.beans.TramsFile;
 import de.davelee.trams.model.GameModel;
-import de.davelee.trams.model.RouteModel;
 import de.davelee.trams.util.MessageFolder;
 
 @ExtendWith(SpringExtension.class)
@@ -68,9 +67,9 @@ public class FileServiceTest {
 				.seatingCapacity(50)
 				.standingCapacity(95)
 				.build());
-		routeService.saveRoute(RouteModel.builder()
-				.routeNumber("M2")
-				.stopNames(List.of("Heinersdorf", "Am Steinberg", "Alexanderplatz"))
+		routeService.saveRoute(AddRouteRequest.builder()
+						.routeNumber("M2")
+						.company("Mustermann GmbH")
 				.build());
 		messageService.saveMessage(MessageRequest.builder()
 				.subject("Test Message")
