@@ -3,7 +3,6 @@ package de.davelee.trams.controllers;
 import de.davelee.trams.api.request.PurchaseVehicleRequest;
 import de.davelee.trams.api.response.VehicleResponse;
 import de.davelee.trams.model.ScenarioModel;
-import de.davelee.trams.model.VehicleModel;
 import de.davelee.trams.util.DifficultyLevel;
 import de.davelee.trams.util.SortedVehicleResponses;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -148,10 +147,6 @@ public class VehicleController {
 
 	public List<String> getAllocations ( final String company ) {
 		return vehicleService.getAllocations(company);
-	}
-
-	public VehicleModel getVehicleByModel ( final String model, final String company ) {
-		return vehicleService.createVehicleObject(model, vehicleService.generateRandomReg(LocalDate.now().getYear(), company), LocalDate.now(), company);
 	}
 
 	public String getFirstVehicleModel ( final String company ) {

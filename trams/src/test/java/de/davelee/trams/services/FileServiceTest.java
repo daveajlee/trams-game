@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import de.davelee.trams.TramsGameApplication;
+import de.davelee.trams.api.request.MessageRequest;
 import de.davelee.trams.api.request.PurchaseVehicleRequest;
 import de.davelee.trams.api.request.UserRequest;
 import org.junit.jupiter.api.Assertions;
@@ -19,7 +20,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import de.davelee.trams.beans.TramsFile;
 import de.davelee.trams.model.GameModel;
-import de.davelee.trams.model.MessageModel;
 import de.davelee.trams.model.RouteModel;
 import de.davelee.trams.util.MessageFolder;
 
@@ -72,12 +72,12 @@ public class FileServiceTest {
 				.routeNumber("M2")
 				.stopNames(List.of("Heinersdorf", "Am Steinberg", "Alexanderplatz"))
 				.build());
-		messageService.saveMessage(MessageModel.builder()
+		messageService.saveMessage(MessageRequest.builder()
 				.subject("Test Message")
 				.sender("Dave Lee")
-				.messageFolder(MessageFolder.INBOX)
+				.folder(MessageFolder.INBOX.getDisplayName())
 				.text("This is a test message")
-				.date(DateTimeFormatter.ofPattern("dd-MM-yyyy").format(LocalDate.now()))
+				.dateTime(DateTimeFormatter.ofPattern("dd-MM-yyyy").format(LocalDate.now()))
 				.build());
 		journeyService.saveStop("Danziger Strasse", "Mustermann GmbH");
 		gameService.saveGame(GameModel.builder()

@@ -7,6 +7,7 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
 
+import de.davelee.trams.api.response.MessageResponse;
 import de.davelee.trams.api.response.VehicleResponse;
 import de.davelee.trams.controllers.ControllerHandler;
 import de.davelee.trams.gui.panels.DisplayPanel;
@@ -349,7 +350,7 @@ public class ControlScreen extends ButtonBar {
             String date = DateTimeFormatter.RFC_1123_DATE_TIME.format(gameModel.getCurrentDateTime());
             super.getControllerHandler().getMessageController().addMessage(gameModel.getCompany(),"Passenger Satisfaction for " + DateFormats.FULL_FORMAT.getFormat().format(getPreviousDateTime(gameModel.getCurrentDateTime(), getControllerHandler().getSimulationSpeed())), "Congratulations you have successfully completed transport operations for " + gameModel.getScenarioName() + " on " + DateFormats.FULL_FORMAT.getFormat().format(getPreviousDateTime(gameModel.getCurrentDateTime(), getControllerHandler().getSimulationSpeed())) + " with a passenger satisfaction of " + super.getControllerHandler().getGameController().computeAndReturnPassengerSatisfaction() + "%.\n\nNow you need to allocate vehicles to routes for " + DateFormats.FULL_FORMAT.getFormat().format(gameModel.getCurrentDateTime()) + " and keep the passenger satisfaction up! Click on the Management tab and then choose Allocations. Good luck!", "Council", "INBOX", date);
             //Refresh messages.
-            MessageModel[] messageModels = super.getControllerHandler().getMessageController().getMessagesByFolderDateSender(gameModel.getCompany(), foldersBox.getSelectedItem().toString(),dateBox.getSelectedItem().toString(),"Council");
+            MessageResponse[] messageModels = super.getControllerHandler().getMessageController().getMessagesByFolderDateSender(gameModel.getCompany(), foldersBox.getSelectedItem().toString(),dateBox.getSelectedItem().toString(),"Council");
             messagesModel.removeAllElements();
             for ( int i = 0; i < messageModels.length; i++ ) {
                 messagesModel.addElement(messageModels[i].getSubject());
@@ -423,11 +424,11 @@ public class ControlScreen extends ButtonBar {
         //Create combo box with date.
         dateModel = new DefaultComboBoxModel();
         dateModel.addElement("All Dates");
-        final MessageModel[] allMessageModels = super.getControllerHandler().getMessageController().getAllMessages(company);
+        final MessageResponse[] allMessageModels = super.getControllerHandler().getMessageController().getAllMessages(company);
         for ( int i = 0; i < allMessageModels.length; i++ ) {
-            logger.debug("Index of " + dateModel.getIndexOf(allMessageModels[i].getDate()));
-            if ( dateModel.getIndexOf(allMessageModels[i].getDate()) == -1 ) {
-                dateModel.addElement(allMessageModels[i].getDate());
+            logger.debug("Index of " + dateModel.getIndexOf(allMessageModels[i].getDateTime()));
+            if ( dateModel.getIndexOf(allMessageModels[i].getDateTime()) == -1 ) {
+                dateModel.addElement(allMessageModels[i].getDateTime());
             }
         }
         dateBox = new JComboBox(dateModel);
@@ -446,7 +447,7 @@ public class ControlScreen extends ButtonBar {
         dateBox.setFont(new Font("Arial", Font.PLAIN, 12));
         dateBox.addItemListener( new ItemListener() {
             public void itemStateChanged ( ItemEvent e ) {
-                MessageModel[] messageModels = ControlScreen.super.getControllerHandler().getMessageController().getMessagesByFolderDateSender(company, foldersBox.getSelectedItem().toString(),dateBox.getSelectedItem().toString(), "Council");
+                MessageResponse[] messageModels = ControlScreen.super.getControllerHandler().getMessageController().getMessagesByFolderDateSender(company, foldersBox.getSelectedItem().toString(),dateBox.getSelectedItem().toString(), "Council");
                 messagesModel.removeAllElements();
                 for ( int i = 0; i < messageModels.length; i++ ) {
                     messagesModel.addElement(messageModels[i].getSubject());
@@ -477,7 +478,7 @@ public class ControlScreen extends ButtonBar {
         foldersBox.setFont(new Font("Arial", Font.PLAIN, 12));
         foldersBox.addItemListener ( new ItemListener() {
             public void itemStateChanged ( ItemEvent e ) {
-                MessageModel[] messageModels = ControlScreen.super.getControllerHandler().getMessageController().getMessagesByFolderDateSender(company, foldersBox.getSelectedItem().toString(),dateBox.getSelectedItem().toString(), "Council");
+                MessageResponse[] messageModels = ControlScreen.super.getControllerHandler().getMessageController().getMessagesByFolderDateSender(company, foldersBox.getSelectedItem().toString(),dateBox.getSelectedItem().toString(), "Council");
                 messagesModel.removeAllElements();
                 for ( int i = 0; i < messageModels.length; i++ ) {
                     messagesModel.addElement(messageModels[i].getSubject());
@@ -500,7 +501,7 @@ public class ControlScreen extends ButtonBar {
         //Add west panel to messages panel.
         messagesPanel.add(westPanel, BorderLayout.WEST);
         //Initialise the messages list now.
-        MessageModel[] myMessageModels = super.getControllerHandler().getMessageController().getMessagesByFolder(company, foldersBox.getSelectedItem().toString());
+        MessageResponse[] myMessageModels = super.getControllerHandler().getMessageController().getMessagesByFolder(company, foldersBox.getSelectedItem().toString());
         if ( myMessageModels != null ) {
             for (int i = 0; i < myMessageModels.length; i++) {
                 messagesModel.addElement(myMessageModels[i].getSubject());
@@ -516,7 +517,7 @@ public class ControlScreen extends ButtonBar {
         JPanel messageAndButtonPanel = new JPanel(new BorderLayout());
         messageAndButtonPanel.setBackground(Color.WHITE);
         //Message subject.
-        final MessageModel[] messageModels;
+        final MessageResponse[] messageModels;
         if ( foldersBox.getSelectedItem() != null  && (dateBox.getSelectedItem() != null ) ) {
             messageModels = super.getControllerHandler().getMessageController().getMessagesByFolderDateSender(company, foldersBox.getSelectedItem().toString(),dateBox.getSelectedItem().toString(),"Council");
         }

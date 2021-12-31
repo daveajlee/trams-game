@@ -9,7 +9,6 @@ import de.davelee.trams.api.response.VehicleResponse;
 import de.davelee.trams.controllers.GameController;
 import de.davelee.trams.controllers.VehicleController;
 import de.davelee.trams.model.GameModel;
-import de.davelee.trams.model.VehicleModel;
 import org.springframework.beans.factory.annotation.Autowired;
 
 

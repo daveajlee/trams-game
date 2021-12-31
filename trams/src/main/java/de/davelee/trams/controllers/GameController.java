@@ -6,7 +6,6 @@ import java.time.Month;
 import de.davelee.trams.api.response.VehicleResponse;
 import de.davelee.trams.gui.ControlScreen;
 import de.davelee.trams.model.GameModel;
-import de.davelee.trams.model.VehicleModel;
 import de.davelee.trams.util.DifficultyLevel;
 import de.davelee.trams.util.GameThread;
 import org.springframework.beans.factory.annotation.Autowired;

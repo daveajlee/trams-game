@@ -3,7 +3,6 @@ package de.davelee.trams.util;
 import java.util.*;
 
 import de.davelee.trams.api.response.VehicleResponse;
-import de.davelee.trams.model.VehicleModel;
 
 
 /**

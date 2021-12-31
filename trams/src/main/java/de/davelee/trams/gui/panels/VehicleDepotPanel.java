@@ -26,9 +26,7 @@ import javax.swing.event.ListSelectionListener;
 import de.davelee.trams.api.response.VehicleResponse;
 import de.davelee.trams.controllers.ControllerHandler;
 import de.davelee.trams.gui.ControlScreen;
-import de.davelee.trams.gui.ImageDisplay;
 import de.davelee.trams.model.GameModel;
-import de.davelee.trams.model.VehicleModel;
 
 public class VehicleDepotPanel {
 	

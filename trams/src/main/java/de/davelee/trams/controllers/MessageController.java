@@ -1,6 +1,7 @@
 package de.davelee.trams.controllers;
 
-import de.davelee.trams.model.MessageModel;
+import de.davelee.trams.api.request.MessageRequest;
+import de.davelee.trams.api.response.MessageResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import de.davelee.trams.services.MessageService;
@@ -20,7 +21,7 @@ public class MessageController {
      * @param sender a <code>String</code> with the sender.
      * @return a <code>LinkedList</code> with messages.
      */
-    public MessageModel[] getMessagesByFolderDateSender ( final String company, final String folder, final String date, final String sender ) {
+    public MessageResponse[] getMessagesByFolderDateSender ( final String company, final String folder, final String date, final String sender ) {
         if ( date.equalsIgnoreCase("All Dates")) {
             return getMessagesByFolder(company, folder);
         }
@@ -33,7 +34,7 @@ public class MessageController {
      * @param folder a <code>String</code> with the name of the folder.
      * @return a <code>LinkedList</code> with messages.
      */
-    public MessageModel[] getMessagesByFolder ( final String company, final String folder ) {
+    public MessageResponse[] getMessagesByFolder ( final String company, final String folder ) {
         //Return a message list.
         return messageService.getMessagesByFolder(company, MessageFolder.getFolderEnum(folder));
     }
@@ -47,27 +48,34 @@ public class MessageController {
      * @param date a <code>LocalDate</code> object representing the date the message was sent.
      */
     public void addMessage ( final String company, final String subject, final String text, final String sender, final String folder, final String date) {
-        messageService.saveMessage(MessageModel.builder()
+        messageService.saveMessage(MessageRequest.builder()
                 .company(company)
                 .subject(subject)
                 .text(text)
                 .sender(sender)
-                .messageFolder(MessageFolder.valueOf(folder))
-                .date(date)
+                .folder(folder)
+                .dateTime(date)
                 .build());
     }
 
-    public MessageModel[] getAllMessages ( final String company ) { return messageService.getAllMessages(company);
+    public MessageResponse[] getAllMessages (final String company ) { return messageService.getAllMessages(company);
     }
 
     /**
      * Load Messages.
-     * @param messageModels an array of <code>MessageModel</code> objects with messages to store and delete all other messages.
+     * @param messageModels an array of <code>MessageResponse</code> objects with messages to store and delete all other messages.
      */
-    public void loadMessages ( final MessageModel[] messageModels, final String company ) {
+    public void loadMessages ( final MessageResponse[] messageModels, final String company ) {
         messageService.deleteAllMessages(company);
-        for ( MessageModel messageModel : messageModels ) {
-            messageService.saveMessage(messageModel);
+        for ( MessageResponse messageModel : messageModels ) {
+            messageService.saveMessage(MessageRequest.builder()
+                    .company(company)
+                    .subject(messageModel.getSubject())
+                    .text(messageModel.getText())
+                    .sender(messageModel.getSender())
+                    .folder(messageModel.getFolder())
+                    .dateTime(messageModel.getDateTime())
+                    .build());
         }
     }
 

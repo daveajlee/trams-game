@@ -29,7 +29,6 @@ import de.davelee.trams.controllers.ControllerHandler;
 import de.davelee.trams.gui.ControlScreen;
 import de.davelee.trams.model.GameModel;
 import de.davelee.trams.model.RouteModel;
-import de.davelee.trams.model.VehicleModel;
 
 public class AllocationPanel {
 	

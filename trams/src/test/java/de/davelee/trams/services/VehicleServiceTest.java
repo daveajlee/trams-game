@@ -1,14 +1,12 @@
 package de.davelee.trams.services;
 
 import java.time.LocalDate;
-import java.time.Month;
 import java.util.Map;
 
 import de.davelee.trams.TramsGameApplication;
 import de.davelee.trams.api.request.PurchaseVehicleRequest;
 import de.davelee.trams.api.response.VehicleResponse;
 import de.davelee.trams.api.response.VehiclesResponse;
-import de.davelee.trams.model.VehicleModel;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -28,34 +26,6 @@ public class VehicleServiceTest {
 
 	@InjectMocks
 	private VehicleService vehicleService = new VehicleService();
-	
-	@Test
-	public void testCreateVehicle() {
-		//Test data.
-		//Add vehicle.
-		VehicleModel vehicleModel = new VehicleModel();
-		vehicleModel.setRegistrationNumber("CV58 2DX");
-		vehicleModel.setDeliveryDate(LocalDate.of(2014,4,20));
-		vehicleModel.setDepreciationFactor(0.06);
-		vehicleModel.setImagePath("singledecker.png");
-		vehicleModel.setModel("Mercedes");
-		vehicleModel.setRouteNumber("155");
-		vehicleModel.setRouteScheduleNumber(1);
-		vehicleModel.setSeatingCapacity(45);
-		vehicleModel.setStandingCapacity(20);
-		vehicleModel.setPurchasePrice(20000.00);
-		assertEquals(vehicleModel.getRegistrationNumber(), "CV58 2DX");
-		Assertions.assertEquals(vehicleModel.getDeliveryDate().getYear(), 2014);
-		Assertions.assertEquals(vehicleModel.getDeliveryDate().getMonth(), Month.APRIL);
-		Assertions.assertEquals(vehicleModel.getDeliveryDate().getDayOfMonth(), 20);
-		Assertions.assertEquals(vehicleModel.getDepreciationFactor(), 0.06, 0.0001);
-		assertEquals(vehicleModel.getImagePath(), "singledecker.png");
-		assertEquals(vehicleModel.getModel(), "Mercedes");
-		Assertions.assertEquals(vehicleModel.getRouteScheduleNumber(), 1);
-		assertEquals(vehicleModel.getSeatingCapacity(), 45);
-		assertEquals(vehicleModel.getStandingCapacity(), 20);
-		Assertions.assertEquals(vehicleModel.getPurchasePrice(), 20000.00, 0.0001);
-	}
 	
 	@Test
 	public void testVehicleDelivered() {
@@ -139,18 +109,6 @@ public class VehicleServiceTest {
 		assertEquals(1, vehicleService.getVehicleModels("Mustermann GmbH").length);
 		Assertions.assertNotNull(vehicleService.getVehicleByRegistrationNumber("DDD2 HJK", "Mustermann GmbH"));
 		Assertions.assertNull(vehicleService.getVehicleByRegistrationNumber("2013-001", "Mustermann GmbH"));
-	}
-
-	@Test
-	public void testCreateVehicleObject() {
-		Mockito.when(restTemplate.getForObject(anyString(), eq(VehiclesResponse.class))).
-				thenReturn(VehiclesResponse.builder()
-						.vehicleResponses(new VehicleResponse[] { VehicleResponse.builder().company("Mustermann GmbH")
-								.additionalTypeInformationMap(Map.of("Registration Number", "DDD2 HJK"))
-								.deliveryDate("24-12-2020")
-								.modelName("MyBus Single Decker").build() })
-						.build());
-		assertNotNull(vehicleService.createVehicleObject("MyBus Single Decker", "DDD2 HJK", LocalDate.now(), "Mustermann GmbH"));
 	}
 
 	@Test

@@ -23,11 +23,10 @@ import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import de.davelee.trams.api.response.VehicleResponse;
 import de.davelee.trams.controllers.ControllerHandler;
 import de.davelee.trams.gui.ControlScreen;
-import de.davelee.trams.gui.ImageDisplay;
 import de.davelee.trams.model.GameModel;
-import de.davelee.trams.model.VehicleModel;
 
 public class PurchaseVehiclePanel {
 
@@ -56,8 +55,8 @@ public class PurchaseVehiclePanel {
         vehicleScreenPanel.add(textLabelPanel);
         
         //Create vehicle object so that we can pull information from it.
-        final VehicleModel vehicleModel = controllerHandler.getVehicleController().getVehicleByModel(controllerHandler.getGameController().getGameModel().getCompany(), vehicleType);
-        
+        final VehicleResponse vehicleResponse = controllerHandler.getVehicleController().getAllCreatedVehicles(controllerHandler.getGameController().getGameModel().getCompany())[0];
+
         final GameModel gameModel = controllerHandler.getGameController().getGameModel();
         
         //Create picture panel.
@@ -78,10 +77,11 @@ public class PurchaseVehiclePanel {
         //Bus Display Picture.
         JPanel busPicture = new JPanel(new GridBagLayout());
         busPicture.setBackground(Color.WHITE);
-        ImageDisplay busDisplay = new ImageDisplay(vehicleModel.getImagePath(),0,0);
+        //TODO: Add a mapping from images to vehicle types.
+        /*ImageDisplay busDisplay = new ImageDisplay(vehicleResponse.getImagePath(),0,0);
         busDisplay.setSize(220,180);
         busDisplay.setBackground(Color.WHITE);
-        busPicture.add(busDisplay);
+        busPicture.add(busDisplay);*/
         picturePanel.add(busPicture, BorderLayout.CENTER);
         //Next vehicle type button.
         JPanel nextButtonPanel = new JPanel(new GridBagLayout());
@@ -107,7 +107,7 @@ public class PurchaseVehiclePanel {
         typeLabel.setFont(new Font("Arial", Font.ITALIC, 14));
         typeLabelPanel.add(typeLabel);
         gridPanel.add(typeLabel);
-        JLabel typeField = new JLabel(vehicleModel.getModel());
+        JLabel typeField = new JLabel(vehicleResponse.getModelName());
         typeField.setFont(new Font("Arial", Font.PLAIN, 12));
         gridPanel.add(typeField);
         //Create label and field for seating capacity and add it to the seating panel.
@@ -117,7 +117,7 @@ public class PurchaseVehiclePanel {
         seatingLabel.setFont(new Font("Arial", Font.ITALIC, 14));
         seatingLabelPanel.add(seatingLabel);
         gridPanel.add(seatingLabel);
-        JLabel seatingField = new JLabel("" + vehicleModel.getSeatingCapacity());
+        JLabel seatingField = new JLabel("" + vehicleResponse.getSeatingCapacity());
         seatingField.setFont(new Font("Arial", Font.PLAIN, 12));
         gridPanel.add(seatingField);
         //Create label and field for standing capacity and add it to the standing panel.
@@ -127,7 +127,7 @@ public class PurchaseVehiclePanel {
         standingLabel.setFont(new Font("Arial", Font.ITALIC, 14));
         standingLabelPanel.add(standingLabel);
         gridPanel.add(standingLabel);
-        JLabel standingField = new JLabel("" + vehicleModel.getStandingCapacity());
+        JLabel standingField = new JLabel("" + vehicleResponse.getStandingCapacity());
         standingField.setFont(new Font("Arial", Font.PLAIN, 12));
         gridPanel.add(standingField);
         //Create label and field for delivery date and add it to the delivery panel.
@@ -150,7 +150,7 @@ public class PurchaseVehiclePanel {
         priceLabelPanel.add(priceLabel);
         gridPanel.add(priceLabel);
         final DecimalFormat format = new DecimalFormat("0.00");
-        JLabel priceField = new JLabel("£" + format.format(vehicleModel.getPurchasePrice()));
+        JLabel priceField = new JLabel("£");
         priceField.setFont(new Font("Arial", Font.PLAIN, 12));
         gridPanel.add(priceField);
         //Create label and field for quantity and add it to the quantity panel.
@@ -164,7 +164,9 @@ public class PurchaseVehiclePanel {
         quantitySpinner.setFont(new Font("Arial", Font.PLAIN, 12));
         quantitySpinner.addChangeListener(new ChangeListener() {
             public void stateChanged ( ChangeEvent e ) {
-                double totalPrice = Double.parseDouble(quantitySpinner.getValue().toString()) * vehicleModel.getPurchasePrice();
+                //TODO: make it possible to retrieve the purchase price of a vehicle
+                //double totalPrice = Double.parseDouble(quantitySpinner.getValue().toString()) * vehicleResponse.getPurchasePrice();
+                double totalPrice = 0.0;
                 if ( totalPrice > gameModel.getBalance() ) {
                     totalPriceField.setText("£" + format.format(totalPrice) + " (Insufficient funds available)");
                     totalPriceField.setForeground(Color.RED);
@@ -186,7 +188,9 @@ public class PurchaseVehiclePanel {
         totalPriceLabel.setFont(new Font("Arial", Font.ITALIC, 14));
         totalPriceLabelPanel.add(totalPriceLabel);
         gridPanel.add(totalPriceLabel);
-        double totalPrice = Double.parseDouble(quantitySpinner.getValue().toString()) * vehicleModel.getPurchasePrice();
+        //TODO: make it possible to calculate total price after retrieving purchase price.
+        //double totalPrice = Double.parseDouble(quantitySpinner.getValue().toString()) * vehicleResponse.getPurchasePrice();
+        double totalPrice = 0.0;
         totalPriceField = new JLabel("£" + format.format(totalPrice));
         totalPriceField.setFont(new Font("Arial", Font.PLAIN, 12));
         gridPanel.add(totalPriceField);
@@ -205,7 +209,7 @@ public class PurchaseVehiclePanel {
                 int quantity = Integer.parseInt(quantitySpinner.getValue().toString());
                 for ( int i = 0; i < quantity; i++ ) {
                     double purchasePrice = controllerHandler.getVehicleController().purchaseVehicle(
-                            vehicleModel.getModel(), gameModel.getCompany(), gameModel.getCurrentDateTime().getYear(), Optional.empty());
+                            vehicleResponse.getModelName(), gameModel.getCompany(), gameModel.getCurrentDateTime().getYear(), Optional.empty());
                     controllerHandler.getGameController().withdrawBalance(purchasePrice);
                 }
                 controlScreen.redrawManagement(displayPanel.createPanel(controlScreen), gameModel);
