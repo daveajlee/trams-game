@@ -1,13 +1,10 @@
 package de.davelee.trams.services;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 
 import de.davelee.trams.api.request.UserRequest;
 import de.davelee.trams.api.response.UserResponse;
 import de.davelee.trams.api.response.UsersResponse;
-import de.davelee.trams.model.DriverModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -33,31 +30,15 @@ public class DriverService {
     	return currentDate.isAfter(startDate) || currentDate.isEqual(startDate);
     }
 
-	private DriverModel convertToDriverModel ( final UserResponse userResponse ) {
-		return DriverModel.builder()
-				.name(userResponse.getFirstName() + " " + userResponse.getSurname())
-				.contractedHours(userResponse.getContractedHoursPerWeek())
-				.startDate(convertDateToLocalDate(userResponse.getStartDate()))
-				.build();
+	public UserResponse getDriverByName(final String name, final String company, final String token) {
+		return restTemplate.getForObject(personalManServerUrl + "user/?company=" + company + "&username=" + name + "&token=" + token, UserResponse.class);
 	}
 
-	public DriverModel getDriverByName(final String name, final String company, final String token) {
-		UserResponse userResponse = restTemplate.getForObject(personalManServerUrl + "user/?company=" + company + "&username=" + name + "&token=" + token, UserResponse.class);
-		if ( userResponse != null ) {
-			return convertToDriverModel(userResponse);
-		}
-		return null;
-	}
-
-	public DriverModel[] getAllDrivers (final String company, final String token) {
+	public UserResponse[] getAllDrivers (final String company, final String token) {
 		try {
 			UsersResponse usersResponse = restTemplate.getForObject(personalManServerUrl + "user/?company=" + company + "&username=mmustermann&token=" + token, UsersResponse.class);
 			if (usersResponse != null && usersResponse.getUserResponses() != null) {
-				DriverModel[] driverModels = new DriverModel[usersResponse.getUserResponses().length];
-				for (int i = 0; i < driverModels.length; i++) {
-					driverModels[i] = convertToDriverModel(usersResponse.getUserResponses()[i]);
-				}
-				return driverModels;
+				return usersResponse.getUserResponses();
 			}
 			return null;
 		} catch ( HttpClientErrorException exception ) {
@@ -66,26 +47,12 @@ public class DriverService {
 		}
 	}
 
-	public void saveDriver ( final DriverModel driverModel ) {
-		restTemplate.postForObject(personalManServerUrl + "user/",
-				UserRequest.builder()
-						.dateOfBirth("01-01-1990")
-						.firstName(driverModel.getName().split(" ")[0])
-						.surname(driverModel.getName().split(" ")[1])
-						.leaveEntitlementPerYear(driverModel.getLeaveEntitlementPerYear())
-						.company(driverModel.getCompany())
-						.password("test")
-						.position("Tester")
-						.role("ADMIN")
-						.username(driverModel.getName().split(" ")[0].substring(0,1) + driverModel.getName().split(" ")[1])
-						.workingDays("Monday,Tuesday")
-						.startDate(driverModel.getStartDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")))
-						.build(),
-				Void.class);
+	public void saveDriver ( final UserRequest userRequest ) {
+		restTemplate.postForObject(personalManServerUrl + "user/", userRequest, Void.class);
 	}
 
-	public void removeDriver ( final DriverModel driverModel, final String token ) {
-		restTemplate.delete(personalManServerUrl + "user/?company=" + driverModel.getCompany() + "&username=" + driverModel.getName() + "&token=" + token);
+	public void removeDriver ( final String company, final String username, final String token ) {
+		restTemplate.delete(personalManServerUrl + "user/?company=" + company + "&username=" + username + "&token=" + token);
 	}
 
 	/**
@@ -95,20 +62,6 @@ public class DriverService {
 	 */
 	public void removeAllDrivers ( final String company, final String token ) {
 		restTemplate.delete(personalManServerUrl + "api/company/?name=" + company + "&token=" + token);
-	}
-
-	/**
-	 * This method converts a string date in the format dd-mm-yyyy to a LocalDate object. If the conversion is not
-	 * successful then return null.
-	 * @param date a <code>String</code> in the form dd-mm-yyyy
-	 * @return a <code>LocaLDate</code> with the converted date or null if no conversion is possible.
-	 */
-	private LocalDate convertDateToLocalDate ( final String date ) {
-		try {
-			return LocalDate.parse(date, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
-		} catch ( DateTimeParseException dateTimeParseException ) {
-			return null;
-		}
 	}
     
 }

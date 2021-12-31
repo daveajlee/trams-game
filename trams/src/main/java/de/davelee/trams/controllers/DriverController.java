@@ -1,6 +1,7 @@
 package de.davelee.trams.controllers;
 
-import de.davelee.trams.model.DriverModel;
+import de.davelee.trams.api.request.UserRequest;
+import de.davelee.trams.api.response.UserResponse;
 import de.davelee.trams.model.GameModel;
 import de.davelee.trams.model.ScenarioModel;
 import lombok.Getter;
@@ -11,6 +12,7 @@ import de.davelee.trams.services.DriverService;
 import org.springframework.stereotype.Controller;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 @Controller
 @Getter
@@ -19,34 +21,52 @@ public class DriverController {
 	
 	@Autowired
 	private DriverService driverService;
-	
+
 	@Autowired
 	private GameController gameController;
 
     private String token;
 
-    public DriverModel[] getAllDrivers (final String company) {
+    public UserResponse[] getAllDrivers (final String company) {
 		return driverService.getAllDrivers(company, token);
 	}
 	
 	/**
      * Employ a new driver.
-     * @param driverModel a <code>DriverModel</code> object including name, contracted hours and start date.
+     * @param name a <code>String</code> with name.
      */
-    public void employDriver ( final DriverModel driverModel ) {
+    public void employDriver ( final String name, final String company, final LocalDate startDate ) {
     	//TODO: Employing drivers should cost money.
         gameController.withdrawBalance(0);
-        driverService.saveDriver(driverModel);
+        driverService.saveDriver(UserRequest.builder()
+                .dateOfBirth("01-01-1990")
+                .firstName(name.split(" ")[0])
+                .surname(name.split(" ")[1])
+                .leaveEntitlementPerYear(25)
+                .company(company)
+                .password("test")
+                .position("Tester")
+                .role("ADMIN")
+                .username(name.split(" ")[0].substring(0,1) + name.split(" ")[1])
+                .workingDays("Monday,Tuesday")
+                .startDate(startDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")))
+                .build());
     }
 
     public void createSuppliedDrivers(final ScenarioModel scenarioModel, final LocalDate startDate, final String company ) {
         for ( String suppliedDriver : scenarioModel.getSuppliedDrivers()) {
-            driverService.saveDriver(DriverModel.builder()
-                    .company(company)
-                    .contractedHours(35)
-                    .name(suppliedDriver)
+            driverService.saveDriver(UserRequest.builder()
+                    .dateOfBirth("01-01-1990")
+                    .firstName(suppliedDriver.split(" ")[0])
+                    .surname(suppliedDriver.split(" ")[1])
                     .leaveEntitlementPerYear(25)
-                    .startDate(startDate)
+                    .company(company)
+                    .password("test")
+                    .position("Tester")
+                    .role("ADMIN")
+                    .username(suppliedDriver.split(" ")[0].substring(0,1) + suppliedDriver.split(" ")[1])
+                    .workingDays("Monday,Tuesday")
+                    .startDate(startDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")))
                     .build());
         }
     }
@@ -55,10 +75,22 @@ public class DriverController {
      * This method loads the supplied drivers list and deletes all previous drivers.
      * @param driverModels a <code>DriverModel</code> array containing the drivers to load.
      */
-    public void loadDrivers ( final DriverModel[] driverModels, final String company ) {
+    public void loadDrivers ( final UserResponse[] driverModels, final String company ) {
         driverService.removeAllDrivers(company, token);
-        for ( DriverModel driverModel : driverModels ) {
-            driverService.saveDriver(driverModel);
+        for ( UserResponse driverModel : driverModels ) {
+            driverService.saveDriver(UserRequest.builder()
+                    .dateOfBirth("01-01-1990")
+                    .firstName(driverModel.getFirstName())
+                    .surname(driverModel.getSurname())
+                    .leaveEntitlementPerYear(25)
+                    .company(company)
+                    .password("test")
+                    .position("Tester")
+                    .role("ADMIN")
+                    .username(driverModel.getUsername())
+                    .workingDays("Monday,Tuesday")
+                    .startDate(driverModel.getStartDate())
+                    .build());
         }
     }
     
@@ -71,11 +103,11 @@ public class DriverController {
      * @return a <code>boolean</code> which is true iff some drivers have started working.
      */
     public boolean hasSomeDriversBeenEmployed ( final String company ) {
-        DriverModel[] driverModels = driverService.getAllDrivers(company, token);
+        UserResponse[] driverModels = driverService.getAllDrivers(company, token);
         if (driverModels != null && driverModels.length > 0) {
             GameModel gameModel = gameController.getGameModel();
             for (int i = 0; i < driverModels.length; i++) {
-                if (driverService.hasStartedWork(driverModels[i].getStartDate(), gameModel.getCurrentDateTime().toLocalDate())) {
+                if (driverService.hasStartedWork(LocalDate.parse(driverModels[i].getStartDate(), DateTimeFormatter.ofPattern("dd-MM-yyyy")), gameModel.getCurrentDateTime().toLocalDate())) {
                     return true;
                 }
             }
@@ -87,18 +119,18 @@ public class DriverController {
     /**
      * Get a driver based on its name.
      * @param name a <code>String</code> with the name.
-     * @return a <code>DriverModel</code> object.
+     * @return a <code>UserResponse</code> object.
      */
-    public DriverModel getDriverByName (final String name, final String company ) {
+    public UserResponse getDriverByName (final String name, final String company ) {
         return driverService.getDriverByName(name, company, token);
     }
 
     /**
      * Sack a driver.
-     * @param driverModel a <code>DriverModel</code> object representing the driver to sack.
+     * @param company a <code>String</code> wi.
      */
-    public void sackDriver ( final DriverModel driverModel ) {
-        driverService.removeDriver(driverModel, token);
+    public void sackDriver ( final String company, final String username ) {
+        driverService.removeDriver(company, username, token);
     }
 
 }

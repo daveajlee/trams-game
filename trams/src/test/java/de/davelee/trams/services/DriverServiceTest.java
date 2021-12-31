@@ -1,11 +1,10 @@
 package de.davelee.trams.services;
 
 import java.time.LocalDate;
-import java.time.Month;
 
 import de.davelee.trams.TramsGameApplication;
+import de.davelee.trams.api.request.UserRequest;
 import de.davelee.trams.api.response.UserResponse;
-import de.davelee.trams.model.DriverModel;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -29,12 +28,12 @@ public class DriverServiceTest {
 	public void testCreateDriver() {
 		Mockito.doNothing().when(restTemplate).delete(anyString());
 		driverService.removeAllDrivers("Mustermann GmbH", "mmustermann-ghgkg");
-		DriverModel driverModel = DriverModel.builder()
-				.name("Dave Lee")
-				.contractedHours(40)
-				.startDate(LocalDate.of(2014,4,20)).build();
+		UserRequest userRequest = UserRequest.builder()
+				.firstName("Dave")
+				.surname("Lee")
+				.startDate("20-04-2014").build();
 		Mockito.when(restTemplate.postForObject(anyString(), any(), eq(Void.class))).thenReturn(null);
-		driverService.saveDriver(driverModel);
+		driverService.saveDriver(userRequest);
 		Mockito.when(restTemplate.getForObject(anyString(), eq(UserResponse.class))).thenReturn(
 			UserResponse.builder()
 					.firstName("Dave")
@@ -43,12 +42,10 @@ public class DriverServiceTest {
 					.startDate("20-04-2014")
 					.build()
 		);
-		DriverModel driverModel2 = driverService.getDriverByName("Dave Lee", "Mustermann GmbH", "mmustermann-ghgkg");
-		assertEquals(driverModel2.getName(), "Dave Lee");
-		Assertions.assertEquals(driverModel2.getContractedHours(), 40);
-		Assertions.assertEquals(driverModel2.getStartDate().getYear(), 2014);
-		Assertions.assertEquals(driverModel2.getStartDate().getMonth(), Month.APRIL);
-		Assertions.assertEquals(driverModel2.getStartDate().getDayOfMonth(), 20);
+		UserResponse userResponse = driverService.getDriverByName("Dave Lee", "Mustermann GmbH", "mmustermann-ghgkg");
+		assertEquals(userResponse.getFirstName(), "Dave");
+		Assertions.assertEquals(userResponse.getContractedHoursPerWeek(), 40);
+		Assertions.assertEquals(userResponse.getStartDate(), "20-04-2014");
 	}
 	
 	@Test
@@ -77,22 +74,22 @@ public class DriverServiceTest {
 	@Test
 	public void testGetDriverByName ( ) {
 		//Treble needed so that test works in both Maven and JUnit.
-		DriverModel driverModel = DriverModel.builder()
-				.name("Dave Lee")
-				.contractedHours(40)
-				.startDate(LocalDate.of(2014,4,20)).build();
-		DriverModel driverModel2 = DriverModel.builder()
-				.name("Brian Lee")
-				.contractedHours(35)
-				.startDate(LocalDate.of(2014,5,20)).build();
-		DriverModel driverModel3 = DriverModel.builder()
-				.name("Rachel Lee")
-				.contractedHours(30)
-				.startDate(LocalDate.of(2014,6,20)).build();
+		UserRequest userRequest = UserRequest.builder()
+				.firstName("Dave")
+				.surname("Lee")
+				.startDate("20-04-2014").build();
+		UserRequest userRequest1 = UserRequest.builder()
+				.firstName("Brian")
+				.surname("Lee")
+				.startDate("20-05-2014").build();
+		UserRequest userRequest2 = UserRequest.builder()
+				.firstName("Rachel")
+				.surname("Lee")
+				.startDate("20-06-2014").build();
 		Mockito.when(restTemplate.postForObject(anyString(), any(), eq(Void.class))).thenReturn(null);
-		driverService.saveDriver(driverModel);
-		driverService.saveDriver(driverModel2);
-		driverService.saveDriver(driverModel3);
+		driverService.saveDriver(userRequest);
+		driverService.saveDriver(userRequest1);
+		driverService.saveDriver(userRequest2);
 		Mockito.when(restTemplate.getForObject(anyString(), eq(UserResponse.class))).thenReturn(
 				UserResponse.builder()
 						.firstName("Brian")
@@ -102,7 +99,7 @@ public class DriverServiceTest {
 						.build()
 		);
 		Assertions.assertNotNull(driverService.getDriverByName("Brian Lee", "Mustermann GmbH", "mmustermann-ghgkg"));
-		assertEquals(driverService.getDriverByName("Brian Lee", "Nustermann GmbH", "mmustermann-ghgkg").getName(), "Brian Lee");
+		assertEquals(driverService.getDriverByName("Brian Lee", "Nustermann GmbH", "mmustermann-ghgkg").getFirstName(), "Brian");
 		Mockito.when(restTemplate.getForObject(anyString(), eq(UserResponse.class))).thenReturn(null);
 		Assertions.assertNull(driverService.getDriverByName("Stephan Lee", "Mustermann GmbH", "mmustermann-ghgkg"));
 	}

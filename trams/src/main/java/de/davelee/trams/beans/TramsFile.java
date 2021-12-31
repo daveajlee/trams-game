@@ -1,7 +1,7 @@
 package de.davelee.trams.beans;
 
+import de.davelee.trams.api.response.UserResponse;
 import de.davelee.trams.api.response.VehicleResponse;
-import de.davelee.trams.model.DriverModel;
 import de.davelee.trams.model.GameModel;
 import de.davelee.trams.model.MessageModel;
 import de.davelee.trams.model.RouteModel;
@@ -18,7 +18,7 @@ import lombok.Setter;
 @Setter
 public class TramsFile {
 
-    private DriverModel[] driverModels;
+    private UserResponse[] driverModels;
     private GameModel[] gameModel;
     private MessageModel[] messageModels;
     private RouteModel[] routeModels;

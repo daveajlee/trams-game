@@ -8,9 +8,9 @@ import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import de.davelee.trams.api.response.UserResponse;
 import de.davelee.trams.controllers.ControllerHandler;
 import de.davelee.trams.gui.ControlScreen;
-import de.davelee.trams.model.DriverModel;
 import de.davelee.trams.model.GameModel;
 
 public class ViewDriverPanel {
@@ -49,13 +49,13 @@ public class ViewDriverPanel {
 
         //Get driver data now so that we can used to compile first!
         DefaultListModel driversModel = new DefaultListModel();
-        DriverModel[] driverModels = controllerHandler.getDriverController().getAllDrivers(gameModel.getCompany());
+        UserResponse[] driverModels = controllerHandler.getDriverController().getAllDrivers(gameModel.getCompany());
         for ( int i = 0; i < driverModels.length; i++ ) {
-            driversModel.addElement(driverModels[i].getName());
+            driversModel.addElement(driverModels[i].getUsername());
         }
 
         //Create driver object so that we can pull information from it.
-        final DriverModel driverModel;
+        final UserResponse driverModel;
         if ( !driverName.equalsIgnoreCase("") ) {
             driverModel = controllerHandler.getDriverController().getDriverByName(driverName, gameModel.getCompany());
         } else {
@@ -72,7 +72,7 @@ public class ViewDriverPanel {
         nameLabel.setFont(new Font("Arial", Font.ITALIC, 14));
         nameLabelPanel.add(nameLabel);
         gridPanel.add(nameLabel);
-        JLabel nameField = new JLabel(driverModel.getName());
+        JLabel nameField = new JLabel(driverModel.getFirstName() + " " + driverModel.getSurname());
         nameField.setFont(new Font("Arial", Font.PLAIN, 12));
         gridPanel.add(nameField);
         //Create label and field for contracted hours and add it to the hours panel.
@@ -82,7 +82,7 @@ public class ViewDriverPanel {
         hoursLabel.setFont(new Font("Arial", Font.ITALIC, 14));
         hoursLabelPanel.add(hoursLabel);
         gridPanel.add(hoursLabel);
-        JLabel hoursField = new JLabel("" + driverModel.getContractedHours());
+        JLabel hoursField = new JLabel("" + driverModel.getContractedHoursPerWeek());
         hoursField.setFont(new Font("Arial", Font.PLAIN, 12));
         gridPanel.add(hoursField);
         //Create label and field for start date and add it to the start date panel.
@@ -92,7 +92,7 @@ public class ViewDriverPanel {
         startDateLabel.setFont(new Font("Arial", Font.ITALIC, 14));
         startDateLabelPanel.add(startDateLabel);
         gridPanel.add(startDateLabel);
-        JLabel startDateField = new JLabel(driverModel.getStartDate().getDayOfMonth() + "-" + driverModel.getStartDate().getMonth() + "-" + driverModel.getStartDate().getYear());
+        JLabel startDateField = new JLabel(driverModel.getStartDate());
         startDateField.setFont(new Font("Arial", Font.PLAIN, 12));
         gridPanel.add(startDateField);
 
@@ -107,7 +107,7 @@ public class ViewDriverPanel {
         JButton sackDriverButton = new JButton("Sack Driver");
         sackDriverButton.addActionListener ( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
-                controllerHandler.getDriverController().sackDriver(driverModel);
+                controllerHandler.getDriverController().sackDriver(driverModel.getCompany(), driverModel.getUsername());
                 controlScreen.redrawManagement(createPanel("", controlScreen, displayPanel), controllerHandler.getGameController().getGameModel());
             }
         });
@@ -137,7 +137,7 @@ public class ViewDriverPanel {
         final JList driversList = new JList(driversModel);
         driversList.setFixedCellWidth(100);
         driversList.setVisibleRowCount(25);
-        driversList.setSelectedValue(driverModel.getName(), true);
+        driversList.setSelectedValue(driverModel.getUsername(), true);
         driversList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         driversList.setFont(new Font("Arial", Font.PLAIN, 15));
         driversList.addListSelectionListener(new ListSelectionListener() {

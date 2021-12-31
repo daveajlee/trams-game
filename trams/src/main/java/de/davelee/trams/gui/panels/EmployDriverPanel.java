@@ -19,7 +19,6 @@ import javax.swing.SwingConstants;
 
 import de.davelee.trams.controllers.ControllerHandler;
 import de.davelee.trams.gui.ControlScreen;
-import de.davelee.trams.model.DriverModel;
 import de.davelee.trams.model.GameModel;
 import de.davelee.trams.util.DateFormats;
 
@@ -96,11 +95,7 @@ public class EmployDriverPanel {
         JButton employDriverButton = new JButton("Employ Driver");
         employDriverButton.addActionListener( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
-                controllerHandler.getDriverController().employDriver(DriverModel.builder()
-                        .name(driverNameField.getText())
-                        .contractedHours((Integer) contractedHoursSpinner.getValue())
-                        .startDate(startDate)
-                        .build());
+                controllerHandler.getDriverController().employDriver(driverNameField.getText(), gameModel.getCompany(), startDate);
                 controlScreen.redrawManagement(displayPanel.createPanel(controlScreen), controllerHandler.getGameController().getGameModel());
             }
         });

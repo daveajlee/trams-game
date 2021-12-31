@@ -8,6 +8,7 @@ import java.util.Map;
 
 import de.davelee.trams.TramsGameApplication;
 import de.davelee.trams.api.request.PurchaseVehicleRequest;
+import de.davelee.trams.api.request.UserRequest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -17,7 +18,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import de.davelee.trams.beans.TramsFile;
-import de.davelee.trams.model.DriverModel;
 import de.davelee.trams.model.GameModel;
 import de.davelee.trams.model.MessageModel;
 import de.davelee.trams.model.RouteModel;
@@ -54,10 +54,10 @@ public class FileServiceTest {
 		//Delete temporary content
 		deleteTemporaryContent();
 		//Now create and save file.
-		driverService.saveDriver(DriverModel.builder()
-				.name("Chris Lee")
-				.contractedHours(40)
-				.startDate(LocalDate.of(2014,4,20)).build());
+		driverService.saveDriver(UserRequest.builder()
+				.firstName("Chris")
+				.surname("Lee")
+				.startDate("20-04-2014").build());
 		vehicleService.saveVehicle(PurchaseVehicleRequest.builder()
 				.company("Mustermann GmbH")
 				.fleetNumber("101")
@@ -117,7 +117,7 @@ public class FileServiceTest {
 		TramsFile tramsFile2 = fileService.loadFile(new File("test-game-service.json"));
 		assertNotNull(tramsFile2);
 		Assertions.assertEquals(tramsFile2.getDriverModels().length, 1);
-		assertEquals(tramsFile2.getDriverModels()[0].getName(), "Chris Lee");
+		assertEquals(tramsFile2.getDriverModels()[0].getFirstName(), "Chris");
 		Assertions.assertEquals(tramsFile2.getVehicleModels().length, 1);
 		Assertions.assertEquals(tramsFile2.getGameModel().length, 1);
 	}
