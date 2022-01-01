@@ -17,9 +17,9 @@ import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 
 import de.davelee.trams.api.response.CompanyResponse;
+import de.davelee.trams.beans.Scenario;
 import de.davelee.trams.controllers.ControllerHandler;
 import de.davelee.trams.gui.ControlScreen;
-import de.davelee.trams.model.ScenarioModel;
 
 public class ScenarioPanel {
 
@@ -65,7 +65,7 @@ public class ScenarioPanel {
         scenarioScreenPanel.add(scenarioNamePanel);
         scenarioScreenPanel.add(Box.createRigidArea(new Dimension(0,15)));
         
-        ScenarioModel scenarioModel = controllerHandler.getScenarioController().getScenario(companyResponse.getScenarioName());
+        Scenario scenario = controllerHandler.getScenarioController().getScenario(companyResponse.getScenarioName());
 
         //Create panel for target field.
         JPanel targetPanel = new JPanel(new GridLayout(1,2,5,5));
@@ -76,7 +76,7 @@ public class ScenarioPanel {
         targetPanel.add(targetLabel);
         JPanel scenarioTargetPanel = new JPanel(new BorderLayout());
         scenarioTargetPanel.setBackground(Color.WHITE);
-        JTextArea scenarioTargetArea = new JTextArea(scenarioModel.getTargets());
+        JTextArea scenarioTargetArea = new JTextArea(scenario.getTargets());
         scenarioTargetArea.setWrapStyleWord(true);
         scenarioTargetArea.setLineWrap(true);
         scenarioTargetArea.setFont(new Font("Arial", Font.ITALIC, 14));

@@ -1,7 +1,7 @@
 package de.davelee.trams.gui;
 
+import de.davelee.trams.beans.Scenario;
 import de.davelee.trams.controllers.ControllerHandler;
-import de.davelee.trams.model.ScenarioModel;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -26,7 +26,7 @@ public class ScenarioDescriptionScreen extends JFrame {
         this.controllerHandler = controllerHandler;
     }
 
-    public void displayScreen (  final ScenarioModel scenarioModel, final String company, final String playerName ) {
+    public void displayScreen (final Scenario scenario, final String company, final String playerName ) {
         //Initialise GUI with title and close attributes.
         this.setTitle ("TraMS - Transport Management Simulator");
         this.setResizable (false);
@@ -81,7 +81,7 @@ public class ScenarioDescriptionScreen extends JFrame {
         //Create the descriptionPanel.
         JPanel descriptionPanel = new JPanel();
         descriptionPanel.setBackground(Color.WHITE);
-        JTextArea scenarioDescriptionArea = new JTextArea(playerName + " " + scenarioModel.getDescription());
+        JTextArea scenarioDescriptionArea = new JTextArea(playerName + " " + scenario.getDescription());
         scenarioDescriptionArea.setFont(new Font("Arial", Font.PLAIN, 16));
         scenarioDescriptionArea.setLineWrap(true);
         scenarioDescriptionArea.setWrapStyleWord(true);

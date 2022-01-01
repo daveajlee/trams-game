@@ -1,12 +1,11 @@
 package de.davelee.trams.controllers;
 
-import de.davelee.trams.model.Direction;
-import de.davelee.trams.model.StopTimeModel;
+import de.davelee.trams.api.response.StopTimeResponse;
+import de.davelee.trams.util.Direction;
 import de.davelee.trams.services.StopTimeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
-import java.time.LocalDate;
 import java.util.Optional;
 
 @Controller
@@ -23,9 +22,9 @@ public class StopTimeController {
                 startTime, endTime, frequency, validFromDate, validToDate, operatingDays);
     }
 
-    public StopTimeModel[] getStopTimes (final Optional<Direction> direction, final String routeNumber, final String date ) {
+    public StopTimeResponse[] getStopTimes (final Optional<Direction> direction, final String routeNumber, final String date ) {
         //TODO: implement method and connect to REST interface.
-        return new StopTimeModel[0];
+        return new StopTimeResponse[0];
     }
 
 }

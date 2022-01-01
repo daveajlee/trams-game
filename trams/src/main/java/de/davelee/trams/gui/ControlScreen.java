@@ -11,10 +11,9 @@ import de.davelee.trams.api.response.CompanyResponse;
 import de.davelee.trams.api.response.MessageResponse;
 import de.davelee.trams.api.response.RouteResponse;
 import de.davelee.trams.api.response.VehicleResponse;
+import de.davelee.trams.beans.Scenario;
 import de.davelee.trams.controllers.ControllerHandler;
 import de.davelee.trams.gui.panels.DisplayPanel;
-import de.davelee.trams.model.*;
-import de.davelee.trams.util.DifficultyLevel;
 import de.davelee.trams.util.MessageFolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -382,8 +381,8 @@ public class ControlScreen extends ButtonBar {
             //Now here we need to update satisfaction bar.
             timeLabel.setText(companyResponse.getTime());
             int satValue = (int) Math.round(super.getControllerHandler().getGameController().computeAndReturnPassengerSatisfaction(getCompany(), companyResponse.getDifficultyLevel()));
-            ScenarioModel scenarioModel = super.getControllerHandler().getScenarioController().getScenario(companyResponse.getScenarioName());
-            if ( satValue < scenarioModel.getMinimumSatisfaction() ) {
+            Scenario scenario = super.getControllerHandler().getScenarioController().getScenario(companyResponse.getScenarioName());
+            if ( satValue < scenario.getMinimumSatisfaction() ) {
                 super.getControllerHandler().getGameController().pauseSimulation();
                 JOptionPane.showMessageDialog(ControlScreen.this, companyResponse.getScenarioName() + " have relunctanly decided to relieve you of your duties as managing director as passenger satisfaction is now " + satValue + "%.", "Sorry You Have Been Sacked!", JOptionPane.ERROR_MESSAGE);
                 new WelcomeScreen(super.getControllerHandler());

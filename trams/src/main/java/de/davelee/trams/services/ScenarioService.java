@@ -7,7 +7,6 @@ import java.util.List;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import de.davelee.trams.beans.Scenario;
-import de.davelee.trams.model.ScenarioModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -31,7 +30,7 @@ public class ScenarioService {
         return possStops;
     }
 
-	public ScenarioModel retrieveScenarioFile ( String name ) {
+	public Scenario retrieveScenarioFile ( String name ) {
 		//Define json importer.
 		final ObjectMapper mapper = new ObjectMapper();
 		mapper.registerModule(new JavaTimeModule());
@@ -43,26 +42,11 @@ public class ScenarioService {
 			while ((line = reader.readLine()) != null) {
 				out.append(line);   // add everything to StringBuilder
 			}
-			return convertToScenarioModel(mapper.readValue(out.toString(), Scenario.class));
+			return mapper.readValue(out.toString(), Scenario.class);
 		} catch ( Exception exception ) {
 			logger.error("exception whilst loading file", exception);
 			return null;
 		}
-	}
-
-	private ScenarioModel convertToScenarioModel ( final Scenario scenario ) {
-		ScenarioModel scenarioModel = new ScenarioModel();
-		scenarioModel.setCityDescription(scenario.getCityDescription());
-		scenarioModel.setName(scenario.getScenarioName());
-		scenarioModel.setSuppliedVehicles(scenario.getSuppliedVehicles());
-		scenarioModel.setSuppliedDrivers(scenario.getSuppliedDrivers());
-		scenarioModel.setTargets(scenario.getTargets());
-		scenarioModel.setDescription(scenario.getDescription());
-		scenarioModel.setStopNames(getStopNames(scenario.getStopDistances()));
-		scenarioModel.setMinimumSatisfaction(scenario.getMinimumSatisfaction());
-		scenarioModel.setLocationMapFileName(scenario.getLocationMapFileName());
-		scenarioModel.setStopDistances(scenario.getStopDistances());
-		return scenarioModel;
 	}
 
 }

@@ -1,9 +1,9 @@
 package de.davelee.trams.controllers;
 
-import java.time.LocalDate;
 import java.util.HashMap;
 
 import de.davelee.trams.TramsGameApplication;
+import de.davelee.trams.beans.Scenario;
 import de.davelee.trams.services.VehicleService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -13,8 +13,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-
-import de.davelee.trams.model.ScenarioModel;
 
 import static org.mockito.ArgumentMatchers.*;
 
@@ -30,14 +28,14 @@ public class VehicleControllerTest {
 	
 	@Test
 	public void testSuppliedVehicles ( ) {
-		ScenarioModel scenarioModel = new ScenarioModel();
-		scenarioModel.setName("Landuff Transport Company");
+		Scenario scenario = new Scenario();
+		scenario.setScenarioName("Landuff Transport Company");
 		HashMap<String, Integer> suppliedVehicles = new HashMap<String, Integer>();
 		suppliedVehicles.put("MyBus Single Decker", Integer.valueOf(1));
-		scenarioModel.setSuppliedVehicles(suppliedVehicles);
+		scenario.setSuppliedVehicles(suppliedVehicles);
 		Mockito.when(vehicleService.generateRandomReg(2014, "Mustermann GmbH")).thenReturn("DDD4 JKL");
 		Mockito.when(vehicleService.saveVehicle(any())).thenReturn(10000.0);
-		assertEquals(1, vehicleController.createSuppliedVehicles(scenarioModel, "01-01-2014", "Mustermann GmbH"));
+		assertEquals(1, vehicleController.createSuppliedVehicles(scenario, "01-01-2014", "Mustermann GmbH"));
 	}
 
 	private void assertEquals ( final int expected, final int actual ) {

@@ -3,7 +3,7 @@ package de.davelee.trams.controllers;
 import de.davelee.trams.api.request.UserRequest;
 import de.davelee.trams.api.response.CompanyResponse;
 import de.davelee.trams.api.response.UserResponse;
-import de.davelee.trams.model.ScenarioModel;
+import de.davelee.trams.beans.Scenario;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,8 +53,8 @@ public class DriverController {
                 .build());
     }
 
-    public void createSuppliedDrivers(final ScenarioModel scenarioModel, final String startDate, final String company ) {
-        for ( String suppliedDriver : scenarioModel.getSuppliedDrivers()) {
+    public void createSuppliedDrivers(final Scenario scenario, final String startDate, final String company ) {
+        for ( String suppliedDriver : scenario.getSuppliedDrivers()) {
             driverService.saveDriver(UserRequest.builder()
                     .dateOfBirth("01-01-1990")
                     .firstName(suppliedDriver.split(" ")[0])

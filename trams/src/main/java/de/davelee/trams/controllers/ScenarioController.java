@@ -1,6 +1,6 @@
 package de.davelee.trams.controllers;
 
-import de.davelee.trams.model.ScenarioModel;
+import de.davelee.trams.beans.Scenario;
 import de.davelee.trams.services.ScenarioService;
 import lombok.Getter;
 import lombok.Setter;
@@ -28,7 +28,7 @@ public class ScenarioController {
 		return scenarioList;
 	}
 
-	public ScenarioModel getScenario ( final String scenarioName ) {
+	public Scenario getScenario (final String scenarioName ) {
 		return scenarioService.retrieveScenarioFile(scenarioName);
 	}
 

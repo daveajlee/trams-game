@@ -3,10 +3,6 @@ package de.davelee.trams.gui.panels;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.List;
 
@@ -18,8 +14,9 @@ import javax.swing.table.TableColumn;
 
 import de.davelee.trams.api.response.CompanyResponse;
 import de.davelee.trams.api.response.RouteResponse;
+import de.davelee.trams.api.response.StopTimeResponse;
 import de.davelee.trams.controllers.ControllerHandler;
-import de.davelee.trams.model.*;
+import de.davelee.trams.util.Direction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -119,7 +116,7 @@ public class ViewTimetablePanel {
         //Show valid information.
         JPanel validityPanel = new JPanel(new BorderLayout());
         validityPanel.setBackground(Color.WHITE);
-        StopTimeModel[] stopTimeModels = controllerHandler.getStopTimeController().getStopTimes(Optional.empty(), routeModel.getRouteNumber(), companyResponse.getTime());
+        StopTimeResponse[] stopTimeModels = controllerHandler.getStopTimeController().getStopTimes(Optional.empty(), routeModel.getRouteNumber(), companyResponse.getTime());
         JLabel validFromDateLabel = new JLabel("Valid From: " + stopTimeModels[0].getValidFromDate());
         validFromDateLabel.setFont(new Font("Arial", Font.ITALIC, 14));
         validityPanel.add(validFromDateLabel, BorderLayout.NORTH);
@@ -179,19 +176,18 @@ public class ViewTimetablePanel {
         String[][] data = new String[24][4];
         //TODO: Preprocessing necessary?
         //TODO: Add multiple route schedules.
-        StopTimeModel[] stopTimeModels = controllerHandler.getStopTimeController().getStopTimes(Optional.of(direction), routeNumber, date);
+        StopTimeResponse[] stopTimeModels = controllerHandler.getStopTimeController().getStopTimes(Optional.of(direction), routeNumber, date);
         for ( int i = 0; i < stopTimeModels.length; i++ ) {
             try {
-                LocalTime myTime = stopTimeModels[i].getTime();
-                String minuteStr = "";
-                if ( myTime.getMinute() < 10 ) { minuteStr = "0" + myTime.getMinute(); } else { minuteStr = "" + myTime.getMinute(); }
+                String[] timeSplit = stopTimeModels[i].getDepartureTime().split(":");
                 int displayPos = 1;
+                data[Integer.parseInt(timeSplit[0])][displayPos] = stopTimeModels[i].getDepartureTime();
                 /*if ( myDateTime.getDayOfWeek()==DayOfWeek.SATURDAY ) { displayPos = 2; }
                 else if ( myDateTime.getDayOfWeek()==DayOfWeek.SUNDAY ) { displayPos = 3; }*/
-                if ( data[myTime.getHour()][displayPos] == null ) {
-                    data[myTime.getHour()][displayPos] = "" + minuteStr;
+                if ( data[Integer.parseInt(timeSplit[0])][displayPos] == null ) {
+                    data[Integer.parseInt(timeSplit[0])][displayPos] = "" + timeSplit[1];
                 } else {
-                    data[myTime.getHour()][displayPos] = data[myTime.getHour()][displayPos] + " " + minuteStr;
+                    data[Integer.parseInt(timeSplit[0])][displayPos] = data[Integer.parseInt(timeSplit[0])][displayPos] + " " + timeSplit[1];
                 }
             } catch (NoSuchElementException ex) {
                 logger.debug("No stop time found for " + stopTimeModels[i] + " and stop name " + stopName);

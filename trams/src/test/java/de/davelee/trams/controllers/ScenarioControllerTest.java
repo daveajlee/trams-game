@@ -1,7 +1,7 @@
 package de.davelee.trams.controllers;
 
 import de.davelee.trams.TramsGameApplication;
-import de.davelee.trams.model.ScenarioModel;
+import de.davelee.trams.beans.Scenario;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,10 +27,10 @@ public class ScenarioControllerTest {
 
     @Test
     public void testLanduffScenario ( ) {
-        ScenarioModel landuffScenarioModel = scenarioController.getScenario("Landuff Town (EASY)");
-        assertNotNull(landuffScenarioModel);
-        assertEquals("Landuff Transport Company", landuffScenarioModel.getName());
-        assertEquals(70, landuffScenarioModel.getMinimumSatisfaction());
+        Scenario landuffScenario = scenarioController.getScenario("Landuff Town (EASY)");
+        assertNotNull(landuffScenario);
+        assertEquals("Landuff Transport Company", landuffScenario.getScenarioName());
+        assertEquals(70, landuffScenario.getMinimumSatisfaction());
     }
 
 }

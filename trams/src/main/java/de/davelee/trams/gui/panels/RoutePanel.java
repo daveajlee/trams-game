@@ -95,7 +95,7 @@ public class RoutePanel {
             }
         }
         CompanyResponse companyResponse = controllerHandler.getGameController().getGameModel(controlScreen.getCompany(), controlScreen.getPlayerName());
-        String[] stopNames = controllerHandler.getScenarioController().getScenario(companyResponse.getScenarioName()).getStopNames();
+        String[] stopNames = convertToStopNames(controllerHandler.getScenarioController().getScenario(companyResponse.getScenarioName()).getStopDistances());
         availableStopModel = new DefaultListModel();
         for ( int i = 0; i < stopNames.length; i++ ) {
             availableStopModel.addElement(stopNames[i]);
@@ -201,6 +201,14 @@ public class RoutePanel {
         if ( routeStopModel.getSize() > 1 && !routeNumberField.getText().equalsIgnoreCase("") ) {
             createRouteButton.setEnabled(true);
         }
+    }
+
+    private String[] convertToStopNames ( final List<String> stopDistances ) {
+        String[] stopNames = new String[stopDistances.size()];
+        for ( int i = 0; i < stopDistances.size(); i++ ) {
+            stopNames[i] = stopDistances.get(i).split(":")[0];
+        }
+        return stopNames;
     }
 
 }

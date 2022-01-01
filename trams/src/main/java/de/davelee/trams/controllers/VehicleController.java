@@ -2,7 +2,7 @@ package de.davelee.trams.controllers;
 
 import de.davelee.trams.api.request.PurchaseVehicleRequest;
 import de.davelee.trams.api.response.VehicleResponse;
-import de.davelee.trams.model.ScenarioModel;
+import de.davelee.trams.beans.Scenario;
 import de.davelee.trams.util.DifficultyLevel;
 import de.davelee.trams.util.SortedVehicleResponses;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -105,12 +105,12 @@ public class VehicleController {
 		return vehicleService.getVehicleByAllocatedTour(allocatedTour, company);
 	}
 
-	public int createSuppliedVehicles(final ScenarioModel scenarioModel, final String currentDate, final String company) {
-		Iterator<String> vehicleModels = scenarioModel.getSuppliedVehicles().keySet().iterator();
+	public int createSuppliedVehicles(final Scenario scenario, final String currentDate, final String company) {
+		Iterator<String> vehicleModels = scenario.getSuppliedVehicles().keySet().iterator();
 		int numCreatedVehicles = 0;
 		while (vehicleModels.hasNext()) {
 			String vehicleModel = vehicleModels.next();
-			for ( int i = 0; i < scenarioModel.getSuppliedVehicles().get(vehicleModel); i++ )  {
+			for ( int i = 0; i < scenario.getSuppliedVehicles().get(vehicleModel); i++ )  {
 				int fleetNumber = 100 + i;
 				purchaseVehicle(vehicleModel, company, LocalDate.parse(currentDate, DateTimeFormatter.ofPattern("dd-MM-yyyy")).getYear(), Optional.of(fleetNumber));
 				numCreatedVehicles++;

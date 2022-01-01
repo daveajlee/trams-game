@@ -9,10 +9,10 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 
 import de.davelee.trams.api.response.CompanyResponse;
+import de.davelee.trams.beans.Scenario;
 import de.davelee.trams.controllers.ControllerHandler;
 import de.davelee.trams.gui.ControlScreen;
 import de.davelee.trams.gui.ImageDisplay;
-import de.davelee.trams.model.ScenarioModel;
 
 public class LocationMapPanel {
 	
@@ -25,7 +25,7 @@ public class LocationMapPanel {
 	public JPanel createPanel ( final ControlScreen controlScreen, final DisplayPanel displayPanel  ) {
 		final CompanyResponse companyResponse = controllerHandler.getGameController().getGameModel(controlScreen.getCompany(), controlScreen.getPlayerName());
     	
-    	ScenarioModel scenarioModel = controllerHandler.getScenarioController().getScenario(companyResponse.getScenarioName());
+    	Scenario scenarioModel = controllerHandler.getScenarioController().getScenario(companyResponse.getScenarioName());
         
         //Create picture panel.
         JPanel picturePanel = new JPanel(new BorderLayout());

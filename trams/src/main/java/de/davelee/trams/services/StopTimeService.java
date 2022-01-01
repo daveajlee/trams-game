@@ -2,14 +2,12 @@ package de.davelee.trams.services;
 
 import de.davelee.trams.api.request.GenerateStopTimesRequest;
 import de.davelee.trams.api.request.StopPatternRequest;
+import de.davelee.trams.api.response.StopTimeResponse;
 import de.davelee.trams.api.response.StopTimesResponse;
-import de.davelee.trams.model.StopTimeModel;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 @Service
@@ -43,8 +41,8 @@ public class StopTimeService {
                 Void.class);
     }
 
-    public StopTimeModel[] getStopTimes (final String company, final String date, final boolean isDepartures,
-                                                         final boolean isArrivals, final Optional<String> startingTime, final String stopName) {
+    public StopTimeResponse[] getStopTimes (final String company, final String date, final boolean isDepartures,
+                                            final boolean isArrivals, final Optional<String> startingTime, final String stopName) {
         StopTimesResponse stopTimesResponse;
         if (startingTime.isPresent()) {
             stopTimesResponse = restTemplate.getForObject(operationsServerUrl + "stopTimes/?company=" + company
@@ -56,19 +54,7 @@ public class StopTimeService {
                     StopTimesResponse.class);
         }
         if ( stopTimesResponse != null && stopTimesResponse.getStopTimeResponses() != null ) {
-            StopTimeModel[] stopTimesModels = new StopTimeModel[stopTimesResponse.getStopTimeResponses().length];
-            for (int i = 0; i < stopTimesResponse.getStopTimeResponses().length; i++) {
-                stopTimesModels[i] = StopTimeModel.builder()
-                        .time(LocalTime.parse(stopTimesResponse.getStopTimeResponses()[i].getDepartureTime(), DateTimeFormatter.ofPattern("HH:mm")))
-                        .company(stopTimesResponse.getStopTimeResponses()[i].getCompany())
-                        .journeyNumber(Integer.parseInt(stopTimesResponse.getStopTimeResponses()[i].getJourneyNumber()))
-                        .routeNumber(stopTimesResponse.getStopTimeResponses()[i].getRouteNumber())
-                        .stopName(stopTimesResponse.getStopTimeResponses()[i].getStopName())
-                        .validFromDate(stopTimesResponse.getStopTimeResponses()[i].getValidFromDate())
-                        .validToDate(stopTimesResponse.getStopTimeResponses()[i].getValidToDate())
-                        .build();
-            }
-            return stopTimesModels;
+            return stopTimesResponse.getStopTimeResponses();
         }
         return null;
     }

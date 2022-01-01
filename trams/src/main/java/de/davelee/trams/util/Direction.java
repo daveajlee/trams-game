@@ -1,4 +1,4 @@
-package de.davelee.trams.model;
+package de.davelee.trams.util;
 
 public enum Direction {
 
