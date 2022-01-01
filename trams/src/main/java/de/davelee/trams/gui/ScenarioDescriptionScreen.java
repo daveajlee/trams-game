@@ -26,7 +26,7 @@ public class ScenarioDescriptionScreen extends JFrame {
         this.controllerHandler = controllerHandler;
     }
 
-    public void displayScreen (  final ScenarioModel scenarioModel ) {
+    public void displayScreen (  final ScenarioModel scenarioModel, final String company, final String playerName ) {
         //Initialise GUI with title and close attributes.
         this.setTitle ("TraMS - Transport Management Simulator");
         this.setResizable (false);
@@ -73,7 +73,7 @@ public class ScenarioDescriptionScreen extends JFrame {
         //Create the MDLabelPanel first of all.
         JPanel MDLabelPanel = new JPanel();
         MDLabelPanel.setBackground(Color.WHITE);
-        JLabel mDLabel = new JLabel(controllerHandler.getGameController().getCurrentPlayerName() + " appointed Managing Director of " + scenarioModel.getName());
+        JLabel mDLabel = new JLabel(playerName + " appointed Managing Director of " + company);
         mDLabel.setFont(new Font("Arial", Font.BOLD, 18));
         MDLabelPanel.add(mDLabel);
         screenPanel.add(MDLabelPanel);
@@ -81,7 +81,7 @@ public class ScenarioDescriptionScreen extends JFrame {
         //Create the descriptionPanel.
         JPanel descriptionPanel = new JPanel();
         descriptionPanel.setBackground(Color.WHITE);
-        JTextArea scenarioDescriptionArea = new JTextArea(controllerHandler.getGameController().getCurrentPlayerName() + " " + scenarioModel.getDescription());
+        JTextArea scenarioDescriptionArea = new JTextArea(playerName + " " + scenarioModel.getDescription());
         scenarioDescriptionArea.setFont(new Font("Arial", Font.PLAIN, 16));
         scenarioDescriptionArea.setLineWrap(true);
         scenarioDescriptionArea.setWrapStyleWord(true);
@@ -95,7 +95,7 @@ public class ScenarioDescriptionScreen extends JFrame {
         JButton continueButton = new JButton("Continue");
         continueButton.addActionListener(new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
-                ControlScreen controlScreen = new ControlScreen(controllerHandler);
+                ControlScreen controlScreen = new ControlScreen(controllerHandler, company, playerName);
                 controlScreen.displayScreen("", 0, 4, false);
                 controlScreen.setVisible(true);
                 dispose();

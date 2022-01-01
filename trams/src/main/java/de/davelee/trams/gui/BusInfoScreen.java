@@ -2,13 +2,16 @@ package de.davelee.trams.gui;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import javax.swing.*;
 
+import de.davelee.trams.api.response.CompanyResponse;
 import de.davelee.trams.api.response.VehicleResponse;
 import de.davelee.trams.controllers.GameController;
 import de.davelee.trams.controllers.VehicleController;
-import de.davelee.trams.model.GameModel;
+import de.davelee.trams.util.DifficultyLevel;
 import org.springframework.beans.factory.annotation.Autowired;
 
 
@@ -31,13 +34,13 @@ public class BusInfoScreen extends JFrame {
     
     /**
      * Create a new bus information screen.
-     * @param routeNumber a <code>String</code> with the route number.
-     * @param scheduleNumber a <code>String</code> with the schedule number.
+     * @param allocatedTour a <code>String</code> with the allocated tour currently being run.
+     * @param company a <code>String</code> with the company that the tour belongs to.
      */
-    public BusInfoScreen ( final String routeNumber, final String scheduleNumber ) {
+    public BusInfoScreen ( final String allocatedTour, final String company, final String playerName ) {
 
         //Retrieve vehicle model.
-        VehicleResponse vehicleModel = vehicleController.getVehicleByAllocatedTour(routeNumber + "/" + scheduleNumber, gameController.getGameModel().getCompany());
+        VehicleResponse vehicleModel = vehicleController.getVehicleByAllocatedTour(allocatedTour, company);
 
         //Set image icon.
         Image img = Toolkit.getDefaultToolkit().getImage(BusInfoScreen.class.getResource("/TraMSlogo.png"));
@@ -76,10 +79,10 @@ public class BusInfoScreen extends JFrame {
         westPanel.add(busDisplay);*/
         screenPanel.add(westPanel, BorderLayout.WEST);
 
-        GameModel gameModel = gameController.getGameModel();
+        CompanyResponse companyResponse = gameController.getGameModel(company, playerName);
 
         //Add current status panel to screen panel.
-        screenPanel.add(createCurrentStatusPanel(scheduleNumber, vehicleModel, gameModel), BorderLayout.CENTER);
+        screenPanel.add(createCurrentStatusPanel(allocatedTour, vehicleModel, companyResponse), BorderLayout.CENTER);
         
         //Create south panel - two buttons - make contact and close.
         JPanel southPanel = new JPanel();
@@ -88,7 +91,7 @@ public class BusInfoScreen extends JFrame {
         JButton makeContactButton = new JButton("Make Contact");
         makeContactButton.addActionListener( new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                new MakeContactScreen(routeNumber, scheduleNumber);
+                new MakeContactScreen(allocatedTour, company, playerName);
                 dispose();
             }
         });
@@ -121,7 +124,7 @@ public class BusInfoScreen extends JFrame {
         
     }
 
-    public JPanel createCurrentStatusPanel ( final String scheduleNumber, final VehicleResponse vehicleModel, final GameModel gameModel ) {
+    public JPanel createCurrentStatusPanel ( final String scheduleNumber, final VehicleResponse vehicleModel, final CompanyResponse companyResponse ) {
         JPanel eastPanel = new JPanel(new GridLayout(6,1,5,5));
         eastPanel.setBackground(Color.WHITE);
         //Timetable id.
@@ -133,11 +136,11 @@ public class BusInfoScreen extends JFrame {
         vehicleIDLabel.setFont(new Font("Arial", Font.BOLD, 15));
         eastPanel.add(vehicleIDLabel);
         //Location.
-        JLabel locationLabel = new JLabel("Location: " + vehicleController.getCurrentStopName(vehicleModel, gameModel.getCurrentDateTime(), gameModel.getDifficultyLevel()));
+        JLabel locationLabel = new JLabel("Location: " + vehicleController.getCurrentStopName(vehicleModel, companyResponse.getTime(), companyResponse.getDifficultyLevel()));
         locationLabel.setFont(new Font("Arial", Font.BOLD, 15));
         eastPanel.add(locationLabel);
         //Destination.
-        JLabel destinationLabel = new JLabel("Destination: " + vehicleController.getDestination(vehicleModel, gameModel.getCurrentDateTime(), gameModel.getDifficultyLevel()));
+        JLabel destinationLabel = new JLabel("Destination: " + vehicleController.getDestination(vehicleModel, LocalDateTime.parse(companyResponse.getTime(), DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm")), DifficultyLevel.valueOf(companyResponse.getDifficultyLevel())));
         destinationLabel.setFont(new Font("Arial", Font.BOLD, 15));
         eastPanel.add(destinationLabel);
         //Delay.

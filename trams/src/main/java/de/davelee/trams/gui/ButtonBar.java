@@ -26,15 +26,19 @@ public class ButtonBar extends JFrame {
     protected JMenuItem aboutItem;
 
     private ControllerHandler controllerHandler;
+    private String company;
+    private String playerName;
     
     /**
      * Create a new button bar.
      * @param controllerHandler a <code>ControllerHandler</code> obtaining the currently used controllers from Spring.
      */
-    public ButtonBar ( final ControllerHandler controllerHandler ) {
+    public ButtonBar ( final ControllerHandler controllerHandler, final String company, final String playerName ) {
 
         this.controllerHandler = controllerHandler;
-        
+        this.company = company;
+        this.playerName = playerName;
+
         menuBar = new JMenuBar();
         
         JMenu fileMenu = new JMenu("File");
@@ -54,7 +58,7 @@ public class ButtonBar extends JFrame {
             public void actionPerformed ( ActionEvent e ) {
                 controllerHandler.getGameController().pauseSimulation();
                 FileDialog fileDialog = new FileDialog();
-                fileDialog.createLoadFileDialog(ButtonBar.this, controllerHandler, new ControlScreen(controllerHandler));
+                fileDialog.createLoadFileDialog(ButtonBar.this, controllerHandler);
             }
         });
         fileMenu.add(loadGameItem);
@@ -89,7 +93,7 @@ public class ButtonBar extends JFrame {
         optionsItem.addActionListener ( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
                 controllerHandler.getGameController().pauseSimulation();
-                new OptionsScreen(controllerHandler);
+                new OptionsScreen(controllerHandler, company, playerName);
             }
         });
         toolsMenu.add(optionsItem);
@@ -110,5 +114,9 @@ public class ButtonBar extends JFrame {
     public ControllerHandler getControllerHandler() {
         return controllerHandler;
     }
+
+    public String getCompany() { return company; }
+
+    public String getPlayerName() { return playerName; }
 
 }

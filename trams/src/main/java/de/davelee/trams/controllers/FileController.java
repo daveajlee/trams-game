@@ -1,6 +1,6 @@
 package de.davelee.trams.controllers;
 
-import de.davelee.trams.model.GameModel;
+import de.davelee.trams.api.response.CompanyResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import de.davelee.trams.beans.TramsFile;
@@ -8,6 +8,8 @@ import de.davelee.trams.services.FileService;
 import org.springframework.stereotype.Controller;
 
 import java.io.File;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 @Controller
 public class FileController {
@@ -38,36 +40,37 @@ public class FileController {
 	 * @param selectedFile a <code>File</code> object with the path to load the file from.
      * @return a <code>boolean</code> which is true iff the file was loaded successfully.
      */
-    public boolean loadFile ( final File selectedFile ) {
+    public CompanyResponse loadFile ( final File selectedFile ) {
         TramsFile myFile = fileService.loadFile(selectedFile);
         if ( myFile != null ) {
             reloadDatabaseWithFile(myFile);
             gameController.pauseSimulation();
-            return true;
+            return myFile.getGameModel()[0];
         }
-        return false;
+        return null;
     }
     
     public void reloadDatabaseWithFile ( TramsFile myFile ) {
     	//Load game.
-    	for ( GameModel gameModel : myFile.getGameModel() ) {
-    		gameController.loadGameModel(gameModel);
+    	for ( CompanyResponse companyResponse : myFile.getGameModel() ) {
+    		gameController.loadGameModel(companyResponse);
 		}
 		//Load drivers.
 		if ( myFile.getDriverModels() != null ) {
-			driverController.loadDrivers(myFile.getDriverModels(), myFile.getGameModel()[0].getCompany());
+			driverController.loadDrivers(myFile.getDriverModels(), myFile.getGameModel()[0].getName());
 		}
     	//Load messages.
 		if ( myFile.getMessageModels() != null ) {
-			messageController.loadMessages(myFile.getMessageModels(), myFile.getGameModel()[0].getCompany());
+			messageController.loadMessages(myFile.getMessageModels(), myFile.getGameModel()[0].getName());
 		}
     	//Load routes.
 		if ( myFile.getRouteModels() != null ) {
-			routeController.loadRoutes(myFile.getRouteModels(), myFile.getGameModel()[0].getCompany());
+			routeController.loadRoutes(myFile.getRouteModels(), myFile.getGameModel()[0].getName());
 		}
     	//Load vehicles.
 		if ( myFile.getVehicleModels() != null ) {
-			vehicleController.loadVehicles(myFile.getVehicleModels(), myFile.getGameModel()[0].getCompany(), myFile.getGameModel()[0].getCurrentDateTime().toLocalDate());
+			vehicleController.loadVehicles(myFile.getVehicleModels(), myFile.getGameModel()[0].getName(),
+					LocalDate.parse(myFile.getGameModel()[0].getTime(), DateTimeFormatter.ofPattern("dd-MM-yyyy")));
 		}
     }
     

@@ -110,7 +110,7 @@ public class WelcomeScreen extends JFrame {
         loadBusDisplay.addMouseListener ( new MouseListener () {
             public void mouseClicked(MouseEvent e) {
                 FileDialog fileDialog = new FileDialog();
-                if ( fileDialog.createLoadFileDialog(WelcomeScreen.this, controllerHandler, new ControlScreen(controllerHandler)) ) {
+                if ( fileDialog.createLoadFileDialog(WelcomeScreen.this, controllerHandler) ) {
                     dispose();
                 }
             }
@@ -234,7 +234,7 @@ public class WelcomeScreen extends JFrame {
         panel.addMouseListener ( new MouseListener () {
             public void mouseClicked(MouseEvent e) {
                 FileDialog fileDialog = new FileDialog();
-                if ( fileDialog.createLoadFileDialog(WelcomeScreen.this, controllerHandler, new ControlScreen(controllerHandler)) ) {
+                if ( fileDialog.createLoadFileDialog(WelcomeScreen.this, controllerHandler) ) {
                     dispose();
                 }
                 else {

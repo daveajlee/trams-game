@@ -7,6 +7,7 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -17,9 +18,9 @@ import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 
+import de.davelee.trams.api.response.CompanyResponse;
 import de.davelee.trams.controllers.ControllerHandler;
 import de.davelee.trams.gui.ControlScreen;
-import de.davelee.trams.model.GameModel;
 import de.davelee.trams.util.DateFormats;
 
 public class EmployDriverPanel {
@@ -73,7 +74,7 @@ public class EmployDriverPanel {
 
         gridPanel.add(contractedHoursPanel);
         
-        final GameModel gameModel = controllerHandler.getGameController().getGameModel();
+        final CompanyResponse companyResponse = controllerHandler.getGameController().getGameModel(controlScreen.getCompany(), controlScreen.getPlayerName());
 
         //Create label and field for start date and add it to the start panel.
         JPanel startLabelPanel = new JPanel();
@@ -81,7 +82,7 @@ public class EmployDriverPanel {
         JLabel startLabel = new JLabel("Start Date:", SwingConstants.CENTER);
         startLabel.setFont(new Font("Arial", Font.BOLD, 16));
         startLabelPanel.add(startLabel);
-        final LocalDate startDate = gameModel.getCurrentDateTime().toLocalDate();
+        final LocalDate startDate = LocalDate.parse(companyResponse.getTime(), DateTimeFormatter.ofPattern("dd-MM-yyyy"));
         startDate.plusDays(3);
         JLabel startField = new JLabel("" + DateFormats.FULL_FORMAT.getFormat().format(startDate));
         startField.setFont(new Font("Arial", Font.ITALIC, 14));
@@ -95,15 +96,15 @@ public class EmployDriverPanel {
         JButton employDriverButton = new JButton("Employ Driver");
         employDriverButton.addActionListener( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
-                controllerHandler.getDriverController().employDriver(driverNameField.getText(), gameModel.getCompany(), startDate);
-                controlScreen.redrawManagement(displayPanel.createPanel(controlScreen), controllerHandler.getGameController().getGameModel());
+                controllerHandler.getDriverController().employDriver(driverNameField.getText(), companyResponse.getName(), startField.getText(), companyResponse.getPlayerName());
+                controlScreen.redrawManagement(displayPanel.createPanel(controlScreen), companyResponse);
             }
         });
         buttonPanel.add(employDriverButton);
         JButton managementScreenButton = new JButton("Return to Management Screen");
         managementScreenButton.addActionListener ( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
-                    controlScreen.redrawManagement(displayPanel.createPanel(controlScreen), gameModel);
+                    controlScreen.redrawManagement(displayPanel.createPanel(controlScreen), companyResponse);
             }
         });
         buttonPanel.add(managementScreenButton);

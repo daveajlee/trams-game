@@ -24,9 +24,9 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
+import de.davelee.trams.api.response.CompanyResponse;
 import de.davelee.trams.api.response.RouteResponse;
 import de.davelee.trams.gui.ControlScreen;
-import de.davelee.trams.model.GameModel;
 
 import de.davelee.trams.controllers.ControllerHandler;
 
@@ -94,7 +94,8 @@ public class RoutePanel {
                 routeStopModel.addElement(currentStopNames.get(i));
             }
         }
-        String[] stopNames = controllerHandler.getScenarioController().getScenario(controllerHandler.getGameController().getGameModel().getScenarioName()).getStopNames();
+        CompanyResponse companyResponse = controllerHandler.getGameController().getGameModel(controlScreen.getCompany(), controlScreen.getPlayerName());
+        String[] stopNames = controllerHandler.getScenarioController().getScenario(companyResponse.getScenarioName()).getStopNames();
         availableStopModel = new DefaultListModel();
         for ( int i = 0; i < stopNames.length; i++ ) {
             availableStopModel.addElement(stopNames[i]);
@@ -163,16 +164,15 @@ public class RoutePanel {
         createRouteButton.setEnabled(false);
         createRouteButton.addActionListener ( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
-               final GameModel gameModel = controllerHandler.getGameController().getGameModel();
                List<String> selectedOutwardStops = new ArrayList<String>();
                for ( int i = 0; i < routeStopModel.size(); i++ ) {
                     selectedOutwardStops.add(routeStopModel.getElementAt(i).toString());
                }
-               controllerHandler.getRouteController().addNewRoute( routeNumberField.getText(), selectedOutwardStops, gameModel.getCompany());
-               RouteResponse routeResponse1 = controllerHandler.getRouteController().getRoute(routeNumberField.getText(), gameModel.getCompany());
+               controllerHandler.getRouteController().addNewRoute( routeNumberField.getText(), selectedOutwardStops, companyResponse.getName());
+               RouteResponse routeResponse1 = controllerHandler.getRouteController().getRoute(routeNumberField.getText(), companyResponse.getName());
                //Now move to timetable screen.
                TimetablePanel myTimetablePanel = new TimetablePanel(controllerHandler);
-               controlScreen.redrawManagement(myTimetablePanel.createPanel(routeResponse1, controlScreen, RoutePanel.this, displayPanel), controllerHandler.getGameController().getGameModel());
+               controlScreen.redrawManagement(myTimetablePanel.createPanel(routeResponse1, controlScreen, RoutePanel.this, displayPanel), companyResponse);
             }
         });
         bottomButtonPanel.add(createRouteButton);
@@ -181,7 +181,7 @@ public class RoutePanel {
         JButton previousScreenButton = new JButton("Return to Previous Screen");
         previousScreenButton.addActionListener ( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
-                controlScreen.redrawManagement(displayPanel.createPanel(controlScreen), controllerHandler.getGameController().getGameModel());
+                controlScreen.redrawManagement(displayPanel.createPanel(controlScreen), companyResponse);
             }
         });
         bottomButtonPanel.add(previousScreenButton);

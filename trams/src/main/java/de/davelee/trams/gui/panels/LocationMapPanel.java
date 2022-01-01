@@ -8,10 +8,10 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
+import de.davelee.trams.api.response.CompanyResponse;
 import de.davelee.trams.controllers.ControllerHandler;
 import de.davelee.trams.gui.ControlScreen;
 import de.davelee.trams.gui.ImageDisplay;
-import de.davelee.trams.model.GameModel;
 import de.davelee.trams.model.ScenarioModel;
 
 public class LocationMapPanel {
@@ -23,9 +23,9 @@ public class LocationMapPanel {
     }
 	
 	public JPanel createPanel ( final ControlScreen controlScreen, final DisplayPanel displayPanel  ) {
-		final GameModel gameModel = controllerHandler.getGameController().getGameModel();
+		final CompanyResponse companyResponse = controllerHandler.getGameController().getGameModel(controlScreen.getCompany(), controlScreen.getPlayerName());
     	
-    	ScenarioModel scenarioModel = controllerHandler.getScenarioController().getScenario(gameModel.getScenarioName());
+    	ScenarioModel scenarioModel = controllerHandler.getScenarioController().getScenario(companyResponse.getScenarioName());
         
         //Create picture panel.
         JPanel picturePanel = new JPanel(new BorderLayout());
@@ -41,7 +41,7 @@ public class LocationMapPanel {
         JButton managementScreenButton = new JButton("Return to Management Screen");
         managementScreenButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                controlScreen.redrawManagement(displayPanel.createPanel(controlScreen), gameModel);
+                controlScreen.redrawManagement(displayPanel.createPanel(controlScreen), companyResponse);
             }
         });
         optionsButtonPanel.add(managementScreenButton);

@@ -35,10 +35,9 @@ public class VehicleControllerTest {
 		HashMap<String, Integer> suppliedVehicles = new HashMap<String, Integer>();
 		suppliedVehicles.put("MyBus Single Decker", Integer.valueOf(1));
 		scenarioModel.setSuppliedVehicles(suppliedVehicles);
-		LocalDate currentDate = LocalDate.of(2014,1,1);
 		Mockito.when(vehicleService.generateRandomReg(2014, "Mustermann GmbH")).thenReturn("DDD4 JKL");
 		Mockito.when(vehicleService.saveVehicle(any())).thenReturn(10000.0);
-		assertEquals(1, vehicleController.createSuppliedVehicles(scenarioModel, currentDate, "Mustermann GmbH"));
+		assertEquals(1, vehicleController.createSuppliedVehicles(scenarioModel, "01-01-2014", "Mustermann GmbH"));
 	}
 
 	private void assertEquals ( final int expected, final int actual ) {

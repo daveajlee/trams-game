@@ -23,7 +23,7 @@ public class StopTimeController {
                 startTime, endTime, frequency, validFromDate, validToDate, operatingDays);
     }
 
-    public StopTimeModel[] getStopTimes (final Optional<Direction> direction, final String routeNumber, final LocalDate date ) {
+    public StopTimeModel[] getStopTimes (final Optional<Direction> direction, final String routeNumber, final String date ) {
         //TODO: implement method and connect to REST interface.
         return new StopTimeModel[0];
     }

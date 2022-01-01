@@ -2,11 +2,10 @@ package de.davelee.trams.gui;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.time.format.DateTimeFormatter;
 import javax.swing.*;
 
+import de.davelee.trams.api.response.CompanyResponse;
 import de.davelee.trams.controllers.ControllerHandler;
-import de.davelee.trams.model.GameModel;
 import de.davelee.trams.model.ScenarioModel;
 
 /**
@@ -158,18 +157,17 @@ public class NewGameScreen extends JFrame {
             public void actionPerformed ( ActionEvent e ) {
                 ScenarioModel scenarioModel = controllerHandler.getScenarioController().getScenario(availableScenariosComboBox.getSelectedItem().toString());
                 //Create Game
-                GameModel gameModel = controllerHandler.getGameController().createGameModel(playerNameField.getText(), scenarioModel.getName(), companyNameField.getText());
+                CompanyResponse companyResponse = controllerHandler.getGameController().createGameModel(playerNameField.getText(), scenarioModel.getName(), companyNameField.getText());
                 //Create supplied vehicles.
-                controllerHandler.getVehicleController().createSuppliedVehicles(scenarioModel, gameModel.getCurrentDateTime().toLocalDate(), companyNameField.getText());
+                controllerHandler.getVehicleController().createSuppliedVehicles(scenarioModel, companyResponse.getTime(), companyNameField.getText());
                 //Create supplied drivers.
-                controllerHandler.getDriverController().createSuppliedDrivers(scenarioModel, gameModel.getCurrentDateTime().toLocalDate(), companyNameField.getText());
+                controllerHandler.getDriverController().createSuppliedDrivers(scenarioModel, companyResponse.getTime(), companyNameField.getText());
                 //Create welcome message.
-                String date = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm").format(gameModel.getCurrentDateTime());
                 controllerHandler.getMessageController().addMessage(companyNameField.getText(), "Welcome Message", "Congratulations on your appointment as Managing Director of the " +
                         scenarioModel.getName() + "! \n\n Your targets for the coming days and months are: " +
-                        scenarioModel.getTargets(),"Council","INBOX", date);
+                        scenarioModel.getTargets(),"Council","INBOX", companyResponse.getTime());
                 ScenarioDescriptionScreen scenarioDescriptionScreen = new ScenarioDescriptionScreen(controllerHandler);
-                scenarioDescriptionScreen.displayScreen(scenarioModel);
+                scenarioDescriptionScreen.displayScreen(scenarioModel, companyNameField.getText(), playerNameField.getText());
                 dispose();
             }
         });

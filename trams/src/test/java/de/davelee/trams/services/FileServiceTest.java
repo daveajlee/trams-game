@@ -6,10 +6,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
 import de.davelee.trams.TramsGameApplication;
-import de.davelee.trams.api.request.AddRouteRequest;
-import de.davelee.trams.api.request.MessageRequest;
-import de.davelee.trams.api.request.PurchaseVehicleRequest;
-import de.davelee.trams.api.request.UserRequest;
+import de.davelee.trams.api.request.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -19,7 +16,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import de.davelee.trams.beans.TramsFile;
-import de.davelee.trams.model.GameModel;
 import de.davelee.trams.util.MessageFolder;
 
 @ExtendWith(SpringExtension.class)
@@ -50,8 +46,6 @@ public class FileServiceTest {
 	
 	@Test
 	public void testSaveFile ( ) {
-		//Delete temporary content
-		deleteTemporaryContent();
 		//Now create and save file.
 		driverService.saveDriver(UserRequest.builder()
 				.firstName("Chris")
@@ -79,7 +73,7 @@ public class FileServiceTest {
 				.dateTime(DateTimeFormatter.ofPattern("dd-MM-yyyy").format(LocalDate.now()))
 				.build());
 		journeyService.saveStop("Danziger Strasse", "Mustermann GmbH");
-		gameService.saveGame(GameModel.builder()
+		gameService.saveGame(CompanyRequest.builder()
 				.playerName("Dave Lee")
 				.scenarioName("Landuff Transport Company")
 				.build());

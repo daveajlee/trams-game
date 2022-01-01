@@ -1,5 +1,6 @@
 package de.davelee.trams.util;
 
+import de.davelee.trams.api.response.CompanyResponse;
 import de.davelee.trams.controllers.GameController;
 import de.davelee.trams.gui.ControlScreen;
 
@@ -26,9 +27,12 @@ public class GameThread extends Thread implements Runnable {
         try { this.sleep(simulationSpeed); } catch (InterruptedException ie) {}
         //Keep running this until pause.
         while ( !gameController.stillRunning() ) {
+			//Get company response.
+			CompanyResponse companyResponse = gameController.getGameModel(controlScreen.getCompany(), controlScreen.getPlayerName());
             //Increment time and update passenger satisfaction.
-			controlScreen.updateDateTime(gameController.incrementTime(), gameController.getGameModel().getDifficultyLevel(), gameController.getGameModel().getCompany());
-			controlScreen.updatePassengerBar((int) Math.round(gameController.computeAndReturnPassengerSatisfaction()));
+			controlScreen.updateDateTime(gameController.incrementTime(controlScreen.getCompany()),
+					companyResponse.getDifficultyLevel(), controlScreen.getCompany());
+			controlScreen.updatePassengerBar((int) Math.round(gameController.computeAndReturnPassengerSatisfaction(controlScreen.getCompany(), companyResponse.getDifficultyLevel())));
             //Now sleep!
             try { this.sleep(simulationSpeed); } catch (InterruptedException ie) {}
         }

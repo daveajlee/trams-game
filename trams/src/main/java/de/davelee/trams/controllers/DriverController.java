@@ -1,8 +1,8 @@
 package de.davelee.trams.controllers;
 
 import de.davelee.trams.api.request.UserRequest;
+import de.davelee.trams.api.response.CompanyResponse;
 import de.davelee.trams.api.response.UserResponse;
-import de.davelee.trams.model.GameModel;
 import de.davelee.trams.model.ScenarioModel;
 import lombok.Getter;
 import lombok.Setter;
@@ -35,9 +35,9 @@ public class DriverController {
      * Employ a new driver.
      * @param name a <code>String</code> with name.
      */
-    public void employDriver ( final String name, final String company, final LocalDate startDate ) {
+    public void employDriver ( final String name, final String company, final String startDate, final String playerName ) {
     	//TODO: Employing drivers should cost money.
-        gameController.withdrawBalance(0);
+        gameController.withdrawBalance(0, playerName);
         driverService.saveDriver(UserRequest.builder()
                 .dateOfBirth("01-01-1990")
                 .firstName(name.split(" ")[0])
@@ -49,11 +49,11 @@ public class DriverController {
                 .role("ADMIN")
                 .username(name.split(" ")[0].substring(0,1) + name.split(" ")[1])
                 .workingDays("Monday,Tuesday")
-                .startDate(startDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")))
+                .startDate(startDate)
                 .build());
     }
 
-    public void createSuppliedDrivers(final ScenarioModel scenarioModel, final LocalDate startDate, final String company ) {
+    public void createSuppliedDrivers(final ScenarioModel scenarioModel, final String startDate, final String company ) {
         for ( String suppliedDriver : scenarioModel.getSuppliedDrivers()) {
             driverService.saveDriver(UserRequest.builder()
                     .dateOfBirth("01-01-1990")
@@ -66,7 +66,7 @@ public class DriverController {
                     .role("ADMIN")
                     .username(suppliedDriver.split(" ")[0].substring(0,1) + suppliedDriver.split(" ")[1])
                     .workingDays("Monday,Tuesday")
-                    .startDate(startDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")))
+                    .startDate(startDate)
                     .build());
         }
     }
@@ -102,12 +102,13 @@ public class DriverController {
      * This method checks if any employees have started working for the company!
      * @return a <code>boolean</code> which is true iff some drivers have started working.
      */
-    public boolean hasSomeDriversBeenEmployed ( final String company ) {
+    public boolean hasSomeDriversBeenEmployed ( final String company, final String playerName ) {
         UserResponse[] driverModels = driverService.getAllDrivers(company, token);
         if (driverModels != null && driverModels.length > 0) {
-            GameModel gameModel = gameController.getGameModel();
+            CompanyResponse companyResponse = gameController.getGameModel(company, playerName);
             for (int i = 0; i < driverModels.length; i++) {
-                if (driverService.hasStartedWork(LocalDate.parse(driverModels[i].getStartDate(), DateTimeFormatter.ofPattern("dd-MM-yyyy")), gameModel.getCurrentDateTime().toLocalDate())) {
+                if (driverService.hasStartedWork(LocalDate.parse(driverModels[i].getStartDate(), DateTimeFormatter.ofPattern("dd-MM-yyyy")),
+                        LocalDate.parse(companyResponse.getTime(), DateTimeFormatter.ofPattern("dd-MM-yyyy")))) {
                     return true;
                 }
             }

@@ -1,41 +1,42 @@
 package de.davelee.trams.controllers;
 
 import de.davelee.trams.TramsGameApplication;
-import de.davelee.trams.model.GameModel;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes= TramsGameApplication.class)
 @Disabled
 public class DriverControllerTest {
 
-    @Autowired
+    @InjectMocks
     private DriverController driverController;
+
+    @Mock
+    private GameController gameController;
 
     @Test
     public void testDrivers() {
-        GameController gameControllerMock = mock(GameController.class);
-        when(gameControllerMock.getGameModel()).thenReturn(GameModel.builder().currentDateTime(LocalDateTime.now()).build());
-        driverController.setGameController(gameControllerMock);
-        assertFalse(driverController.hasSomeDriversBeenEmployed("Mustermann GmbH"));
-        driverController.employDriver("Max Mustermann", "Mustermann GmbH", LocalDate.now());
-        assertTrue(driverController.hasSomeDriversBeenEmployed("Mustermann GmbH"));
+        Mockito.doNothing().when(gameController).withdrawBalance(any(), any());
+        assertFalse(driverController.hasSomeDriversBeenEmployed("Mustermann GmbH", "Dave Lee"));
+        driverController.employDriver("Max Mustermann", "Mustermann GmbH", "01-01-2020", "Dave Lee");
+        assertTrue(driverController.hasSomeDriversBeenEmployed("Mustermann GmbH", "Dave Lee"));
         LocalDate startDate = LocalDate.of(2013,4,20);
-        driverController.employDriver("Micha Mustermann", "Mustermann GmbH", startDate);
-        assertTrue(driverController.hasSomeDriversBeenEmployed("Mustermann GmbH"));
+        driverController.employDriver("Micha Mustermann", "Mustermann GmbH", "20-04-2013", "Dave Lee");
+        assertTrue(driverController.hasSomeDriversBeenEmployed("Mustermann GmbH", "Dave Lee"));
     }
 
 }

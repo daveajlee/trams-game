@@ -23,10 +23,10 @@ import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import de.davelee.trams.api.response.CompanyResponse;
 import de.davelee.trams.api.response.VehicleResponse;
 import de.davelee.trams.controllers.ControllerHandler;
 import de.davelee.trams.gui.ControlScreen;
-import de.davelee.trams.model.GameModel;
 
 public class PurchaseVehiclePanel {
 
@@ -55,9 +55,9 @@ public class PurchaseVehiclePanel {
         vehicleScreenPanel.add(textLabelPanel);
         
         //Create vehicle object so that we can pull information from it.
-        final VehicleResponse vehicleResponse = controllerHandler.getVehicleController().getAllCreatedVehicles(controllerHandler.getGameController().getGameModel().getCompany())[0];
+        final VehicleResponse vehicleResponse = controllerHandler.getVehicleController().getAllCreatedVehicles(controlScreen.getCompany())[0];
 
-        final GameModel gameModel = controllerHandler.getGameController().getGameModel();
+        final CompanyResponse companyResponse = controllerHandler.getGameController().getGameModel(controlScreen.getCompany(), controlScreen.getPlayerName());
         
         //Create picture panel.
         JPanel picturePanel = new JPanel(new BorderLayout());
@@ -66,10 +66,10 @@ public class PurchaseVehiclePanel {
         JPanel previousButtonPanel = new JPanel(new GridBagLayout());
         previousButtonPanel.setBackground(Color.WHITE);
         JButton previousVehicleTypeButton = new JButton("< Previous Vehicle Type");
-        if ( vehicleType.contentEquals(controllerHandler.getVehicleController().getFirstVehicleModel(controllerHandler.getGameController().getGameModel().getCompany())) ) { previousVehicleTypeButton.setEnabled(false); }
+        if ( vehicleType.contentEquals(controllerHandler.getVehicleController().getFirstVehicleModel(controlScreen.getCompany())) ) { previousVehicleTypeButton.setEnabled(false); }
         previousVehicleTypeButton.addActionListener( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
-                    controlScreen.redrawManagement(createPanel(controllerHandler.getVehicleController().getPreviousVehicleModel(controllerHandler.getGameController().getGameModel().getCompany(), vehicleType), controlScreen, displayPanel), gameModel);
+                    controlScreen.redrawManagement(createPanel(controllerHandler.getVehicleController().getPreviousVehicleModel(controlScreen.getCompany(), vehicleType), controlScreen, displayPanel), companyResponse);
             }
         });
         previousButtonPanel.add(previousVehicleTypeButton);
@@ -87,10 +87,10 @@ public class PurchaseVehiclePanel {
         JPanel nextButtonPanel = new JPanel(new GridBagLayout());
         nextButtonPanel.setBackground(Color.WHITE);
         JButton nextVehicleTypeButton = new JButton("Next Vehicle Type >");
-        if ( vehicleType.contentEquals(controllerHandler.getVehicleController().getLastVehicleModel(controllerHandler.getGameController().getGameModel().getCompany())))  { nextVehicleTypeButton.setEnabled(false); }
+        if ( vehicleType.contentEquals(controllerHandler.getVehicleController().getLastVehicleModel(controlScreen.getCompany())))  { nextVehicleTypeButton.setEnabled(false); }
         nextVehicleTypeButton.addActionListener( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
-                    controlScreen.redrawManagement(createPanel(controllerHandler.getVehicleController().getNextVehicleModel(controllerHandler.getGameController().getGameModel().getCompany(), vehicleType), controlScreen, displayPanel), gameModel);
+                    controlScreen.redrawManagement(createPanel(controllerHandler.getVehicleController().getNextVehicleModel(controlScreen.getCompany(), vehicleType), controlScreen, displayPanel), companyResponse);
             }
         });
         nextButtonPanel.add(nextVehicleTypeButton);
@@ -137,7 +137,7 @@ public class PurchaseVehiclePanel {
         deliveryLabel.setFont(new Font("Arial", Font.ITALIC, 14));
         deliveryLabelPanel.add(deliveryLabel);
         gridPanel.add(deliveryLabel);
-        final LocalDate deliveryDate = gameModel.getCurrentDateTime().toLocalDate();
+        final LocalDate deliveryDate = LocalDate.parse(companyResponse.getTime(), DateTimeFormatter.ofPattern("dd-MM-yyyy"));
         deliveryDate.plusDays(3);
         JLabel deliveryField = new JLabel("" + DateTimeFormatter.RFC_1123_DATE_TIME.format(deliveryDate));
         deliveryField.setFont(new Font("Arial", Font.PLAIN, 12));
@@ -167,7 +167,7 @@ public class PurchaseVehiclePanel {
                 //TODO: make it possible to retrieve the purchase price of a vehicle
                 //double totalPrice = Double.parseDouble(quantitySpinner.getValue().toString()) * vehicleResponse.getPurchasePrice();
                 double totalPrice = 0.0;
-                if ( totalPrice > gameModel.getBalance() ) {
+                if ( totalPrice > companyResponse.getBalance() ) {
                     totalPriceField.setText("£" + format.format(totalPrice) + " (Insufficient funds available)");
                     totalPriceField.setForeground(Color.RED);
                     purchaseVehicleButton.setEnabled(false);
@@ -209,10 +209,10 @@ public class PurchaseVehiclePanel {
                 int quantity = Integer.parseInt(quantitySpinner.getValue().toString());
                 for ( int i = 0; i < quantity; i++ ) {
                     double purchasePrice = controllerHandler.getVehicleController().purchaseVehicle(
-                            vehicleResponse.getModelName(), gameModel.getCompany(), gameModel.getCurrentDateTime().getYear(), Optional.empty());
-                    controllerHandler.getGameController().withdrawBalance(purchasePrice);
+                            vehicleResponse.getModelName(), companyResponse.getName(), LocalDate.parse(companyResponse.getTime(), DateTimeFormatter.ofPattern("dd-MM-yyyy")).getYear(), Optional.empty());
+                    controllerHandler.getGameController().withdrawBalance(purchasePrice, controlScreen.getPlayerName());
                 }
-                controlScreen.redrawManagement(displayPanel.createPanel(controlScreen), gameModel);
+                controlScreen.redrawManagement(displayPanel.createPanel(controlScreen), companyResponse);
             }
         });
         bottomButtonPanel.add(purchaseVehicleButton);
@@ -221,7 +221,7 @@ public class PurchaseVehiclePanel {
         JButton managementScreenButton = new JButton("Return to Management Screen");
         managementScreenButton.addActionListener ( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
-                    controlScreen.redrawManagement(displayPanel.createPanel(controlScreen), gameModel);
+                    controlScreen.redrawManagement(displayPanel.createPanel(controlScreen), companyResponse);
             }
         });
         bottomButtonPanel.add(managementScreenButton);

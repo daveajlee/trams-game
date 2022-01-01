@@ -32,19 +32,20 @@ public class VehicleController {
 		return vehicleModels;
 	}
 
-	public boolean hasVehicleBeenDelivered (final LocalDate deliveryDate, final LocalDate currentDate ) {
-		return vehicleService.hasBeenDelivered(deliveryDate, currentDate);
+	public boolean hasVehicleBeenDelivered (final String deliveryDate, final String currentDate ) {
+		return vehicleService.hasBeenDelivered(LocalDate.parse(deliveryDate, DateTimeFormatter.ofPattern("dd-MM-yyyy")),
+				LocalDate.parse(currentDate, DateTimeFormatter.ofPattern("dd-MM-yyyy")));
 	}
 
 	/**
 	 * This method checks if any vehicles have been delivered to the company yet!
 	 * @return a <code>boolean</code> which is true iff some vehicles have been delivered!
 	 */
-	public boolean hasSomeVehiclesBeenDelivered ( final String company, final LocalDate currentDate) {
+	public boolean hasSomeVehiclesBeenDelivered ( final String company, final String currentDate) {
 		VehicleResponse[] vehicleModels = getAllCreatedVehicles(company);
 		if ( vehicleModels.length == 0 ) { return false; }
 		for ( int i = 0; i < vehicleModels.length; i++ ) {
-			if ( hasVehicleBeenDelivered(LocalDate.parse(vehicleModels[i].getDeliveryDate(), DateTimeFormatter.ofPattern("dd-MM-yyyy")), currentDate) ) { return true; }
+			if ( hasVehicleBeenDelivered(vehicleModels[i].getDeliveryDate(), currentDate)) { return true; }
 		}
 		return false;
 	}
@@ -58,11 +59,12 @@ public class VehicleController {
 		return vehicleService.getVehicleByRegistrationNumber(registrationNumber, company);
 	}
 
-	public int getAge (final LocalDate deliveryDate, final LocalDate currentDate ) {
-		return vehicleService.getAge(deliveryDate, currentDate);
+	public int getAge (final String deliveryDate, final String currentDate ) {
+		return vehicleService.getAge(LocalDate.parse(deliveryDate, DateTimeFormatter.ofPattern("dd-MM-yyyy")),
+				LocalDate.parse(currentDate, DateTimeFormatter.ofPattern("dd-MM-yyyy")));
 	}
 
-	public double getValue ( final VehicleResponse vehicleModel, final LocalDate currentDate ) {
+	public double getValue ( final VehicleResponse vehicleModel, final String currentDate ) {
 		//TODO: Calculate depreciation factor in the server.
 		//return vehicleModel.getPurchasePrice() - ((vehicleModel.getDepreciationFactor() * getAge(vehicleModel.getDeliveryDate(), currentDate)) * vehicleModel.getPurchasePrice());
 		return 0.0;
@@ -72,7 +74,7 @@ public class VehicleController {
 	 * Sell a vehicle.
 	 * @param vehicleResponse a <code>VehicleResponse</code> object representing the vehicle to sell.
 	 */
-	public double sellVehicle ( final VehicleResponse vehicleResponse, final LocalDate currentDate ) {
+	public double sellVehicle ( final VehicleResponse vehicleResponse, final String currentDate ) {
 		vehicleService.removeVehicle(vehicleResponse.getCompany(), vehicleResponse.getFleetNumber());
 		return getValue(vehicleResponse, currentDate);
 	}
@@ -103,14 +105,14 @@ public class VehicleController {
 		return vehicleService.getVehicleByAllocatedTour(allocatedTour, company);
 	}
 
-	public int createSuppliedVehicles(final ScenarioModel scenarioModel, final LocalDate currentDate, final String company) {
+	public int createSuppliedVehicles(final ScenarioModel scenarioModel, final String currentDate, final String company) {
 		Iterator<String> vehicleModels = scenarioModel.getSuppliedVehicles().keySet().iterator();
 		int numCreatedVehicles = 0;
 		while (vehicleModels.hasNext()) {
 			String vehicleModel = vehicleModels.next();
 			for ( int i = 0; i < scenarioModel.getSuppliedVehicles().get(vehicleModel); i++ )  {
 				int fleetNumber = 100 + i;
-				purchaseVehicle(vehicleModel, company, currentDate.getYear(), Optional.of(fleetNumber));
+				purchaseVehicle(vehicleModel, company, LocalDate.parse(currentDate, DateTimeFormatter.ofPattern("dd-MM-yyyy")).getYear(), Optional.of(fleetNumber));
 				numCreatedVehicles++;
 			}
 		}
@@ -126,7 +128,7 @@ public class VehicleController {
 		return new VehicleResponse[0];
 	}
 
-	public String getCurrentStopName (final VehicleResponse vehicleModel, final LocalDateTime currentDateTime, final DifficultyLevel difficultyLevel ) {
+	public String getCurrentStopName (final VehicleResponse vehicleModel, final String currentDateTime, final String difficultyLevel ) {
 		//TODO: implement method completely.
 		return "";
 	}
@@ -136,12 +138,12 @@ public class VehicleController {
 		return "";
 	}
 
-	public void shortenSchedule ( final VehicleResponse vehicleModel, final String newDestination, final LocalDateTime currentDateTime ) {
+	public void shortenSchedule ( final VehicleResponse vehicleModel, final String newDestination, final String currentDateTime ) {
 		//TODO: implement shorten schedule correctly.
 	}
 
-	public void outOfService ( final VehicleResponse vehicleModel, final String restartStop, final LocalDateTime currentDateTime,
-							   final DifficultyLevel difficultyLevel ) {
+	public void outOfService ( final VehicleResponse vehicleModel, final String restartStop, final String currentDateTime,
+							   final String difficultyLevel ) {
 		final String currentStopName = getCurrentStopName(vehicleModel, currentDateTime, difficultyLevel);
 	}
 

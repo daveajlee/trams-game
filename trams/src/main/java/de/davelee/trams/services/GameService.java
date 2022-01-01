@@ -9,7 +9,6 @@ import de.davelee.trams.api.response.BalanceResponse;
 import de.davelee.trams.api.response.CompanyResponse;
 import de.davelee.trams.api.response.SatisfactionRateResponse;
 import de.davelee.trams.api.response.TimeResponse;
-import de.davelee.trams.model.GameModel;
 import de.davelee.trams.util.DifficultyLevel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,36 +25,12 @@ public class GameService {
     @Value("${server.business.url}")
     private String businessServerUrl;
 
-    public void saveGame ( final GameModel gameModel ) {
-        restTemplate.postForObject(businessServerUrl + "company/",
-                CompanyRequest.builder()
-                        .name(gameModel.getCompany())
-                        .startingBalance(gameModel.getBalance())
-                        .startingTime(gameModel.getCurrentDateTime().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm")))
-                        .playerName(gameModel.getPlayerName())
-                        .difficultyLevel(gameModel.getDifficultyLevel().name())
-                        .scenarioName(gameModel.getScenarioName())
-                        .build(),
-                Void.class);
+    public void saveGame ( final CompanyRequest companyRequest ) {
+        restTemplate.postForObject(businessServerUrl + "company/", companyRequest, Void.class);
     }
 
-    public GameModel getGameByPlayerName ( final String company, final String playerName )  {
-        CompanyResponse companyResponse = restTemplate.getForObject(businessServerUrl + "company/?name=" + company + "&playerName=" + playerName, CompanyResponse.class);
-        if ( companyResponse != null ) {
-            return convertToGameModel(companyResponse);
-        }
-        return null;
-    }
-
-     private GameModel convertToGameModel ( final CompanyResponse companyResponse ) {
-        return GameModel.builder()
-                .playerName(companyResponse.getPlayerName())
-                .balance(companyResponse.getBalance())
-                .passengerSatisfaction(companyResponse.getSatisfactionRate())
-                .scenarioName(companyResponse.getScenarioName())
-                .difficultyLevel(DifficultyLevel.valueOf(companyResponse.getDifficultyLevel()))
-                .currentDateTime(LocalDateTime.parse(companyResponse.getTime(), DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm")))
-                .build();
+    public CompanyResponse getGameByPlayerName ( final String company, final String playerName )  {
+        return restTemplate.getForObject(businessServerUrl + "company/?name=" + company + "&playerName=" + playerName, CompanyResponse.class);
     }
     
     /**

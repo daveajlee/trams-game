@@ -5,8 +5,8 @@ import java.awt.event.*;
 
 import javax.swing.*;
 
+import de.davelee.trams.api.response.CompanyResponse;
 import de.davelee.trams.controllers.ControllerHandler;
-import de.davelee.trams.model.GameModel;
 import de.davelee.trams.util.DifficultyLevel;
 
 /**
@@ -23,7 +23,7 @@ public class OptionsScreen extends JFrame {
      * Create a new options screen.
      * @param controllerHandler a <code>ControllerHandler</code> object containing the actual controllers from spring.
      */
-    public OptionsScreen ( final ControllerHandler controllerHandler ) {
+    public OptionsScreen ( final ControllerHandler controllerHandler, final String company, final String playerName ) {
         
         //Set image icon.
         Image img = Toolkit.getDefaultToolkit().getImage(OptionsScreen.class.getResource("/TraMSlogo.png"));
@@ -61,7 +61,7 @@ public class OptionsScreen extends JFrame {
         optionsLabelPanel.add(optionsLabel);
         northPanel.add(optionsLabelPanel, BorderLayout.NORTH);
 
-        final GameModel gameModel = controllerHandler.getGameController().getGameModel();
+        final CompanyResponse companyResponse = controllerHandler.getGameController().getGameModel(company, playerName);
         
         //Create panel for centre - options in grid layout.
         JTabbedPane optionsTabbedPane = new JTabbedPane();
@@ -92,16 +92,17 @@ public class OptionsScreen extends JFrame {
             difficultDescrips[i].setFont(new Font("Arial", Font.ITALIC, 11));
             difficultyPanel.add(difficultDescrips[i]);
         }
-        if ( gameModel.getDifficultyLevel() == DifficultyLevel.EASY ) {
+        DifficultyLevel difficultyLevel = DifficultyLevel.valueOf(companyResponse.getDifficultyLevel());
+        if ( difficultyLevel == DifficultyLevel.EASY ) {
             difficultButtons[0].setSelected(true);
         }
-        else if ( gameModel.getDifficultyLevel() == DifficultyLevel.INTERMEDIATE ) {
+        else if ( difficultyLevel == DifficultyLevel.INTERMEDIATE ) {
             difficultButtons[1].setSelected(true);
         }
-        else if ( gameModel.getDifficultyLevel() == DifficultyLevel.MEDIUM ) {
+        else if ( difficultyLevel == DifficultyLevel.MEDIUM ) {
             difficultButtons[2].setSelected(true);
         }
-        else if ( gameModel.getDifficultyLevel() == DifficultyLevel.HARD ) {
+        else if ( difficultyLevel == DifficultyLevel.HARD ) {
             difficultButtons[3].setSelected(true);
         }
         //Now add the difficulty panel to the tabbed panel.
@@ -118,16 +119,20 @@ public class OptionsScreen extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 //Process options - set difficulty level!
                 if ( difficultButtons[0].isSelected() ) {
-                    gameModel.setDifficultyLevel(DifficultyLevel.EASY);
+                    //TODO: set the difficulty level via game controller to EASY.
+                    //controllerHandler.getGameController().setDifficultyLevel(DifficultyLevel.EASY);
                 }
                 else if ( difficultButtons[1].isSelected() ) {
-                    gameModel.setDifficultyLevel(DifficultyLevel.INTERMEDIATE);
+                    //TODO: set the difficulty level via game controller to INTERMEDIATE.
+                    //controllerHandler.getGameController().setDifficultyLevel(DifficultyLevel.INTERMEDIATE);
                 }
                 else if ( difficultButtons[2].isSelected() ) {
-                    gameModel.setDifficultyLevel(DifficultyLevel.MEDIUM);
+                    //TODO: set the difficulty level via game controller to MEDIUM.
+                    //controllerHandler.getGameController().setDifficultyLevel(DifficultyLevel.MEDIUM);
                 }
                 else if ( difficultButtons[3].isSelected() ) {
-                    gameModel.setDifficultyLevel(DifficultyLevel.HARD);
+                    //TODO: set the difficulty level via game controller to HARD.
+                    //controllerHandler.getGameController().setDifficultyLevel(DifficultyLevel.HARD);
                 }
                 dispose();
             }

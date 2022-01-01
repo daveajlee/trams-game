@@ -6,9 +6,9 @@ import java.util.ArrayList;
 
 import javax.swing.*;
 
+import de.davelee.trams.api.response.CompanyResponse;
 import de.davelee.trams.api.response.VehicleResponse;
 import de.davelee.trams.controllers.*;
-import de.davelee.trams.model.GameModel;
 import org.springframework.beans.factory.annotation.Autowired;
 
 
@@ -29,27 +29,26 @@ public class MakeContactScreen extends JFrame {
     private GameController gameController;
 
     @Autowired
-    private RouteController routeController;
-
-    @Autowired
     private VehicleController vehicleController;
 
     /**
      * Create a new make contact screen.
-     * @param routeNumber a <code>String</code> with the route number.
-     * @param scheduleNumber a <code>String</code> with the schedule number.
+     * @param allocatedTour a <code>String</code> with the allocated tour currently being run.
+     * @param company a <code>String</code> with the company that the tour belongs to.
      */
-    public MakeContactScreen ( final String routeNumber, final String scheduleNumber ) {
+    public MakeContactScreen ( final String allocatedTour, final String company, final String playerName ) {
+
+        final CompanyResponse companyResponse = gameController.getGameModel(company, playerName);
 
         //Retrieve vehicle model.
-        final VehicleResponse vehicleModel = vehicleController.getVehicleByAllocatedTour(routeNumber + "/" + scheduleNumber, gameController.getGameModel().getCompany());
+        final VehicleResponse vehicleModel = vehicleController.getVehicleByAllocatedTour(allocatedTour, company);
         
         //Set image icon.
         Image img = Toolkit.getDefaultToolkit().getImage(MakeContactScreen.class.getResource("/TraMSlogo.png"));
         setIconImage(img);
         
         //Initialise GUI with title and close attributes.
-        this.setTitle ("Contact With " + vehicleModel.getAdditionalTypeInformationMap().get("Registration Number") + " On Route " + routeNumber);
+        this.setTitle ("Contact With " + vehicleModel.getAdditionalTypeInformationMap().get("Registration Number") + " On Tour " + allocatedTour);
         this.setResizable (false);
         this.setDefaultCloseOperation (DO_NOTHING_ON_CLOSE);
         this.setBackground(Color.WHITE);
@@ -70,8 +69,6 @@ public class MakeContactScreen extends JFrame {
         JPanel screenPanel = new JPanel();
         screenPanel.setLayout ( new BorderLayout () );
         screenPanel.setBackground(Color.WHITE);
-
-        final GameModel gameModel = gameController.getGameModel();
         
         //Create panel for west - picture of bus.
         JPanel westPanel = new JPanel(new BorderLayout());
@@ -102,7 +99,7 @@ public class MakeContactScreen extends JFrame {
                         "\n\n Control: Vehicle " + vehicleModel.getAdditionalTypeInformationMap().get("Registration Number") + ", please terminate at " + stopBox.getSelectedItem().toString() + " and proceed in service in the reverse direction. Over!" +
                         "\n\n Vehicle " + vehicleModel.getAdditionalTypeInformationMap().get("Registration Number") + ": Message acknowledeged. Thanks. Over!");
                 //Ask vehicle to shorten current route to the specified destination.
-                vehicleController.shortenSchedule(vehicleModel, stopBox.getSelectedItem().toString(), gameModel.getCurrentDateTime());
+                vehicleController.shortenSchedule(vehicleModel, stopBox.getSelectedItem().toString(), companyResponse.getTime());
             }
         });
         alterButtonPanel.add(shortenRouteButton);
@@ -113,7 +110,7 @@ public class MakeContactScreen extends JFrame {
                         "\n\n Control: Vehicle " + vehicleModel.getAdditionalTypeInformationMap().get("Registration Number") + ", please go out of service until " + stopBox.getSelectedItem().toString() + ". Over!" +
                         "\n\n Vehicle " + vehicleModel.getAdditionalTypeInformationMap().get("Registration Number") + ": Message acknowledeged. Thanks. Over!");
                 //Request vehicle to go out of service.
-                vehicleController.outOfService(vehicleModel, stopBox.getSelectedItem().toString(), gameModel.getCurrentDateTime(), gameModel.getDifficultyLevel());
+                vehicleController.outOfService(vehicleModel, stopBox.getSelectedItem().toString(), companyResponse.getTime(), companyResponse.getDifficultyLevel());
             }
         });
         alterButtonPanel.add(goOutOfServiceButton);
@@ -127,7 +124,7 @@ public class MakeContactScreen extends JFrame {
         communicationArea = new JTextArea(3,5);
         communicationArea.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         communicationArea.setText("Control: Vehicle " + vehicleModel.getAdditionalTypeInformationMap().get("Registration Number") + ", please state your current position. Over!");
-        communicationArea.setText(communicationArea.getText() + "\n\n Vehicle " + vehicleModel.getAdditionalTypeInformationMap().get("Registration Number") + ": At " + vehicleController.getCurrentStopName(vehicleModel, gameModel.getCurrentDateTime(), gameModel.getDifficultyLevel()) + " heading towards " + getCurrentDestination(routeNumber, gameModel) + " with delay of " + vehicleModel.getDelayInMinutes() + " mins. Over!");
+        communicationArea.setText(communicationArea.getText() + "\n\n Vehicle " + vehicleModel.getAdditionalTypeInformationMap().get("Registration Number") + ": At " + vehicleController.getCurrentStopName(vehicleModel, companyResponse.getTime(), companyResponse.getDifficultyLevel()) + " heading towards " + getCurrentDestination(allocatedTour, companyResponse) + " with delay of " + vehicleModel.getDelayInMinutes() + " mins. Over!");
         communicationArea.setFont(new Font("Arial", Font.ITALIC, 12));
         communicationArea.setEditable(false);
         communicationArea.setLineWrap(true);
@@ -173,11 +170,11 @@ public class MakeContactScreen extends JFrame {
     
     /**
      * Get the current destination of the vehicle.
-     * @param routeNumber a <code>String</code> with the route number that the vehicle is running.
-     * @param gameModel a <code>GameModel</code> representing the game currently being modelled.
+     * @param allocatedTour a <code>String</code> with the tour that the vehicle is running.
+     * @param companyResponse  a <code>CompanyResponse</code> representing the game currently being modelled.
      * @return a <code>String</code> with the current destination.
      */
-    public String getCurrentDestination ( final String routeNumber, final GameModel gameModel ) {
+    public String getCurrentDestination ( final String allocatedTour, final CompanyResponse companyResponse ) {
         java.util.List<String> stopNames = new ArrayList<>();
         //TODO: Print the last stop in the list of stops served by this route.
         //java.util.List<String> stopNames = routeController.getRoute(routeNumber, gameModel.getCompany()).getStopNames();

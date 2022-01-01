@@ -15,11 +15,11 @@ import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import de.davelee.trams.api.response.CompanyResponse;
 import de.davelee.trams.api.response.RouteResponse;
 import de.davelee.trams.controllers.ControllerHandler;
 
 import de.davelee.trams.gui.ControlScreen;
-import de.davelee.trams.model.GameModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,7 +40,7 @@ public class TimetablePanel {
     }
 	
 	public JPanel createPanel (final RouteResponse routeResponse, final ControlScreen controlScreen, final RoutePanel routePanel, final DisplayPanel displayPanel ) {
-		final GameModel gameModel = controllerHandler.getGameController().getGameModel();
+		final CompanyResponse companyResponse = controllerHandler.getGameController().getGameModel(controlScreen.getCompany(), controlScreen.getPlayerName());
         
         //Create timetableScreen panel to add things to.
         JPanel timetableScreenPanel = new JPanel();
@@ -96,15 +96,15 @@ public class TimetablePanel {
         everyLabel.setFont(new Font("Arial", Font.ITALIC, 16));
         timesPanel.add(everyLabel);
         int min = 10;
-        if ( min > getCurrentRouteDuration(1) ) { min = getCurrentRouteDuration(1); }
-        everyMinuteModel = new SpinnerNumberModel(min,1,getMaxRouteDuration(),1);
+        if ( min > getCurrentRouteDuration(1, companyResponse.getScenarioName()) ) { min = getCurrentRouteDuration(1, companyResponse.getScenarioName()); }
+        everyMinuteModel = new SpinnerNumberModel(min,1,getMaxRouteDuration(companyResponse.getScenarioName()),1);
         everyMinuteSpinner = new JSpinner(everyMinuteModel);
         //Initialise minVehicles label here but then actually place it later.
-        final JLabel minVehicleLabel = new JLabel("NOTE: " + getMinVehicles() + " vehicles are required to operate " + everyMinuteSpinner.getValue().toString() + " minute frequency!" );
+        final JLabel minVehicleLabel = new JLabel("NOTE: " + getMinVehicles(companyResponse.getScenarioName()) + " vehicles are required to operate " + everyMinuteSpinner.getValue().toString() + " minute frequency!" );
         everyMinuteSpinner.setFont(new Font("Arial", Font.PLAIN, 14));
         everyMinuteSpinner.addChangeListener(new ChangeListener() {
             public void stateChanged ( ChangeEvent e ) {
-                minVehicleLabel.setText("NOTE: " + getMinVehicles() + " vehicles are required to operate " + everyMinuteSpinner.getValue().toString() + " minute frequency!");
+                minVehicleLabel.setText("NOTE: " + getMinVehicles(companyResponse.getScenarioName()) + " vehicles are required to operate " + everyMinuteSpinner.getValue().toString() + " minute frequency!");
             }
         });
         timesPanel.add(everyMinuteSpinner);
@@ -147,7 +147,7 @@ public class TimetablePanel {
                     terminus2Box.addItem(stopNames.get(i));
                 }
                 //Update spinner!
-                everyMinuteModel.setMaximum(getCurrentRouteDuration(Integer.parseInt(everyMinuteSpinner.getValue().toString())));
+                everyMinuteModel.setMaximum(getCurrentRouteDuration(Integer.parseInt(everyMinuteSpinner.getValue().toString()), companyResponse.getScenarioName()));
             }
         });
         betweenStopsPanel.add(terminus1Box);
@@ -166,7 +166,7 @@ public class TimetablePanel {
             public void itemStateChanged ( ItemEvent e ) {
                 //Update spinner!
                 if ( terminus2Box.getItemCount() != 0 ) {
-                    everyMinuteModel.setMaximum(getCurrentRouteDuration(Integer.parseInt(everyMinuteSpinner.getValue().toString())));
+                    everyMinuteModel.setMaximum(getCurrentRouteDuration(Integer.parseInt(everyMinuteSpinner.getValue().toString()), companyResponse.getScenarioName()));
                 }
             }
         });
@@ -181,10 +181,11 @@ public class TimetablePanel {
         validFromLabel.setFont(new Font("Arial", Font.ITALIC, 16));
         validityPanel.add(validFromLabel);
         //Valid From Day.
-        final int fromStartDay = gameModel.getCurrentDateTime().getDayOfMonth();
+        final LocalDate currentDate = LocalDate.parse(companyResponse.getTime(), DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+        final int fromStartDay = currentDate.getDayOfMonth();
         final DefaultComboBoxModel validFromDayModel = new DefaultComboBoxModel();
-        YearMonth yearMonth = YearMonth.of(gameModel.getCurrentDateTime().getYear(), gameModel.getCurrentDateTime().getMonthValue());
-        for ( int i = gameModel.getCurrentDateTime().getDayOfMonth(); i <= yearMonth.lengthOfMonth(); i++ ) {
+        YearMonth yearMonth = YearMonth.of(currentDate.getYear(), currentDate.getMonthValue());
+        for ( int i = currentDate.getDayOfMonth(); i <= yearMonth.lengthOfMonth(); i++ ) {
             validFromDayModel.addElement(i);
         }
         JComboBox validFromDayBox = new JComboBox(validFromDayModel);
@@ -192,7 +193,7 @@ public class TimetablePanel {
         validityPanel.add(validFromDayBox);
         //Valid From Month.
         final JComboBox validFromMonthBox = new JComboBox();
-        LocalDate monthNames = gameModel.getCurrentDateTime().toLocalDate();
+        LocalDate monthNames = LocalDate.parse(companyResponse.getTime(), DateTimeFormatter.ofPattern("dd-MM-yyyy"));
         for ( int i = 0; i < 4; i++ ) {
             validFromMonthBox.addItem(monthNames.getMonth() + " " + monthNames.getYear());
             monthNames.plusMonths(1);
@@ -223,7 +224,7 @@ public class TimetablePanel {
         validToLabel.setFont(new Font("Arial", Font.ITALIC, 16));
         validityPanel.add(validToLabel);
         //Get the local date object with current date.
-        LocalDate defaultValidToDate = gameModel.getCurrentDateTime().toLocalDate();
+        LocalDate defaultValidToDate = LocalDate.parse(companyResponse.getTime(), DateTimeFormatter.ofPattern("dd-MM-yyyy"));
         defaultValidToDate.plusDays(3);
         //Valid To Day.
         final int toStartDay = defaultValidToDate.getDayOfMonth();
@@ -296,13 +297,13 @@ public class TimetablePanel {
                 //TODO: implement the stoppingTimes and distances arrays in the GUI correctly instead of arrays of 0.
                 int[] stoppingTimes = new int[stopNames.size()];
                 int[] distances = new int[stopNames.size()-1];
-                controllerHandler.getStopTimeController().generateStopTimes(gameModel.getCompany(), stoppingTimes,
+                controllerHandler.getStopTimeController().generateStopTimes(companyResponse.getName(), stoppingTimes,
                         stopNames.toArray(new String[0]), routeResponse.getRouteNumber(), distances, timeFrom.format(DateTimeFormatter.ofPattern("HH:mm")),
                         timeTo.format(DateTimeFormatter.ofPattern("HH:mm")), (Integer) everyMinuteSpinner.getValue(),
                         validFromDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")), validToDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")),
                         operatingDays);
                 //Return to management screen.
-                controlScreen.redrawManagement(displayPanel.createPanel(controlScreen), gameModel);
+                controlScreen.redrawManagement(displayPanel.createPanel(controlScreen), companyResponse);
             }
         });
         bottomButtonPanel.add(generateTimetableButton);
@@ -310,7 +311,7 @@ public class TimetablePanel {
         previousScreenButton.addActionListener ( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
                 //Cancel addition.
-                controlScreen.redrawManagement(routePanel.createPanel(routeResponse, controlScreen, displayPanel), gameModel);
+                controlScreen.redrawManagement(routePanel.createPanel(routeResponse, controlScreen, displayPanel), companyResponse);
             }
         });
         bottomButtonPanel.add(previousScreenButton);
@@ -322,37 +323,34 @@ public class TimetablePanel {
         return timetableScreenPanel;
 	}
 
-    private int getMaxRouteDuration ( ) {
-        final GameModel gameModel = controllerHandler.getGameController().getGameModel();
+    private int getMaxRouteDuration ( final String scenarioName ) {
         //So duration is the distance between selected one in terminus1 and then distance between all ones in terminus2 up to selected item.
         //Note cumulative total.
         int cumDistance = 0;
         //Add distance of terminus1 and first item of terminus2 first of all - this is guaranteed.
-        cumDistance += controllerHandler.getJourneyController().getDistance(gameModel.getScenarioName(), terminus1Box.getSelectedItem().toString(), terminus2Box.getItemAt(0).toString());
+        cumDistance += controllerHandler.getJourneyController().getDistance(scenarioName, terminus1Box.getSelectedItem().toString(), terminus2Box.getItemAt(0).toString());
         //Now from 0 up until the selected index - add distances for terminus 2.
         int selectIndex = terminus2Box.getSelectedIndex();
         if ( selectIndex == 0 ) {
             return cumDistance*2;
         }
         for ( int i = 1; i <= selectIndex; i++ ) {
-            cumDistance += controllerHandler.getJourneyController().getDistance(gameModel.getScenarioName(), terminus2Box.getItemAt(i-1).toString(), terminus2Box.getItemAt(i).toString());
+            cumDistance += controllerHandler.getJourneyController().getDistance(scenarioName, terminus2Box.getItemAt(i-1).toString(), terminus2Box.getItemAt(i).toString());
         }
         //Return distance * 2.
         return cumDistance*2;
     }
 
-    private int getMinVehicles ( ) {
-        return (int) Math.ceil((double) getCurrentRouteDuration(Integer.parseInt(everyMinuteSpinner.getValue().toString())) / Double.parseDouble(everyMinuteSpinner.getValue().toString()) );
+    private int getMinVehicles ( final String scenarioName ) {
+        return (int) Math.ceil((double) getCurrentRouteDuration(Integer.parseInt(everyMinuteSpinner.getValue().toString()), scenarioName) / Double.parseDouble(everyMinuteSpinner.getValue().toString()) );
     }
 
-    private int getCurrentRouteDuration ( int frequency ) {
-
-        final GameModel gameModel = controllerHandler.getGameController().getGameModel();
+    private int getCurrentRouteDuration ( final int frequency, final String scenarioName ) {
         //So duration is the distance between selected one in terminus1 and then distance between all ones in terminus2 up to selected item.
         //Note cumulative total.
         int cumDistance = 0;
         //Add distance of terminus1 and first item of terminus2 first of all - this is guaranteed.
-        cumDistance += controllerHandler.getJourneyController().getDistance(gameModel.getScenarioName(), terminus1Box.getSelectedItem().toString(), terminus2Box.getItemAt(0).toString());
+        cumDistance += controllerHandler.getJourneyController().getDistance(scenarioName, terminus1Box.getSelectedItem().toString(), terminus2Box.getItemAt(0).toString());
         //Now from 0 up until the selected index - add distances for terminus 2.
         int selectIndex = terminus2Box.getSelectedIndex();
         if ( selectIndex == 0 ) {
@@ -366,7 +364,7 @@ public class TimetablePanel {
             return myCumFreq;
         }
         for ( int i = 1; i <= selectIndex; i++ ) {
-            cumDistance += controllerHandler.getJourneyController().getDistance(gameModel.getScenarioName(), terminus2Box.getItemAt(i-1).toString(), terminus2Box.getItemAt(i).toString());
+            cumDistance += controllerHandler.getJourneyController().getDistance(scenarioName, terminus2Box.getItemAt(i-1).toString(), terminus2Box.getItemAt(i).toString());
         }
         //Return distance * 2.
         int myDistance = (cumDistance*2);

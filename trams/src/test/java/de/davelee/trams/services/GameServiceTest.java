@@ -4,11 +4,10 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 import de.davelee.trams.TramsGameApplication;
-import de.davelee.trams.api.request.AddTimeRequest;
+import de.davelee.trams.api.request.CompanyRequest;
 import de.davelee.trams.api.response.CompanyResponse;
 import de.davelee.trams.api.response.SatisfactionRateResponse;
 import de.davelee.trams.api.response.TimeResponse;
-import de.davelee.trams.model.GameModel;
 import de.davelee.trams.util.DifficultyLevel;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -16,11 +15,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.client.RestTemplate;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.*;
 
 @ExtendWith(SpringExtension.class)
@@ -36,13 +35,12 @@ public class GameServiceTest {
 	@Test
 	public void testIncrement() {
 		Mockito.when(restTemplate.postForObject(anyString(), any(), eq(Void.class))).thenReturn(null);
-		gameService.saveGame(GameModel.builder()
+		gameService.saveGame(CompanyRequest.builder()
 				.playerName("Dave A J Lee")
 				.scenarioName("Landuff Transport Company")
-				.balance(80000.0)
-				.currentDateTime(LocalDateTime.of(2009,8,20,5,0,0))
-				.difficultyLevel(DifficultyLevel.EASY)
-				.passengerSatisfaction(100)
+				.startingBalance(80000.0)
+				.startingTime("20-08-2009 05:00")
+				.difficultyLevel(DifficultyLevel.EASY.name())
 				.build());
 		Mockito.when(restTemplate.getForObject(anyString(), eq(CompanyResponse.class))).thenReturn(null);
 		Assertions.assertNull(gameService.getGameByPlayerName("Mustermann GmbH", "My First Name"));
@@ -51,8 +49,8 @@ public class GameServiceTest {
 						.time("24-12-2020 11:58").build()
 		);
 		Assertions.assertNotNull(gameService.getGameByPlayerName("Mustermann GmbH", "Dave A J Lee"));
-		GameModel gameModel2 = gameService.getGameByPlayerName("Mustermann GmbH", "Dave A J Lee");
-		assertEquals(DateTimeFormatter.ofPattern("HH:mm").format(gameModel2.getCurrentDateTime()), "11:58");
+		CompanyResponse companyResponse = gameService.getGameByPlayerName("Mustermann GmbH", "Dave A J Lee");
+		assertEquals(companyResponse.getTime(), "24-12-2020 11:58");
 		Mockito.when(restTemplate.patchForObject(anyString(), any(), eq(TimeResponse.class))).thenReturn(
 				TimeResponse.builder()
 						.company("Mustermann GmbH")
@@ -69,11 +67,7 @@ public class GameServiceTest {
 						.satisfactionRate(91)
 						.build()
 		);
-		Assertions.assertEquals(gameService.computeAndReturnPassengerSatisfaction("Mustermann GmbH", DifficultyLevel.EASY, 4, 3, 2), 91);
-	}
-
-	private void assertEquals ( final String expected, final String actual ) {
-		Assertions.assertEquals(expected, actual);
+		assertEquals(gameService.computeAndReturnPassengerSatisfaction("Mustermann GmbH", DifficultyLevel.EASY, 4, 3, 2), 91);
 	}
 
 }

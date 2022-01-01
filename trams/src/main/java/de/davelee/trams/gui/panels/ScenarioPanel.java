@@ -16,9 +16,9 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 
+import de.davelee.trams.api.response.CompanyResponse;
 import de.davelee.trams.controllers.ControllerHandler;
 import de.davelee.trams.gui.ControlScreen;
-import de.davelee.trams.model.GameModel;
 import de.davelee.trams.model.ScenarioModel;
 
 public class ScenarioPanel {
@@ -48,7 +48,7 @@ public class ScenarioPanel {
         /*JPanel infoPanel = new JPanel(new BorderLayout());
         infoPanel.setBackground(Color.WHITE);*/
         
-        final GameModel gameModel = controllerHandler.getGameController().getGameModel();
+        final CompanyResponse companyResponse = controllerHandler.getGameController().getGameModel(controlScreen.getCompany(), controlScreen.getPlayerName());
 
         //Create panel for scenario name field.
         JPanel scenarioNamePanel = new JPanel(new GridLayout(1,2,5,5));
@@ -56,7 +56,7 @@ public class ScenarioPanel {
         //Create label and field for scenario name.
         JLabel scenarioNameLabel = new JLabel("Scenario Name: ", SwingConstants.CENTER);
         scenarioNameLabel.setFont(new Font("Arial", Font.BOLD, 17));
-        JLabel scenarioActualNameLabel = new JLabel(gameModel.getScenarioName(), SwingConstants.CENTER);
+        JLabel scenarioActualNameLabel = new JLabel(companyResponse.getScenarioName(), SwingConstants.CENTER);
         scenarioActualNameLabel.setFont(new Font("Arial", Font.PLAIN, 17));
         scenarioNamePanel.add(scenarioNameLabel);
         scenarioNamePanel.add(scenarioActualNameLabel);
@@ -65,7 +65,7 @@ public class ScenarioPanel {
         scenarioScreenPanel.add(scenarioNamePanel);
         scenarioScreenPanel.add(Box.createRigidArea(new Dimension(0,15)));
         
-        ScenarioModel scenarioModel = controllerHandler.getScenarioController().getScenario(gameModel.getScenarioName());
+        ScenarioModel scenarioModel = controllerHandler.getScenarioController().getScenario(companyResponse.getScenarioName());
 
         //Create panel for target field.
         JPanel targetPanel = new JPanel(new GridLayout(1,2,5,5));
@@ -91,7 +91,7 @@ public class ScenarioPanel {
         //Create label and field for player name.
         JLabel playerNameLabel = new JLabel("Player Name: ", SwingConstants.CENTER);
         playerNameLabel.setFont(new Font("Arial", Font.BOLD, 17));
-        JLabel playerActualNameLabel = new JLabel(gameModel.getPlayerName(), SwingConstants.CENTER);
+        JLabel playerActualNameLabel = new JLabel(companyResponse.getPlayerName(), SwingConstants.CENTER);
         playerActualNameLabel.setFont(new Font("Arial", Font.PLAIN, 17));
         playerNamePanel.add(playerNameLabel);
         playerNamePanel.add(playerActualNameLabel);
@@ -106,7 +106,7 @@ public class ScenarioPanel {
         JButton managementScreenButton = new JButton("Return to Management Screen");
         managementScreenButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                    controlScreen.redrawManagement(displayPanel.createPanel(controlScreen), gameModel);
+                    controlScreen.redrawManagement(displayPanel.createPanel(controlScreen), companyResponse);
             }
         });
         optionsButtonPanel.add(managementScreenButton);

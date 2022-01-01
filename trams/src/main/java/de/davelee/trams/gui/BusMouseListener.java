@@ -14,17 +14,19 @@ public class BusMouseListener implements MouseListener {
     @Autowired
     private GameController gameController;
 
-    private String routeNumber;
-    private String scheduleNumber;
+    private String allocatedTour;
+    private String company;
+    private String playerName;
     
     /**
      * Create a new BusMouseListener.
-     * @param routeNumber a <code>String</code> with the route number.
-     * @param scheduleNumber a <code>String</code> with the schedule number.
+     * @param allocatedTour a <code>String</code> with the allocated tour currently being run.
+     * @param company a <code>String</code> with the company that the tour belongs to.
      */
-    public BusMouseListener(final String routeNumber, final String scheduleNumber) {
-        this.routeNumber = routeNumber;
-        this.scheduleNumber = scheduleNumber;
+    public BusMouseListener(final String allocatedTour, final String company, final String playerName) {
+        this.allocatedTour = allocatedTour;
+        this.company = company;
+        this.playerName = playerName;
     }
     
     /**
@@ -66,7 +68,7 @@ public class BusMouseListener implements MouseListener {
      */
     public void mouseClicked(MouseEvent e) {
         gameController.pauseSimulation();
-        new BusInfoScreen(routeNumber, scheduleNumber);
+        new BusInfoScreen(allocatedTour, company, playerName);
     }
     
 }

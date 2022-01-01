@@ -8,10 +8,10 @@ import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import de.davelee.trams.api.response.CompanyResponse;
 import de.davelee.trams.api.response.UserResponse;
 import de.davelee.trams.controllers.ControllerHandler;
 import de.davelee.trams.gui.ControlScreen;
-import de.davelee.trams.model.GameModel;
 
 public class ViewDriverPanel {
 	
@@ -21,8 +21,8 @@ public class ViewDriverPanel {
 	    this.controllerHandler = controllerHandler;
     }
 	
-	public JPanel createPanel ( final String driverName, final ControlScreen controlScreen, final DisplayPanel displayPanel ) {
-		final GameModel gameModel = controllerHandler.getGameController().getGameModel();
+	public JPanel createPanel ( final String driverName, final ControlScreen controlScreen ) {
+		final CompanyResponse companyResponse = controllerHandler.getGameController().getGameModel(controlScreen.getCompany(), controlScreen.getPlayerName());
     	
         //Create screen panel to add things to.
         JPanel driverScreenPanel = new JPanel();
@@ -49,7 +49,7 @@ public class ViewDriverPanel {
 
         //Get driver data now so that we can used to compile first!
         DefaultListModel driversModel = new DefaultListModel();
-        UserResponse[] driverModels = controllerHandler.getDriverController().getAllDrivers(gameModel.getCompany());
+        UserResponse[] driverModels = controllerHandler.getDriverController().getAllDrivers(companyResponse.getName());
         for ( int i = 0; i < driverModels.length; i++ ) {
             driversModel.addElement(driverModels[i].getUsername());
         }
@@ -57,9 +57,9 @@ public class ViewDriverPanel {
         //Create driver object so that we can pull information from it.
         final UserResponse driverModel;
         if ( !driverName.equalsIgnoreCase("") ) {
-            driverModel = controllerHandler.getDriverController().getDriverByName(driverName, gameModel.getCompany());
+            driverModel = controllerHandler.getDriverController().getDriverByName(driverName, companyResponse.getName());
         } else {
-            driverModel = controllerHandler.getDriverController().getDriverByName(driversModel.get(0).toString(), gameModel.getCompany());
+            driverModel = controllerHandler.getDriverController().getDriverByName(driversModel.get(0).toString(), companyResponse.getName());
         }
 
         //Create panel for information fields.
@@ -108,7 +108,7 @@ public class ViewDriverPanel {
         sackDriverButton.addActionListener ( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
                 controllerHandler.getDriverController().sackDriver(driverModel.getCompany(), driverModel.getUsername());
-                controlScreen.redrawManagement(createPanel("", controlScreen, displayPanel), controllerHandler.getGameController().getGameModel());
+                controlScreen.redrawManagement(createPanel("", controlScreen), companyResponse);
             }
         });
         bottomButtonPanel.add(sackDriverButton);
@@ -117,7 +117,7 @@ public class ViewDriverPanel {
         JButton managementScreenButton = new JButton("Return to Management Screen");
         managementScreenButton.addActionListener ( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
-                controlScreen.redrawManagement(new DisplayPanel(controllerHandler).createPanel(controlScreen), gameModel);
+                controlScreen.redrawManagement(new DisplayPanel(controllerHandler).createPanel(controlScreen), companyResponse);
             }
         });
         bottomButtonPanel.add(managementScreenButton);
@@ -143,7 +143,7 @@ public class ViewDriverPanel {
         driversList.addListSelectionListener(new ListSelectionListener() {
             public void valueChanged ( ListSelectionEvent e ) {
                 String selectedValue = driversList.getSelectedValue().toString();
-                controlScreen.redrawManagement(createPanel(selectedValue, controlScreen, displayPanel), gameModel);
+                controlScreen.redrawManagement(createPanel(selectedValue, controlScreen), companyResponse);
             }
         });
         JScrollPane driversPane = new JScrollPane(driversList);

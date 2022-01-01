@@ -23,12 +23,12 @@ import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 
+import de.davelee.trams.api.response.CompanyResponse;
 import de.davelee.trams.api.response.RouteResponse;
 import de.davelee.trams.api.response.VehicleResponse;
 import de.davelee.trams.controllers.ControllerHandler;
 
 import de.davelee.trams.gui.ControlScreen;
-import de.davelee.trams.model.GameModel;
 
 public class AllocationPanel {
 	
@@ -40,13 +40,14 @@ public class AllocationPanel {
         this.controllerHandler = controllerHandler;
     }
 	
-	public JPanel createPanel ( final ControlScreen controlScreen, final DisplayPanel displayPanel  ) {
+	public JPanel createPanel ( final ControlScreen controlScreen, final DisplayPanel displayPanel, final String company,
+                                final String playerName) {
 		//Create allocation screen panel to add things to.
         JPanel allocationScreenPanel = new JPanel();
         allocationScreenPanel.setLayout ( new BoxLayout ( allocationScreenPanel, BoxLayout.PAGE_AXIS ) );
         allocationScreenPanel.setBackground(Color.WHITE);
         
-        final GameModel gameModel = controllerHandler.getGameController().getGameModel();
+        final CompanyResponse companyResponse = controllerHandler.getGameController().getGameModel(company, playerName);
 
         //Create label at top of screen in topLabelPanel and add it to screenPanel.
         JPanel topLabelPanel = new JPanel(new BorderLayout());
@@ -59,7 +60,7 @@ public class AllocationPanel {
         topRightPanel.add(topLabel);
         JPanel dayPanel = new JPanel();
         dayPanel.setBackground(Color.WHITE);
-        JLabel dayLabel = new JLabel(DateTimeFormatter.RFC_1123_DATE_TIME.format(gameModel.getCurrentDateTime()), SwingConstants.CENTER);
+        JLabel dayLabel = new JLabel(companyResponse.getTime(), SwingConstants.CENTER);
         dayLabel.setFont(new Font("Arial", Font.BOLD + Font.ITALIC, 20));
         dayPanel.add(dayLabel);
         topRightPanel.add(dayPanel);
@@ -106,7 +107,7 @@ public class AllocationPanel {
         final JList routesList = new JList(routesModel);
         routesList.setFixedCellWidth(270);
         routesList.setFont(new Font("Arial", Font.PLAIN, 15));
-        RouteResponse[] routeModels = controllerHandler.getRouteController().getRoutes(gameModel.getCompany());
+        RouteResponse[] routeModels = controllerHandler.getRouteController().getRoutes(companyResponse.getName());
         for ( int i = 0; i < routeModels.length; i++ ) {
             routesModel.addElement(routeModels[i].getRouteNumber());
         }
@@ -119,7 +120,7 @@ public class AllocationPanel {
         JPanel modelPanel = new JPanel();
         modelPanel.setBackground(Color.WHITE);
         final DefaultListModel vehiclesModel = new DefaultListModel();
-        VehicleResponse[] vehicleModels = controllerHandler.getVehicleController().getAllCreatedVehicles(gameModel.getCompany());
+        VehicleResponse[] vehicleModels = controllerHandler.getVehicleController().getAllCreatedVehicles(companyResponse.getName());
         for ( int i = 0; i < vehicleModels.length; i++ ) {
             if ( vehicleModels[i].getAllocatedTour() != null ) {
                 vehiclesModel.addElement(vehicleModels[i].getAdditionalTypeInformationMap().get("Registration Number")
@@ -169,7 +170,7 @@ public class AllocationPanel {
                     allocationsModel.removeElement(allocationsList.getSelectedValue());
                     String[] textParts = text.split("&");
                     routesModel.addElement(textParts[0].trim());
-                    VehicleResponse vehicleModel = controllerHandler.getVehicleController().getVehicleByRegistrationNumber(textParts[1].trim(), gameModel.getCompany());
+                    VehicleResponse vehicleModel = controllerHandler.getVehicleController().getVehicleByRegistrationNumber(textParts[1].trim(), companyResponse.getName());
                     vehiclesModel.addElement(vehicleModel.getAdditionalTypeInformationMap().get("Registration Number") +
                     		" (" + vehicleModel.getModelName() + ")");
                     //Remove this from the interface as well.
@@ -181,14 +182,14 @@ public class AllocationPanel {
                     }*/
                     //Find vehicle object position.
                     int vehiclePos = -1;
-                    VehicleResponse[] vehicleModels = controllerHandler.getVehicleController().getAllCreatedVehicles(gameModel.getCompany());
+                    VehicleResponse[] vehicleModels = controllerHandler.getVehicleController().getAllCreatedVehicles(companyResponse.getName());
                     for ( int j = 0; j < vehicleModels.length; j++ ) {
                         if ( vehicleModels[j].getAdditionalTypeInformationMap().get("Registration Number").equalsIgnoreCase(textParts[1].trim())) {
                             vehiclePos = j;
                         }
                     }
                     //TODO: Set route and route schedule number.
-                    controllerHandler.getVehicleController().assignVehicleToTour(vehicleModels[vehiclePos].getAdditionalTypeInformationMap().get("Registration Number"), "0/0", gameModel.getCompany());
+                    controllerHandler.getVehicleController().assignVehicleToTour(vehicleModels[vehiclePos].getAdditionalTypeInformationMap().get("Registration Number"), "0/0", companyResponse.getName());
                 }
             }
         });
@@ -212,7 +213,7 @@ public class AllocationPanel {
         allocationListPanel.setBackground(Color.WHITE);
         allocationsModel = new DefaultListModel();
         List<String> allocations;
-        allocations = controllerHandler.getVehicleController().getAllocations(gameModel.getCompany());
+        allocations = controllerHandler.getVehicleController().getAllocations(companyResponse.getName());
         for ( int i = 0; i < allocations.size(); i++ ) {
             allocationsModel.addElement(allocations.get(i).toString());
             //For each allocation, remove route and vehicle from list.
@@ -257,7 +258,7 @@ public class AllocationPanel {
                         String[] allocationSplit = allocationsModel.get(i).toString().split("&");
                         //Store route detail object.
                         String routeNumber = allocationSplit[0].split("/")[0]; int routeDetailPos = -1;
-                        VehicleResponse[] vehicleModels = controllerHandler.getVehicleController().getVehicleModelsForRoute(gameModel.getCompany(), controllerHandler.getRouteController().getRoute(routeNumber, gameModel.getCompany()).getRouteNumber());
+                        VehicleResponse[] vehicleModels = controllerHandler.getVehicleController().getVehicleModelsForRoute(companyResponse.getName(), controllerHandler.getRouteController().getRoute(routeNumber, companyResponse.getName()).getRouteNumber());
                         for ( int k = 0; k < vehicleModels.length; k++ ) {
                             if ( vehicleModels[k].getAllocatedTour().contentEquals(allocationSplit[0]) ) {
                                 routeDetailPos = k;
@@ -272,10 +273,10 @@ public class AllocationPanel {
                             }
                         }
                         //Now assign route detail to vehicle.
-                        controllerHandler.getVehicleController().assignVehicleToTour(vehicleModels[vehiclePos].getAdditionalTypeInformationMap().get("Registration Number"), vehicleModels[routeDetailPos].getAllocatedTour(), gameModel.getCompany());
+                        controllerHandler.getVehicleController().assignVehicleToTour(vehicleModels[vehiclePos].getAdditionalTypeInformationMap().get("Registration Number"), vehicleModels[routeDetailPos].getAllocatedTour(), companyResponse.getName());
                     }
                     //Now return to previous screen.
-                    controlScreen.redrawManagement(displayPanel.createPanel(controlScreen), gameModel);
+                    controlScreen.redrawManagement(displayPanel.createPanel(controlScreen), companyResponse);
                 }
             }
         });
@@ -284,7 +285,7 @@ public class AllocationPanel {
         previousScreenButton.addActionListener( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
                 //Now return to previous screen.
-                controlScreen.redrawManagement(displayPanel.createPanel(controlScreen), gameModel);
+                controlScreen.redrawManagement(displayPanel.createPanel(controlScreen), companyResponse);
             }
         });
         bottomButtonPanel.add(previousScreenButton);

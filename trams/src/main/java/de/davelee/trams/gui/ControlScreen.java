@@ -7,6 +7,7 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
 
+import de.davelee.trams.api.response.CompanyResponse;
 import de.davelee.trams.api.response.MessageResponse;
 import de.davelee.trams.api.response.RouteResponse;
 import de.davelee.trams.api.response.VehicleResponse;
@@ -67,8 +68,8 @@ public class ControlScreen extends ButtonBar {
      * Create a new control screen.
      * @param controllerHandler a <code>ControllerHandler</code> obtaining the currently used controllers from Spring.
      */
-    public ControlScreen ( final ControllerHandler controllerHandler ) {
-        super(controllerHandler);
+    public ControlScreen ( final ControllerHandler controllerHandler, final String company, final String playerName ) {
+        super(controllerHandler, company, playerName);
     }
 
     /**
@@ -89,10 +90,10 @@ public class ControlScreen extends ButtonBar {
         //Initialise dialog panel.
         dialogPanel = new JPanel(new BorderLayout());
 
-        final GameModel gameModel = super.getControllerHandler().getGameController().getGameModel();
+        final CompanyResponse companyResponse = super.getControllerHandler().getGameController().getGameModel(getCompany(), getPlayerName());
         
         //Initialise GUI with title and close attributes.
-        this.setTitle ("TraMS - Player: " + gameModel.getPlayerName() + " (" + gameModel.getScenarioName() + ")");
+        this.setTitle ("TraMS - Player: " + companyResponse.getPlayerName() + " (" + companyResponse.getScenarioName() + ")");
         this.setResizable (true);
         this.setDefaultCloseOperation (DO_NOTHING_ON_CLOSE);
         this.setJMenuBar(menuBar);
@@ -118,7 +119,7 @@ public class ControlScreen extends ButtonBar {
         topPanel = new JPanel();
         topPanel.setLayout ( new BorderLayout () );
         topPanel.setBackground(Color.WHITE);
-        timeLabel = new JLabel(gameModel.getCurrentDateTime().format(DateTimeFormatter.ofPattern("EEEE d MMMM yyyy HH:mm")), SwingConstants.CENTER);
+        timeLabel = new JLabel(companyResponse.getTime(), SwingConstants.CENTER);
         timeLabel.setFont(new Font("Arial", Font.ITALIC, 20));
         topPanel.add(timeLabel, BorderLayout.NORTH);
 
@@ -133,18 +134,18 @@ public class ControlScreen extends ButtonBar {
         tabbedPane = new JTabbedPane();
         tabbedPane.setBackground(Color.WHITE);
         //Create Live Situation tab.
-        if ( super.getControllerHandler().getRouteController().getNumberRoutes(gameModel.getCompany()) > 0 ) {
-            drawVehicles(gameModel);
-            updateVehicleStatus(gameModel.getCurrentDateTime(), gameModel.getDifficultyLevel(), gameModel.getCompany());
+        if ( super.getControllerHandler().getRouteController().getNumberRoutes(companyResponse.getName()) > 0 ) {
+            drawVehicles(companyResponse);
+            updateVehicleStatus(companyResponse.getTime(), companyResponse.getDifficultyLevel(), companyResponse.getName());
             tabbedPane.addTab("Live Situation", graphicsPanel);
             tabbedPane.setSelectedIndex(0);
         }
         else {
-            drawVehicles(gameModel);
+            drawVehicles(companyResponse);
             tabbedPane.addTab("Live Situation", graphicsPanel);
         }
         //Create Messages tab.
-        drawMessages(gameModel.getCompany());
+        drawMessages(companyResponse.getName());
         tabbedPane.addTab("Messages", messagesPanel);
         /*if ( userInterface.getMessageScreen() ) {
             topPanel.getComponent(1).setVisible(false);
@@ -181,7 +182,7 @@ public class ControlScreen extends ButtonBar {
                 else {
                     logger.debug("You just selected live screen");
                     redrawOnRouteChange = false;
-                    populateRouteList(ControlScreen.super.getControllerHandler().getGameController().getGameModel().getCompany());
+                    populateRouteList(ControlScreen.super.getControllerHandler().getGameController().getGameModel(getCompany(), getPlayerName()).getName());
                     redrawOnRouteChange = true;
                     logger.debug("Route list has been re-populated!");
                     //topPanel.getComponent(1).setVisible(true);
@@ -199,7 +200,7 @@ public class ControlScreen extends ButtonBar {
             tabbedPane.setSelectedIndex(2);
         }*/
         //Disable the live situation tab if appropriate.
-        if ( super.getControllerHandler().getRouteController().getNumberRoutes(gameModel.getCompany()) > 0 ) {
+        if ( super.getControllerHandler().getRouteController().getNumberRoutes(companyResponse.getName()) > 0 ) {
             tabbedPane.setEnabledAt(0, true);
         } else {
             tabbedPane.setSelectedIndex(2);
@@ -235,7 +236,7 @@ public class ControlScreen extends ButtonBar {
         JPanel passengerSatisfactionPanel = new JPanel();
         passengerSatisfactionPanel.setBackground(Color.WHITE);
         passengerSatisfactionBar = new JProgressBar(0, 100);
-        passengerSatisfactionBar.setValue((int) Math.round(super.getControllerHandler().getGameController().computeAndReturnPassengerSatisfaction()));
+        passengerSatisfactionBar.setValue((int) Math.round(super.getControllerHandler().getGameController().computeAndReturnPassengerSatisfaction(getCompany(), super.getControllerHandler().getGameController().getGameModel(getCompany(), getPlayerName()).getDifficultyLevel())));
         passengerSatisfactionBar.setString("Passenger Satisfaction Rating - " + passengerSatisfactionBar.getValue() + "%");
         passengerSatisfactionBar.setFont(new Font("Arial", Font.ITALIC, 20));
         passengerSatisfactionBar.setStringPainted(true);
@@ -245,7 +246,7 @@ public class ControlScreen extends ButtonBar {
         JPanel bottomInfoPanel = new JPanel();
         bottomInfoPanel.setBackground(Color.WHITE);
         DecimalFormat form = new DecimalFormat("0.00");
-        balanceLabel = new JLabel("Balance: £" + form.format(gameModel.getBalance()));
+        balanceLabel = new JLabel("Balance: £" + form.format(companyResponse.getBalance()));
         balanceLabel.setFont(new Font("Arial", Font.BOLD, 12));
         bottomInfoPanel.add(balanceLabel);
         JButton resignButton = new JButton("Resign");
@@ -317,17 +318,17 @@ public class ControlScreen extends ButtonBar {
         
     }
 
-    public void updateDateTime (final LocalDateTime currentDateTime, final DifficultyLevel difficultyLevel, final String company ) {
-        timeLabel.setText(DateTimeFormatter.RFC_1123_DATE_TIME.format(currentDateTime));
+    public void updateDateTime (final String currentDateTime, final String difficultyLevel, final String company ) {
+        timeLabel.setText(currentDateTime);
         updateVehicleStatus(currentDateTime, difficultyLevel, company);
     }
 
-    public void updateVehicleStatus ( final LocalDateTime currentDateTime, final DifficultyLevel difficultyLevel, final String company ) {
+    public void updateVehicleStatus ( final String time, final String difficultyLevel, final String company ) {
         String vehicleStatus = "";
 
         VehicleResponse[] vehicleModels = super.getControllerHandler().getVehicleController().getVehicleModelsForRoute(company, routeList.getSelectedValue().toString().split(":")[0]);
         for (int i = 0; i < vehicleModels.length; i++) {
-            String vehiclePos = super.getControllerHandler().getVehicleController().getCurrentStopName(vehicleModels[i], currentDateTime, difficultyLevel);
+            String vehiclePos = super.getControllerHandler().getVehicleController().getCurrentStopName(vehicleModels[i], time, difficultyLevel);
             vehicleStatus += "Schedule " + vehicleModels[i].getAllocatedTour() + " is at " + vehiclePos + " with a delay of " + vehicleModels[i].getDelayInMinutes() + " minutes.\n";
         }
 
@@ -342,16 +343,21 @@ public class ControlScreen extends ButtonBar {
     
     /**
      * Draw the vehicle positions.
-     * @param gameModel a <code>GameModel</code> representing the game currently modeled.
+     * @param companyResponse a <code>CompanyResponse</code> representing the game currently modeled.
      */
-    public void drawVehicles ( final GameModel gameModel ) {
+    public void drawVehicles ( final CompanyResponse companyResponse ) {
         //Now check if it is past midnight! If it is dispose, and create Allocation Screen.
-        if ( isPastMidnight(gameModel.getCurrentDateTime(), getControllerHandler().getSimulationSpeed()) && !doneAllocations ) {
+        if ( isPastMidnight(companyResponse.getTime(), getControllerHandler().getSimulationSpeed()) && !doneAllocations ) {
             //Now add a message to summarise days events!!!
-            String date = DateTimeFormatter.RFC_1123_DATE_TIME.format(gameModel.getCurrentDateTime());
-            super.getControllerHandler().getMessageController().addMessage(gameModel.getCompany(),"Passenger Satisfaction for " + DateFormats.FULL_FORMAT.getFormat().format(getPreviousDateTime(gameModel.getCurrentDateTime(), getControllerHandler().getSimulationSpeed())), "Congratulations you have successfully completed transport operations for " + gameModel.getScenarioName() + " on " + DateFormats.FULL_FORMAT.getFormat().format(getPreviousDateTime(gameModel.getCurrentDateTime(), getControllerHandler().getSimulationSpeed())) + " with a passenger satisfaction of " + super.getControllerHandler().getGameController().computeAndReturnPassengerSatisfaction() + "%.\n\nNow you need to allocate vehicles to routes for " + DateFormats.FULL_FORMAT.getFormat().format(gameModel.getCurrentDateTime()) + " and keep the passenger satisfaction up! Click on the Management tab and then choose Allocations. Good luck!", "Council", "INBOX", date);
+            super.getControllerHandler().getMessageController().addMessage(companyResponse.getName(),"Passenger Satisfaction for " +
+                    DateFormats.FULL_FORMAT.getFormat().format(getPreviousDateTime(companyResponse.getTime(), getControllerHandler().getSimulationSpeed())),
+                    "Congratulations you have successfully completed transport operations for " + companyResponse.getScenarioName() + " on " +
+                            DateFormats.FULL_FORMAT.getFormat().format(getPreviousDateTime(companyResponse.getTime(), getControllerHandler().getSimulationSpeed())) +
+                            " with a passenger satisfaction of " + super.getControllerHandler().getGameController().computeAndReturnPassengerSatisfaction(getCompany(), companyResponse.getDifficultyLevel()) +
+                            "%.\n\nNow you need to allocate vehicles to routes for " + companyResponse.getTime() + " and keep the passenger satisfaction up! Click on the Management tab and then choose Allocations. Good luck!",
+                    "Council", "INBOX", companyResponse.getTime());
             //Refresh messages.
-            MessageResponse[] messageModels = super.getControllerHandler().getMessageController().getMessagesByFolderDateSender(gameModel.getCompany(), foldersBox.getSelectedItem().toString(),dateBox.getSelectedItem().toString(),"Council");
+            MessageResponse[] messageModels = super.getControllerHandler().getMessageController().getMessagesByFolderDateSender(companyResponse.getName(), foldersBox.getSelectedItem().toString(),dateBox.getSelectedItem().toString(),"Council");
             messagesModel.removeAllElements();
             for ( int i = 0; i < messageModels.length; i++ ) {
                 messagesModel.addElement(messageModels[i].getSubject());
@@ -367,19 +373,19 @@ public class ControlScreen extends ButtonBar {
                 messagesArea.setText(messageModels[messagesList.getSelectedIndex()].getText());
             }
 
-            dateModel.addElement(DateTimeFormatter.RFC_1123_DATE_TIME.format(gameModel.getCurrentDateTime()));
+            dateModel.addElement(companyResponse.getTime());
             //Then display it to the user.
             doneAllocations = true;
             super.getControllerHandler().getGameController().pauseSimulation();
             topPanel.getComponent(1).setVisible(false);
             tabbedPane.setSelectedIndex(1);
             //Now here we need to update satisfaction bar.
-            timeLabel.setText(DateTimeFormatter.RFC_1123_DATE_TIME.format(gameModel.getCurrentDateTime()));
-            int satValue = (int) Math.round(super.getControllerHandler().getGameController().computeAndReturnPassengerSatisfaction());
-            ScenarioModel scenarioModel = super.getControllerHandler().getScenarioController().getScenario(gameModel.getScenarioName());
+            timeLabel.setText(companyResponse.getTime());
+            int satValue = (int) Math.round(super.getControllerHandler().getGameController().computeAndReturnPassengerSatisfaction(getCompany(), companyResponse.getDifficultyLevel()));
+            ScenarioModel scenarioModel = super.getControllerHandler().getScenarioController().getScenario(companyResponse.getScenarioName());
             if ( satValue < scenarioModel.getMinimumSatisfaction() ) {
                 super.getControllerHandler().getGameController().pauseSimulation();
-                JOptionPane.showMessageDialog(ControlScreen.this, gameModel.getScenarioName() + " have relunctanly decided to relieve you of your duties as managing director as passenger satisfaction is now " + satValue + "%.", "Sorry You Have Been Sacked!", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(ControlScreen.this, companyResponse.getScenarioName() + " have relunctanly decided to relieve you of your duties as managing director as passenger satisfaction is now " + satValue + "%.", "Sorry You Have Been Sacked!", JOptionPane.ERROR_MESSAGE);
                 new WelcomeScreen(super.getControllerHandler());
                 dispose();
             }
@@ -400,7 +406,7 @@ public class ControlScreen extends ButtonBar {
         doneAllocations = false;
 
         //Now get the component and replace it if appropriate.
-        graphicsPanel = generateNewVehiclePanel(gameModel);
+        graphicsPanel = generateNewVehiclePanel(companyResponse);
     }
     
     /**
@@ -559,11 +565,11 @@ public class ControlScreen extends ButtonBar {
     /**
      * Redraw the management panel to be replaced as requested.
      * @param newManagePanel a <code>JPanel</code> containing the new management panel.
-     * @param gameModel a <code>GameModel</code> object representing the game currently being modelled.
+     * @param companyResponse a <code>CompanyResponse</code> object representing the game currently being modelled.
      */
-    public void redrawManagement ( JPanel newManagePanel, final GameModel gameModel ) {
+    public void redrawManagement (JPanel newManagePanel, final CompanyResponse companyResponse) {
         //Disable the live situation tab if appropriate.
-        if ( super.getControllerHandler().getRouteController().getNumberRoutes(gameModel.getCompany()) == 0 ) {
+        if ( super.getControllerHandler().getRouteController().getNumberRoutes(companyResponse.getName()) == 0 ) {
             tabbedPane.setEnabledAt(0, false);
         }
         //Otherwise, re-enable live panel.
@@ -574,7 +580,7 @@ public class ControlScreen extends ButtonBar {
         tabbedPane.setComponentAt(2, newManagePanel);
         dialogPanel.paintImmediately(dialogPanel.getBounds());
         DecimalFormat form = new DecimalFormat("0.00");
-        balanceLabel.setText("Balance: £" + form.format(gameModel.getBalance()));
+        balanceLabel.setText("Balance: £" + form.format(companyResponse.getBalance()));
     }
 
     /**
@@ -588,42 +594,43 @@ public class ControlScreen extends ButtonBar {
     
     /**
      * Generate a new vehicle panel to display the vehicles.
-     * @param gameModel a <code>GameModel</code> object containing the current game information.
+     * @param companyResponse a <code>CompanyResponse</code> object containing the current game information.
      * @return a <code>JPanel</code> object.
      */
-    public JPanel generateNewVehiclePanel ( final GameModel gameModel ) {
+    public JPanel generateNewVehiclePanel ( final CompanyResponse companyResponse ) {
         //Now create panel.
         JPanel allVehicleDisplayPanel = new JPanel(new BorderLayout());
-        allVehicleDisplayPanel.add(makeOptionsPanel(gameModel), BorderLayout.NORTH);
+        allVehicleDisplayPanel.add(makeOptionsPanel(companyResponse), BorderLayout.NORTH);
 
         vehiclesStatusArea = new JTextArea();
         vehiclesStatusArea.setFont(new Font("Arial", Font.BOLD, 15));
 
         allVehicleDisplayPanel.add(vehiclesStatusArea, BorderLayout.CENTER);
-        allVehicleDisplayPanel.add(makeVehicleInfoPanel(gameModel), BorderLayout.SOUTH);
+        allVehicleDisplayPanel.add(makeVehicleInfoPanel(companyResponse), BorderLayout.SOUTH);
         return allVehicleDisplayPanel;
     }
     
     /**
      * Check if the current time is the first past midnight.
-     * @param currentDateTime a <code>LocalDateTime</code> object which represents the current time.
+     * @param currentDateTime a <code>String</code> object which represents the current time.
      * @param timeIncrement a <code>int</code> with the time increment in order to calculate previous time.
      * @return a <code>boolean</code> which is true iff this is the first time past midnight.
      */
-    private boolean isPastMidnight ( final LocalDateTime currentDateTime, final int timeIncrement ) {
-        LocalDateTime previousDateTime = currentDateTime;
+    private boolean isPastMidnight ( final String currentDateTime, final int timeIncrement ) {
+        LocalDateTime myCurrentDateTime = LocalDateTime.parse(currentDateTime, DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"));
+        LocalDateTime previousDateTime = LocalDateTime.parse(currentDateTime, DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"));
         previousDateTime.minusMinutes(timeIncrement);
-        return previousDateTime.getDayOfWeek() != currentDateTime.getDayOfWeek();
+        return previousDateTime.getDayOfWeek() != myCurrentDateTime.getDayOfWeek();
     }
 
     /**
      * Get the previous day by calculating the current day and subtracting the time increment.
-     * @param currentDateTime a <code>LocalDateTime</code> object which represents the current time.
+     * @param currentDateTime a <code>String</code> object which represents the current time.
      * @param timeIncrement a <code>int</code> with the time increment in order to calculate previous time.
      * @return a <code>Calendar</code> with the previous day.
      */
-    private LocalDateTime getPreviousDateTime ( final LocalDateTime currentDateTime, final int timeIncrement ) {
-        LocalDateTime previousDateTime = currentDateTime;
+    private LocalDateTime getPreviousDateTime ( final String currentDateTime, final int timeIncrement ) {
+        LocalDateTime previousDateTime = LocalDateTime.parse(currentDateTime, DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"));
         previousDateTime.minusMinutes(timeIncrement);
         return previousDateTime;
     }
@@ -653,21 +660,21 @@ public class ControlScreen extends ButtonBar {
         }
     }
 
-    public JPanel makeOptionsPanel ( final GameModel gameModel ) {
+    public JPanel makeOptionsPanel ( final CompanyResponse companyResponse ) {
         logger.debug("Calling makeOptions panel....");
         //Construct options panel and add it to the top panel.
         JPanel optionsPanel = new JPanel();
         optionsPanel.setBackground(Color.WHITE);
         optionsPanel.setLayout(new BorderLayout());
         //Construct route listing box!
-        if ( super.getControllerHandler().getRouteController().getNumberRoutes(gameModel.getCompany()) != 0 ) {
-            populateRouteList(super.getControllerHandler().getGameController().getGameModel().getCompany());
+        if ( super.getControllerHandler().getRouteController().getNumberRoutes(companyResponse.getName()) != 0 ) {
+            populateRouteList(companyResponse.getName());
         }
         routeList.addListSelectionListener(new ListSelectionListener() {
             public void valueChanged (ListSelectionEvent ie ) {
                 if ( redrawOnRouteChange ) {
                     ControlScreen.super.getControllerHandler().getGameController().pauseSimulation();
-                    ControlScreen.this.redrawVehicles(generateNewVehiclePanel(gameModel));
+                    ControlScreen.this.redrawVehicles(generateNewVehiclePanel(companyResponse));
                     ControlScreen.super.getControllerHandler().getGameController().resumeSimulation(ControlScreen.this);
                 }
                 //logger.debug("Moving to route " + theRouteList.getSelectedValue().toString().split(":")[0]);
@@ -706,7 +713,7 @@ public class ControlScreen extends ButtonBar {
         return optionsPanel;
     }
 
-    public JPanel makeVehicleInfoPanel ( final GameModel gameModel ) {
+    public JPanel makeVehicleInfoPanel ( final CompanyResponse companyResponse ) {
         //Panel containing vehicle info.
         JPanel vehicleInfoPanel = new JPanel();
         vehicleInfoPanel.setBackground(Color.WHITE);
@@ -716,7 +723,7 @@ public class ControlScreen extends ButtonBar {
         int totalPages;
         final int routeScheduleModelsLength;
         if ( routeList.getModel().getSize() > 0 ) {
-            routeScheduleModelsLength = super.getControllerHandler().getVehicleController().getVehicleModelsForRoute(gameModel.getCompany(), routeList.getSelectedValue().toString()).length;
+            routeScheduleModelsLength = super.getControllerHandler().getVehicleController().getVehicleModelsForRoute(companyResponse.getName(), routeList.getSelectedValue().toString()).length;
             totalPages = (routeScheduleModelsLength/4); if ((routeScheduleModelsLength%4) !=0 || totalPages == 0 ) { totalPages++; }
         }
         else {
@@ -738,7 +745,7 @@ public class ControlScreen extends ButtonBar {
                     minVehicle = 0;
                 }
                 ControlScreen.super.getControllerHandler().getGameController().pauseSimulation();
-                ControlScreen.this.redrawVehicles(generateNewVehiclePanel(gameModel));
+                ControlScreen.this.redrawVehicles(generateNewVehiclePanel(companyResponse));
                 ControlScreen.super.getControllerHandler().getGameController().resumeSimulation(ControlScreen.this);
                 //theInterface.changeDisplay(theRouteList.getSelectedValue().toString(), theMinVehicle, theMaxVehicle, false);
                 //dispose();
@@ -759,7 +766,7 @@ public class ControlScreen extends ButtonBar {
                     maxVehicle = routeScheduleModelsLength;
                 }
                 ControlScreen.super.getControllerHandler().getGameController().pauseSimulation();
-                ControlScreen.this.redrawVehicles(generateNewVehiclePanel(gameModel));
+                ControlScreen.this.redrawVehicles(generateNewVehiclePanel(companyResponse));
                 ControlScreen.super.getControllerHandler().getGameController().resumeSimulation(ControlScreen.this);
                 //theInterface.changeDisplay(theRouteNumber, theMinVehicle, theMaxVehicle, false);
                 //dispose();

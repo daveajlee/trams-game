@@ -16,6 +16,7 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
+import de.davelee.trams.api.response.CompanyResponse;
 import de.davelee.trams.api.response.RouteResponse;
 import de.davelee.trams.controllers.ControllerHandler;
 import de.davelee.trams.model.*;
@@ -36,15 +37,15 @@ public class ViewTimetablePanel {
         this.controllerHandler = controllerHandler;
     }
 	
-	public JPanel createPanel ( final String route, final int min, final int dateIndex, final ControlScreen controlScreen, final RoutePanel routePanel, final DisplayPanel displayPanel ) {
+	public JPanel createPanel ( final String route, final ControlScreen controlScreen, final RoutePanel routePanel, final DisplayPanel displayPanel ) {
         
         //Create screen panel to add things to.
         JPanel routeScreenPanel = new JPanel();
         routeScreenPanel.setLayout( new BoxLayout(routeScreenPanel, BoxLayout.PAGE_AXIS));
         routeScreenPanel.setBackground(Color.WHITE);
      
-        final RouteResponse routeModel = controllerHandler.getRouteController().getRoute(route, controlScreen.getControllerHandler().getGameController().getGameModel().getCompany());
-        final GameModel gameModel = controllerHandler.getGameController().getGameModel();
+        final RouteResponse routeModel = controllerHandler.getRouteController().getRoute(route, controlScreen.getCompany());
+        final CompanyResponse companyResponse = controllerHandler.getGameController().getGameModel(controlScreen.getCompany(), controlScreen.getPlayerName());
             
         //Create an overall screen panel.
         JPanel overallScreenPanel = new JPanel(new BorderLayout());
@@ -64,14 +65,14 @@ public class ViewTimetablePanel {
         routeSelectionLabel.setFont(new Font("Arial", Font.BOLD, 16));
         selectionPanel.add(routeSelectionLabel);
         final DefaultComboBoxModel routeSelectionModel = new DefaultComboBoxModel();
-        RouteResponse[] routeModels = controllerHandler.getRouteController().getRoutes(gameModel.getCompany());
+        RouteResponse[] routeModels = controllerHandler.getRouteController().getRoutes(companyResponse.getName());
         for ( int i = 0; i < routeModels.length; i++ ) {
             routeSelectionModel.addElement(routeModels[i].getRouteNumber());
         }
         final JComboBox routeSelectionBox = new JComboBox(routeSelectionModel);
         routeSelectionBox.addActionListener ( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
-                controlScreen.redrawManagement(createPanel(routeSelectionBox.getSelectedItem().toString(), 0, 0, controlScreen, routePanel, displayPanel), gameModel);
+                controlScreen.redrawManagement(createPanel(routeSelectionBox.getSelectedItem().toString(), controlScreen, routePanel, displayPanel), companyResponse);
             }
         });
         routeSelectionBox.setFont(new Font("Arial", Font.PLAIN, 15));
@@ -91,7 +92,7 @@ public class ViewTimetablePanel {
         stopSelectionBox.addActionListener ( new ActionListener()  {
         public void actionPerformed ( ActionEvent e ) {
             logger.debug("You chose stop " + stopSelectionBox.getSelectedItem().toString());
-            myTable.setModel(createTableModel(routeModel.getRouteNumber(), stopSelectionBox.getSelectedItem().toString(), (Direction) directionSelectionBox.getSelectedItem(), gameModel.getCurrentDateTime().toLocalDate()));
+            myTable.setModel(createTableModel(routeModel.getRouteNumber(), stopSelectionBox.getSelectedItem().toString(), (Direction) directionSelectionBox.getSelectedItem(), companyResponse.getTime()));
             autoResizeColWidth(myTable, (DefaultTableModel) myTable.getModel());
             }
         });
@@ -108,7 +109,7 @@ public class ViewTimetablePanel {
         directionSelectionBox.addActionListener(new ActionListener() {
         public void actionPerformed ( ActionEvent e ) {
             logger.debug("You chose direction " + directionSelectionBox.getSelectedIndex());
-            myTable.setModel(createTableModel(routeModel.getRouteNumber(), stopSelectionBox.getSelectedItem().toString(), (Direction) directionSelectionBox.getSelectedItem(), gameModel.getCurrentDateTime().toLocalDate()));
+            myTable.setModel(createTableModel(routeModel.getRouteNumber(), stopSelectionBox.getSelectedItem().toString(), (Direction) directionSelectionBox.getSelectedItem(), companyResponse.getTime()));
             autoResizeColWidth(myTable, (DefaultTableModel) myTable.getModel());
             }
         });
@@ -118,7 +119,7 @@ public class ViewTimetablePanel {
         //Show valid information.
         JPanel validityPanel = new JPanel(new BorderLayout());
         validityPanel.setBackground(Color.WHITE);
-        StopTimeModel[] stopTimeModels = controllerHandler.getStopTimeController().getStopTimes(Optional.empty(), routeModel.getRouteNumber(), gameModel.getCurrentDateTime().toLocalDate());
+        StopTimeModel[] stopTimeModels = controllerHandler.getStopTimeController().getStopTimes(Optional.empty(), routeModel.getRouteNumber(), companyResponse.getTime());
         JLabel validFromDateLabel = new JLabel("Valid From: " + stopTimeModels[0].getValidFromDate());
         validFromDateLabel.setFont(new Font("Arial", Font.ITALIC, 14));
         validityPanel.add(validFromDateLabel, BorderLayout.NORTH);
@@ -135,7 +136,7 @@ public class ViewTimetablePanel {
         tablePanel.setBackground(Color.WHITE);
 
         //Display it!
-        myTable.setModel(createTableModel(routeModel.getRouteNumber(), stopSelectionBox.getSelectedItem().toString(), Direction.OUTGOING, gameModel.getCurrentDateTime().toLocalDate()));
+        myTable.setModel(createTableModel(routeModel.getRouteNumber(), stopSelectionBox.getSelectedItem().toString(), Direction.OUTGOING, companyResponse.getTime()));
         myTable.setFont(new Font("Arial", Font.PLAIN, 12));
         JScrollPane tableScrollPane = new JScrollPane(autoResizeColWidth(myTable, (DefaultTableModel) myTable.getModel()));
         tablePanel.add(tableScrollPane, BorderLayout.CENTER);
@@ -149,7 +150,7 @@ public class ViewTimetablePanel {
         amendRouteButton.addActionListener(new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
                 //Show the actual screen!
-                controlScreen.redrawManagement(routePanel.createPanel(routeModel, controlScreen, displayPanel), gameModel);
+                controlScreen.redrawManagement(routePanel.createPanel(routeModel, controlScreen, displayPanel), companyResponse);
                 //int confirm = JOptionPane.showConfirmDialog(null, "Are you sure you wish to delete route " + ((Route) theRoutesModel.get(theRoutesList.getSelectedIndex())).getRouteNumber() + "?", "Confirm Delete", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
                 //if ( confirm == JOptionPane.YES_OPTION ) {
                 //    theInterface.deleteRoute(((Route) theRoutesModel.get(theRoutesList.getSelectedIndex())));
@@ -160,7 +161,7 @@ public class ViewTimetablePanel {
         JButton managementScreenButton = new JButton("Back to Management Screen");
         managementScreenButton.addActionListener(new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
-                controlScreen.redrawManagement(displayPanel.createPanel(controlScreen), gameModel);
+                controlScreen.redrawManagement(displayPanel.createPanel(controlScreen), companyResponse);
             }
         });
         otherServicesButtonPanel.add(managementScreenButton);
@@ -173,7 +174,7 @@ public class ViewTimetablePanel {
 
 
 	private DefaultTableModel createTableModel ( final String routeNumber, final String stopName, final Direction direction,
-                                                 final LocalDate date) {
+                                                 final String date) {
         String[] columnNames = new String[] { "", "Monday - Friday", "Saturday", "Sunday" };
         String[][] data = new String[24][4];
         //TODO: Preprocessing necessary?
