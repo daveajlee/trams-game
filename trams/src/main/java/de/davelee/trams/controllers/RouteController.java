@@ -2,30 +2,35 @@ package de.davelee.trams.controllers;
 
 import de.davelee.trams.api.request.AddRouteRequest;
 import de.davelee.trams.api.response.RouteResponse;
+import de.davelee.trams.api.response.RoutesResponse;
 import de.davelee.trams.util.SortedRouteResponses;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import de.davelee.trams.services.RouteService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.Arrays;
 import java.util.List;
 
 @Controller
 public class RouteController {
-	
-	@Autowired
-	private RouteService routeService;
+
+	private final RestTemplate restTemplate = new RestTemplate();
+
+	@Value("${server.operations.url}")
+	private String operationsServerUrl;
 
 	public RouteResponse[] getRoutes (final String company ) {
-		RouteResponse[] routeResponses = routeService.getAllRoutes(company);
-		Arrays.sort(routeResponses, new SortedRouteResponses());
-		return routeResponses;
+		RoutesResponse routesResponse = restTemplate.getForObject(operationsServerUrl + "routes/?company=" + company, RoutesResponse.class);
+		if ( routesResponse != null && routesResponse.getRouteResponses() != null ) {
+			Arrays.sort(routesResponse.getRouteResponses(), new SortedRouteResponses());
+			return routesResponse.getRouteResponses();
+		}
+		return null;
 	}
 
 	public int getNumberRoutes ( final String company ) {
-		RouteResponse[] routeModels = routeService.getAllRoutes(company);
-		return routeModels != null ? routeService.getAllRoutes(company).length : 0;
+		RoutesResponse routesResponse = restTemplate.getForObject(operationsServerUrl + "routes/?company=" + company, RoutesResponse.class);
+		return routesResponse != null ? routesResponse.getCount().intValue() : 0;
 	}
 
 	/**
@@ -34,7 +39,7 @@ public class RouteController {
 	 * @return a <code>RouteResponse</code> object matching the string representation.
 	 */
 	public RouteResponse getRoute ( final String routeNumber, final String company ) {
-		return routeService.getRoute(routeNumber, company);
+		return restTemplate.getForObject(operationsServerUrl + "route/?company=" + company + "&routeNumber=" + routeNumber, RouteResponse.class);
 	}
 
 	/**
@@ -43,10 +48,10 @@ public class RouteController {
 	 * @param stopNames a <code>String</code> list with the stops served by this route.
 	 */
 	public void addNewRoute ( final String routeNumber, final List<String> stopNames, final String company ) {
-		routeService.saveRoute(AddRouteRequest.builder()
+		restTemplate.postForObject(operationsServerUrl + "route/", AddRouteRequest.builder()
 				.company(company)
 				.routeNumber(routeNumber)
-				.build());
+				.build(), Void.class);
 	}
 
 	/**
@@ -54,7 +59,7 @@ public class RouteController {
 	 * @param routeNumber a <code>String</code> with the number for this route.
 	 */
 	public void deleteRoute ( final String company, final String routeNumber ) {
-		routeService.removeRoute(company, routeNumber);
+		restTemplate.delete(operationsServerUrl + "route/?company=" + company + "&routeNumber=" + routeNumber);
 	}
 
 	/**
@@ -75,12 +80,12 @@ public class RouteController {
 	 * @param routeResponses an array of <code>RouteResponse</code> objects with routes to store and delete all other routes.
 	 */
 	public void loadRoutes ( final RouteResponse[] routeResponses, final String company ) {
-		routeService.deleteAllRoutes(company);
+		restTemplate.delete(operationsServerUrl + "routes/?company=" + company);
 		for ( RouteResponse routeResponse : routeResponses ) {
-			routeService.saveRoute(AddRouteRequest.builder()
+			restTemplate.postForObject(operationsServerUrl + "route/", AddRouteRequest.builder()
 					.company(company)
 					.routeNumber(routeResponse.getRouteNumber())
-					.build());
+					.build(), Void.class);
 		}
 	}
 

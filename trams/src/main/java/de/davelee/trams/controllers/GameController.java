@@ -1,25 +1,28 @@
 package de.davelee.trams.controllers;
 
-import java.time.LocalDateTime;
-import java.time.Month;
-import java.time.format.DateTimeFormatter;
-
+import java.time.format.DateTimeParseException;
+import de.davelee.trams.api.request.AddTimeRequest;
+import de.davelee.trams.api.request.AdjustBalanceRequest;
+import de.davelee.trams.api.request.AdjustSatisfactionRequest;
 import de.davelee.trams.api.request.CompanyRequest;
-import de.davelee.trams.api.response.CompanyResponse;
-import de.davelee.trams.api.response.VehicleResponse;
+import de.davelee.trams.api.response.*;
 import de.davelee.trams.gui.ControlScreen;
 import de.davelee.trams.util.DifficultyLevel;
 import de.davelee.trams.util.GameThread;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import de.davelee.trams.services.GameService;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.client.RestTemplate;
 
 @Controller
 public class GameController {
-	
+
 	@Autowired
-	private GameService gameService;
+	private RestTemplate restTemplate;
+
+	@Value("${server.business.url}")
+	private String businessServerUrl;
 
 	@Autowired
 	private VehicleController vehicleController;
@@ -29,19 +32,15 @@ public class GameController {
     private boolean simulationRunning = false;
 
 	/**
-	 * Withdraw the specified amount from the balance of the current game.
-	 * @param amount a <code>double</code> with the amount to withdraw from the balance.
+	 * Withdraw or credit the specified amount from/to the balance of the current game.
+	 * @param amount a <code>double</code> with the amount to withdraw from the balance if negative or credit if positive.
 	 */
-	public void withdrawBalance ( final double amount, final String playerName ) {
-		gameService.withdrawOrCreditBalance(-amount, playerName);
-	}
-
-	/**
-	 * Credit the specified amount to the balance of the current game.
-	 * @param amount a <code>double</code> with the amount to credit to the balance
-	 */
-	public void creditBalance ( final double amount, final String playerName ) {
-		gameService.withdrawOrCreditBalance(amount, playerName);
+	public void withdrawOrCreditBalance ( final double amount, final String company ) {
+		BalanceResponse balanceResponse = restTemplate.patchForObject(businessServerUrl + "company/balance",
+				AdjustBalanceRequest.builder()
+						.company(company)
+						.value(amount).build(),
+				BalanceResponse.class);
 	}
 
 	/**
@@ -52,18 +51,16 @@ public class GameController {
 	 * @return a <code>GameModel</code> representing the new game which was created.
 	 */
 	public CompanyResponse createGameModel ( final String playerName, final String scenarioName, final String company ) {
-		//Create game.
-		LocalDateTime startDateTime = LocalDateTime.of(2017, Month.MARCH,1,4,0);
-		//Save game to db, update cache and return it.
-		gameService.saveGame(CompanyRequest.builder()
+		//Save game to db and return it.
+		restTemplate.postForObject(businessServerUrl + "company/", CompanyRequest.builder()
 				.name(company)
 				.startingBalance(80000.00)
 				.startingTime("01-03-2017 04:00")
 				.playerName(playerName)
 				.difficultyLevel(DifficultyLevel.EASY.name())
 				.scenarioName(scenarioName)
-				.build());
-		return gameService.getGameByPlayerName(company, playerName);
+				.build(), Void.class);
+		return restTemplate.getForObject(businessServerUrl + "company/?name=" + company + "&playerName=" + playerName, CompanyResponse.class);
 	}
 
 	/**
@@ -71,15 +68,15 @@ public class GameController {
 	 * @param companyResponse a <code>CompanyResponse</code> containing the game to load.
 	 */
 	public void loadGameModel ( final CompanyResponse companyResponse ) {
-		//Save game to db and update cache.
-		gameService.saveGame(CompanyRequest.builder()
+		//Save game to db.
+		restTemplate.postForObject(businessServerUrl + "company/", CompanyRequest.builder()
 				.name(companyResponse.getName())
-				.startingBalance(companyResponse.getBalance())
-				.startingTime(companyResponse.getTime())
+				.startingBalance(80000.00)
+				.startingTime("01-03-2017 04:00")
 				.playerName(companyResponse.getPlayerName())
-				.difficultyLevel(companyResponse.getDifficultyLevel())
+				.difficultyLevel(DifficultyLevel.EASY.name())
 				.scenarioName(companyResponse.getScenarioName())
-				.build());
+				.build(), Void.class);
 	}
 
 	/**
@@ -87,7 +84,7 @@ public class GameController {
 	 * @return a <code>CompanyResponse</code> representing the current game being played.
 	 */
 	public CompanyResponse getGameModel (final String company, final String playerName ) {
-		return gameService.getGameByPlayerName(company, playerName);
+		return restTemplate.getForObject(businessServerUrl + "company/?name=" + company + "&playerName=" + playerName, CompanyResponse.class);
 	}
 
 	/**
@@ -128,7 +125,18 @@ public class GameController {
 	 * @return a <code>String</code> with the new time after incrementing it.
 	 */
 	public String incrementTime ( final String company ) {
-		return gameService.incrementTime(company, 15).format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"));
+		//Get data from API.
+		TimeResponse timeResponse = restTemplate.patchForObject(businessServerUrl + "company/time",
+				AddTimeRequest.builder()
+						.company(company)
+						.minutes(15).build(),
+				TimeResponse.class);
+		//Convert time.
+		try {
+			return timeResponse.getTime();
+		} catch ( DateTimeParseException dateTimeParseException ) {
+			return null;
+		}
 	}
 
 	/**
@@ -165,7 +173,35 @@ public class GameController {
 				numLargeLateSchedules++;
 			}
 		}
-		return gameService.computeAndReturnPassengerSatisfaction(company, DifficultyLevel.valueOf(difficultyLevel), numSmallLateSchedules, numMediumLateSchedules, numLargeLateSchedules);
+		int totalSubtract = 0;
+
+		//Easy: numSmallLateSchedules / 2 and numMediumLateSchedules and numLargeLateSchedules*2.
+		DifficultyLevel myDifficultyLevel = DifficultyLevel.valueOf(difficultyLevel);
+		if ( myDifficultyLevel == DifficultyLevel.EASY ) {
+			totalSubtract = (numSmallLateSchedules/2) + numMediumLateSchedules + (numLargeLateSchedules*2);
+		}
+		else if ( myDifficultyLevel == DifficultyLevel.INTERMEDIATE ) {
+			totalSubtract = (numSmallLateSchedules) + (numMediumLateSchedules*2) + (numLargeLateSchedules*3);
+		}
+		else if ( myDifficultyLevel == DifficultyLevel.MEDIUM ) {
+			totalSubtract = (numSmallLateSchedules*2) + (numMediumLateSchedules*3) + (numLargeLateSchedules*4);
+		}
+		else if ( myDifficultyLevel == DifficultyLevel.HARD ) {
+			totalSubtract = (numSmallLateSchedules*3) + (numMediumLateSchedules*4) + (numLargeLateSchedules*5);
+		}
+		//Enable patch method for this rest template.
+		HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
+		requestFactory.setConnectTimeout(5000);
+		requestFactory.setReadTimeout(5000);
+		restTemplate.setRequestFactory(requestFactory);
+
+		//Subtract from passenger satisfaction.
+		SatisfactionRateResponse satisfactionRateResponse = restTemplate.patchForObject(businessServerUrl + "company/satisfaction",
+				AdjustSatisfactionRequest.builder()
+						.company(company)
+						.satisfactionRate(totalSubtract).build(),
+				SatisfactionRateResponse.class);
+		return satisfactionRateResponse.getSatisfactionRate();
 	}
 
 }

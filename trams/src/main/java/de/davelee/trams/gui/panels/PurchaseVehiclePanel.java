@@ -210,7 +210,7 @@ public class PurchaseVehiclePanel {
                 for ( int i = 0; i < quantity; i++ ) {
                     double purchasePrice = controllerHandler.getVehicleController().purchaseVehicle(
                             vehicleResponse.getModelName(), companyResponse.getName(), LocalDate.parse(companyResponse.getTime(), DateTimeFormatter.ofPattern("dd-MM-yyyy")).getYear(), Optional.empty());
-                    controllerHandler.getGameController().withdrawBalance(purchasePrice, controlScreen.getPlayerName());
+                    controllerHandler.getGameController().withdrawOrCreditBalance(purchasePrice, controlScreen.getPlayerName());
                 }
                 controlScreen.redrawManagement(displayPanel.createPanel(controlScreen), companyResponse);
             }

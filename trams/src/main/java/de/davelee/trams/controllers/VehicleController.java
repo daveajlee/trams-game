@@ -1,14 +1,18 @@
 package de.davelee.trams.controllers;
 
+import de.davelee.trams.api.request.AllocateVehicleRequest;
 import de.davelee.trams.api.request.PurchaseVehicleRequest;
+import de.davelee.trams.api.response.PurchaseVehicleResponse;
 import de.davelee.trams.api.response.VehicleResponse;
+import de.davelee.trams.api.response.VehiclesResponse;
 import de.davelee.trams.beans.Scenario;
 import de.davelee.trams.util.DifficultyLevel;
 import de.davelee.trams.util.SortedVehicleResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import de.davelee.trams.services.VehicleService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -17,24 +21,40 @@ import java.util.*;
 
 @Controller
 public class VehicleController {
-	
+
 	@Autowired
-	private VehicleService vehicleService;
+	private RestTemplate restTemplate;
+
+	@Value("${server.operations.url}")
+	private String operationsServerUrl;
 
 	public void assignVehicleToTour ( final String registrationNumber, final String allocatedTour, final String company ) {
-		VehicleResponse vehicleModel = vehicleService.getVehicleByRegistrationNumber(registrationNumber, company);
-		vehicleService.assignVehicleToTour(vehicleModel.getFleetNumber(), allocatedTour, company);
+		VehicleResponse[] vehicleModels = getVehicleModels(company);
+		for ( VehicleResponse vehicleModel : vehicleModels ) {
+			if ( vehicleModel.getAdditionalTypeInformationMap().get("Registration Number").contentEquals(registrationNumber) ) {
+				restTemplate.patchForObject(operationsServerUrl + "vehicle/allocate/",
+						AllocateVehicleRequest.builder()
+								.allocatedTour(allocatedTour)
+								.fleetNumber(vehicleModel.getFleetNumber())
+								.company(company)
+								.build(),
+						Void.class);
+			}
+		}
 	}
 
 	public VehicleResponse[] getAllCreatedVehicles (final String company ) {
-		VehicleResponse[] vehicleModels = vehicleService.getVehicleModels(company);
-		Arrays.sort(vehicleModels, new SortedVehicleResponses());
-		return vehicleModels;
+		VehiclesResponse vehiclesResponse = restTemplate.getForObject(operationsServerUrl + "vehicles/?company=" + company, VehiclesResponse.class);
+		if ( vehiclesResponse != null && vehiclesResponse.getVehicleResponses() != null ) {
+			Arrays.sort(vehiclesResponse.getVehicleResponses(), new SortedVehicleResponses());
+			return vehiclesResponse.getVehicleResponses();
+		}
+		return null;
 	}
 
 	public boolean hasVehicleBeenDelivered (final String deliveryDate, final String currentDate ) {
-		return vehicleService.hasBeenDelivered(LocalDate.parse(deliveryDate, DateTimeFormatter.ofPattern("dd-MM-yyyy")),
-				LocalDate.parse(currentDate, DateTimeFormatter.ofPattern("dd-MM-yyyy")));
+		return LocalDate.parse(currentDate, DateTimeFormatter.ofPattern("dd-MM-yyyy")).isAfter(LocalDate.parse(deliveryDate, DateTimeFormatter.ofPattern("dd-MM-yyyy")))
+				|| LocalDate.parse(currentDate, DateTimeFormatter.ofPattern("dd-MM-yyyy")).isEqual(LocalDate.parse(deliveryDate, DateTimeFormatter.ofPattern("dd-MM-yyyy")));
 	}
 
 	/**
@@ -56,12 +76,22 @@ public class VehicleController {
 	 * @return a <code>VehicleModel</code> object.
 	 */
 	public VehicleResponse getVehicleByRegistrationNumber ( final String registrationNumber, final String company ) {
-		return vehicleService.getVehicleByRegistrationNumber(registrationNumber, company);
+		VehicleResponse[] vehicleModels = getVehicleModels(company);
+		for ( VehicleResponse vehicleModel : vehicleModels ) {
+			if ( vehicleModel.getAdditionalTypeInformationMap().get("Registration Number").contentEquals(registrationNumber) ) {
+				return vehicleModel;
+			}
+		}
+		return null;
 	}
 
 	public int getAge (final String deliveryDate, final String currentDate ) {
-		return vehicleService.getAge(LocalDate.parse(deliveryDate, DateTimeFormatter.ofPattern("dd-MM-yyyy")),
-				LocalDate.parse(currentDate, DateTimeFormatter.ofPattern("dd-MM-yyyy")));
+		LocalDate myCurrentDate = LocalDate.parse(currentDate, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+		LocalDate myDeliveryDate = LocalDate.parse(deliveryDate, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+		if ( myCurrentDate.isBefore(myDeliveryDate) ) return -1;
+		int yearDiff = Math.abs(myCurrentDate.getYear() - myDeliveryDate.getYear());
+		int monthDiff = Math.abs(myCurrentDate.getMonthValue() - myDeliveryDate.getMonthValue());
+		return (yearDiff * 12) + monthDiff;
 	}
 
 	public double getValue ( final VehicleResponse vehicleModel, final String currentDate ) {
@@ -75,7 +105,7 @@ public class VehicleController {
 	 * @param vehicleResponse a <code>VehicleResponse</code> object representing the vehicle to sell.
 	 */
 	public double sellVehicle ( final VehicleResponse vehicleResponse, final String currentDate ) {
-		vehicleService.removeVehicle(vehicleResponse.getCompany(), vehicleResponse.getFleetNumber());
+		restTemplate.delete(operationsServerUrl + "vehicle/?company=" + vehicleResponse.getCompany() + "&fleetNumber=" + vehicleResponse.getFleetNumber());
 		return getValue(vehicleResponse, currentDate);
 	}
 
@@ -88,21 +118,25 @@ public class VehicleController {
 	public double purchaseVehicle ( final String type, final String company, final int year, final Optional<Integer> fleetNumber) {
 		Random random = new Random();
 		int fleetNum = fleetNumber.isPresent() ? fleetNumber.get() : random.nextInt();
-		return vehicleService.saveVehicle(PurchaseVehicleRequest.builder()
+		PurchaseVehicleResponse purchaseVehicleResponse = restTemplate.postForObject(operationsServerUrl + "vehicle/", PurchaseVehicleRequest.builder()
 				.company(company)
 				.fleetNumber("" + fleetNum)
 				.livery("Green with Red text")
 				.vehicleType("BUS")
 				.modelName(type)
-				.additionalTypeInformationMap(Map.of("Registration Number", vehicleService.generateRandomReg(
+				.additionalTypeInformationMap(Map.of("Registration Number", generateRandomReg(
 						year, company)))
 				.seatingCapacity(50)
 				.standingCapacity(95)
-				.build());
+				.build(), PurchaseVehicleResponse.class);
+		if ( purchaseVehicleResponse != null && purchaseVehicleResponse.isPurchased() ) {
+			return purchaseVehicleResponse.getPurchasePrice();
+		}
+		return 0.0;
 	}
 
 	public VehicleResponse getVehicleByAllocatedTour ( final String allocatedTour, final String company ) {
-		return vehicleService.getVehicleByAllocatedTour(allocatedTour, company);
+		return restTemplate.getForObject(operationsServerUrl + "vehicle/allocate/?company=" + company + "&allocatedTour=" + allocatedTour, VehicleResponse.class);
 	}
 
 	public int createSuppliedVehicles(final Scenario scenario, final String currentDate, final String company) {
@@ -120,7 +154,11 @@ public class VehicleController {
 	}
 
 	public VehicleResponse[] getVehicleModels ( final String company ) {
-		return vehicleService.getVehicleModels(company);
+		VehiclesResponse vehiclesResponse = restTemplate.getForObject(operationsServerUrl + "vehicles/?company=" + company, VehiclesResponse.class);
+		if ( vehiclesResponse != null && vehiclesResponse.getVehicleResponses() != null ) {
+			return vehiclesResponse.getVehicleResponses();
+		}
+		return null;
 	}
 
 	public VehicleResponse[] getVehicleModelsForRoute ( final String company, final String routeNumber ) {
@@ -148,23 +186,46 @@ public class VehicleController {
 	}
 
 	public List<String> getAllocations ( final String company ) {
-		return vehicleService.getAllocations(company);
+		//Allocations list.
+		ArrayList<String> allocations = new ArrayList<>();
+		//Now go through and add their allocation if they already have an allocation.
+		VehicleResponse[] vehicleModels = getVehicleModels(company);
+		for ( VehicleResponse vehicleModel : vehicleModels ) {
+			if ( vehicleModel.getAllocatedTour() != null ) {
+				allocations.add(vehicleModel.getAllocatedTour() + " & " + vehicleModel.getAdditionalTypeInformationMap().get("Registration Number"));
+			}
+		}
+		//Return allocations list.
+		return allocations;
 	}
 
 	public String getFirstVehicleModel ( final String company ) {
-		return vehicleService.getFirstVehicleModel(company);
+		return getVehicleModels(company)[0].getModelName();
 	}
 
 	public String getLastVehicleModel ( final String company ) {
-		return vehicleService.getLastVehicleModel(company);
+		VehicleResponse[] vehicleModels = getVehicleModels(company);
+		return vehicleModels[vehicleModels.length-1].getModelName();
 	}
 
 	public String getPreviousVehicleModel ( final String model, final String company ) {
-		return vehicleService.getPreviousVehicleModel(model, company);
+		VehicleResponse[] vehicleModels = getVehicleModels(company);
+		for ( int i = 0; i < vehicleModels.length; i++ ) {
+			if ( vehicleModels[i].getModelName().contentEquals(model) ) {
+				return vehicleModels[i-1].getModelName();
+			}
+		}
+		return "";
 	}
 
 	public String getNextVehicleModel ( final String model, final String company) {
-		return vehicleService.getNextVehicleModel(model, company);
+		VehicleResponse[] vehicleModels = getVehicleModels(company);
+		for ( int i = 0; i < vehicleModels.length; i++ ) {
+			if ( vehicleModels[i].getModelName().contentEquals(model) ) {
+				return vehicleModels[i+1].getModelName();
+			}
+		}
+		return "";
 	}
 
 	/**
@@ -172,10 +233,45 @@ public class VehicleController {
 	 * @param vehicleModels an array of <code>VehicleModel</code> objects with vehicles to store and delete all other vehicles.
 	 */
 	public void loadVehicles ( final VehicleResponse[] vehicleModels, final String company, final LocalDate currentDate ) {
-		vehicleService.deleteAllVehicles(company);
+		restTemplate.delete(operationsServerUrl + "vehicles/?company=" + company);
 		for ( VehicleResponse vehicleModel : vehicleModels ) {
 			purchaseVehicle(vehicleModel.getModelName(), vehicleModel.getCompany(), currentDate.getYear(), Optional.of(Integer.parseInt(vehicleModel.getFleetNumber())));
 		}
+	}
+
+	/**
+	 * Helper method to generate random vehicle registration.
+	 * @param year a <code>String</code> with the current simulation year.
+	 * @param company a <code>String</code> with the name of the company.
+	 * @return a <code>String</code> with the generated vehicle registration.
+	 */
+	public String generateRandomReg ( final int year, final String company ) {
+		//Generate random registration - in form 2 digit year - then 5 random letters.
+		String alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+		//This is our loop - till we get unique reg.
+		boolean isUniqueReg = true;
+		String randomReg = "" + year + "-";
+		do {
+			//Here is random reg.
+			Random r = new Random();
+			for ( int i = 0; i < 5; i++ ) {
+				randomReg += alphabet.charAt(r.nextInt(alphabet.length()));
+			}
+			//Now check that random reg not been generated before.
+			VehicleResponse[] vehicleModels = getVehicleModels(company);
+			if ( vehicleModels != null ) {
+				for ( VehicleResponse vehicleModel : vehicleModels ) {
+					if ( vehicleModel.getAdditionalTypeInformationMap().get("Registration Number").equalsIgnoreCase(randomReg) ) {
+						isUniqueReg = false;
+						break;
+					}
+				}
+			}
+			if ( !isUniqueReg ) {
+				randomReg = "" + year + "-";
+			}
+		} while ( !isUniqueReg );
+		return randomReg;
 	}
 
 }

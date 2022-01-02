@@ -89,7 +89,7 @@ public class ViewTimetablePanel {
         stopSelectionBox.addActionListener ( new ActionListener()  {
         public void actionPerformed ( ActionEvent e ) {
             logger.debug("You chose stop " + stopSelectionBox.getSelectedItem().toString());
-            myTable.setModel(createTableModel(routeModel.getRouteNumber(), stopSelectionBox.getSelectedItem().toString(), (Direction) directionSelectionBox.getSelectedItem(), companyResponse.getTime()));
+            myTable.setModel(createTableModel(routeModel.getRouteNumber(), stopSelectionBox.getSelectedItem().toString(), (Direction) directionSelectionBox.getSelectedItem(), companyResponse.getTime(), companyResponse.getName()));
             autoResizeColWidth(myTable, (DefaultTableModel) myTable.getModel());
             }
         });
@@ -106,7 +106,7 @@ public class ViewTimetablePanel {
         directionSelectionBox.addActionListener(new ActionListener() {
         public void actionPerformed ( ActionEvent e ) {
             logger.debug("You chose direction " + directionSelectionBox.getSelectedIndex());
-            myTable.setModel(createTableModel(routeModel.getRouteNumber(), stopSelectionBox.getSelectedItem().toString(), (Direction) directionSelectionBox.getSelectedItem(), companyResponse.getTime()));
+            myTable.setModel(createTableModel(routeModel.getRouteNumber(), stopSelectionBox.getSelectedItem().toString(), (Direction) directionSelectionBox.getSelectedItem(), companyResponse.getTime(), companyResponse.getName()));
             autoResizeColWidth(myTable, (DefaultTableModel) myTable.getModel());
             }
         });
@@ -116,7 +116,7 @@ public class ViewTimetablePanel {
         //Show valid information.
         JPanel validityPanel = new JPanel(new BorderLayout());
         validityPanel.setBackground(Color.WHITE);
-        StopTimeResponse[] stopTimeModels = controllerHandler.getStopTimeController().getStopTimes(Optional.empty(), routeModel.getRouteNumber(), companyResponse.getTime());
+        StopTimeResponse[] stopTimeModels = controllerHandler.getStopTimeController().getStopTimes(Optional.empty(), routeModel.getRouteNumber(), companyResponse.getTime(), companyResponse.getName());
         JLabel validFromDateLabel = new JLabel("Valid From: " + stopTimeModels[0].getValidFromDate());
         validFromDateLabel.setFont(new Font("Arial", Font.ITALIC, 14));
         validityPanel.add(validFromDateLabel, BorderLayout.NORTH);
@@ -133,7 +133,7 @@ public class ViewTimetablePanel {
         tablePanel.setBackground(Color.WHITE);
 
         //Display it!
-        myTable.setModel(createTableModel(routeModel.getRouteNumber(), stopSelectionBox.getSelectedItem().toString(), Direction.OUTGOING, companyResponse.getTime()));
+        myTable.setModel(createTableModel(routeModel.getRouteNumber(), stopSelectionBox.getSelectedItem().toString(), Direction.OUTGOING, companyResponse.getTime(), companyResponse.getName()));
         myTable.setFont(new Font("Arial", Font.PLAIN, 12));
         JScrollPane tableScrollPane = new JScrollPane(autoResizeColWidth(myTable, (DefaultTableModel) myTable.getModel()));
         tablePanel.add(tableScrollPane, BorderLayout.CENTER);
@@ -171,12 +171,12 @@ public class ViewTimetablePanel {
 
 
 	private DefaultTableModel createTableModel ( final String routeNumber, final String stopName, final Direction direction,
-                                                 final String date) {
+                                                 final String date, final String company) {
         String[] columnNames = new String[] { "", "Monday - Friday", "Saturday", "Sunday" };
         String[][] data = new String[24][4];
         //TODO: Preprocessing necessary?
         //TODO: Add multiple route schedules.
-        StopTimeResponse[] stopTimeModels = controllerHandler.getStopTimeController().getStopTimes(Optional.of(direction), routeNumber, date);
+        StopTimeResponse[] stopTimeModels = controllerHandler.getStopTimeController().getStopTimes(Optional.of(direction), routeNumber, date, company );
         for ( int i = 0; i < stopTimeModels.length; i++ ) {
             try {
                 String[] timeSplit = stopTimeModels[i].getDepartureTime().split(":");

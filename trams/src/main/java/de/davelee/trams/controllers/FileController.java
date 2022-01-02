@@ -1,13 +1,16 @@
 package de.davelee.trams.controllers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import de.davelee.trams.api.response.CompanyResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import de.davelee.trams.beans.TramsFile;
-import de.davelee.trams.services.FileService;
 import org.springframework.stereotype.Controller;
 
-import java.io.File;
+import java.io.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
@@ -15,16 +18,10 @@ import java.time.format.DateTimeFormatter;
 public class FileController {
 	
 	@Autowired
-	private FileService fileService;
-	
-	@Autowired
 	private DriverController driverController;
 	
 	@Autowired
 	private GameController gameController;
-	
-	@Autowired
-	private StopController journeyController;
 	
 	@Autowired
 	private MessageController messageController;
@@ -34,6 +31,8 @@ public class FileController {
 	
 	@Autowired
 	private VehicleController vehicleController;
+
+	private static final Logger logger = LoggerFactory.getLogger(FileController.class);
 	
 	/**
      * Load file.
@@ -41,13 +40,24 @@ public class FileController {
      * @return a <code>boolean</code> which is true iff the file was loaded successfully.
      */
     public CompanyResponse loadFile ( final File selectedFile ) {
-        TramsFile myFile = fileService.loadFile(selectedFile);
-        if ( myFile != null ) {
-            reloadDatabaseWithFile(myFile);
-            gameController.pauseSimulation();
-            return myFile.getGameModel()[0];
-        }
-        return null;
+		//Define json importer.
+		final ObjectMapper mapper = new ObjectMapper();
+		mapper.registerModule(new JavaTimeModule());
+		try {
+			BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(selectedFile.getAbsolutePath())));
+			StringBuilder out = new StringBuilder();
+			String line;
+			while ((line = reader.readLine()) != null) {
+				out.append(line);   // add everything to StringBuilder
+			}
+			TramsFile myFile = mapper.readValue(out.toString(), TramsFile.class);
+			reloadDatabaseWithFile(myFile);
+			gameController.pauseSimulation();
+			return myFile.getGameModel()[0];
+		} catch ( Exception exception ) {
+			logger.error("exception whilst loading file", exception);
+			return null;
+		}
     }
     
     public void reloadDatabaseWithFile ( TramsFile myFile ) {
@@ -80,7 +90,22 @@ public class FileController {
      * @return a <code>boolean</code> which is true iff the file was saved successfully.
      */
     public boolean saveFile ( final File selectedFile ) {
-        return fileService.saveFile(selectedFile, prepareTramsFile());
+		//Output json.
+		try {
+			if ( selectedFile.exists() ) {
+				selectedFile.delete();
+			}
+			if ( selectedFile.createNewFile() ) {
+				final ObjectMapper mapper = new ObjectMapper();
+				mapper.registerModule(new JavaTimeModule());
+				mapper.writeValue(selectedFile, prepareTramsFile());
+				return true;
+			}
+			return false;
+		} catch ( IOException ioException) {
+			logger.error("Failure converting to json: " + ioException);
+			return false;
+		}
     }
     
     public TramsFile prepareTramsFile ( ) {

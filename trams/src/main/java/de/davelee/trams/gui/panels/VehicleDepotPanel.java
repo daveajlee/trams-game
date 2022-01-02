@@ -176,7 +176,7 @@ public class VehicleDepotPanel {
         sellVehicleButton.addActionListener ( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
                 double sellingPrice = controllerHandler.getVehicleController().sellVehicle(vehicleModel, companyResponse.getTime());
-                controllerHandler.getGameController().creditBalance(sellingPrice, controlScreen.getPlayerName());
+                controllerHandler.getGameController().withdrawOrCreditBalance(sellingPrice, controlScreen.getPlayerName());
                 controlScreen.redrawManagement(createPanel("", controlScreen, displayPanel), companyResponse);
             }
         });
