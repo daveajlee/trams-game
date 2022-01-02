@@ -40,7 +40,7 @@ public class DriverControllerTest {
                         .name("Mustermann GmbH")
                         .balance(8000.0)
                 .build()));
-        driverController.employDriver("Max Mustermann", "Mustermann GmbH", "01-01-2020", "Dave Lee");
+        driverController.employDriver("Max Mustermann", "Mustermann GmbH", "01-01-2020");
         Mockito.when(restTemplate.getForObject(anyString(), eq(UsersResponse.class))).thenReturn(
                 UsersResponse.builder()
                         .count(1L)
@@ -59,7 +59,7 @@ public class DriverControllerTest {
                 .time("01-01-2020")
                 .build()));
         LocalDate startDate = LocalDate.of(2013,4,20);
-        driverController.employDriver("Micha Mustermann", "Mustermann GmbH", "20-04-2013", "Dave Lee");
+        driverController.employDriver("Micha Mustermann", "Mustermann GmbH", "20-04-2013");
         assertTrue(driverController.hasSomeDriversBeenEmployed(CompanyResponse.builder()
                 .playerName("Dave Lee")
                 .name("Mustermann GmbH")
@@ -71,7 +71,7 @@ public class DriverControllerTest {
     @Test
     public void testCreateDriver() {
         Mockito.when(restTemplate.postForObject(anyString(), any(), eq(Void.class))).thenReturn(null);
-        driverController.employDriver("Max Mustermann", "Mustermann GmbH", "20-04-2014", "Dave Lee");
+        driverController.employDriver("Max Mustermann", "Mustermann GmbH", "20-04-2014");
         Mockito.when(restTemplate.getForObject(anyString(), eq(UserResponse.class))).thenReturn(
                 UserResponse.builder()
                         .firstName("Max")
@@ -90,9 +90,9 @@ public class DriverControllerTest {
     public void testGetDriverByName ( ) {
         //Treble needed so that test works in both Maven and JUnit.
         Mockito.when(restTemplate.postForObject(anyString(), any(), eq(Void.class))).thenReturn(null);
-        driverController.employDriver("Dave Lee", "Mustermann GmbH", "20-04-2014", "Dave Lee");
-        driverController.employDriver("Brian Lee", "Mustermann GmbH", "20-04-2014", "Dave Lee");
-        driverController.employDriver("Chris Lee", "Mustermann GmbH", "20-04-2014", "Dave Lee");
+        driverController.employDriver("Dave Lee", "Mustermann GmbH", "20-04-2014");
+        driverController.employDriver("Brian Lee", "Mustermann GmbH", "20-04-2014");
+        driverController.employDriver("Chris Lee", "Mustermann GmbH", "20-04-2014");
         Mockito.when(restTemplate.getForObject(anyString(), eq(UserResponse.class))).thenReturn(
                 UserResponse.builder()
                         .firstName("Brian")
