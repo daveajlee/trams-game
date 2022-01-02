@@ -7,6 +7,7 @@ import java.util.Map;
 
 import de.davelee.trams.TramsGameApplication;
 import de.davelee.trams.api.request.*;
+import de.davelee.trams.controllers.DriverController;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -22,9 +23,9 @@ import de.davelee.trams.util.MessageFolder;
 @SpringBootTest(classes= TramsGameApplication.class)
 @Disabled
 public class FileServiceTest {
-	
+
 	@Autowired
-	private DriverService driverService;
+	private DriverController driverController;
 	
 	@Autowired
 	private RouteService routeService;
@@ -47,10 +48,7 @@ public class FileServiceTest {
 	@Test
 	public void testSaveFile ( ) {
 		//Now create and save file.
-		driverService.saveDriver(UserRequest.builder()
-				.firstName("Chris")
-				.surname("Lee")
-				.startDate("20-04-2014").build());
+		driverController.employDriver("Chris Lee", "Mustermann GmbH", "20-04-2014", "Dave Lee");
 		vehicleService.saveVehicle(PurchaseVehicleRequest.builder()
 				.company("Mustermann GmbH")
 				.fleetNumber("101")
@@ -79,7 +77,7 @@ public class FileServiceTest {
 				.build());
 		
 		TramsFile tramsFile = TramsFile.builder()
-				.driverModels(driverService.getAllDrivers("Mustermann GmbH", "mmustermann-ghgkg"))
+				.driverModels(driverController.getAllDrivers("Mustermann GmbH"))
 				.messageModels(messageService.getAllMessages("Mustermann GmbH"))
 				.routeModels(routeService.getAllRoutes("Mustermann GmbH"))
 				.stops(journeyService.getAllStops("Mustermann GmbH"))
@@ -98,7 +96,6 @@ public class FileServiceTest {
 
 	private void deleteTemporaryContent ( ) {
 		//Delete temporary content.
-		driverService.removeAllDrivers("Mustermann GmbH", "mmustermann-ghgkg");
 		routeService.deleteAllRoutes("Mustermann GmbH");
 		messageService.deleteAllMessages("Mustermann GmbH");
 		vehicleService.deleteAllVehicles("Mustermann GmbH");

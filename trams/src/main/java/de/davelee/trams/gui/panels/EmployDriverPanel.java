@@ -97,6 +97,8 @@ public class EmployDriverPanel {
         employDriverButton.addActionListener( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
                 controllerHandler.getDriverController().employDriver(driverNameField.getText(), companyResponse.getName(), startField.getText(), companyResponse.getPlayerName());
+                //TODO: Employing drivers should cost money.
+                controllerHandler.getGameController().withdrawBalance(0, companyResponse.getPlayerName());
                 controlScreen.redrawManagement(displayPanel.createPanel(controlScreen), companyResponse);
             }
         });

@@ -284,7 +284,7 @@ public class DisplayPanel {
         JPanel viewDriversButtonPanel = new JPanel(new GridBagLayout());
         viewDriversButtonPanel.setBackground(Color.WHITE);
         final JButton viewDriversButton = new JButton("View Drivers");
-        if ( !controllerHandler.getDriverController().hasSomeDriversBeenEmployed(company, companyResponse.getPlayerName()) ) { viewDriversButton.setEnabled(false); }
+        if ( !controllerHandler.getDriverController().hasSomeDriversBeenEmployed(companyResponse) ) { viewDriversButton.setEnabled(false); }
         viewDriversButton.addActionListener( new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 //Show the actual screen!

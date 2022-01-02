@@ -3,13 +3,16 @@ package de.davelee.trams.controllers;
 import de.davelee.trams.api.request.UserRequest;
 import de.davelee.trams.api.response.CompanyResponse;
 import de.davelee.trams.api.response.UserResponse;
+import de.davelee.trams.api.response.UsersResponse;
 import de.davelee.trams.beans.Scenario;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import de.davelee.trams.services.DriverService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -18,27 +21,34 @@ import java.time.format.DateTimeFormatter;
 @Getter
 @Setter
 public class DriverController {
-	
-	@Autowired
-	private DriverService driverService;
 
-	@Autowired
-	private GameController gameController;
+    @Autowired
+    private RestTemplate restTemplate;
+
+    @Value("${server.personalman.url}")
+    private String personalManServerUrl;
 
     private String token;
 
     public UserResponse[] getAllDrivers (final String company) {
-		return driverService.getAllDrivers(company, token);
-	}
+        try {
+            UsersResponse usersResponse = restTemplate.getForObject(personalManServerUrl + "user/?company=" + company + "&username=mmustermann&token=" + token, UsersResponse.class);
+            if (usersResponse != null && usersResponse.getUserResponses() != null) {
+                return usersResponse.getUserResponses();
+            }
+            return null;
+        } catch ( HttpClientErrorException exception ) {
+            //If forbidden then return null.
+            return null;
+        }
+    }
 	
 	/**
      * Employ a new driver.
      * @param name a <code>String</code> with name.
      */
     public void employDriver ( final String name, final String company, final String startDate, final String playerName ) {
-    	//TODO: Employing drivers should cost money.
-        gameController.withdrawBalance(0, playerName);
-        driverService.saveDriver(UserRequest.builder()
+        restTemplate.postForObject(personalManServerUrl + "user/", UserRequest.builder()
                 .dateOfBirth("01-01-1990")
                 .firstName(name.split(" ")[0])
                 .surname(name.split(" ")[1])
@@ -50,12 +60,12 @@ public class DriverController {
                 .username(name.split(" ")[0].substring(0,1) + name.split(" ")[1])
                 .workingDays("Monday,Tuesday")
                 .startDate(startDate)
-                .build());
+                .build(), Void.class);
     }
 
     public void createSuppliedDrivers(final Scenario scenario, final String startDate, final String company ) {
         for ( String suppliedDriver : scenario.getSuppliedDrivers()) {
-            driverService.saveDriver(UserRequest.builder()
+            restTemplate.postForObject(personalManServerUrl + "user/", UserRequest.builder()
                     .dateOfBirth("01-01-1990")
                     .firstName(suppliedDriver.split(" ")[0])
                     .surname(suppliedDriver.split(" ")[1])
@@ -67,7 +77,7 @@ public class DriverController {
                     .username(suppliedDriver.split(" ")[0].substring(0,1) + suppliedDriver.split(" ")[1])
                     .workingDays("Monday,Tuesday")
                     .startDate(startDate)
-                    .build());
+                    .build(), Void.class);
         }
     }
 
@@ -76,9 +86,9 @@ public class DriverController {
      * @param driverModels a <code>DriverModel</code> array containing the drivers to load.
      */
     public void loadDrivers ( final UserResponse[] driverModels, final String company ) {
-        driverService.removeAllDrivers(company, token);
+        restTemplate.delete(personalManServerUrl + "api/company/?name=" + company + "&token=" + token);
         for ( UserResponse driverModel : driverModels ) {
-            driverService.saveDriver(UserRequest.builder()
+            restTemplate.postForObject(personalManServerUrl + "user/", UserRequest.builder()
                     .dateOfBirth("01-01-1990")
                     .firstName(driverModel.getFirstName())
                     .surname(driverModel.getSurname())
@@ -90,25 +100,23 @@ public class DriverController {
                     .username(driverModel.getUsername())
                     .workingDays("Monday,Tuesday")
                     .startDate(driverModel.getStartDate())
-                    .build());
+                    .build(), Void.class);
         }
-    }
-    
-    public int getNumberDrivers ( final String company ) {
-        return driverService.getAllDrivers(company, token).length;
     }
 
     /**
      * This method checks if any employees have started working for the company!
      * @return a <code>boolean</code> which is true iff some drivers have started working.
      */
-    public boolean hasSomeDriversBeenEmployed ( final String company, final String playerName ) {
-        UserResponse[] driverModels = driverService.getAllDrivers(company, token);
+    public boolean hasSomeDriversBeenEmployed ( final CompanyResponse companyResponse ) {
+        UserResponse[] driverModels = getAllDrivers(companyResponse.getName());
+        System.out.println("Attempted to get responses");
         if (driverModels != null && driverModels.length > 0) {
-            CompanyResponse companyResponse = gameController.getGameModel(company, playerName);
+            System.out.println("I have responses...");
             for (int i = 0; i < driverModels.length; i++) {
-                if (driverService.hasStartedWork(LocalDate.parse(driverModels[i].getStartDate(), DateTimeFormatter.ofPattern("dd-MM-yyyy")),
-                        LocalDate.parse(companyResponse.getTime(), DateTimeFormatter.ofPattern("dd-MM-yyyy")))) {
+                LocalDate currentDate = LocalDate.parse(companyResponse.getTime(), DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+                LocalDate startDate = LocalDate.parse(driverModels[i].getStartDate(), DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+                if ( currentDate.isAfter(startDate) || currentDate.isEqual(startDate) ) {
                     return true;
                 }
             }
@@ -123,7 +131,7 @@ public class DriverController {
      * @return a <code>UserResponse</code> object.
      */
     public UserResponse getDriverByName (final String name, final String company ) {
-        return driverService.getDriverByName(name, company, token);
+        return restTemplate.getForObject(personalManServerUrl + "user/?company=" + company + "&username=" + name + "&token=" + token, UserResponse.class);
     }
 
     /**
@@ -131,7 +139,7 @@ public class DriverController {
      * @param company a <code>String</code> wi.
      */
     public void sackDriver ( final String company, final String username ) {
-        driverService.removeDriver(company, username, token);
+        restTemplate.delete(personalManServerUrl + "user/?company=" + company + "&username=" + username + "&token=" + token);
     }
 
 }
