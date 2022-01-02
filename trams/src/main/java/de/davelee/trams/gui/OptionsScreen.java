@@ -22,6 +22,8 @@ public class OptionsScreen extends JFrame {
     /**
      * Create a new options screen.
      * @param controllerHandler a <code>ControllerHandler</code> object containing the actual controllers from spring.
+     * @param company a <code>String</code> with the company being played.
+     * @param playerName a <code>String</code> with the name of the player currently playing the game.
      */
     public OptionsScreen ( final ControllerHandler controllerHandler, final String company, final String playerName ) {
         

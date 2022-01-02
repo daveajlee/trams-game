@@ -34,6 +34,7 @@ public class GameController {
 	/**
 	 * Withdraw or credit the specified amount from/to the balance of the current game.
 	 * @param amount a <code>double</code> with the amount to withdraw from the balance if negative or credit if positive.
+	 * @param company a <code>String</code> with the name of the company.
 	 */
 	public void withdrawOrCreditBalance ( final double amount, final String company ) {
 		BalanceResponse balanceResponse = restTemplate.patchForObject(businessServerUrl + "company/balance",
@@ -81,6 +82,8 @@ public class GameController {
 
 	/**
 	 * This method returns the current game model from the cache.
+	 * @param company a <code>String</code> with the name of the company.
+	 * @param playerName a <code>String</code> with the player name for this game.
 	 * @return a <code>CompanyResponse</code> representing the current game being played.
 	 */
 	public CompanyResponse getGameModel (final String company, final String playerName ) {
@@ -122,6 +125,7 @@ public class GameController {
 
 	/**
 	 * Increment the time for the currently running simulation.
+	 * @param company a <code>String</code> with the name of the company.
 	 * @return a <code>String</code> with the new time after incrementing it.
 	 */
 	public String incrementTime ( final String company ) {
@@ -152,6 +156,8 @@ public class GameController {
 
 	/**
 	 * Compute and return the passenger satisfaction for the current game.
+	 * @param company a <code>String</code> with the name of the company.
+	 * @param difficultyLevel a <code>String</code> with the difficulty level to use for calculation e.g. EASY, MEDIUM, HARD.
 	 * @return a <code>int</code> with the current level of passenger satisfaction between 0 and 100.
 	 */
 	public double computeAndReturnPassengerSatisfaction ( final String company, final String difficultyLevel ) {

@@ -36,6 +36,7 @@ public class RouteController {
 	/**
 	 * Get the route based on comparing the toString method with the supplied text.
 	 * @param routeNumber a <code>String</code> with the string representation of the route.
+	 * @param company a <code>String</code> with the name of the company to return route for.
 	 * @return a <code>RouteResponse</code> object matching the string representation.
 	 */
 	public RouteResponse getRoute ( final String routeNumber, final String company ) {
@@ -46,6 +47,7 @@ public class RouteController {
 	 * Add a new route.
 	 * @param routeNumber a <code>String</code> with the number for this route.
 	 * @param stopNames a <code>String</code> list with the stops served by this route.
+	 * @param company a <code>String</code> with the name of the company to create route for.
 	 */
 	public void addNewRoute ( final String routeNumber, final List<String> stopNames, final String company ) {
 		restTemplate.postForObject(operationsServerUrl + "route/", AddRouteRequest.builder()
@@ -56,6 +58,7 @@ public class RouteController {
 
 	/**
 	 * Delete route.
+	 * @param company a <code>String</code> with the name of the company.
 	 * @param routeNumber a <code>String</code> with the number for this route.
 	 */
 	public void deleteRoute ( final String company, final String routeNumber ) {
@@ -64,7 +67,7 @@ public class RouteController {
 
 	/**
 	 * Edit route - replace the two routes.
-	 * @param company a <code>String</code> with the name of the company running .
+	 * @param company a <code>String</code> with the name of the company.
 	 * @param routeNumber a <code>String</code> with the string representation of the route.
 	 * @param stopNames a <code>String</code> list with the name of the stops for this route.
 	 */
@@ -78,6 +81,7 @@ public class RouteController {
 	/**
 	 * Load Routes.
 	 * @param routeResponses an array of <code>RouteResponse</code> objects with routes to store and delete all other routes.
+	 * @param company a <code>String</code> with the name of the company.
 	 */
 	public void loadRoutes ( final RouteResponse[] routeResponses, final String company ) {
 		restTemplate.delete(operationsServerUrl + "routes/?company=" + company);

@@ -21,8 +21,7 @@ import org.slf4j.LoggerFactory;
 import java.text.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-
-import de.davelee.trams.util.DateFormats;
+import java.util.Locale;
 
 /**
  * This class represents the control screen display for the TraMS program.
@@ -66,6 +65,8 @@ public class ControlScreen extends ButtonBar {
     /**
      * Create a new control screen.
      * @param controllerHandler a <code>ControllerHandler</code> obtaining the currently used controllers from Spring.
+     * @param company a <code>String</code> with the company currently being played.
+     * @param playerName a <code>String</code> with the name of the player currently playing the game.
      */
     public ControlScreen ( final ControllerHandler controllerHandler, final String company, final String playerName ) {
         super(controllerHandler, company, playerName);
@@ -317,11 +318,23 @@ public class ControlScreen extends ButtonBar {
         
     }
 
+    /**
+     * Update the time to the new specified time and update the status of all vehicles.
+     * @param currentDateTime a <code>String</code> with the current time in the game in format dd-MM-yyyy HH:mm
+     * @param difficultyLevel a <code>String</code> with the difficulty level which can be either EASY, MEDIUM, INTERMEDIATE or HARD.
+     * @param company a <code>String</code> with the name of the company currently being played.
+     */
     public void updateDateTime (final String currentDateTime, final String difficultyLevel, final String company ) {
         timeLabel.setText(currentDateTime);
         updateVehicleStatus(currentDateTime, difficultyLevel, company);
     }
 
+    /**
+     * Update the status of all vehicles.
+     * @param time a <code>String</code> with the current time in the game in format dd-MM-yyyy HH:mm
+     * @param difficultyLevel a <code>String</code> with the difficulty level which can be either EASY, MEDIUM, INTERMEDIATE or HARD.
+     * @param company a <code>String</code> with the name of the company currently being played.
+     */
     public void updateVehicleStatus ( final String time, final String difficultyLevel, final String company ) {
         String vehicleStatus = "";
 
@@ -335,6 +348,10 @@ public class ControlScreen extends ButtonBar {
 
     }
 
+    /**
+     * Update the value of the passenger satisfaction bar to the specified value.
+     * @param value a <code>int</code> with the new satisfaction value.
+     */
     public void updatePassengerBar ( final int value ) {
         passengerSatisfactionBar.setValue(value);
         passengerSatisfactionBar.setString("Passenger Satisfaction Rating - " + value + "%");
@@ -349,9 +366,9 @@ public class ControlScreen extends ButtonBar {
         if ( isPastMidnight(companyResponse.getTime(), getControllerHandler().getSimulationSpeed()) && !doneAllocations ) {
             //Now add a message to summarise days events!!!
             super.getControllerHandler().getMessageController().addMessage(companyResponse.getName(),"Passenger Satisfaction for " +
-                    DateFormats.FULL_FORMAT.getFormat().format(getPreviousDateTime(companyResponse.getTime(), getControllerHandler().getSimulationSpeed())),
+                            DateFormat.getDateInstance(DateFormat.FULL, Locale.UK).format(getPreviousDateTime(companyResponse.getTime(), getControllerHandler().getSimulationSpeed())),
                     "Congratulations you have successfully completed transport operations for " + companyResponse.getScenarioName() + " on " +
-                            DateFormats.FULL_FORMAT.getFormat().format(getPreviousDateTime(companyResponse.getTime(), getControllerHandler().getSimulationSpeed())) +
+                            DateFormat.getDateInstance(DateFormat.FULL, Locale.UK).format(getPreviousDateTime(companyResponse.getTime(), getControllerHandler().getSimulationSpeed())) +
                             " with a passenger satisfaction of " + super.getControllerHandler().getGameController().computeAndReturnPassengerSatisfaction(getCompany(), companyResponse.getDifficultyLevel()) +
                             "%.\n\nNow you need to allocate vehicles to routes for " + companyResponse.getTime() + " and keep the passenger satisfaction up! Click on the Management tab and then choose Allocations. Good luck!",
                     "Council", "INBOX", companyResponse.getTime());
@@ -641,6 +658,10 @@ public class ControlScreen extends ButtonBar {
         super.getControllerHandler().getGameController().pauseSimulation();
     }
 
+    /**
+     * Populate the list of routes for the current company.
+     * @param company a <code>String</code> with the name of the company currently being played.
+     */
     public void populateRouteList ( final String company ) {
         routeModel.clear();
         RouteResponse[] routeModels = super.getControllerHandler().getRouteController().getRoutes(company);
@@ -659,6 +680,11 @@ public class ControlScreen extends ButtonBar {
         }
     }
 
+    /**
+     * Show to the user a panel which contains options such as pause the simulation.
+     * @param companyResponse a <code>CompanyResponse</code> object with current state of game.
+     * @return a <code>JPanel</code> object representing the panel to show to the user.
+     */
     public JPanel makeOptionsPanel ( final CompanyResponse companyResponse ) {
         logger.debug("Calling makeOptions panel....");
         //Construct options panel and add it to the top panel.
@@ -712,6 +738,11 @@ public class ControlScreen extends ButtonBar {
         return optionsPanel;
     }
 
+    /**
+     * Show to the user the current status of each vehicle.
+     * @param companyResponse a <code>CompanyResponse</code> object with current state of game.
+     * @return a <code>JPanel</code> object representing the panel to show to the user.
+     */
     public JPanel makeVehicleInfoPanel ( final CompanyResponse companyResponse ) {
         //Panel containing vehicle info.
         JPanel vehicleInfoPanel = new JPanel();

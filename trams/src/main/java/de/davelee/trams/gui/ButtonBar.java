@@ -12,17 +12,44 @@ import de.davelee.trams.controllers.ControllerHandler;
 public class ButtonBar extends JFrame {
     
     /**
-	 * 
+	 * Serial Version id for serialisation.
 	 */
 	private static final long serialVersionUID = 1L;
+    /**
+     * Menu Bar containing all Menu Items to show to the user.
+     */
 	protected JMenuBar menuBar;
+    /**
+     * New game item in Menu Bar.
+     */
     protected JMenuItem newGameItem;
+    /**
+     * Load game item in Menu Bar.
+     */
     protected JMenuItem loadGameItem;
+    /**
+     * Save game item in Menu Bar.
+     */
     protected JMenuItem saveGameItem;
+    /**
+     * Exit Game item in Menu Bar.
+     */
     protected JMenuItem exitGameItem;
+    /**
+     * Options item in Menu Bar.
+     */
     protected JMenuItem optionsItem;
+    /**
+     * Help item in Menu Bar.
+     */
     protected JMenuItem helpItem;
+    /**
+     * Update item in Menu Bar.
+     */
     protected JMenuItem updateItem;
+    /**
+     * About item in Menu Bar.
+     */
     protected JMenuItem aboutItem;
 
     private ControllerHandler controllerHandler;
@@ -32,6 +59,8 @@ public class ButtonBar extends JFrame {
     /**
      * Create a new button bar.
      * @param controllerHandler a <code>ControllerHandler</code> obtaining the currently used controllers from Spring.
+     * @param company a <code>String</code> with the company currently being played.
+     * @param playerName a <code>String</code> with the name of the player currently playing the game.
      */
     public ButtonBar ( final ControllerHandler controllerHandler, final String company, final String playerName ) {
 
@@ -111,12 +140,24 @@ public class ButtonBar extends JFrame {
         
     }
 
+    /**
+     * Return the currently used controllers from Spring.
+     * @return a <code>ControllerHandler</code> obtaining the currently used controllers from Spring.
+     */
     public ControllerHandler getControllerHandler() {
         return controllerHandler;
     }
 
+    /**
+     * Return the name of the company currently being played.
+     * @return a <code>String</code> with the company currently being played.
+     */
     public String getCompany() { return company; }
 
+    /**
+     * Return the name of the player currently playing the game.
+     * @return a <code>String</code> with the name of the player currently playing the game.
+     */
     public String getPlayerName() { return playerName; }
 
 }

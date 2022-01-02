@@ -1,5 +1,7 @@
 package de.davelee.trams.controllers;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -11,6 +13,8 @@ import org.springframework.stereotype.Controller;
  * Created by davelee on 27.03.17.
  */
 @Controller
+@Getter
+@Setter
 public class ControllerHandler {
 
     @Autowired
@@ -49,75 +53,4 @@ public class ControllerHandler {
     @Value("${simulation.speed}")
     private int simulationSpeed;
 
-    public FileController getFileController() {
-        return fileController;
-    }
-
-    public void setFileController(FileController fileController) {
-        this.fileController = fileController;
-    }
-
-    public GameController getGameController() {
-        return gameController;
-    }
-
-    public ScenarioController getScenarioController() {
-        return scenarioController;
-    }
-
-    public VehicleController getVehicleController() {
-        return vehicleController;
-    }
-
-    public MessageController getMessageController() {
-        return messageController;
-    }
-
-    public StopController getJourneyController() {
-        return journeyController;
-    }
-
-    public RouteController getRouteController() {
-        return routeController;
-    }
-
-    public DriverController getDriverController() {
-        return driverController;
-    }
-
-    public void setDriverController(DriverController driverController) {
-        this.driverController = driverController;
-    }
-
-    public TipController getTipController() {
-        return tipController;
-    }
-
-    public void setTipController(TipController tipController) {
-        this.tipController = tipController;
-    }
-
-    public StopTimeController getStopTimeController() {
-        return stopTimeController;
-    }
-
-    public void setStopTimeController(StopTimeController stopTimeController) {
-        this.stopTimeController = stopTimeController;
-    }
-
-    public String getVersion() {
-        return version;
-    }
-
-    public void setVersion(String version) {
-        this.version = version;
-    }
-
-    public int getSimulationSpeed() {
-        return simulationSpeed;
-    }
-
-    public void setSimulationSpeed(final int simulationSpeed) {
-        this.simulationSpeed = simulationSpeed;
-    }
 }

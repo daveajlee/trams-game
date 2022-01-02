@@ -34,7 +34,8 @@ public class MakeContactScreen extends JFrame {
     /**
      * Create a new make contact screen.
      * @param allocatedTour a <code>String</code> with the allocated tour currently being run.
-     * @param company a <code>String</code> with the company that the tour belongs to.
+     * @param company a <code>String</code> with the company being played.
+     * @param playerName a <code>String</code> with the name of the player currently playing the game.
      */
     public MakeContactScreen ( final String allocatedTour, final String company, final String playerName ) {
 

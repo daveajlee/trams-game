@@ -45,9 +45,11 @@ public class DriverController {
 	
 	/**
      * Employ a new driver.
-     * @param name a <code>String</code> with name.
+     * @param name a <code>String</code> with name of driver.
+     * @param company a <code>String</code> with company that driver should work for.
+     * @param startDate a <code>String</code> with the date that the driver should start in dd-MM-yyyy format.
      */
-    public void employDriver ( final String name, final String company, final String startDate, final String playerName ) {
+    public void employDriver ( final String name, final String company, final String startDate ) {
         restTemplate.postForObject(personalManServerUrl + "user/", UserRequest.builder()
                 .dateOfBirth("01-01-1990")
                 .firstName(name.split(" ")[0])
@@ -83,11 +85,12 @@ public class DriverController {
 
     /**
      * This method loads the supplied drivers list and deletes all previous drivers.
-     * @param driverModels a <code>DriverModel</code> array containing the drivers to load.
+     * @param userResponses a <code>DUserResponse</code> array containing the drivers to load.
+     * @param company a <code>String</code> with company that drivers should work for.
      */
-    public void loadDrivers ( final UserResponse[] driverModels, final String company ) {
+    public void loadDrivers ( final UserResponse[] userResponses, final String company ) {
         restTemplate.delete(personalManServerUrl + "api/company/?name=" + company + "&token=" + token);
-        for ( UserResponse driverModel : driverModels ) {
+        for ( UserResponse driverModel : userResponses ) {
             restTemplate.postForObject(personalManServerUrl + "user/", UserRequest.builder()
                     .dateOfBirth("01-01-1990")
                     .firstName(driverModel.getFirstName())
@@ -106,6 +109,7 @@ public class DriverController {
 
     /**
      * This method checks if any employees have started working for the company!
+     * @param companyResponse a <code>CompanyResponse</code> object containing information about the company.
      * @return a <code>boolean</code> which is true iff some drivers have started working.
      */
     public boolean hasSomeDriversBeenEmployed ( final CompanyResponse companyResponse ) {
@@ -127,7 +131,8 @@ public class DriverController {
 
     /**
      * Get a driver based on its name.
-     * @param name a <code>String</code> with the name.
+     * @param name a <code>String</code> with the name of the driver.
+     * @param company a <code>String</code> with the name of the company that the driver should work for.
      * @return a <code>UserResponse</code> object.
      */
     public UserResponse getDriverByName (final String name, final String company ) {
@@ -136,7 +141,8 @@ public class DriverController {
 
     /**
      * Sack a driver.
-     * @param company a <code>String</code> wi.
+     * @param company a <code>String</code> with the name of the company sacking the driver.
+     * @param username a <code>String</code> with the username of the driver being sacked.
      */
     public void sackDriver ( final String company, final String username ) {
         restTemplate.delete(personalManServerUrl + "user/?company=" + company + "&username=" + username + "&token=" + token);

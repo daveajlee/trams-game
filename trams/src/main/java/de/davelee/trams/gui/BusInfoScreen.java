@@ -36,6 +36,7 @@ public class BusInfoScreen extends JFrame {
      * Create a new bus information screen.
      * @param allocatedTour a <code>String</code> with the allocated tour currently being run.
      * @param company a <code>String</code> with the company that the tour belongs to.
+     * @param playerName a <code>String</code> with the name of the player currently playing the game.
      */
     public BusInfoScreen ( final String allocatedTour, final String company, final String playerName ) {
 
@@ -121,30 +122,36 @@ public class BusInfoScreen extends JFrame {
         this.pack ();
         this.setVisible (true);
         this.setSize ( new Dimension(400,300) );
-        
     }
 
-    public JPanel createCurrentStatusPanel ( final String scheduleNumber, final VehicleResponse vehicleModel, final CompanyResponse companyResponse ) {
+    /**
+     * Create a panel showing the current status to the user.
+     * @param allocatedTour a <code>String</code> with the name of the tour being run.
+     * @param vehicleResponse a <code>VehicleResponse</code> object with information about the vehicle who's status should be shown.
+     * @param companyResponse a <code>CompanyResponse</code> object with information about the company who the vehicle belongs to.
+     * @return a <code>JPanel</code> object representing the panel to be shown to the user.
+     */
+    public JPanel createCurrentStatusPanel ( final String allocatedTour, final VehicleResponse vehicleResponse, final CompanyResponse companyResponse ) {
         JPanel eastPanel = new JPanel(new GridLayout(6,1,5,5));
         eastPanel.setBackground(Color.WHITE);
         //Timetable id.
-        JLabel timetableIDLabel = new JLabel("Timetable ID: " + scheduleNumber);
+        JLabel timetableIDLabel = new JLabel("Timetable ID: " + allocatedTour);
         timetableIDLabel.setFont(new Font("Arial", Font.BOLD, 15));
         eastPanel.add(timetableIDLabel);
         //Vehicle id.
-        JLabel vehicleIDLabel = new JLabel("Vehicle ID: " + vehicleModel.getAdditionalTypeInformationMap().get("Registration Number"));
+        JLabel vehicleIDLabel = new JLabel("Vehicle ID: " + vehicleResponse.getAdditionalTypeInformationMap().get("Registration Number"));
         vehicleIDLabel.setFont(new Font("Arial", Font.BOLD, 15));
         eastPanel.add(vehicleIDLabel);
         //Location.
-        JLabel locationLabel = new JLabel("Location: " + vehicleController.getCurrentStopName(vehicleModel, companyResponse.getTime(), companyResponse.getDifficultyLevel()));
+        JLabel locationLabel = new JLabel("Location: " + vehicleController.getCurrentStopName(vehicleResponse, companyResponse.getTime(), companyResponse.getDifficultyLevel()));
         locationLabel.setFont(new Font("Arial", Font.BOLD, 15));
         eastPanel.add(locationLabel);
         //Destination.
-        JLabel destinationLabel = new JLabel("Destination: " + vehicleController.getDestination(vehicleModel, LocalDateTime.parse(companyResponse.getTime(), DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm")), DifficultyLevel.valueOf(companyResponse.getDifficultyLevel())));
+        JLabel destinationLabel = new JLabel("Destination: " + vehicleController.getDestination(vehicleResponse, LocalDateTime.parse(companyResponse.getTime(), DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm")), DifficultyLevel.valueOf(companyResponse.getDifficultyLevel())));
         destinationLabel.setFont(new Font("Arial", Font.BOLD, 15));
         eastPanel.add(destinationLabel);
         //Delay.
-        JLabel delayLabel = new JLabel("Delay: " + vehicleModel.getDelayInMinutes() + " mins");
+        JLabel delayLabel = new JLabel("Delay: " + vehicleResponse.getDelayInMinutes() + " mins");
         delayLabel.setFont(new Font("Arial", Font.BOLD, 15));
         eastPanel.add(delayLabel);
         return eastPanel;

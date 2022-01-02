@@ -17,10 +17,11 @@ public class MessageController {
     
     /**
      * Get a linked list of messages which are relevant for the specified folder, date and sender.
+     * @param company a <code>String</code> with the name of the company.
      * @param folder a <code>String</code> with the name of the folder.
      * @param date a <code>String</code> with the date.
      * @param sender a <code>String</code> with the sender.
-     * @return a <code>LinkedList</code> with messages.
+     * @return a <code>MessageResponse</code> array with messages.
      */
     public MessageResponse[] getMessagesByFolderDateSender ( final String company, final String folder, final String date, final String sender ) {
         if ( date.equalsIgnoreCase("All Dates")) {
@@ -36,8 +37,9 @@ public class MessageController {
 
     /**
      * Get a linked list of messages which are relevant for the specified folder.
+     * @param company a <code>String</code> with the name of the company.
      * @param folder a <code>String</code> with the name of the folder.
-     * @return a <code>LinkedList</code> with messages.
+     * @return a <code>MessageResponse</code> array with messages.
      */
     public MessageResponse[] getMessagesByFolder ( final String company, final String folder ) {
         //Return a message list.
@@ -50,6 +52,7 @@ public class MessageController {
     
     /**
      * Add a message to the message queue.
+     * @param company a <code>String</code> with the name of the company.
      * @param subject a <code>String</code> with the subject of the message.
      * @param text a <code>String</code> with the text of the message.
      * @param sender a <code>String</code> with the name of the sender.
@@ -67,6 +70,11 @@ public class MessageController {
                 .build(), Void.class);
     }
 
+    /**
+     * Return all messages for a particular company.
+     * @param company a <code>String</code> with the name of the company.
+     * @return a <code>MessageResponse</code> array containing all of the messages for this company.
+     */
     public MessageResponse[] getAllMessages (final String company ) {
         MessagesResponse messagesResponse = restTemplate.getForObject(crmServerUrl + "messages/?company=" + company, MessagesResponse.class);
         if ( messagesResponse != null && messagesResponse.getMessageResponses() != null ) {
@@ -77,11 +85,12 @@ public class MessageController {
 
     /**
      * Load Messages.
-     * @param messageModels an array of <code>MessageResponse</code> objects with messages to store and delete all other messages.
+     * @param messageResponses an array of <code>MessageResponse</code> objects with messages to store and delete all other messages.
+     * @param company a <code>String</code> with the name of the company.
      */
-    public void loadMessages ( final MessageResponse[] messageModels, final String company ) {
+    public void loadMessages ( final MessageResponse[] messageResponses, final String company ) {
         restTemplate.delete(crmServerUrl + "messages/?company=" + company);
-        for ( MessageResponse messageModel : messageModels ) {
+        for ( MessageResponse messageModel : messageResponses ) {
             restTemplate.postForObject(crmServerUrl + "message/", MessageRequest.builder()
                     .company(company)
                     .subject(messageModel.getSubject())

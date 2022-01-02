@@ -59,6 +59,8 @@ public class VehicleController {
 
 	/**
 	 * This method checks if any vehicles have been delivered to the company yet!
+	 * @param company a <code>String</code> with the name of the company.
+	 * @param currentDate a <code>String</code> with the current date in format dd-MM-yyyy.
 	 * @return a <code>boolean</code> which is true iff some vehicles have been delivered!
 	 */
 	public boolean hasSomeVehiclesBeenDelivered ( final String company, final String currentDate) {
@@ -73,6 +75,7 @@ public class VehicleController {
 	/**
 	 * Get a vehicle based on its registration number.
 	 * @param registrationNumber a <code>String</code> with the registration number.
+	 * @param company a <code>String</code> with the name of the company.
 	 * @return a <code>VehicleModel</code> object.
 	 */
 	public VehicleResponse getVehicleByRegistrationNumber ( final String registrationNumber, final String company ) {
@@ -103,6 +106,7 @@ public class VehicleController {
 	/**
 	 * Sell a vehicle.
 	 * @param vehicleResponse a <code>VehicleResponse</code> object representing the vehicle to sell.
+	 * @param currentDate a <code>String</code> with the current date in format dd-MM-yyyy.
 	 */
 	public double sellVehicle ( final VehicleResponse vehicleResponse, final String currentDate ) {
 		restTemplate.delete(operationsServerUrl + "vehicle/?company=" + vehicleResponse.getCompany() + "&fleetNumber=" + vehicleResponse.getFleetNumber());
@@ -113,6 +117,8 @@ public class VehicleController {
 	 * Purchase a new vehicle.
 	 * @param type a <code>String</code> with the vehicle type.
 	 * @param company a <code>String</code> with the name of the company.
+	 * @param year a <code>int</code> with the year that the vehicle was purchased in format yyyy
+	 * @param fleetNumber a <code>Optional</code> of <code>int</code> with the desired fleet number (if null, will be generated randomly)
 	 * @return a <code>double</code> with the purchase price of the vehicle.
 	 */
 	public double purchaseVehicle ( final String type, final String company, final int year, final Optional<Integer> fleetNumber) {
@@ -231,6 +237,8 @@ public class VehicleController {
 	/**
 	 * Load Vehicles.
 	 * @param vehicleModels an array of <code>VehicleModel</code> objects with vehicles to store and delete all other vehicles.
+	 * @param company a <code>String</code> with the name of the company.
+	 * @param currentDate a <code>String</code> with the current date in format dd-MM-yyyy.
 	 */
 	public void loadVehicles ( final VehicleResponse[] vehicleModels, final String company, final LocalDate currentDate ) {
 		restTemplate.delete(operationsServerUrl + "vehicles/?company=" + company);

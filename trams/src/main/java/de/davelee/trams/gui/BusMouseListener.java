@@ -22,6 +22,7 @@ public class BusMouseListener implements MouseListener {
      * Create a new BusMouseListener.
      * @param allocatedTour a <code>String</code> with the allocated tour currently being run.
      * @param company a <code>String</code> with the company that the tour belongs to.
+     * @param playerName a <code>String</code> with the name of the player currently playing the game.
      */
     public BusMouseListener(final String allocatedTour, final String company, final String playerName) {
         this.allocatedTour = allocatedTour;

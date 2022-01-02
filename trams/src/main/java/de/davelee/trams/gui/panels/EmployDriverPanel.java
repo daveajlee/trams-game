@@ -6,8 +6,10 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.DateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -21,7 +23,6 @@ import javax.swing.SwingConstants;
 import de.davelee.trams.api.response.CompanyResponse;
 import de.davelee.trams.controllers.ControllerHandler;
 import de.davelee.trams.gui.ControlScreen;
-import de.davelee.trams.util.DateFormats;
 
 public class EmployDriverPanel {
 
@@ -84,7 +85,7 @@ public class EmployDriverPanel {
         startLabelPanel.add(startLabel);
         final LocalDate startDate = LocalDate.parse(companyResponse.getTime(), DateTimeFormatter.ofPattern("dd-MM-yyyy"));
         startDate.plusDays(3);
-        JLabel startField = new JLabel("" + DateFormats.FULL_FORMAT.getFormat().format(startDate));
+        JLabel startField = new JLabel("" + DateFormat.getDateInstance(DateFormat.FULL, Locale.UK).format(startDate));
         startField.setFont(new Font("Arial", Font.ITALIC, 14));
         startLabelPanel.add(startField);
         gridPanel.add(startLabelPanel);

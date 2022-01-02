@@ -8,7 +8,6 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,16 +29,32 @@ import de.davelee.trams.controllers.ControllerHandler;
 
 import de.davelee.trams.gui.ControlScreen;
 
+/**
+ * This class represents a panel to allow the user to allocate vehicles to tours.
+ * @author Dave Lee
+ */
 public class AllocationPanel {
 	
 	private ControllerHandler controllerHandler;
 	private DefaultListModel allocationsModel;
 	private JList allocationsList;
 
+    /**
+     * Create a new allocation panel with access to all Controllers to get or send data where needed.
+     * @param controllerHandler a <code>ControllerHandler</code> object allowing access to Controllers.
+     */
     public AllocationPanel ( final ControllerHandler controllerHandler ) {
         this.controllerHandler = controllerHandler;
     }
-	
+
+    /**
+     * Create a new allocation panel and display it to the user.
+     * @param controlScreen a <code>ControlScreen</code> object with the control screen that the user can use to control the game.
+     * @param displayPanel a <code>DisplayPanel</code> object which should be displayed to the user.
+     * @param company a <code>String</code> with the name of the company that the user is playing.
+     * @param playerName a <code>String</code> with the name of the player.
+     * @return a <code>JPanel</code> object which can be displayed to the user.
+     */
 	public JPanel createPanel ( final ControlScreen controlScreen, final DisplayPanel displayPanel, final String company,
                                 final String playerName) {
 		//Create allocation screen panel to add things to.
