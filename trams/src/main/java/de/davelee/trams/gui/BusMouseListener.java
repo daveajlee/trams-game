@@ -2,7 +2,7 @@ package de.davelee.trams.gui;
 
 import java.awt.event.*;
 
-import de.davelee.trams.controllers.GameController;
+import de.davelee.trams.controllers.SimulationController;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class BusMouseListener implements MouseListener {
 
     @Autowired
-    private GameController gameController;
+    private SimulationController simulationController;
 
     private String allocatedTour;
     private String company;
@@ -68,7 +68,7 @@ public class BusMouseListener implements MouseListener {
      * @param e a <code>MouseEvent</code> object.
      */
     public void mouseClicked(MouseEvent e) {
-        gameController.pauseSimulation();
+        simulationController.pauseSimulation();
         new BusInfoScreen(allocatedTour, company, playerName);
     }
     

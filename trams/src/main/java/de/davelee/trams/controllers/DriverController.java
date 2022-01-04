@@ -4,7 +4,6 @@ import de.davelee.trams.api.request.UserRequest;
 import de.davelee.trams.api.response.CompanyResponse;
 import de.davelee.trams.api.response.UserResponse;
 import de.davelee.trams.api.response.UsersResponse;
-import de.davelee.trams.beans.Scenario;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +15,12 @@ import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
+/**
+ * This class enables access to Driver data via REST endpoints to the TraMS Operations microservice in the TraMS Platform.
+ * @author Dave Lee
+ */
 @Controller
 @Getter
 @Setter
@@ -30,6 +34,11 @@ public class DriverController {
 
     private String token;
 
+    /**
+     * Return all drivers belonging to the supplied company.
+     * @param company a <code>String</code> containing the name of the company to return drivers for.
+     * @return an array of <code>UserResponse</code> objects containing all drivers belonging to the supplied company.
+     */
     public UserResponse[] getAllDrivers (final String company) {
         try {
             UsersResponse usersResponse = restTemplate.getForObject(personalManServerUrl + "user/?company=" + company + "&username=mmustermann&token=" + token, UsersResponse.class);
@@ -65,8 +74,14 @@ public class DriverController {
                 .build(), Void.class);
     }
 
-    public void createSuppliedDrivers(final Scenario scenario, final String startDate, final String company ) {
-        for ( String suppliedDriver : scenario.getSuppliedDrivers()) {
+    /**
+     * Employ a number of drivers so that the company has some drivers at the beginning.
+     * @param suppliedDriverNames a <code>String</code> with the names of the drivers who should be employed.
+     * @param startDate a <code>String</code> with the date that the drivers should begin in the format dd-MM-yyyy
+     * @param company a <code>String</code> with the name of the company that the drivers should work for.
+     */
+    public void createSuppliedDrivers(final List<String> suppliedDriverNames, final String startDate, final String company ) {
+        for ( String suppliedDriver : suppliedDriverNames) {
             restTemplate.postForObject(personalManServerUrl + "user/", UserRequest.builder()
                     .dateOfBirth("01-01-1990")
                     .firstName(suppliedDriver.split(" ")[0])
@@ -85,7 +100,7 @@ public class DriverController {
 
     /**
      * This method loads the supplied drivers list and deletes all previous drivers.
-     * @param userResponses a <code>DUserResponse</code> array containing the drivers to load.
+     * @param userResponses a <code>UserResponse</code> array containing the drivers to load.
      * @param company a <code>String</code> with company that drivers should work for.
      */
     public void loadDrivers ( final UserResponse[] userResponses, final String company ) {

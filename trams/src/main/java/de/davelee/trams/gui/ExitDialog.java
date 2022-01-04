@@ -2,8 +2,16 @@ package de.davelee.trams.gui;
 
 import javax.swing.*;
 
+/**
+ * This class represents a dialog which will be shown to confirm that the user would like to exit the game.
+ * @author Dave Lee
+ */
 public class ExitDialog {
-	
+
+	/**
+	 * Create a new <code>ExitDialog</code> with an option for the user to confirm that they wish to leave TraMS.
+	 * @param currentFrame a <code>JFrame</code> object containing the parent frame of this dialog.
+	 */
 	public void createExitDialog ( final JFrame currentFrame ) {
 		//Create image with exit.
 		ImageIcon imageIcon = new ImageIcon(ExitDialog.class.getResource("/TraMSlogo-small.png"));

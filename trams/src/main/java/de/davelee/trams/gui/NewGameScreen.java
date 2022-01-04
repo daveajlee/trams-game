@@ -16,12 +16,9 @@ public class NewGameScreen extends JFrame {
     
 	private static final long serialVersionUID = 1L;
 
-    private JTextField companyNameField;
-
-    private JTextField playerNameField;
-
-    private JButton createGameButton;
-
+    /**
+     * A <code>ControllerHandler</code> obtaining the currently used controllers from Spring.
+     */
     private ControllerHandler controllerHandler;
 
     public NewGameScreen (final ControllerHandler controllerHandler ) {
@@ -76,12 +73,15 @@ public class NewGameScreen extends JFrame {
         welcomePanel.add(logoPanel);
         screenPanel.add(welcomePanel);
 
+        //Create button but do not display it yet.
+        JButton createGameButton = new JButton("Create Game");
+
         //Create a new company name panel.
         JPanel newCompanyPanel = new JPanel();
         newCompanyPanel.setBackground(Color.WHITE);
         JLabel companyNameLabel = new JLabel("Company Name:");
         companyNameLabel.setFont(new Font("Arial", Font.BOLD, 18));
-        companyNameField = new JTextField("");
+        JTextField companyNameField = new JTextField("");
         companyNameField.setFont(new Font("Arial", Font.PLAIN, 18));
         companyNameField.setColumns(25);
         companyNameField.addKeyListener( new KeyListener() {
@@ -109,7 +109,7 @@ public class NewGameScreen extends JFrame {
         newPlayerPanel.setBackground(Color.WHITE);
         JLabel playerNameLabel = new JLabel("Player Name:");
         playerNameLabel.setFont(new Font("Arial", Font.BOLD, 18));
-        playerNameField = new JTextField("");
+        JTextField playerNameField = new JTextField("");
         playerNameField.setFont(new Font("Arial", Font.PLAIN, 18));
         playerNameField.setColumns(25);
         playerNameField.addKeyListener( new KeyListener() {
@@ -151,17 +151,16 @@ public class NewGameScreen extends JFrame {
         //Create button panel to display create game and back to welcome screen buttons.
         JPanel buttonPanel = new JPanel();
         buttonPanel.setBackground(Color.WHITE);
-        createGameButton = new JButton("Create Game");
         createGameButton.setEnabled(false);
         createGameButton.addActionListener ( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
                 Scenario scenarioModel = controllerHandler.getScenarioController().getScenario(availableScenariosComboBox.getSelectedItem().toString());
                 //Create Game
-                CompanyResponse companyResponse = controllerHandler.getGameController().createGameModel(playerNameField.getText(), scenarioModel.getScenarioName(), companyNameField.getText());
+                CompanyResponse companyResponse = controllerHandler.getCompanyController().createCompany(playerNameField.getText(), scenarioModel.getScenarioName(), companyNameField.getText());
                 //Create supplied vehicles.
                 controllerHandler.getVehicleController().createSuppliedVehicles(scenarioModel, companyResponse.getTime(), companyNameField.getText());
                 //Create supplied drivers.
-                controllerHandler.getDriverController().createSuppliedDrivers(scenarioModel, companyResponse.getTime(), companyNameField.getText());
+                controllerHandler.getDriverController().createSuppliedDrivers(scenarioModel.getSuppliedDrivers(), companyResponse.getTime(), companyNameField.getText());
                 //Create welcome message.
                 controllerHandler.getMessageController().addMessage(companyNameField.getText(), "Welcome Message", "Congratulations on your appointment as Managing Director of the " +
                         scenarioModel.getScenarioName() + "! \n\n Your targets for the coming days and months are: " +

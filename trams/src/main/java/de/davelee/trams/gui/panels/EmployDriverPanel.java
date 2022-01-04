@@ -24,15 +24,29 @@ import de.davelee.trams.api.response.CompanyResponse;
 import de.davelee.trams.controllers.ControllerHandler;
 import de.davelee.trams.gui.ControlScreen;
 
+/**
+ * This class represents a panel to employ drivers.
+ * @author Dave Lee
+ */
 public class EmployDriverPanel {
 
     private ControllerHandler controllerHandler;
-	
+
+    /**
+     * Create a new <code>EmployDriverPanel</code> with access to all Controllers to get or send data where needed.
+     * @param controllerHandler a <code>ControllerHandler</code> object allowing access to Controllers.
+     */
 	public EmployDriverPanel (final ControllerHandler controllerHandler ) {
         this.controllerHandler = controllerHandler;
     }
-	
-	public JPanel createPanel ( final ControlScreen controlScreen, final DisplayPanel displayPanel ) {
+
+    /**
+     * Create a new <code>EmployDriverPanel</code> panel and display it to the user.
+     * @param controlScreen a <code>ControlScreen</code> object with the control screen that the user can use to control the game.
+     * @param managementPanel a <code>ManagementPanel</code> object which is the management panel that has been displayed to the user (for back button functionality).
+     * @return a <code>JPanel</code> object which can be displayed to the user.
+     */
+	public JPanel createPanel ( final ControlScreen controlScreen, final ManagementPanel managementPanel ) {
 		//Create screen panel to add things to.
         JPanel driverScreenPanel = new JPanel();
         driverScreenPanel.setLayout ( new BoxLayout ( driverScreenPanel, BoxLayout.PAGE_AXIS ) );
@@ -75,7 +89,7 @@ public class EmployDriverPanel {
 
         gridPanel.add(contractedHoursPanel);
         
-        final CompanyResponse companyResponse = controllerHandler.getGameController().getGameModel(controlScreen.getCompany(), controlScreen.getPlayerName());
+        final CompanyResponse companyResponse = controllerHandler.getCompanyController().getCompany(controlScreen.getCompany(), controlScreen.getPlayerName());
 
         //Create label and field for start date and add it to the start panel.
         JPanel startLabelPanel = new JPanel();
@@ -99,15 +113,15 @@ public class EmployDriverPanel {
             public void actionPerformed ( ActionEvent e ) {
                 controllerHandler.getDriverController().employDriver(driverNameField.getText(), companyResponse.getName(), startField.getText());
                 //TODO: Employing drivers should cost money.
-                controllerHandler.getGameController().withdrawOrCreditBalance(0, companyResponse.getPlayerName());
-                controlScreen.redrawManagement(displayPanel.createPanel(controlScreen), companyResponse);
+                controllerHandler.getCompanyController().withdrawOrCreditBalance(0, companyResponse.getPlayerName());
+                controlScreen.redrawManagement(managementPanel.createPanel(controlScreen), companyResponse);
             }
         });
         buttonPanel.add(employDriverButton);
         JButton managementScreenButton = new JButton("Return to Management Screen");
         managementScreenButton.addActionListener ( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
-                    controlScreen.redrawManagement(displayPanel.createPanel(controlScreen), companyResponse);
+                    controlScreen.redrawManagement(managementPanel.createPanel(controlScreen), companyResponse);
             }
         });
         buttonPanel.add(managementScreenButton);

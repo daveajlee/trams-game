@@ -14,6 +14,9 @@ public class WelcomeScreen extends JFrame {
     
 	private static final long serialVersionUID = 1L;
 
+    /**
+     * A <code>ControllerHandler</code> obtaining the currently used controllers from Spring.
+     */
     private ControllerHandler controllerHandler;
 
     public WelcomeScreen (final ControllerHandler controllerHandler) {

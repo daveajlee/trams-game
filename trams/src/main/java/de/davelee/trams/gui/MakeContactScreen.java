@@ -22,12 +22,16 @@ public class MakeContactScreen extends JFrame {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-    private JTextArea communicationArea;
-    private JComboBox stopBox;
 
+    /**
+     * A <code>CompanyController</code> object which allows access to company data.
+     */
     @Autowired
-    private GameController gameController;
+    private CompanyController companyController;
 
+    /**
+     * A <code>VehicleController</code> object which allows access to vehicle data.
+     */
     @Autowired
     private VehicleController vehicleController;
 
@@ -39,7 +43,7 @@ public class MakeContactScreen extends JFrame {
      */
     public MakeContactScreen ( final String allocatedTour, final String company, final String playerName ) {
 
-        final CompanyResponse companyResponse = gameController.getGameModel(company, playerName);
+        final CompanyResponse companyResponse = companyController.getCompany(company, playerName);
 
         //Retrieve vehicle model.
         final VehicleResponse vehicleModel = vehicleController.getVehicleByAllocatedTour(allocatedTour, company);
@@ -89,7 +93,8 @@ public class MakeContactScreen extends JFrame {
         stopLabel.setFont(new Font("Arial", Font.BOLD, 12));
         stopPanel.add(stopLabel);
         //TODO: Add a list of stops served by this route.
-        stopBox = new JComboBox(/*routeController.getRoute(routeNumber, gameModel.getCompany()).getStopNames().toArray(new String[0])*/);
+        JComboBox stopBox = new JComboBox(/*routeController.getRoute(routeNumber, gameModel.getCompany()).getStopNames().toArray(new String[0])*/);
+        JTextArea communicationArea = new JTextArea(3,5);
         stopPanel.add(stopBox);
         alterButtonPanel.add(stopPanel);
         JButton shortenRouteButton = new JButton("Terminate At Stop");
@@ -122,7 +127,6 @@ public class MakeContactScreen extends JFrame {
         JPanel eastPanel = new JPanel(new GridLayout(1,1,5,5));
         eastPanel.setBackground(Color.WHITE);
         //Communication Area.
-        communicationArea = new JTextArea(3,5);
         communicationArea.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         communicationArea.setText("Control: Vehicle " + vehicleModel.getAdditionalTypeInformationMap().get("Registration Number") + ", please state your current position. Over!");
         communicationArea.setText(communicationArea.getText() + "\n\n Vehicle " + vehicleModel.getAdditionalTypeInformationMap().get("Registration Number") + ": At " + vehicleController.getCurrentStopName(vehicleModel, companyResponse.getTime(), companyResponse.getDifficultyLevel()) + " heading towards " + getCurrentDestination(allocatedTour, companyResponse) + " with delay of " + vehicleModel.getDelayInMinutes() + " mins. Over!");

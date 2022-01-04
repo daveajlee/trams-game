@@ -21,7 +21,7 @@ public class ControllerHandler {
     private FileController fileController;
 
     @Autowired
-    private GameController gameController;
+    private CompanyController companyController;
 
     @Autowired
     private ScenarioController scenarioController;
@@ -46,6 +46,9 @@ public class ControllerHandler {
 
     @Autowired
     private StopTimeController stopTimeController;
+
+    @Autowired
+    private SimulationController simulationController;
 
     @Value("${trams.version}")
     private String version;

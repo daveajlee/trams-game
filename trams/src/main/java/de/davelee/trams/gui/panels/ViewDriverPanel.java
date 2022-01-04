@@ -22,7 +22,7 @@ public class ViewDriverPanel {
     }
 	
 	public JPanel createPanel ( final String driverName, final ControlScreen controlScreen ) {
-		final CompanyResponse companyResponse = controllerHandler.getGameController().getGameModel(controlScreen.getCompany(), controlScreen.getPlayerName());
+		final CompanyResponse companyResponse = controllerHandler.getCompanyController().getCompany(controlScreen.getCompany(), controlScreen.getPlayerName());
     	
         //Create screen panel to add things to.
         JPanel driverScreenPanel = new JPanel();
@@ -117,7 +117,7 @@ public class ViewDriverPanel {
         JButton managementScreenButton = new JButton("Return to Management Screen");
         managementScreenButton.addActionListener ( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
-                controlScreen.redrawManagement(new DisplayPanel(controllerHandler).createPanel(controlScreen), companyResponse);
+                controlScreen.redrawManagement(new ManagementPanel(controllerHandler).createPanel(controlScreen), companyResponse);
             }
         });
         bottomButtonPanel.add(managementScreenButton);

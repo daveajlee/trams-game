@@ -16,8 +16,6 @@ import de.davelee.trams.util.DifficultyLevel;
 public class OptionsScreen extends JFrame {
     
 	private static final long serialVersionUID = 1L;
-    
-    private JRadioButton[] difficultButtons;
 
     /**
      * Create a new options screen.
@@ -63,7 +61,7 @@ public class OptionsScreen extends JFrame {
         optionsLabelPanel.add(optionsLabel);
         northPanel.add(optionsLabelPanel, BorderLayout.NORTH);
 
-        final CompanyResponse companyResponse = controllerHandler.getGameController().getGameModel(company, playerName);
+        final CompanyResponse companyResponse = controllerHandler.getCompanyController().getCompany(company, playerName);
         
         //Create panel for centre - options in grid layout.
         JTabbedPane optionsTabbedPane = new JTabbedPane();
@@ -79,7 +77,7 @@ public class OptionsScreen extends JFrame {
         //That's the headings done - now the levels.
         DifficultyLevel[] levels = DifficultyLevel.values();
         //Now put them into the interface.
-        difficultButtons = new JRadioButton[levels.length];
+        JRadioButton[] difficultButtons = new JRadioButton[levels.length];
         JTextArea[] difficultDescrips = new JTextArea[levels.length];
         ButtonGroup difficultGroup = new ButtonGroup();
         for ( int i = 0; i < levels.length; i++ ) {
@@ -122,19 +120,19 @@ public class OptionsScreen extends JFrame {
                 //Process options - set difficulty level!
                 if ( difficultButtons[0].isSelected() ) {
                     //TODO: set the difficulty level via game controller to EASY.
-                    //controllerHandler.getGameController().setDifficultyLevel(DifficultyLevel.EASY);
+                    //controllerHandler.getcompanyController().setDifficultyLevel(DifficultyLevel.EASY);
                 }
                 else if ( difficultButtons[1].isSelected() ) {
                     //TODO: set the difficulty level via game controller to INTERMEDIATE.
-                    //controllerHandler.getGameController().setDifficultyLevel(DifficultyLevel.INTERMEDIATE);
+                    //controllerHandler.getcompanyController().setDifficultyLevel(DifficultyLevel.INTERMEDIATE);
                 }
                 else if ( difficultButtons[2].isSelected() ) {
                     //TODO: set the difficulty level via game controller to MEDIUM.
-                    //controllerHandler.getGameController().setDifficultyLevel(DifficultyLevel.MEDIUM);
+                    //controllerHandler.getcompanyController().setDifficultyLevel(DifficultyLevel.MEDIUM);
                 }
                 else if ( difficultButtons[3].isSelected() ) {
                     //TODO: set the difficulty level via game controller to HARD.
-                    //controllerHandler.getGameController().setDifficultyLevel(DifficultyLevel.HARD);
+                    //controllerHandler.getcompanyController().setDifficultyLevel(DifficultyLevel.HARD);
                 }
                 dispose();
             }

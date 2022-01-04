@@ -22,8 +22,8 @@ public class LocationMapPanel {
 	    this.controllerHandler = controllerHandler;
     }
 	
-	public JPanel createPanel ( final ControlScreen controlScreen, final DisplayPanel displayPanel  ) {
-		final CompanyResponse companyResponse = controllerHandler.getGameController().getGameModel(controlScreen.getCompany(), controlScreen.getPlayerName());
+	public JPanel createPanel ( final ControlScreen controlScreen, final ManagementPanel displayPanel  ) {
+		final CompanyResponse companyResponse = controllerHandler.getCompanyController().getCompany(controlScreen.getCompany(), controlScreen.getPlayerName());
     	
     	Scenario scenarioModel = controllerHandler.getScenarioController().getScenario(companyResponse.getScenarioName());
         

@@ -39,8 +39,8 @@ public class TimetablePanel {
         this.controllerHandler = controllerHandler;
     }
 	
-	public JPanel createPanel (final RouteResponse routeResponse, final ControlScreen controlScreen, final RoutePanel routePanel, final DisplayPanel displayPanel ) {
-		final CompanyResponse companyResponse = controllerHandler.getGameController().getGameModel(controlScreen.getCompany(), controlScreen.getPlayerName());
+	public JPanel createPanel (final RouteResponse routeResponse, final ControlScreen controlScreen, final RoutePanel routePanel, final ManagementPanel displayPanel ) {
+		final CompanyResponse companyResponse = controllerHandler.getCompanyController().getCompany(controlScreen.getCompany(), controlScreen.getPlayerName());
         
         //Create timetableScreen panel to add things to.
         JPanel timetableScreenPanel = new JPanel();

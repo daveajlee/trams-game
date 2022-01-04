@@ -52,8 +52,19 @@ public class ButtonBar extends JFrame {
      */
     protected JMenuItem aboutItem;
 
+    /**
+     * A <code>ControllerHandler</code> obtaining the currently used controllers from Spring.
+     */
     private ControllerHandler controllerHandler;
+
+    /**
+     * A <code>String</code> with the name of the company currently being played.
+     */
     private String company;
+
+    /**
+     * A <code>String</code> with the name of the player currently playing the game.
+     */
     private String playerName;
     
     /**
@@ -85,7 +96,7 @@ public class ButtonBar extends JFrame {
         loadGameItem = new JMenuItem("Load Game");
         loadGameItem.addActionListener ( new ActionListener () {
             public void actionPerformed ( ActionEvent e ) {
-                controllerHandler.getGameController().pauseSimulation();
+                controllerHandler.getSimulationController().pauseSimulation();
                 FileDialog fileDialog = new FileDialog();
                 fileDialog.createLoadFileDialog(ButtonBar.this, controllerHandler);
             }
@@ -97,7 +108,7 @@ public class ButtonBar extends JFrame {
         saveGameItem = new JMenuItem("Save Game");
         saveGameItem.addActionListener ( new ActionListener () {
             public void actionPerformed ( ActionEvent e ) {
-                controllerHandler.getGameController().pauseSimulation();
+                controllerHandler.getSimulationController().pauseSimulation();
                 FileDialog fileDialog = new FileDialog();
                 fileDialog.createSaveFileDialog(ButtonBar.this, controllerHandler);
             }
@@ -121,7 +132,7 @@ public class ButtonBar extends JFrame {
         optionsItem = new JMenuItem("Options");
         optionsItem.addActionListener ( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
-                controllerHandler.getGameController().pauseSimulation();
+                controllerHandler.getSimulationController().pauseSimulation();
                 new OptionsScreen(controllerHandler, company, playerName);
             }
         });

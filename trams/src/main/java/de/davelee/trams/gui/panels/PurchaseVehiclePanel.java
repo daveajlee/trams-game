@@ -38,7 +38,7 @@ public class PurchaseVehiclePanel {
         this.controllerHandler = controllerHandler;
     }
 	
-	public JPanel createPanel ( final String vehicleType, final ControlScreen controlScreen, final DisplayPanel displayPanel) {
+	public JPanel createPanel ( final String vehicleType, final ControlScreen controlScreen, final ManagementPanel displayPanel) {
         
         //Create screen panel to add things to.
         JPanel vehicleScreenPanel = new JPanel();
@@ -57,7 +57,7 @@ public class PurchaseVehiclePanel {
         //Create vehicle object so that we can pull information from it.
         final VehicleResponse vehicleResponse = controllerHandler.getVehicleController().getAllCreatedVehicles(controlScreen.getCompany())[0];
 
-        final CompanyResponse companyResponse = controllerHandler.getGameController().getGameModel(controlScreen.getCompany(), controlScreen.getPlayerName());
+        final CompanyResponse companyResponse = controllerHandler.getCompanyController().getCompany(controlScreen.getCompany(), controlScreen.getPlayerName());
         
         //Create picture panel.
         JPanel picturePanel = new JPanel(new BorderLayout());
@@ -210,7 +210,7 @@ public class PurchaseVehiclePanel {
                 for ( int i = 0; i < quantity; i++ ) {
                     double purchasePrice = controllerHandler.getVehicleController().purchaseVehicle(
                             vehicleResponse.getModelName(), companyResponse.getName(), LocalDate.parse(companyResponse.getTime(), DateTimeFormatter.ofPattern("dd-MM-yyyy")).getYear(), Optional.empty());
-                    controllerHandler.getGameController().withdrawOrCreditBalance(purchasePrice, controlScreen.getPlayerName());
+                    controllerHandler.getCompanyController().withdrawOrCreditBalance(purchasePrice, controlScreen.getPlayerName());
                 }
                 controlScreen.redrawManagement(displayPanel.createPanel(controlScreen), companyResponse);
             }

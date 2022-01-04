@@ -29,7 +29,7 @@ public class ScenarioPanel {
         this.controllerHandler = controllerHandler;
     }
 	
-	public JPanel createPanel ( final ControlScreen controlScreen, final DisplayPanel displayPanel ) {
+	public JPanel createPanel ( final ControlScreen controlScreen, final ManagementPanel displayPanel ) {
 		//Create screen panel to add things to.
         JPanel scenarioScreenPanel = new JPanel();
         scenarioScreenPanel.setLayout ( new BoxLayout ( scenarioScreenPanel, BoxLayout.PAGE_AXIS ) );
@@ -48,7 +48,7 @@ public class ScenarioPanel {
         /*JPanel infoPanel = new JPanel(new BorderLayout());
         infoPanel.setBackground(Color.WHITE);*/
         
-        final CompanyResponse companyResponse = controllerHandler.getGameController().getGameModel(controlScreen.getCompany(), controlScreen.getPlayerName());
+        final CompanyResponse companyResponse = controllerHandler.getCompanyController().getCompany(controlScreen.getCompany(), controlScreen.getPlayerName());
 
         //Create panel for scenario name field.
         JPanel scenarioNamePanel = new JPanel(new GridLayout(1,2,5,5));

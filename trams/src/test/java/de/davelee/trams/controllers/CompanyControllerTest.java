@@ -5,8 +5,6 @@ import de.davelee.trams.api.response.CompanyResponse;
 import de.davelee.trams.api.response.SatisfactionRateResponse;
 import de.davelee.trams.api.response.TimeResponse;
 import de.davelee.trams.api.response.VehicleResponse;
-import de.davelee.trams.controllers.GameController;
-import de.davelee.trams.controllers.VehicleController;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,7 +20,7 @@ import static org.mockito.ArgumentMatchers.*;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes= TramsGameApplication.class)
-public class GameControllerTest {
+public class CompanyControllerTest {
 
 	@Mock
 	private RestTemplate restTemplate;
@@ -31,20 +29,20 @@ public class GameControllerTest {
 	private VehicleController vehicleController;
 
 	@InjectMocks
-	private GameController gameController;
+	private CompanyController companyController;
 	
 	@Test
 	public void testIncrement() {
 		Mockito.when(restTemplate.postForObject(anyString(), any(), eq(Void.class))).thenReturn(null);
-		gameController.createGameModel("Dave A J Lee", "Landuff Transport Company", "Mustermann GmbH");
+		companyController.createCompany("Dave A J Lee", "Landuff Transport Company", "Mustermann GmbH");
 		Mockito.when(restTemplate.getForObject(anyString(), eq(CompanyResponse.class))).thenReturn(null);
-		Assertions.assertNull(gameController.getGameModel("Mustermann GmbH", "My First Name"));
+		Assertions.assertNull(companyController.getCompany("Mustermann GmbH", "My First Name"));
 		Mockito.when(restTemplate.getForObject(anyString(), eq(CompanyResponse.class))).thenReturn(
 				CompanyResponse.builder().name("Mustermann GmbH").playerName("Dave A J Lee").difficultyLevel("EASY")
 						.time("24-12-2020 11:58").build()
 		);
-		Assertions.assertNotNull(gameController.getGameModel("Mustermann GmbH", "Dave A J Lee"));
-		CompanyResponse companyResponse = gameController.getGameModel("Mustermann GmbH", "Dave A J Lee");
+		Assertions.assertNotNull(companyController.getCompany("Mustermann GmbH", "Dave A J Lee"));
+		CompanyResponse companyResponse = companyController.getCompany("Mustermann GmbH", "Dave A J Lee");
 		assertEquals(companyResponse.getTime(), "24-12-2020 11:58");
 		Mockito.when(restTemplate.patchForObject(anyString(), any(), eq(TimeResponse.class))).thenReturn(
 				TimeResponse.builder()
@@ -52,10 +50,10 @@ public class GameControllerTest {
 						.time("24-12-2020 12:13")
 						.build()
 		);
-		String time = gameController.incrementTime("Mustermann GmbH");
+		String time = companyController.incrementTime("Mustermann GmbH");
 		assertEquals("24-12-2020 12:13", time);
-		gameController.withdrawOrCreditBalance(-100.0, "Dave A J Lee");
-		gameController.withdrawOrCreditBalance(10.0, "Dave A J Lee");
+		companyController.withdrawOrCreditBalance(-100.0, "Dave A J Lee");
+		companyController.withdrawOrCreditBalance(10.0, "Dave A J Lee");
 		Mockito.when(restTemplate.patchForObject(anyString(), any(), eq(SatisfactionRateResponse.class))).thenReturn(
 				SatisfactionRateResponse.builder()
 						.company("Mustermann GmbH")
@@ -65,7 +63,7 @@ public class GameControllerTest {
 		Mockito.when(vehicleController.getVehicleModels("Mustermann GmbH")).thenReturn(
 				new VehicleResponse[0]
 		);
-		assertEquals(gameController.computeAndReturnPassengerSatisfaction("Mustermann GmbH", "EASY"), 91);
+		assertEquals(companyController.computeAndReturnPassengerSatisfaction("Mustermann GmbH", "EASY"), 91);
 	}
 
 }

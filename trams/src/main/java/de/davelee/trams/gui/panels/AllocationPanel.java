@@ -50,19 +50,19 @@ public class AllocationPanel {
     /**
      * Create a new allocation panel and display it to the user.
      * @param controlScreen a <code>ControlScreen</code> object with the control screen that the user can use to control the game.
-     * @param displayPanel a <code>DisplayPanel</code> object which should be displayed to the user.
+     * @param managementPanel a <code>ManagementPanel</code> object which is the management panel that has been displayed to the user (for back button functionality).
      * @param company a <code>String</code> with the name of the company that the user is playing.
      * @param playerName a <code>String</code> with the name of the player.
      * @return a <code>JPanel</code> object which can be displayed to the user.
      */
-	public JPanel createPanel ( final ControlScreen controlScreen, final DisplayPanel displayPanel, final String company,
-                                final String playerName) {
+	public JPanel createPanel (final ControlScreen controlScreen, final ManagementPanel managementPanel, final String company,
+                               final String playerName) {
 		//Create allocation screen panel to add things to.
         JPanel allocationScreenPanel = new JPanel();
         allocationScreenPanel.setLayout ( new BoxLayout ( allocationScreenPanel, BoxLayout.PAGE_AXIS ) );
         allocationScreenPanel.setBackground(Color.WHITE);
         
-        final CompanyResponse companyResponse = controllerHandler.getGameController().getGameModel(company, playerName);
+        final CompanyResponse companyResponse = controllerHandler.getCompanyController().getCompany(company, playerName);
 
         //Create label at top of screen in topLabelPanel and add it to screenPanel.
         JPanel topLabelPanel = new JPanel(new BorderLayout());
@@ -291,7 +291,7 @@ public class AllocationPanel {
                         controllerHandler.getVehicleController().assignVehicleToTour(vehicleModels[vehiclePos].getAdditionalTypeInformationMap().get("Registration Number"), vehicleModels[routeDetailPos].getAllocatedTour(), companyResponse.getName());
                     }
                     //Now return to previous screen.
-                    controlScreen.redrawManagement(displayPanel.createPanel(controlScreen), companyResponse);
+                    controlScreen.redrawManagement(managementPanel.createPanel(controlScreen), companyResponse);
                 }
             }
         });
@@ -300,7 +300,7 @@ public class AllocationPanel {
         previousScreenButton.addActionListener( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
                 //Now return to previous screen.
-                controlScreen.redrawManagement(displayPanel.createPanel(controlScreen), companyResponse);
+                controlScreen.redrawManagement(managementPanel.createPanel(controlScreen), companyResponse);
             }
         });
         bottomButtonPanel.add(previousScreenButton);

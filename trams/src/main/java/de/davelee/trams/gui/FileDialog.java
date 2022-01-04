@@ -8,8 +8,18 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import de.davelee.trams.api.response.CompanyResponse;
 import de.davelee.trams.controllers.ControllerHandler;
 
+/**
+ * This class represents two dialogs which will be shown to either choose a file to load or a file to save.
+ * @author Dave Lee
+ */
 public class FileDialog {
-	
+
+    /**
+     * Create a new dialog to load a file.
+     * @param currentFrame a <code>JFrame</code> object containing the parent frame of this dialog.
+     * @param controllerHandler a <code>ControllerHandler</code> object allowing access to Controllers.
+     * @return a <code>boolean</code> which is true iff a file was selected and loaded successfully.
+     */
 	public boolean createLoadFileDialog (final JFrame currentFrame, final ControllerHandler controllerHandler) {
 		JFileChooser fileDialog = new JFileChooser();
         fileDialog.setDialogTitle("Load Game");
@@ -31,8 +41,7 @@ public class FileDialog {
                 //Set control screen.
                 controlScreen.setVisible(true);
                 //Finally, run simulation
-                controllerHandler.getGameController().resumeSimulation(controlScreen);
-
+                controllerHandler.getSimulationController().resumeSimulation(controlScreen);
                 return true;
             } else {
                 return false;
@@ -43,7 +52,13 @@ public class FileDialog {
         }
         return false;
 	}
-	
+
+    /**
+     * Create a new dialog to save a file.
+     * @param currentFrame a <code>JFrame</code> object containing the parent frame of this dialog.
+     * @param controllerHandler a <code>ControllerHandler</code> object allowing access to Controllers.
+     * @return a <code>boolean</code> which is true iff a file was selected and saved successfully.
+     */
 	public boolean createSaveFileDialog ( final JFrame currentFrame, final ControllerHandler controllerHandler ) {
 		//Create file dialog box.
         JFileChooser fileDialog = new JFileChooser();

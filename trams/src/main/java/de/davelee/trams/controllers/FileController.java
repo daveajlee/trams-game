@@ -14,6 +14,10 @@ import java.io.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
+/**
+ * This class controls the loading and saving of game files in TraMS.
+ * @author Dave Lee
+ */
 @Controller
 public class FileController {
 	
@@ -21,13 +25,16 @@ public class FileController {
 	private DriverController driverController;
 	
 	@Autowired
-	private GameController gameController;
+	private CompanyController companyController;
 	
 	@Autowired
 	private MessageController messageController;
 	
 	@Autowired
 	private RouteController routeController;
+
+	@Autowired
+	private SimulationController simulationController;
 	
 	@Autowired
 	private VehicleController vehicleController;
@@ -51,36 +58,32 @@ public class FileController {
 				out.append(line);   // add everything to StringBuilder
 			}
 			TramsFile myFile = mapper.readValue(out.toString(), TramsFile.class);
-			reloadDatabaseWithFile(myFile);
-			gameController.pauseSimulation();
+			//Load game.
+			for ( CompanyResponse companyResponse : myFile.getGameModel() ) {
+				companyController.loadCompany(companyResponse);
+			}
+			//Load drivers.
+			if ( myFile.getDriverModels() != null ) {
+				driverController.loadDrivers(myFile.getDriverModels(), myFile.getGameModel()[0].getName());
+			}
+			//Load messages.
+			if ( myFile.getMessageModels() != null ) {
+				messageController.loadMessages(myFile.getMessageModels(), myFile.getGameModel()[0].getName());
+			}
+			//Load routes.
+			if ( myFile.getRouteModels() != null ) {
+				routeController.loadRoutes(myFile.getRouteModels(), myFile.getGameModel()[0].getName());
+			}
+			//Load vehicles.
+			if ( myFile.getVehicleModels() != null ) {
+				vehicleController.loadVehicles(myFile.getVehicleModels(), myFile.getGameModel()[0].getName(),
+						LocalDate.parse(myFile.getGameModel()[0].getTime(), DateTimeFormatter.ofPattern("dd-MM-yyyy")));
+			}
+			simulationController.pauseSimulation();
 			return myFile.getGameModel()[0];
 		} catch ( Exception exception ) {
 			logger.error("exception whilst loading file", exception);
 			return null;
-		}
-    }
-    
-    public void reloadDatabaseWithFile ( TramsFile myFile ) {
-    	//Load game.
-    	for ( CompanyResponse companyResponse : myFile.getGameModel() ) {
-    		gameController.loadGameModel(companyResponse);
-		}
-		//Load drivers.
-		if ( myFile.getDriverModels() != null ) {
-			driverController.loadDrivers(myFile.getDriverModels(), myFile.getGameModel()[0].getName());
-		}
-    	//Load messages.
-		if ( myFile.getMessageModels() != null ) {
-			messageController.loadMessages(myFile.getMessageModels(), myFile.getGameModel()[0].getName());
-		}
-    	//Load routes.
-		if ( myFile.getRouteModels() != null ) {
-			routeController.loadRoutes(myFile.getRouteModels(), myFile.getGameModel()[0].getName());
-		}
-    	//Load vehicles.
-		if ( myFile.getVehicleModels() != null ) {
-			vehicleController.loadVehicles(myFile.getVehicleModels(), myFile.getGameModel()[0].getName(),
-					LocalDate.parse(myFile.getGameModel()[0].getTime(), DateTimeFormatter.ofPattern("dd-MM-yyyy")));
 		}
     }
     
@@ -98,7 +101,15 @@ public class FileController {
 			if ( selectedFile.createNewFile() ) {
 				final ObjectMapper mapper = new ObjectMapper();
 				mapper.registerModule(new JavaTimeModule());
-				mapper.writeValue(selectedFile, prepareTramsFile());
+				//TODO: rebuild the trams file with all classes in a suitable structure.
+				mapper.writeValue(selectedFile, TramsFile.builder()
+						/*.driverModels(driverController.getAllDrivers(companyController.getGameModel().getCompany()))
+                        .gameModel(new GameModel[] { companyController.getGameModel() })
+                        .messageModels(messageController.getAllMessages(companyController.getGameModel().getCompany()))
+                        .routeModels(routeController.getRouteModels(companyController.getGameModel().getCompany()))
+                        .stops(journeyController.getAllStops(companyController.getGameModel().getCompany()))
+                        .vehicleModels(vehicleController.getVehicleModels(companyController.getGameModel().getCompany()))*/
+						.build());
 				return true;
 			}
 			return false;
@@ -106,18 +117,6 @@ public class FileController {
 			logger.error("Failure converting to json: " + ioException);
 			return false;
 		}
-    }
-    
-    public TramsFile prepareTramsFile ( ) {
-		//TODO: rebuild the trams file with all classes in a suitable structure.
-    	return TramsFile.builder()
-				/*.driverModels(driverController.getAllDrivers(gameController.getGameModel().getCompany()))
-				.gameModel(new GameModel[] { gameController.getGameModel() })
-				.messageModels(messageController.getAllMessages(gameController.getGameModel().getCompany()))
-				.routeModels(routeController.getRouteModels(gameController.getGameModel().getCompany()))
-				.stops(journeyController.getAllStops(gameController.getGameModel().getCompany()))
-				.vehicleModels(vehicleController.getVehicleModels(gameController.getGameModel().getCompany()))*/
-				.build();
     }
 
 }

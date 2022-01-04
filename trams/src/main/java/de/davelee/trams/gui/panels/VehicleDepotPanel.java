@@ -34,7 +34,7 @@ public class VehicleDepotPanel {
         this.controllerHandler = controllerHandler;
     }
 	
-	public JPanel createPanel ( final String registrationNumber, final ControlScreen controlScreen, final DisplayPanel displayPanel ) {
+	public JPanel createPanel ( final String registrationNumber, final ControlScreen controlScreen, final ManagementPanel displayPanel ) {
         
         //Create screen panel to add things to.
         JPanel vehicleScreenPanel = new JPanel();
@@ -59,7 +59,7 @@ public class VehicleDepotPanel {
         centrePanel.setLayout ( new BoxLayout ( centrePanel, BoxLayout.PAGE_AXIS ) );
         centrePanel.setBackground(Color.WHITE);
         
-        final CompanyResponse companyResponse = controllerHandler.getGameController().getGameModel(controlScreen.getCompany(), controlScreen.getPlayerName());
+        final CompanyResponse companyResponse = controllerHandler.getCompanyController().getCompany(controlScreen.getCompany(), controlScreen.getPlayerName());
         
         //Get vehicle data now so that we can used to compile first!
         DefaultListModel vehiclesModel = new DefaultListModel();
@@ -176,7 +176,7 @@ public class VehicleDepotPanel {
         sellVehicleButton.addActionListener ( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
                 double sellingPrice = controllerHandler.getVehicleController().sellVehicle(vehicleModel, companyResponse.getTime());
-                controllerHandler.getGameController().withdrawOrCreditBalance(sellingPrice, controlScreen.getPlayerName());
+                controllerHandler.getCompanyController().withdrawOrCreditBalance(sellingPrice, controlScreen.getPlayerName());
                 controlScreen.redrawManagement(createPanel("", controlScreen, displayPanel), companyResponse);
             }
         });
@@ -186,7 +186,7 @@ public class VehicleDepotPanel {
         JButton managementScreenButton = new JButton("Return to Management Screen");
         managementScreenButton.addActionListener ( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
-                controlScreen.redrawManagement(new DisplayPanel(controllerHandler).createPanel(controlScreen), companyResponse);
+                controlScreen.redrawManagement(new ManagementPanel(controllerHandler).createPanel(controlScreen), companyResponse);
             }
         });
         bottomButtonPanel.add(managementScreenButton);

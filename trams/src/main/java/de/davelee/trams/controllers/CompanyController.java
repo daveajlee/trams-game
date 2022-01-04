@@ -6,17 +6,19 @@ import de.davelee.trams.api.request.AdjustBalanceRequest;
 import de.davelee.trams.api.request.AdjustSatisfactionRequest;
 import de.davelee.trams.api.request.CompanyRequest;
 import de.davelee.trams.api.response.*;
-import de.davelee.trams.gui.ControlScreen;
 import de.davelee.trams.util.DifficultyLevel;
-import de.davelee.trams.util.GameThread;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.client.RestTemplate;
 
+/**
+ * This class enables access to Company data via REST endpoints to the TraMS Business microservice in the TraMS Platform.
+ * @author Dave Lee
+ */
 @Controller
-public class GameController {
+public class CompanyController {
 
 	@Autowired
 	private RestTemplate restTemplate;
@@ -27,12 +29,8 @@ public class GameController {
 	@Autowired
 	private VehicleController vehicleController;
 
-	private boolean end = false;
-    private Thread runningThread;
-    private boolean simulationRunning = false;
-
 	/**
-	 * Withdraw or credit the specified amount from/to the balance of the current game.
+	 * Withdraw or credit the specified amount from/to the balance of the current company.
 	 * @param amount a <code>double</code> with the amount to withdraw from the balance if negative or credit if positive.
 	 * @param company a <code>String</code> with the name of the company.
 	 */
@@ -45,13 +43,13 @@ public class GameController {
 	}
 
 	/**
-	 * Create a new game for the specified player running the specified scenario.
-	 * @param playerName a <code>String</code> with the player name for this new game.
-	 * @param scenarioName a <code>String</code> with the scenario to use for this new game.
-	 * @param company a <code>String</code> with the name of the company to use for this new game.
-	 * @return a <code>GameModel</code> representing the new game which was created.
+	 * Create a new company for the specified player running the specified scenario.
+	 * @param playerName a <code>String</code> with the player name for this new company.
+	 * @param scenarioName a <code>String</code> with the scenario to use for this new company.
+	 * @param company a <code>String</code> with the name of the company to use.
+	 * @return a <code>CompanyResponse</code> representing the new company which was created.
 	 */
-	public CompanyResponse createGameModel ( final String playerName, final String scenarioName, final String company ) {
+	public CompanyResponse createCompany ( final String playerName, final String scenarioName, final String company ) {
 		//Save game to db and return it.
 		restTemplate.postForObject(businessServerUrl + "company/", CompanyRequest.builder()
 				.name(company)
@@ -65,10 +63,10 @@ public class GameController {
 	}
 
 	/**
-	 * This method loads a game model from a saved file. It overwrites any existing game models in the database!
-	 * @param companyResponse a <code>CompanyResponse</code> containing the game to load.
+	 * This method loads a company from a saved file.
+	 * @param companyResponse a <code>CompanyResponse</code> containing the company to load.
 	 */
-	public void loadGameModel ( final CompanyResponse companyResponse ) {
+	public void loadCompany ( final CompanyResponse companyResponse ) {
 		//Save game to db.
 		restTemplate.postForObject(businessServerUrl + "company/", CompanyRequest.builder()
 				.name(companyResponse.getName())
@@ -86,41 +84,8 @@ public class GameController {
 	 * @param playerName a <code>String</code> with the player name for this game.
 	 * @return a <code>CompanyResponse</code> representing the current game being played.
 	 */
-	public CompanyResponse getGameModel (final String company, final String playerName ) {
+	public CompanyResponse getCompany (final String company, final String playerName ) {
 		return restTemplate.getForObject(businessServerUrl + "company/?name=" + company + "&playerName=" + playerName, CompanyResponse.class);
-	}
-
-	/**
-	 * Resume the simulation!
-	 * @param controlScreen a <code>ControlScreen</code> to update whilst running the simulation.
-	 */
-    public void resumeSimulation ( final ControlScreen controlScreen ) {
-		simulationRunning = true;
-		end = false;
-		runningThread = new GameThread("SimThread", this, 2000, controlScreen);
-		runningThread.start();
-	}
-
-	/**
-	 * Pause the simulation!
-	 * @return a <code>boolean</code> which is true iff the simulation was successfully paused.
-	 */
-	public boolean pauseSimulation ( ) {
-		if ( simulationRunning ) {
-			simulationRunning = false;
-			//logger.debug("Pausing - Setting isEnd to true in " + this.toString());
-			end = true;
-			return true;
-		}
-		return false;
-	}
-
-	/**
-	 * This method checks if the simulation is currently running.
-	 * @return a <code>boolean</code> which is true iff the simulation is still running.
-	 */
-	public boolean stillRunning ( ) {
-		return end;
 	}
 
 	/**
@@ -143,16 +108,7 @@ public class GameController {
 		}
 	}
 
-	/**
-	 * This method starts running the simulation.
-	 * @param controlScreen a <code>ControlScreen</code> to update whilst running the simulation.
-	 */
-	public void runSimulation ( final ControlScreen controlScreen ) {
-		//Finally, run simulation
-		end = false;
-		runningThread = new GameThread("simThread", this, 2000, controlScreen);
-		runningThread.start();
-	}
+
 
 	/**
 	 * Compute and return the passenger satisfaction for the current game.

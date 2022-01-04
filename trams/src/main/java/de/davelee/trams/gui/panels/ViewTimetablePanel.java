@@ -34,7 +34,7 @@ public class ViewTimetablePanel {
         this.controllerHandler = controllerHandler;
     }
 	
-	public JPanel createPanel ( final String route, final ControlScreen controlScreen, final RoutePanel routePanel, final DisplayPanel displayPanel ) {
+	public JPanel createPanel ( final String route, final ControlScreen controlScreen, final RoutePanel routePanel, final ManagementPanel displayPanel ) {
         
         //Create screen panel to add things to.
         JPanel routeScreenPanel = new JPanel();
@@ -42,7 +42,7 @@ public class ViewTimetablePanel {
         routeScreenPanel.setBackground(Color.WHITE);
      
         final RouteResponse routeModel = controllerHandler.getRouteController().getRoute(route, controlScreen.getCompany());
-        final CompanyResponse companyResponse = controllerHandler.getGameController().getGameModel(controlScreen.getCompany(), controlScreen.getPlayerName());
+        final CompanyResponse companyResponse = controllerHandler.getCompanyController().getCompany(controlScreen.getCompany(), controlScreen.getPlayerName());
             
         //Create an overall screen panel.
         JPanel overallScreenPanel = new JPanel(new BorderLayout());

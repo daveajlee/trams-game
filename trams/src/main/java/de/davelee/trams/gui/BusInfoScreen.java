@@ -9,7 +9,7 @@ import javax.swing.*;
 
 import de.davelee.trams.api.response.CompanyResponse;
 import de.davelee.trams.api.response.VehicleResponse;
-import de.davelee.trams.controllers.GameController;
+import de.davelee.trams.controllers.CompanyController;
 import de.davelee.trams.controllers.VehicleController;
 import de.davelee.trams.util.DifficultyLevel;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,9 +26,15 @@ public class BusInfoScreen extends JFrame {
 	 */
 	private static final long serialVersionUID = 1L;
 
+    /**
+     * A <code>CompanyController</code> object which allows access to company data.
+     */
     @Autowired
-    private GameController gameController;
+    private CompanyController companyController;
 
+    /**
+     * A <code>VehicleController</code> object which allows access to vehicle data.
+     */
     @Autowired
     private VehicleController vehicleController;
     
@@ -80,7 +86,7 @@ public class BusInfoScreen extends JFrame {
         westPanel.add(busDisplay);*/
         screenPanel.add(westPanel, BorderLayout.WEST);
 
-        CompanyResponse companyResponse = gameController.getGameModel(company, playerName);
+        CompanyResponse companyResponse = companyController.getCompany(company, playerName);
 
         //Add current status panel to screen panel.
         screenPanel.add(createCurrentStatusPanel(allocatedTour, vehicleModel, companyResponse), BorderLayout.CENTER);

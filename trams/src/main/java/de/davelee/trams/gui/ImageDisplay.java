@@ -12,8 +12,20 @@ public class ImageDisplay extends Canvas {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private Image image;
+
+    /**
+     * The image to be displayed.
+     */
+    private Image image;
+
+    /**
+     * The number of pixels for the left border (higher = move image to right).
+     */
     private int leftBorder;
+
+    /**
+     * The number of pixels for the top border (higher = move image to bottom).
+     */
     private int topBorder;
     
     /**

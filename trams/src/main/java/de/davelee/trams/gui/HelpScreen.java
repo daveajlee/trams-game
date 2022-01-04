@@ -18,9 +18,19 @@ public class HelpScreen extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 
-    private JTextField searchField;
+    /**
+     * A list of topics that the user can choose from.
+     */
     private JList topicsList;
+
+    /**
+     * The control model which contains list of topics available.
+     */
     private DefaultListModel topicsModel;
+
+    /**
+     * The area where topic information can be displayed.
+     */
     private JEditorPane displayPane;
 
     /**
@@ -71,7 +81,7 @@ public class HelpScreen extends JFrame {
         leftPanel.add(Box.createRigidArea(new Dimension(0, 10)));
         
         //Add search field.
-        searchField = new JTextField();
+        JTextField searchField = new JTextField();
         searchField.setColumns(40);
         searchField.addKeyListener( new KeyAdapter() {
             public void keyReleased ( KeyEvent e ) {

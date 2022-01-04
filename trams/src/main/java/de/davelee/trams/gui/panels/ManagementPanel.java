@@ -26,20 +26,33 @@ import org.slf4j.LoggerFactory;
 import de.davelee.trams.gui.ControlScreen;
 import de.davelee.trams.gui.ImageDisplay;
 
-public class DisplayPanel {
+/**
+ * This class represents the panel that is shown on the control screen to manage the game e.g. add/remove drivers, vehicles etc.
+ * @author Dave Lee
+ */
+public class ManagementPanel {
 
     private ControllerHandler controllerHandler;
 
-	private static final Logger logger = LoggerFactory.getLogger(DisplayPanel.class);
+	private static final Logger logger = LoggerFactory.getLogger(ManagementPanel.class);
 
-    public DisplayPanel (final ControllerHandler controllerHandler) {
+    /**
+     * Create a new management panel.
+     * @param controllerHandler a <code>ControllerHandler</code> containing all controllers available via Spring.
+     */
+    public ManagementPanel(final ControllerHandler controllerHandler) {
         this.controllerHandler = controllerHandler;
     }
-	
+
+    /**
+     * Display the management panel to the user in the supplied control screen.
+     * @param controlScreen a <code>ControlScreen</code> object representing the frame to display the panel in.
+     * @return a <code>JPanel</code> object containing the panel to display to the user.
+     */
 	public JPanel createPanel ( final ControlScreen controlScreen ) {
 
         //Store company response.
-        CompanyResponse companyResponse = controllerHandler.getGameController().getGameModel(controlScreen.getCompany(), controlScreen.getPlayerName());
+        CompanyResponse companyResponse = controllerHandler.getCompanyController().getCompany(controlScreen.getCompany(), controlScreen.getPlayerName());
     	
         //Create an overall screen panel.
         JPanel overallScreenPanel = new JPanel(new BorderLayout());
@@ -114,7 +127,7 @@ public class DisplayPanel {
             public void actionPerformed (ActionEvent e) {
                 //Show the actual screen!
                 ScenarioPanel myScenarioPanel = new ScenarioPanel(controllerHandler);
-                controlScreen.redrawManagement(myScenarioPanel.createPanel(controlScreen, DisplayPanel.this), companyResponse);
+                controlScreen.redrawManagement(myScenarioPanel.createPanel(controlScreen, ManagementPanel.this), companyResponse);
             }
         });
         viewScenarioButtonPanel.add(viewScenarioButton);
@@ -127,7 +140,7 @@ public class DisplayPanel {
             public void actionPerformed (ActionEvent e) {
                 //Show the actual screen!
                 LocationMapPanel myLocationMapPanel = new LocationMapPanel(controllerHandler);
-                controlScreen.redrawManagement(myLocationMapPanel.createPanel(controlScreen, DisplayPanel.this), companyResponse);
+                controlScreen.redrawManagement(myLocationMapPanel.createPanel(controlScreen, ManagementPanel.this), companyResponse);
             }
         });
         locationMapButtonPanel.add(locationMapButton);
@@ -166,7 +179,7 @@ public class DisplayPanel {
             public void actionPerformed(ActionEvent e) {
                 //Show the actual screen!
                 RoutePanel myRoutePanel = new RoutePanel(controllerHandler);
-                controlScreen.redrawManagement(myRoutePanel.createPanel(null, controlScreen, DisplayPanel.this), companyResponse);
+                controlScreen.redrawManagement(myRoutePanel.createPanel(null, controlScreen, ManagementPanel.this), companyResponse);
             }
         });
         createRouteButtonPanel.add(addRouteButton);
@@ -181,7 +194,7 @@ public class DisplayPanel {
                 RoutePanel myRoutePanel = new RoutePanel(controllerHandler);
                 ViewTimetablePanel myViewTimetablePanel = new ViewTimetablePanel(controllerHandler);
                 //Show the actual screen!
-                controlScreen.redrawManagement(myViewTimetablePanel.createPanel(controllerHandler.getRouteController().getRoutes(company)[0].getRouteNumber(), controlScreen, myRoutePanel, DisplayPanel.this), companyResponse);
+                controlScreen.redrawManagement(myViewTimetablePanel.createPanel(controllerHandler.getRouteController().getRoutes(company)[0].getRouteNumber(), controlScreen, myRoutePanel, ManagementPanel.this), companyResponse);
             }
         });
         timetableButtonPanel.add(routeTimetableButton);
@@ -221,7 +234,7 @@ public class DisplayPanel {
             public void actionPerformed(ActionEvent e) {
                 PurchaseVehiclePanel myPurchaseVehiclePanel = new PurchaseVehiclePanel(controllerHandler);
                 //Show the actual screen!
-                controlScreen.redrawManagement(myPurchaseVehiclePanel.createPanel(controllerHandler.getVehicleController().getFirstVehicleModel(company), controlScreen, DisplayPanel.this), companyResponse);
+                controlScreen.redrawManagement(myPurchaseVehiclePanel.createPanel(controllerHandler.getVehicleController().getFirstVehicleModel(company), controlScreen, ManagementPanel.this), companyResponse);
             }
         });
         purchaseVehicleButtonPanel.add(purchaseVehicleScreenButton);
@@ -235,7 +248,7 @@ public class DisplayPanel {
             public void actionPerformed(ActionEvent e) {
                 VehicleDepotPanel vehicleDepotPanel = new VehicleDepotPanel(controllerHandler);
                 //Show the actual screen!
-                controlScreen.redrawManagement(vehicleDepotPanel.createPanel("", controlScreen, DisplayPanel.this), companyResponse);
+                controlScreen.redrawManagement(vehicleDepotPanel.createPanel("", controlScreen, ManagementPanel.this), companyResponse);
             }
         });
         viewDepotButtonPanel.add(viewDepotButton);
@@ -275,7 +288,7 @@ public class DisplayPanel {
             public void actionPerformed(ActionEvent e) {
                 EmployDriverPanel employDriverPanel = new EmployDriverPanel(controllerHandler);
                 //Show the actual screen!
-                controlScreen.redrawManagement(employDriverPanel.createPanel(controlScreen, DisplayPanel.this), companyResponse);
+                controlScreen.redrawManagement(employDriverPanel.createPanel(controlScreen, ManagementPanel.this), companyResponse);
             }
         });
         employDriverButtonPanel.add(employDriversButton);
@@ -324,7 +337,7 @@ public class DisplayPanel {
             public void actionPerformed(ActionEvent e) {
                 AllocationPanel myAllocationPanel = new AllocationPanel(controllerHandler);
                 //Show the actual screen!
-                controlScreen.redrawManagement(myAllocationPanel.createPanel(controlScreen, DisplayPanel.this, companyResponse.getName(), companyResponse.getPlayerName()), companyResponse);
+                controlScreen.redrawManagement(myAllocationPanel.createPanel(controlScreen, ManagementPanel.this, companyResponse.getName(), companyResponse.getPlayerName()), companyResponse);
             }
         });
         allocationButtonPanel.add(changeAllocationButton);

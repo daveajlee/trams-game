@@ -15,9 +15,10 @@ public class SplashScreen extends JFrame {
     
 	private static final long serialVersionUID = 1L;
 
+    /**
+     * A <code>ControllerHandler</code> obtaining the currently used controllers from Spring.
+     */
     private ControllerHandler controllerHandler;
-
-    private JLabel loadingLabel;
 
     public SplashScreen (final ControllerHandler controllerHandler ) {
         this.controllerHandler = controllerHandler;
@@ -60,8 +61,8 @@ public class SplashScreen extends JFrame {
         //Construct loading panel to add to the centre panel.
         JPanel loadingPanel = new JPanel();
         loadingPanel.setBackground(Color.WHITE);
-        if ( isAboutScreen ) { loadingLabel = new JLabel("Version: " + controllerHandler.getVersion()); }
-        else { loadingLabel = new JLabel("Loading... Please Wait!"); }
+        JLabel loadingLabel = isAboutScreen ? new JLabel("Version: " + controllerHandler.getVersion()) :
+                new JLabel("Loading... Please Wait!");
         loadingLabel.setFont(new Font("Arial", Font.ITALIC, 15));
         loadingPanel.add(loadingLabel);
         centrePanel.add(loadingPanel);

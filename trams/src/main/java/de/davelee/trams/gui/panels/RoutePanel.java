@@ -42,7 +42,7 @@ public class RoutePanel {
         this.controllerHandler = controllerHandler;
     }
 	
-	public JPanel createPanel (final RouteResponse routeResponse, final ControlScreen controlScreen, final DisplayPanel displayPanel ) {
+	public JPanel createPanel (final RouteResponse routeResponse, final ControlScreen controlScreen, final ManagementPanel displayPanel ) {
         
         //Create routeScreen panel to add things to.
         JPanel routeScreenPanel = new JPanel();
@@ -94,7 +94,7 @@ public class RoutePanel {
                 routeStopModel.addElement(currentStopNames.get(i));
             }
         }
-        CompanyResponse companyResponse = controllerHandler.getGameController().getGameModel(controlScreen.getCompany(), controlScreen.getPlayerName());
+        CompanyResponse companyResponse = controllerHandler.getCompanyController().getCompany(controlScreen.getCompany(), controlScreen.getPlayerName());
         String[] stopNames = convertToStopNames(controllerHandler.getScenarioController().getScenario(companyResponse.getScenarioName()).getStopDistances());
         availableStopModel = new DefaultListModel();
         for ( int i = 0; i < stopNames.length; i++ ) {
