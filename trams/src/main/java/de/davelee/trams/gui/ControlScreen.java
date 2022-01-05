@@ -223,8 +223,10 @@ public class ControlScreen extends ButtonBar {
         //Create two tabbed panes here.
         tabbedPane = new JTabbedPane();
         tabbedPane.setBackground(Color.WHITE);
+        //get count of routes.
+        final long numberRoutes = super.getControllerHandler().getRouteController().getRoutes(companyResponse.getName()).getCount();
         //Create Live Situation tab.
-        if ( super.getControllerHandler().getRouteController().getNumberRoutes(companyResponse.getName()) > 0 ) {
+        if ( numberRoutes > 0 ) {
             drawVehicles(companyResponse);
             updateVehicleStatus(companyResponse.getTime(), companyResponse.getDifficultyLevel(), companyResponse.getName());
             tabbedPane.addTab("Live Situation", graphicsPanel);
@@ -290,7 +292,7 @@ public class ControlScreen extends ButtonBar {
             tabbedPane.setSelectedIndex(2);
         }*/
         //Disable the live situation tab if appropriate.
-        if ( super.getControllerHandler().getRouteController().getNumberRoutes(companyResponse.getName()) > 0 ) {
+        if ( numberRoutes > 0 ) {
             tabbedPane.setEnabledAt(0, true);
         } else {
             tabbedPane.setSelectedIndex(2);
@@ -673,9 +675,9 @@ public class ControlScreen extends ButtonBar {
      * @param newManagePanel a <code>JPanel</code> containing the new management panel.
      * @param companyResponse a <code>CompanyResponse</code> object representing the game currently being modelled.
      */
-    public void redrawManagement (JPanel newManagePanel, final CompanyResponse companyResponse) {
+    public void redrawManagement (final JPanel newManagePanel, final CompanyResponse companyResponse) {
         //Disable the live situation tab if appropriate.
-        if ( super.getControllerHandler().getRouteController().getNumberRoutes(companyResponse.getName()) == 0 ) {
+        if ( super.getControllerHandler().getRouteController().getRoutes(companyResponse.getName()).getCount() == 0 ) {
             tabbedPane.setEnabledAt(0, false);
         }
         //Otherwise, re-enable live panel.
@@ -754,7 +756,7 @@ public class ControlScreen extends ButtonBar {
      */
     public void populateRouteList ( final String company ) {
         routeModel.clear();
-        RouteResponse[] routeModels = super.getControllerHandler().getRouteController().getRoutes(company);
+        RouteResponse[] routeModels = super.getControllerHandler().getRouteController().getRoutes(company).getRouteResponses();
         for ( int i = 0; i < routeModels.length; i++ ) {
             //TODO: Add stops to the display of the route text
             routeModel.addElement(routeModels[i].getRouteNumber() /*+ ":" + routeModels[i].getStopNames().get(0) + " - " + routeModels[i].getStopNames().get(routeModels[i].getStopNames().size()-1)*/);
@@ -782,7 +784,7 @@ public class ControlScreen extends ButtonBar {
         optionsPanel.setBackground(Color.WHITE);
         optionsPanel.setLayout(new BorderLayout());
         //Construct route listing box!
-        if ( super.getControllerHandler().getRouteController().getNumberRoutes(companyResponse.getName()) != 0 ) {
+        if ( super.getControllerHandler().getRouteController().getRoutes(companyResponse.getName()).getCount() != 0 ) {
             populateRouteList(companyResponse.getName());
         }
         routeList.addListSelectionListener(new ListSelectionListener() {

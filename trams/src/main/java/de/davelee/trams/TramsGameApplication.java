@@ -15,16 +15,28 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
 
+/**
+ * This is the main SpringBoot class to start the application.
+ * @author Dave Lee
+ */
 @SpringBootApplication
 @Configuration
 @EnableConfigurationProperties
 public class TramsGameApplication {
 
+    /**
+     * Create a RestTemplate which can be autowired into other components.
+     * @return a <code>RestTemplate</code> object which can be used by other components.
+     */
     @Bean
     public RestTemplate restTemplate() {
         return new RestTemplate();
     }
-	
+
+    /**
+     * Run the program through the main method.
+     * @param args a <code>String</code> array of arguments which is currently ignored.
+     */
 	public static void main ( String[] args ) {
 		try {
             UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");

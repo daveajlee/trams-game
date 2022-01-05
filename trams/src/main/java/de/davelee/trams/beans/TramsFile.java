@@ -7,6 +7,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * This class represents the content of a file which can be saved or loaded and contains all of the data for a single TraMS game.
+ */
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor

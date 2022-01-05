@@ -28,17 +28,32 @@ import de.davelee.trams.api.response.VehicleResponse;
 import de.davelee.trams.controllers.ControllerHandler;
 import de.davelee.trams.gui.ControlScreen;
 
+/**
+ * This class represents a panel to purchase a vehicle.
+ * @author Dave Lee
+ */
 public class PurchaseVehiclePanel {
 
 	private ControllerHandler controllerHandler;
 	private JLabel totalPriceField;
 	private JButton purchaseVehicleButton;
 
+    /**
+     * Create a new <code>PurchaseVehiclePanel</code> with access to all Controllers to get or send data where needed.
+     * @param controllerHandler a <code>ControllerHandler</code> object allowing access to Controllers.
+     */
     public PurchaseVehiclePanel ( final ControllerHandler controllerHandler ) {
         this.controllerHandler = controllerHandler;
     }
-	
-	public JPanel createPanel ( final String vehicleType, final ControlScreen controlScreen, final ManagementPanel displayPanel) {
+
+    /**
+     * Create a new <code>PurchaseVehiclePanel</code> panel and display it to the user.
+     * @param vehicleType a <code>String</code> with the model name which should be purchased.
+     * @param controlScreen a <code>ControlScreen</code> object with the control screen that the user can use to control the game.
+     * @param managementPanel a <code>ManagementPanel</code> object which is the management panel that has been displayed to the user (for back button functionality).
+     * @return a <code>JPanel</code> object which can be displayed to the user.
+     */
+	public JPanel createPanel ( final String vehicleType, final ControlScreen controlScreen, final ManagementPanel managementPanel) {
         
         //Create screen panel to add things to.
         JPanel vehicleScreenPanel = new JPanel();
@@ -55,7 +70,7 @@ public class PurchaseVehiclePanel {
         vehicleScreenPanel.add(textLabelPanel);
         
         //Create vehicle object so that we can pull information from it.
-        final VehicleResponse vehicleResponse = controllerHandler.getVehicleController().getAllCreatedVehicles(controlScreen.getCompany())[0];
+        final VehicleResponse vehicleResponse = controllerHandler.getVehicleController().getAllCreatedVehicles(controlScreen.getCompany()).getVehicleResponses()[0];
 
         final CompanyResponse companyResponse = controllerHandler.getCompanyController().getCompany(controlScreen.getCompany(), controlScreen.getPlayerName());
         
@@ -69,7 +84,7 @@ public class PurchaseVehiclePanel {
         if ( vehicleType.contentEquals(controllerHandler.getVehicleController().getFirstVehicleModel(controlScreen.getCompany())) ) { previousVehicleTypeButton.setEnabled(false); }
         previousVehicleTypeButton.addActionListener( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
-                    controlScreen.redrawManagement(createPanel(controllerHandler.getVehicleController().getPreviousVehicleModel(controlScreen.getCompany(), vehicleType), controlScreen, displayPanel), companyResponse);
+                    controlScreen.redrawManagement(createPanel(controllerHandler.getVehicleController().getPreviousVehicleModel(controlScreen.getCompany(), vehicleType), controlScreen, managementPanel), companyResponse);
             }
         });
         previousButtonPanel.add(previousVehicleTypeButton);
@@ -90,7 +105,7 @@ public class PurchaseVehiclePanel {
         if ( vehicleType.contentEquals(controllerHandler.getVehicleController().getLastVehicleModel(controlScreen.getCompany())))  { nextVehicleTypeButton.setEnabled(false); }
         nextVehicleTypeButton.addActionListener( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
-                    controlScreen.redrawManagement(createPanel(controllerHandler.getVehicleController().getNextVehicleModel(controlScreen.getCompany(), vehicleType), controlScreen, displayPanel), companyResponse);
+                    controlScreen.redrawManagement(createPanel(controllerHandler.getVehicleController().getNextVehicleModel(controlScreen.getCompany(), vehicleType), controlScreen, managementPanel), companyResponse);
             }
         });
         nextButtonPanel.add(nextVehicleTypeButton);
@@ -212,7 +227,7 @@ public class PurchaseVehiclePanel {
                             vehicleResponse.getModelName(), companyResponse.getName(), LocalDate.parse(companyResponse.getTime(), DateTimeFormatter.ofPattern("dd-MM-yyyy")).getYear(), Optional.empty());
                     controllerHandler.getCompanyController().withdrawOrCreditBalance(purchasePrice, controlScreen.getPlayerName());
                 }
-                controlScreen.redrawManagement(displayPanel.createPanel(controlScreen), companyResponse);
+                controlScreen.redrawManagement(managementPanel.createPanel(controlScreen), companyResponse);
             }
         });
         bottomButtonPanel.add(purchaseVehicleButton);
@@ -221,7 +236,7 @@ public class PurchaseVehiclePanel {
         JButton managementScreenButton = new JButton("Return to Management Screen");
         managementScreenButton.addActionListener ( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
-                    controlScreen.redrawManagement(displayPanel.createPanel(controlScreen), companyResponse);
+                    controlScreen.redrawManagement(managementPanel.createPanel(controlScreen), companyResponse);
             }
         });
         bottomButtonPanel.add(managementScreenButton);

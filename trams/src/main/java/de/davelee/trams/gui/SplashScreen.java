@@ -20,12 +20,16 @@ public class SplashScreen extends JFrame {
      */
     private ControllerHandler controllerHandler;
 
+    /**
+     * Create a new splash screen.
+     * @param controllerHandler a <code>ControllerHandler</code> obtaining the currently used controllers from Spring.
+     */
     public SplashScreen (final ControllerHandler controllerHandler ) {
         this.controllerHandler = controllerHandler;
     }
     
     /**
-     * Create a new splash screen.
+     * Display a new splash screen.
      * @param isAboutScreen a <code>boolean</code> which is true iff this is the about screen rather than splash screen at beginning.
      */
     public void displayScreen ( boolean isAboutScreen ) {

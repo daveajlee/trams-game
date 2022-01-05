@@ -21,15 +21,29 @@ import de.davelee.trams.beans.Scenario;
 import de.davelee.trams.controllers.ControllerHandler;
 import de.davelee.trams.gui.ControlScreen;
 
+/**
+ * This class represents a panel to choose the scenario that the player would like to play.
+ * @author Dave Lee
+ */
 public class ScenarioPanel {
 
     private ControllerHandler controllerHandler;
-	
+
+    /**
+     * Create a new <code>ScenarioPanel</code> with access to all Controllers to get or send data where needed.
+     * @param controllerHandler a <code>ControllerHandler</code> object allowing access to Controllers.
+     */
 	public ScenarioPanel (final ControllerHandler controllerHandler) {
         this.controllerHandler = controllerHandler;
     }
-	
-	public JPanel createPanel ( final ControlScreen controlScreen, final ManagementPanel displayPanel ) {
+
+    /**
+     * Create a new <code>ScenarioPanel</code> panel and display it to the user.
+     * @param controlScreen a <code>ControlScreen</code> object with the control screen that the user can use to control the game.
+     * @param managementPanel a <code>ManagementPanel</code> object which is the management panel that has been displayed to the user (for back button functionality).
+     * @return a <code>JPanel</code> object which can be displayed to the user.
+     */
+	public JPanel createPanel ( final ControlScreen controlScreen, final ManagementPanel managementPanel ) {
 		//Create screen panel to add things to.
         JPanel scenarioScreenPanel = new JPanel();
         scenarioScreenPanel.setLayout ( new BoxLayout ( scenarioScreenPanel, BoxLayout.PAGE_AXIS ) );
@@ -106,7 +120,7 @@ public class ScenarioPanel {
         JButton managementScreenButton = new JButton("Return to Management Screen");
         managementScreenButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                    controlScreen.redrawManagement(displayPanel.createPanel(controlScreen), companyResponse);
+                    controlScreen.redrawManagement(managementPanel.createPanel(controlScreen), companyResponse);
             }
         });
         optionsButtonPanel.add(managementScreenButton);

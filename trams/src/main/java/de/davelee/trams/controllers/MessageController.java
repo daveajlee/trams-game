@@ -7,6 +7,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.client.RestTemplate;
 
+/**
+ * This class enables access to Message data via REST endpoints to the TraMS CRM microservice in the TraMS Platform.
+ * @author Dave Lee
+ */
 @Controller
 public class MessageController {
 

@@ -122,7 +122,7 @@ public class AllocationPanel {
         final JList routesList = new JList(routesModel);
         routesList.setFixedCellWidth(270);
         routesList.setFont(new Font("Arial", Font.PLAIN, 15));
-        RouteResponse[] routeModels = controllerHandler.getRouteController().getRoutes(companyResponse.getName());
+        RouteResponse[] routeModels = controllerHandler.getRouteController().getRoutes(companyResponse.getName()).getRouteResponses();
         for ( int i = 0; i < routeModels.length; i++ ) {
             routesModel.addElement(routeModels[i].getRouteNumber());
         }
@@ -135,7 +135,7 @@ public class AllocationPanel {
         JPanel modelPanel = new JPanel();
         modelPanel.setBackground(Color.WHITE);
         final DefaultListModel vehiclesModel = new DefaultListModel();
-        VehicleResponse[] vehicleModels = controllerHandler.getVehicleController().getAllCreatedVehicles(companyResponse.getName());
+        VehicleResponse[] vehicleModels = controllerHandler.getVehicleController().getAllCreatedVehicles(companyResponse.getName()).getVehicleResponses();
         for ( int i = 0; i < vehicleModels.length; i++ ) {
             if ( vehicleModels[i].getAllocatedTour() != null ) {
                 vehiclesModel.addElement(vehicleModels[i].getAdditionalTypeInformationMap().get("Registration Number")
@@ -197,7 +197,7 @@ public class AllocationPanel {
                     }*/
                     //Find vehicle object position.
                     int vehiclePos = -1;
-                    VehicleResponse[] vehicleModels = controllerHandler.getVehicleController().getAllCreatedVehicles(companyResponse.getName());
+                    VehicleResponse[] vehicleModels = controllerHandler.getVehicleController().getAllCreatedVehicles(companyResponse.getName()).getVehicleResponses();
                     for ( int j = 0; j < vehicleModels.length; j++ ) {
                         if ( vehicleModels[j].getAdditionalTypeInformationMap().get("Registration Number").equalsIgnoreCase(textParts[1].trim())) {
                             vehiclePos = j;

@@ -23,6 +23,10 @@ import de.davelee.trams.gui.ControlScreen;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * This class represents a panel to show a timetable for a particular route.
+ * @author Dave Lee
+ */
 public class TimetablePanel {
 
     private ControllerHandler controllerHandler;
@@ -35,11 +39,22 @@ public class TimetablePanel {
 
     private Logger logger = LoggerFactory.getLogger(TimetablePanel.class);
 
+    /**
+     * Create a new <code>TimetablePanel</code> with access to all Controllers to get or send data where needed.
+     * @param controllerHandler a <code>ControllerHandler</code> object allowing access to Controllers.
+     */
     public TimetablePanel (final ControllerHandler controllerHandler) {
         this.controllerHandler = controllerHandler;
     }
-	
-	public JPanel createPanel (final RouteResponse routeResponse, final ControlScreen controlScreen, final RoutePanel routePanel, final ManagementPanel displayPanel ) {
+
+    /**
+     * Create a new <code>TimetablePanel</code> panel and display it to the user.
+     * @param routeResponse a <code>RouteResponse</code> object containing the data for the specified route.
+     * @param controlScreen a <code>ControlScreen</code> object with the control screen that the user can use to control the game.
+     * @param managementPanel a <code>ManagementPanel</code> object which is the management panel that has been displayed to the user (for back button functionality).
+     * @return a <code>JPanel</code> object which can be displayed to the user.
+     */
+	public JPanel createPanel (final RouteResponse routeResponse, final ControlScreen controlScreen, final ManagementPanel managementPanel ) {
 		final CompanyResponse companyResponse = controllerHandler.getCompanyController().getCompany(controlScreen.getCompany(), controlScreen.getPlayerName());
         
         //Create timetableScreen panel to add things to.
@@ -303,7 +318,7 @@ public class TimetablePanel {
                         validFromDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")), validToDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")),
                         operatingDays);
                 //Return to management screen.
-                controlScreen.redrawManagement(displayPanel.createPanel(controlScreen), companyResponse);
+                controlScreen.redrawManagement(managementPanel.createPanel(controlScreen), companyResponse);
             }
         });
         bottomButtonPanel.add(generateTimetableButton);
@@ -311,7 +326,8 @@ public class TimetablePanel {
         previousScreenButton.addActionListener ( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
                 //Cancel addition.
-                controlScreen.redrawManagement(routePanel.createPanel(routeResponse, controlScreen, displayPanel), companyResponse);
+                RoutePanel routePanel = new RoutePanel(controllerHandler);
+                controlScreen.redrawManagement(routePanel.createPanel(routeResponse, controlScreen, managementPanel), companyResponse);
             }
         });
         bottomButtonPanel.add(previousScreenButton);

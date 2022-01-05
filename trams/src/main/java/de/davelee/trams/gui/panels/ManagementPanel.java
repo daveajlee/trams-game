@@ -53,7 +53,10 @@ public class ManagementPanel {
 
         //Store company response.
         CompanyResponse companyResponse = controllerHandler.getCompanyController().getCompany(controlScreen.getCompany(), controlScreen.getPlayerName());
-    	
+
+        //Store number of routes.
+        long numberRoutes = controllerHandler.getRouteController().getRoutes(companyResponse.getName()).getCount();
+
         //Create an overall screen panel.
         JPanel overallScreenPanel = new JPanel(new BorderLayout());
         overallScreenPanel.setBackground(Color.WHITE);
@@ -62,7 +65,7 @@ public class ManagementPanel {
         informationPanel.setBackground(Color.WHITE);
         ImageDisplay infoDisplay = null;
         String company = companyResponse.getName();
-        if ( controllerHandler.getRouteController().getNumberRoutes(company) == 0 || (controllerHandler.getVehicleController().getAllCreatedVehicles(company) != null && controllerHandler.getVehicleController().getAllCreatedVehicles(company).length == 0) || (controllerHandler.getVehicleController().getAllocations(company) != null && controllerHandler.getVehicleController().getAllocations(company).size() == 0 )) {
+        if ( numberRoutes == 0 || (controllerHandler.getVehicleController().getAllCreatedVehicles(company) != null && controllerHandler.getVehicleController().getAllCreatedVehicles(company).getCount() == 0) || (controllerHandler.getVehicleController().getAllocations(company) != null && controllerHandler.getVehicleController().getAllocations(company).size() == 0 )) {
             infoDisplay = new ImageDisplay("xpic.png",0,0);
         }
         else {
@@ -73,10 +76,10 @@ public class ManagementPanel {
         informationPanel.add(infoDisplay, BorderLayout.WEST);
         JTextArea informationArea = new JTextArea();
         informationArea.setFont(new Font("Arial", Font.PLAIN, 14));
-        if ( controllerHandler.getRouteController().getNumberRoutes(company) == 0 ) {
+        if ( numberRoutes == 0 ) {
             informationArea.setText("WARNING: No routes have been devised yet. Click 'Create Route' to define a route.");
         }
-        else if ( controllerHandler.getVehicleController().getAllCreatedVehicles(company).length == 0 ) {
+        else if ( controllerHandler.getVehicleController().getAllCreatedVehicles(company).getCount() == 0 ) {
             informationArea.setText("WARNING: You can't run routes without vehicles. Click 'Purchase Vehicle' to buy a vehicle");
         }
         else if ( controllerHandler.getVehicleController().getAllocations(company).size() == 0 ) {
@@ -188,13 +191,13 @@ public class ManagementPanel {
         JPanel timetableButtonPanel = new JPanel(new GridBagLayout());
         timetableButtonPanel.setBackground(Color.WHITE);
         final JButton routeTimetableButton = new JButton("View Route Info");
-        if ( controllerHandler.getRouteController().getNumberRoutes(company) == 0 ) { routeTimetableButton.setEnabled(false); }
+        if ( numberRoutes == 0 ) { routeTimetableButton.setEnabled(false); }
         routeTimetableButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 RoutePanel myRoutePanel = new RoutePanel(controllerHandler);
                 ViewTimetablePanel myViewTimetablePanel = new ViewTimetablePanel(controllerHandler);
                 //Show the actual screen!
-                controlScreen.redrawManagement(myViewTimetablePanel.createPanel(controllerHandler.getRouteController().getRoutes(company)[0].getRouteNumber(), controlScreen, myRoutePanel, ManagementPanel.this), companyResponse);
+                controlScreen.redrawManagement(myViewTimetablePanel.createPanel(controllerHandler.getRouteController().getRoutes(company).getRouteResponses()[0].getRouteNumber(), controlScreen, ManagementPanel.this), companyResponse);
             }
         });
         timetableButtonPanel.add(routeTimetableButton);
@@ -248,7 +251,7 @@ public class ManagementPanel {
             public void actionPerformed(ActionEvent e) {
                 VehicleDepotPanel vehicleDepotPanel = new VehicleDepotPanel(controllerHandler);
                 //Show the actual screen!
-                controlScreen.redrawManagement(vehicleDepotPanel.createPanel("", controlScreen, ManagementPanel.this), companyResponse);
+                controlScreen.redrawManagement(vehicleDepotPanel.createPanel("", controlScreen), companyResponse);
             }
         });
         viewDepotButtonPanel.add(viewDepotButton);

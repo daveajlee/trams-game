@@ -11,6 +11,10 @@ import org.springframework.web.client.RestTemplate;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * This class enables access to Route data via REST endpoints to the TraMS Operations microservice in the TraMS Platform.
+ * @author Dave Lee
+ */
 @Controller
 public class RouteController {
 
@@ -19,18 +23,18 @@ public class RouteController {
 	@Value("${server.operations.url}")
 	private String operationsServerUrl;
 
-	public RouteResponse[] getRoutes (final String company ) {
+	/**
+	 * Return all routes that exist for the specified company.
+	 * @param company a <code>String</code> containing the name of the company to retrieve routes for.
+	 * @return a <code>RoutesResponse</code> object containing details of all routes including a count of the number of routes available.
+	 */
+	public RoutesResponse getRoutes (final String company ) {
 		RoutesResponse routesResponse = restTemplate.getForObject(operationsServerUrl + "routes/?company=" + company, RoutesResponse.class);
 		if ( routesResponse != null && routesResponse.getRouteResponses() != null ) {
 			Arrays.sort(routesResponse.getRouteResponses(), new SortedRouteResponses());
-			return routesResponse.getRouteResponses();
+			return routesResponse;
 		}
 		return null;
-	}
-
-	public int getNumberRoutes ( final String company ) {
-		RoutesResponse routesResponse = restTemplate.getForObject(operationsServerUrl + "routes/?company=" + company, RoutesResponse.class);
-		return routesResponse != null ? routesResponse.getCount().intValue() : 0;
 	}
 
 	/**

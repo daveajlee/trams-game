@@ -5,6 +5,10 @@ import lombok.*;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * This class represents a response from the server containing details of a single vehicle according to specified criteria.
+ * @author Dave Lee
+ */
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor

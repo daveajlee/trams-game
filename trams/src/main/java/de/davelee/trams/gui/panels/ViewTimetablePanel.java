@@ -22,6 +22,10 @@ import org.slf4j.LoggerFactory;
 
 import de.davelee.trams.gui.ControlScreen;
 
+/**
+ * This class represents a panel to show a particular timetable for a particular route for a particular company.
+ * @author Dave Lee
+ */
 public class ViewTimetablePanel {
 
     private ControllerHandler controllerHandler;
@@ -30,11 +34,22 @@ public class ViewTimetablePanel {
 	
 	private static final Logger logger = LoggerFactory.getLogger(ViewTimetablePanel.class);
 
+    /**
+     * Create a new <code>ViewTimetablePanel</code> with access to all Controllers to get or send data where needed.
+     * @param controllerHandler a <code>ControllerHandler</code> object allowing access to Controllers.
+     */
     public ViewTimetablePanel ( final ControllerHandler controllerHandler ) {
         this.controllerHandler = controllerHandler;
     }
-	
-	public JPanel createPanel ( final String route, final ControlScreen controlScreen, final RoutePanel routePanel, final ManagementPanel displayPanel ) {
+
+    /**
+     * Create a new <code>ViewTimetablePanel</code> panel and display it to the user.
+     * @param route a <code>String</code> object containing the route to show timetables for.
+     * @param controlScreen a <code>ControlScreen</code> object with the control screen that the user can use to control the game.
+     * @param managementPanel a <code>ManagementPanel</code> object which is the management panel that has been displayed to the user (for back button functionality).
+     * @return a <code>JPanel</code> object which can be displayed to the user.
+     */
+	public JPanel createPanel ( final String route, final ControlScreen controlScreen, final ManagementPanel managementPanel ) {
         
         //Create screen panel to add things to.
         JPanel routeScreenPanel = new JPanel();
@@ -62,14 +77,14 @@ public class ViewTimetablePanel {
         routeSelectionLabel.setFont(new Font("Arial", Font.BOLD, 16));
         selectionPanel.add(routeSelectionLabel);
         final DefaultComboBoxModel routeSelectionModel = new DefaultComboBoxModel();
-        RouteResponse[] routeModels = controllerHandler.getRouteController().getRoutes(companyResponse.getName());
+        RouteResponse[] routeModels = controllerHandler.getRouteController().getRoutes(companyResponse.getName()).getRouteResponses();
         for ( int i = 0; i < routeModels.length; i++ ) {
             routeSelectionModel.addElement(routeModels[i].getRouteNumber());
         }
         final JComboBox routeSelectionBox = new JComboBox(routeSelectionModel);
         routeSelectionBox.addActionListener ( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
-                controlScreen.redrawManagement(createPanel(routeSelectionBox.getSelectedItem().toString(), controlScreen, routePanel, displayPanel), companyResponse);
+                controlScreen.redrawManagement(createPanel(routeSelectionBox.getSelectedItem().toString(), controlScreen, managementPanel), companyResponse);
             }
         });
         routeSelectionBox.setFont(new Font("Arial", Font.PLAIN, 15));
@@ -147,7 +162,8 @@ public class ViewTimetablePanel {
         amendRouteButton.addActionListener(new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
                 //Show the actual screen!
-                controlScreen.redrawManagement(routePanel.createPanel(routeModel, controlScreen, displayPanel), companyResponse);
+                RoutePanel routePanel = new RoutePanel(controllerHandler);
+                controlScreen.redrawManagement(routePanel.createPanel(routeModel, controlScreen, managementPanel), companyResponse);
                 //int confirm = JOptionPane.showConfirmDialog(null, "Are you sure you wish to delete route " + ((Route) theRoutesModel.get(theRoutesList.getSelectedIndex())).getRouteNumber() + "?", "Confirm Delete", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
                 //if ( confirm == JOptionPane.YES_OPTION ) {
                 //    theInterface.deleteRoute(((Route) theRoutesModel.get(theRoutesList.getSelectedIndex())));
@@ -158,7 +174,7 @@ public class ViewTimetablePanel {
         JButton managementScreenButton = new JButton("Back to Management Screen");
         managementScreenButton.addActionListener(new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
-                controlScreen.redrawManagement(displayPanel.createPanel(controlScreen), companyResponse);
+                controlScreen.redrawManagement(managementPanel.createPanel(controlScreen), companyResponse);
             }
         });
         otherServicesButtonPanel.add(managementScreenButton);

@@ -5,12 +5,19 @@ import org.springframework.stereotype.Controller;
 import javax.annotation.PostConstruct;
 import java.util.Random;
 
+/**
+ * This class controls the loading and saving of tips in TraMS.
+ * @author Dave Lee
+ */
 @Controller
 public class TipController {
 
 	//This is where we keep the tip messages.
 	private String[] tipMessages;
 
+	/**
+	 * Initialise the tip messages that should be showed to the user.
+	 */
 	@PostConstruct
 	public void init() {
 		tipMessages = new String[] {

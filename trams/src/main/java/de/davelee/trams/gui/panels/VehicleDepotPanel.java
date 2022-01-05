@@ -26,15 +26,29 @@ import de.davelee.trams.api.response.VehicleResponse;
 import de.davelee.trams.controllers.ControllerHandler;
 import de.davelee.trams.gui.ControlScreen;
 
+/**
+ * This class represents a panel to show a particular vehicle in the depot for a company.
+ * @author Dave Lee
+ */
 public class VehicleDepotPanel {
 	
 	private ControllerHandler controllerHandler;
 
+    /**
+     * Create a new <code>VehicleDepotPanel</code> with access to all Controllers to get or send data where needed.
+     * @param controllerHandler a <code>ControllerHandler</code> object allowing access to Controllers.
+     */
 	public VehicleDepotPanel (final ControllerHandler controllerHandler ) {
         this.controllerHandler = controllerHandler;
     }
-	
-	public JPanel createPanel ( final String registrationNumber, final ControlScreen controlScreen, final ManagementPanel displayPanel ) {
+
+    /**
+     * Create a new <code>VehicleDepotPanel</code> panel and display it to the user.
+     * @param registrationNumber a <code>String</code> object containing the vehicle to show at the start.
+     * @param controlScreen a <code>ControlScreen</code> object with the control screen that the user can use to control the game.
+     * @return a <code>JPanel</code> object which can be displayed to the user.
+     */
+	public JPanel createPanel ( final String registrationNumber, final ControlScreen controlScreen ) {
         
         //Create screen panel to add things to.
         JPanel vehicleScreenPanel = new JPanel();
@@ -63,7 +77,7 @@ public class VehicleDepotPanel {
         
         //Get vehicle data now so that we can used to compile first!
         DefaultListModel vehiclesModel = new DefaultListModel();
-        VehicleResponse[] vehicleModels = controllerHandler.getVehicleController().getAllCreatedVehicles(companyResponse.getName());
+        VehicleResponse[] vehicleModels = controllerHandler.getVehicleController().getAllCreatedVehicles(companyResponse.getName()).getVehicleResponses();
         for ( int i = 0; i < vehicleModels.length; i++ ) {
             if ( controllerHandler.getVehicleController().hasVehicleBeenDelivered(vehicleModels[i].getDeliveryDate(), companyResponse.getTime()) ) {
                 vehiclesModel.addElement(vehicleModels[i].getAdditionalTypeInformationMap().get("Registration Number"));
@@ -177,7 +191,7 @@ public class VehicleDepotPanel {
             public void actionPerformed ( ActionEvent e ) {
                 double sellingPrice = controllerHandler.getVehicleController().sellVehicle(vehicleModel, companyResponse.getTime());
                 controllerHandler.getCompanyController().withdrawOrCreditBalance(sellingPrice, controlScreen.getPlayerName());
-                controlScreen.redrawManagement(createPanel("", controlScreen, displayPanel), companyResponse);
+                controlScreen.redrawManagement(createPanel("", controlScreen), companyResponse);
             }
         });
         bottomButtonPanel.add(sellVehicleButton);
@@ -212,7 +226,7 @@ public class VehicleDepotPanel {
         vehiclesList.addListSelectionListener(new ListSelectionListener() {
             public void valueChanged ( ListSelectionEvent e ) {
                 String selectedValue = vehiclesList.getSelectedValue().toString();
-                controlScreen.redrawManagement(createPanel(selectedValue, controlScreen, displayPanel), companyResponse);
+                controlScreen.redrawManagement(createPanel(selectedValue, controlScreen), companyResponse);
             }
         });
         JScrollPane vehiclesPane = new JScrollPane(vehiclesList);

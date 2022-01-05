@@ -21,6 +21,10 @@ public class NewGameScreen extends JFrame {
      */
     private ControllerHandler controllerHandler;
 
+    /**
+     * Create a new game screen.
+     * @param controllerHandler a <code>ControllerHandler</code> obtaining the currently used controllers from Spring.
+     */
     public NewGameScreen (final ControllerHandler controllerHandler ) {
         this.controllerHandler = controllerHandler;
     }
@@ -166,7 +170,7 @@ public class NewGameScreen extends JFrame {
                         scenarioModel.getScenarioName() + "! \n\n Your targets for the coming days and months are: " +
                         scenarioModel.getTargets(),"Council","INBOX", companyResponse.getTime());
                 ScenarioDescriptionScreen scenarioDescriptionScreen = new ScenarioDescriptionScreen(controllerHandler);
-                scenarioDescriptionScreen.displayScreen(scenarioModel, companyNameField.getText(), playerNameField.getText());
+                scenarioDescriptionScreen.displayScreen(scenarioModel.getDescription(), companyNameField.getText(), playerNameField.getText());
                 dispose();
             }
         });

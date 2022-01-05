@@ -7,6 +7,10 @@ import lombok.ToString;
 
 import java.util.List;
 
+/**
+ * This class represents a response from the server containing details of a single stop time according to specified criteria.
+ * @author Dave Lee
+ */
 @Builder
 @Getter
 @Setter

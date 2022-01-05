@@ -1,6 +1,7 @@
 package de.davelee.trams.beans;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.ArrayList;
@@ -13,6 +14,7 @@ import java.util.List;
  */
 @Getter
 @Setter
+@NoArgsConstructor
 public class Scenario {
 
     private String scenarioName;
@@ -33,10 +35,6 @@ public class Scenario {
 
     private List<String> suppliedDrivers;
 
-    private List<String> stopDistances;
-    
-    public Scenario ( ) {
-    	stopDistances = new ArrayList<String>();
-    }
+    private List<String> stopDistances = new ArrayList<>();
 
 }

@@ -13,14 +13,28 @@ import de.davelee.trams.api.response.UserResponse;
 import de.davelee.trams.controllers.ControllerHandler;
 import de.davelee.trams.gui.ControlScreen;
 
+/**
+ * This class represents a panel to show a particular driver for a company.
+ * @author Dave Lee
+ */
 public class ViewDriverPanel {
 	
 	private ControllerHandler controllerHandler;
 
+    /**
+     * Create a new <code>ViewDriverPanel</code> with access to all Controllers to get or send data where needed.
+     * @param controllerHandler a <code>ControllerHandler</code> object allowing access to Controllers.
+     */
 	public ViewDriverPanel ( final ControllerHandler controllerHandler ) {
 	    this.controllerHandler = controllerHandler;
     }
-	
+
+    /**
+     * Create a new <code>ViewDriverPanel</code> panel and display it to the user.
+     * @param driverName a <code>String</code> object containing the name of the driver to show.
+     * @param controlScreen a <code>ControlScreen</code> object with the control screen that the user can use to control the game.
+     * @return a <code>JPanel</code> object which can be displayed to the user.
+     */
 	public JPanel createPanel ( final String driverName, final ControlScreen controlScreen ) {
 		final CompanyResponse companyResponse = controllerHandler.getCompanyController().getCompany(controlScreen.getCompany(), controlScreen.getPlayerName());
     	

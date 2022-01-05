@@ -19,6 +19,10 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
+/**
+ * This class enables access to Vehicle data via REST endpoints to the TraMS Operations microservice in the TraMS Platform.
+ * @author Dave Lee
+ */
 @Controller
 public class VehicleController {
 
@@ -28,6 +32,12 @@ public class VehicleController {
 	@Value("${server.operations.url}")
 	private String operationsServerUrl;
 
+	/**
+	 * Assign the supplied vehicle to the specified tour for the specified company.
+	 * @param registrationNumber a <code>String</code> containing the registration number of the vehicle to assign.
+	 * @param allocatedTour a <code>String</code> containing the id of the tour to assign the vehicle to.
+	 * @param company a <code>String</code> with the name of the company to assign the vehicle for.
+	 */
 	public void assignVehicleToTour ( final String registrationNumber, final String allocatedTour, final String company ) {
 		VehicleResponse[] vehicleModels = getVehicleModels(company);
 		for ( VehicleResponse vehicleModel : vehicleModels ) {
@@ -43,15 +53,26 @@ public class VehicleController {
 		}
 	}
 
-	public VehicleResponse[] getAllCreatedVehicles (final String company ) {
+	/**
+	 * Return all vehicles for the specified company.
+	 * @param company a <code>String</code> with the name of the company to retrieve the vehicles for.
+	 * @return a <code>VehiclesResponse</code> object containing all of the vehicles which exist for the specified company.
+	 */
+	public VehiclesResponse getAllCreatedVehicles (final String company ) {
 		VehiclesResponse vehiclesResponse = restTemplate.getForObject(operationsServerUrl + "vehicles/?company=" + company, VehiclesResponse.class);
 		if ( vehiclesResponse != null && vehiclesResponse.getVehicleResponses() != null ) {
 			Arrays.sort(vehiclesResponse.getVehicleResponses(), new SortedVehicleResponses());
-			return vehiclesResponse.getVehicleResponses();
+			return vehiclesResponse;
 		}
 		return null;
 	}
 
+	/**
+	 * Check if the vehicle has been delivered i.e. if the delivery date has already past or the delivery date is today.
+	 * @param deliveryDate a <code>String</code> with the delivery date of the vehicle.
+	 * @param currentDate a <code>String</code> with the current date in format dd-MM-yyyy.
+	 * @return a <code>boolean</code> which is true iff the vehicle has been delivered.
+	 */
 	public boolean hasVehicleBeenDelivered (final String deliveryDate, final String currentDate ) {
 		return LocalDate.parse(currentDate, DateTimeFormatter.ofPattern("dd-MM-yyyy")).isAfter(LocalDate.parse(deliveryDate, DateTimeFormatter.ofPattern("dd-MM-yyyy")))
 				|| LocalDate.parse(currentDate, DateTimeFormatter.ofPattern("dd-MM-yyyy")).isEqual(LocalDate.parse(deliveryDate, DateTimeFormatter.ofPattern("dd-MM-yyyy")));
@@ -64,7 +85,7 @@ public class VehicleController {
 	 * @return a <code>boolean</code> which is true iff some vehicles have been delivered!
 	 */
 	public boolean hasSomeVehiclesBeenDelivered ( final String company, final String currentDate) {
-		VehicleResponse[] vehicleModels = getAllCreatedVehicles(company);
+		VehicleResponse[] vehicleModels = getAllCreatedVehicles(company).getVehicleResponses();
 		if ( vehicleModels.length == 0 ) { return false; }
 		for ( int i = 0; i < vehicleModels.length; i++ ) {
 			if ( hasVehicleBeenDelivered(vehicleModels[i].getDeliveryDate(), currentDate)) { return true; }
@@ -88,6 +109,12 @@ public class VehicleController {
 		return null;
 	}
 
+	/**
+	 * Return the number of months since a vehicle has been delivered.
+	 * @param deliveryDate a <code>String</code> with the delivery date of the vehicle.
+	 * @param currentDate a <code>String</code> with the current date in format dd-MM-yyyy.
+	 * @return a <code>int</code> with the number of months since a vehicle has been delivered.
+	 */
 	public int getAge (final String deliveryDate, final String currentDate ) {
 		LocalDate myCurrentDate = LocalDate.parse(currentDate, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
 		LocalDate myDeliveryDate = LocalDate.parse(deliveryDate, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
@@ -97,9 +124,15 @@ public class VehicleController {
 		return (yearDiff * 12) + monthDiff;
 	}
 
-	public double getValue ( final VehicleResponse vehicleModel, final String currentDate ) {
+	/**
+	 * Return the value of this vehicle on the present date including depreciation.
+	 * @param vehicleResponse a <code>VehicleResponse</code> with details of the vehicle to get the value of.
+	 * @param currentDate a <code>String</code> with the current date in format dd-MM-yyyy.
+	 * @return a <code>double</code> with the value of this vehicle.
+	 */
+	public double getValue ( final VehicleResponse vehicleResponse, final String currentDate ) {
 		//TODO: Calculate depreciation factor in the server.
-		//return vehicleModel.getPurchasePrice() - ((vehicleModel.getDepreciationFactor() * getAge(vehicleModel.getDeliveryDate(), currentDate)) * vehicleModel.getPurchasePrice());
+		//return vehicleResponse.getPurchasePrice() - ((vehicleResponse.getDepreciationFactor() * getAge(vehicleResponse.getDeliveryDate(), currentDate)) * vehicleResponse.getPurchasePrice());
 		return 0.0;
 	}
 

@@ -19,10 +19,17 @@ public class WelcomeScreen extends JFrame {
      */
     private ControllerHandler controllerHandler;
 
+    /**
+     * Create a new welcome screen.
+     * @param controllerHandler a <code>ControllerHandler</code> obtaining the currently used controllers from Spring.
+     */
     public WelcomeScreen (final ControllerHandler controllerHandler) {
         this.controllerHandler = controllerHandler;
     }
 
+    /**
+     * Display a new welcome screen.
+     */
     public void displayScreen ( ) {
         
         //Initialise GUI with title and close attributes.

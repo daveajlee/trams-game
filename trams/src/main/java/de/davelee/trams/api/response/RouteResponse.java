@@ -5,6 +5,10 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+/**
+ * This class represents a response from the server containing details of a single route according to specified criteria.
+ * @author Dave Lee
+ */
 @Builder
 @Getter
 @Setter
