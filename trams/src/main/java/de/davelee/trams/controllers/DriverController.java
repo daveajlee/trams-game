@@ -68,7 +68,7 @@ public class DriverController {
                 .password("test")
                 .position("Tester")
                 .role("ADMIN")
-                .username(name.split(" ")[0].substring(0,1) + name.split(" ")[1])
+                .username(name.split(" ")[0].charAt(0) + name.split(" ")[1])
                 .workingDays("Monday,Tuesday")
                 .startDate(startDate)
                 .build(), Void.class);
@@ -82,19 +82,7 @@ public class DriverController {
      */
     public void createSuppliedDrivers(final List<String> suppliedDriverNames, final String startDate, final String company ) {
         for ( String suppliedDriver : suppliedDriverNames) {
-            restTemplate.postForObject(personalManServerUrl + "user/", UserRequest.builder()
-                    .dateOfBirth("01-01-1990")
-                    .firstName(suppliedDriver.split(" ")[0])
-                    .surname(suppliedDriver.split(" ")[1])
-                    .leaveEntitlementPerYear(25)
-                    .company(company)
-                    .password("test")
-                    .position("Tester")
-                    .role("ADMIN")
-                    .username(suppliedDriver.split(" ")[0].substring(0,1) + suppliedDriver.split(" ")[1])
-                    .workingDays("Monday,Tuesday")
-                    .startDate(startDate)
-                    .build(), Void.class);
+            employDriver(suppliedDriver, company, startDate);
         }
     }
 
@@ -128,14 +116,14 @@ public class DriverController {
      * @return a <code>boolean</code> which is true iff some drivers have started working.
      */
     public boolean hasSomeDriversBeenEmployed ( final CompanyResponse companyResponse ) {
-        UserResponse[] driverModels = getAllDrivers(companyResponse.getName());
+        UserResponse[] userResponses = getAllDrivers(companyResponse.getName());
         System.out.println("Attempted to get responses");
-        if (driverModels != null && driverModels.length > 0) {
+        if (userResponses != null && userResponses.length > 0) {
             System.out.println("I have responses...");
-            for (int i = 0; i < driverModels.length; i++) {
+            for (UserResponse userResponse : userResponses) {
                 LocalDate currentDate = LocalDate.parse(companyResponse.getTime(), DateTimeFormatter.ofPattern("dd-MM-yyyy"));
-                LocalDate startDate = LocalDate.parse(driverModels[i].getStartDate(), DateTimeFormatter.ofPattern("dd-MM-yyyy"));
-                if ( currentDate.isAfter(startDate) || currentDate.isEqual(startDate) ) {
+                LocalDate startDate = LocalDate.parse(userResponse.getStartDate(), DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+                if (currentDate.isAfter(startDate) || currentDate.isEqual(startDate)) {
                     return true;
                 }
             }

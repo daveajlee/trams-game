@@ -77,7 +77,7 @@ public class MessageController {
     /**
      * Return all messages for a particular company.
      * @param company a <code>String</code> with the name of the company.
-     * @return a <code>MessageResponse</code> array containing all of the messages for this company.
+     * @return a <code>MessageResponse</code> array containing all the messages for this company.
      */
     public MessageResponse[] getAllMessages (final String company ) {
         MessagesResponse messagesResponse = restTemplate.getForObject(crmServerUrl + "messages/?company=" + company, MessagesResponse.class);

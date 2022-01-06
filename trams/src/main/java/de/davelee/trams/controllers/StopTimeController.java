@@ -5,6 +5,8 @@ import de.davelee.trams.api.request.StopPatternRequest;
 import de.davelee.trams.api.response.StopTimeResponse;
 import de.davelee.trams.api.response.StopTimesResponse;
 import de.davelee.trams.util.Direction;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.client.RestTemplate;
@@ -23,6 +25,8 @@ public class StopTimeController {
     @Value("${server.operations.url}")
     private String operationsServerUrl;
 
+    private final Logger logger = LoggerFactory.getLogger(StopTimeController.class);
+
     /**
      * Generate a set of stop times based on the specified criteria.
      * @param company a <code>String</code> with the name of the company to generate stop times for.
@@ -35,7 +39,7 @@ public class StopTimeController {
      * @param frequency a <code>int</code> containing the frequency between departures in minutes.
      * @param validFromDate a <code>String</code> with the valid from date for departures in the format dd-MM-yyyy
      * @param validToDate a <code>String</code> with the valid to date for departures in the format dd-MM-yyyy
-     * @param operatingDays a <code>String</code> with comma-separated Strings with those days where the departure runs.
+     * @param operatingDays a <code>String</code> with comma-separated Strings with those days when the departure runs.
      */
     public void generateStopTimes ( final String company, final int[] stoppingTimes, final String[] stopNames,
                                     final String routeNumber, final int[] distances, final String startTime,
@@ -68,11 +72,13 @@ public class StopTimeController {
      * @param company a <code>String</code> with the name of the company to return departures for.
      * @return a <code>StopTimeResponse</code> array containing all stop times which matched the specified criteria.
      */
-    public StopTimeResponse[] getStopTimes (final Optional<Direction> direction, final String routeNumber, final String date, final String company ) {
+    public StopTimeResponse[] getStopTimes (final Optional<Direction> direction, final String routeNumber, final String date, final String company,
+                                            final Optional<String> startingTime) {
+        logger.info("Direction=" + direction + "&routeNumber=" + routeNumber) ;
         //TODO: Implement correct logic with missing parameters implemented.
-        final Optional<String> startingTime = Optional.empty(); final boolean isDepartures = false; final boolean isArrivals = false; final String stopName = "";
+        final boolean isDepartures = false; final boolean isArrivals = false; final String stopName = "";
         StopTimesResponse stopTimesResponse = startingTime.isPresent() ?
-            stopTimesResponse = restTemplate.getForObject(operationsServerUrl + "stopTimes/?company=" + company
+            restTemplate.getForObject(operationsServerUrl + "stopTimes/?company=" + company
                     + "&date=" + date + "&departures=" + isDepartures + "&arrivals=" + isArrivals + "&startingTime=" + startingTime.get()
                     + "&stopName=" + stopName, StopTimesResponse.class) :
                     restTemplate.getForObject(operationsServerUrl + "stopTimes/?company=" + company

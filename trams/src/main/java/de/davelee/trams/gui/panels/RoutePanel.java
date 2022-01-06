@@ -135,6 +135,7 @@ public class RoutePanel {
         routeAddStopButton.addActionListener(new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
                 String stopName = availableStopList.getSelectedValue().toString();
+                controllerHandler.getStopController().saveStop(stopName, controlScreen.getCompany());
                 routeStopModel.addElement(stopName);
                 availableStopModel.removeElement(stopName);
                 enableCreateButtons();
@@ -183,7 +184,7 @@ public class RoutePanel {
                for ( int i = 0; i < routeStopModel.size(); i++ ) {
                     selectedOutwardStops.add(routeStopModel.getElementAt(i).toString());
                }
-               controllerHandler.getRouteController().addNewRoute( routeNumberField.getText(), selectedOutwardStops, companyResponse.getName());
+               controllerHandler.getRouteController().addNewRoute( routeNumberField.getText(), companyResponse.getName());
                RouteResponse routeResponse1 = controllerHandler.getRouteController().getRoute(routeNumberField.getText(), companyResponse.getName());
                //Now move to timetable screen.
                TimetablePanel myTimetablePanel = new TimetablePanel(controllerHandler);

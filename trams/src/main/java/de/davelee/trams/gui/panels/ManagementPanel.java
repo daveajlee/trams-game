@@ -237,7 +237,7 @@ public class ManagementPanel {
             public void actionPerformed(ActionEvent e) {
                 PurchaseVehiclePanel myPurchaseVehiclePanel = new PurchaseVehiclePanel(controllerHandler);
                 //Show the actual screen!
-                controlScreen.redrawManagement(myPurchaseVehiclePanel.createPanel(controllerHandler.getVehicleController().getFirstVehicleModel(company), controlScreen, ManagementPanel.this), companyResponse);
+                controlScreen.redrawManagement(myPurchaseVehiclePanel.createPanel(controllerHandler.getVehicleController().getVehicles(company).getVehicleResponses()[0].getModelName(), controlScreen, ManagementPanel.this), companyResponse);
             }
         });
         purchaseVehicleButtonPanel.add(purchaseVehicleScreenButton);

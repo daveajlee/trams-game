@@ -13,6 +13,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Controller;
 
 import java.io.BufferedReader;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
 
@@ -51,13 +52,17 @@ public class ScenarioController {
 		mapper.registerModule(new JavaTimeModule());
 		try {
 			String filePath = "scenarios/" + scenarioName.split(" ")[0].toLowerCase() + ".json";
-			BufferedReader reader = new BufferedReader(new InputStreamReader(getClass().getClassLoader().getResourceAsStream(filePath)));
-			StringBuilder out = new StringBuilder();
-			String line;
-			while ((line = reader.readLine()) != null) {
-				out.append(line);   // add everything to StringBuilder
+			InputStream inputStream = getClass().getClassLoader() != null ? getClass().getClassLoader().getResourceAsStream(filePath) : null;
+			if (inputStream != null) {
+				BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+				StringBuilder out = new StringBuilder();
+				String line;
+				while ((line = reader.readLine()) != null) {
+					out.append(line);   // add everything to StringBuilder
+				}
+				return mapper.readValue(out.toString(), Scenario.class);
 			}
-			return mapper.readValue(out.toString(), Scenario.class);
+			return null;
 		} catch ( Exception exception ) {
 			logger.error("exception whilst loading file", exception);
 			return null;

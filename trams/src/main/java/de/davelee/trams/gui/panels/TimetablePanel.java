@@ -8,8 +8,6 @@ import java.awt.GridBagLayout;
 import java.awt.event.*;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -146,11 +144,11 @@ public class TimetablePanel {
         betweenStopsPanel.add(betweenLabel);
         //Save the stop names to a variable.
         //TODO: Add a list of the names of stops served by this route.
-        List<String> stopNames = /*routeResponse.getStopNames();*/ new ArrayList<>();
+        String[] stopNames = controllerHandler.getStopController().getAllStops(controlScreen.getCompany());
         //Terminus 1 Combo box.
         terminus1Box = new JComboBox();
-        for ( int i = 0; i < stopNames.size()-1; i++ ) {
-            terminus1Box.addItem(stopNames.get(i));
+        for ( int i = 0; i < stopNames.length-1; i++ ) {
+            terminus1Box.addItem(stopNames[i]);
         }
         terminus1Box.setSelectedIndex(0);
         terminus1Box.setFont(new Font("Arial", Font.PLAIN, 14));
@@ -158,8 +156,8 @@ public class TimetablePanel {
             public void itemStateChanged ( ItemEvent e ) {
                 //Update terminus 2 box!!!
                 terminus2Box.removeAllItems();
-                for ( int i = (stopNames.indexOf(terminus1Box.getSelectedItem().toString()))+1; i < stopNames.size(); i++ ) {
-                    terminus2Box.addItem(stopNames.get(i));
+                for ( int i = 0; i < stopNames.length; i++ ) {
+                    terminus2Box.addItem(stopNames[i]);
                 }
                 //Update spinner!
                 everyMinuteModel.setMaximum(getCurrentRouteDuration(Integer.parseInt(everyMinuteSpinner.getValue().toString()), companyResponse.getScenarioName()));
@@ -172,8 +170,8 @@ public class TimetablePanel {
         betweenStopsPanel.add(andLabel);
         //Terminus 2 Combo box.
         terminus2Box = new JComboBox();
-        for ( int i = 1; i < stopNames.size(); i++ ) {
-            terminus2Box.addItem(stopNames.get(i));
+        for ( int i = 1; i < stopNames.length; i++ ) {
+            terminus2Box.addItem(stopNames[i]);
         }
         terminus2Box.setSelectedIndex(terminus2Box.getItemCount() - 1);
         terminus2Box.setFont(new Font("Arial", Font.PLAIN, 14));
@@ -310,10 +308,10 @@ public class TimetablePanel {
                 LocalTime timeTo = LocalTime.of(Integer.parseInt(toHourSpinner.getValue().toString()), Integer.parseInt(toMinuteSpinner.getValue().toString()));
                 //Generate timetable as a series of stop times.
                 //TODO: implement the stoppingTimes and distances arrays in the GUI correctly instead of arrays of 0.
-                int[] stoppingTimes = new int[stopNames.size()];
-                int[] distances = new int[stopNames.size()-1];
+                int[] stoppingTimes = new int[stopNames.length];
+                int[] distances = new int[stopNames.length-1];
                 controllerHandler.getStopTimeController().generateStopTimes(companyResponse.getName(), stoppingTimes,
-                        stopNames.toArray(new String[0]), routeResponse.getRouteNumber(), distances, timeFrom.format(DateTimeFormatter.ofPattern("HH:mm")),
+                        stopNames, routeResponse.getRouteNumber(), distances, timeFrom.format(DateTimeFormatter.ofPattern("HH:mm")),
                         timeTo.format(DateTimeFormatter.ofPattern("HH:mm")), (Integer) everyMinuteSpinner.getValue(),
                         validFromDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")), validToDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")),
                         operatingDays);

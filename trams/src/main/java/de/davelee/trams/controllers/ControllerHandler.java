@@ -50,6 +50,9 @@ public class ControllerHandler {
     @Autowired
     private SimulationController simulationController;
 
+    @Autowired
+    private StopController stopController;
+
     @Value("${trams.version}")
     private String version;
 

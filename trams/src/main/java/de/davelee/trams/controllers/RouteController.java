@@ -9,7 +9,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Arrays;
-import java.util.List;
 
 /**
  * This class enables access to Route data via REST endpoints to the TraMS Operations microservice in the TraMS Platform.
@@ -50,36 +49,13 @@ public class RouteController {
 	/**
 	 * Add a new route.
 	 * @param routeNumber a <code>String</code> with the number for this route.
-	 * @param stopNames a <code>String</code> list with the stops served by this route.
 	 * @param company a <code>String</code> with the name of the company to create route for.
 	 */
-	public void addNewRoute ( final String routeNumber, final List<String> stopNames, final String company ) {
+	public void addNewRoute ( final String routeNumber, final String company ) {
 		restTemplate.postForObject(operationsServerUrl + "route/", AddRouteRequest.builder()
 				.company(company)
 				.routeNumber(routeNumber)
 				.build(), Void.class);
-	}
-
-	/**
-	 * Delete route.
-	 * @param company a <code>String</code> with the name of the company.
-	 * @param routeNumber a <code>String</code> with the number for this route.
-	 */
-	public void deleteRoute ( final String company, final String routeNumber ) {
-		restTemplate.delete(operationsServerUrl + "route/?company=" + company + "&routeNumber=" + routeNumber);
-	}
-
-	/**
-	 * Edit route - replace the two routes.
-	 * @param company a <code>String</code> with the name of the company.
-	 * @param routeNumber a <code>String</code> with the string representation of the route.
-	 * @param stopNames a <code>String</code> list with the name of the stops for this route.
-	 */
-	public void editRoute ( final String company, final String routeNumber, final List<String> stopNames ) {
-		//Delete old route.
-		deleteRoute(company, routeNumber);
-		//Add new route.
-		addNewRoute(routeNumber, stopNames, company);
 	}
 
 	/**

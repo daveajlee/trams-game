@@ -45,7 +45,10 @@ public class VehicleControllerTest {
 				.purchased(true)
 				.purchasePrice(10000.0)
 				.build());
-		assertEquals(1, vehicleController.createSuppliedVehicles(scenario, "01-01-2014", "Mustermann GmbH"));
+		Mockito.when(vehicleController.getVehicles("Mustermann GmbH")).thenReturn(VehiclesResponse.builder()
+				.count(0L)
+				.vehicleResponses(new VehicleResponse[0]).build());
+		assertEquals(1, vehicleController.createSuppliedVehicles(scenario.getSuppliedVehicles(), "01-01-2014", "Mustermann GmbH"));
 	}
 
 	@Test
@@ -102,41 +105,33 @@ public class VehicleControllerTest {
 	@Test
 	public void testGetVehicleById ( ) {
 		//Test begins here.
+		Mockito.when(vehicleController.getVehicles("Mustermann GmbH")).thenReturn(VehiclesResponse.builder()
+				.count(0L)
+				.vehicleResponses(new VehicleResponse[0]).build());
 		vehicleController.purchaseVehicle("Mercedes", "Mustermann GmbH", 2014, Optional.of(101));
 		Mockito.when(restTemplate.getForObject(anyString(), eq(VehiclesResponse.class))).
 				thenReturn(VehiclesResponse.builder()
+						.count(1L)
 						.vehicleResponses(new VehicleResponse[] { VehicleResponse.builder().company("Mustermann GmbH")
 								.additionalTypeInformationMap(Map.of("Registration Number", "DDD2 HJK"))
 								.deliveryDate("24-12-2020").build() })
 						.build());
-		assertEquals(1, vehicleController.getVehicleModels("Mustermann GmbH").length);
+		assertEquals(1, vehicleController.getVehicles("Mustermann GmbH").getCount());
 		Assertions.assertNotNull(vehicleController.getVehicleByRegistrationNumber("DDD2 HJK", "Mustermann GmbH"));
 		Assertions.assertNull(vehicleController.getVehicleByRegistrationNumber("2013-001", "Mustermann GmbH"));
-	}
-
-	@Test
-	public void testGetModel() {
-		Mockito.when(restTemplate.getForObject(anyString(), eq(VehiclesResponse.class))).
-				thenReturn(VehiclesResponse.builder()
-						.vehicleResponses(new VehicleResponse[] { VehicleResponse.builder().company("Mustermann GmbH")
-								.additionalTypeInformationMap(Map.of("Registration Number", "DDD2 HJK"))
-								.deliveryDate("24-12-2020")
-								.modelName("MyBus Single Decker").build() })
-						.build());
-		Assertions.assertNotNull(vehicleController.getFirstVehicleModel("Mustermann GmbH"));
-		assertEquals(vehicleController.getFirstVehicleModel("Mustermann GmbH"), "MyBus Single Decker");
 	}
 
 	@Test
 	public void testVehicleSize() {
 		Mockito.when(restTemplate.getForObject(anyString(), eq(VehiclesResponse.class))).
 				thenReturn(VehiclesResponse.builder()
+						.count(1L)
 						.vehicleResponses(new VehicleResponse[] { VehicleResponse.builder().company("Mustermann GmbH")
 								.additionalTypeInformationMap(Map.of("Registration Number", "DDD2 HJK"))
 								.deliveryDate("24-12-2020")
 								.modelName("MyBus Single Decker").build() })
 						.build());
-		assertEquals(vehicleController.getVehicleModels("Mustermann GmbH").length, 1);
+		assertEquals(vehicleController.getVehicles("Mustermann GmbH").getCount(), 1);
 	}
 
 }

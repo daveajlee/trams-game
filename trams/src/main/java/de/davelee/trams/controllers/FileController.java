@@ -95,10 +95,11 @@ public class FileController {
     public boolean saveFile ( final File selectedFile ) {
 		//Output json.
 		try {
+			boolean resultOfDelete = true;
 			if ( selectedFile.exists() ) {
-				selectedFile.delete();
+				resultOfDelete = selectedFile.delete();
 			}
-			if ( selectedFile.createNewFile() ) {
+			if ( resultOfDelete && selectedFile.createNewFile() ) {
 				final ObjectMapper mapper = new ObjectMapper();
 				mapper.registerModule(new JavaTimeModule());
 				//TODO: rebuild the trams file with all classes in a suitable structure.

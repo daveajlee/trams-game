@@ -273,7 +273,7 @@ public class AllocationPanel {
                         String[] allocationSplit = allocationsModel.get(i).toString().split("&");
                         //Store route detail object.
                         String routeNumber = allocationSplit[0].split("/")[0]; int routeDetailPos = -1;
-                        VehicleResponse[] vehicleModels = controllerHandler.getVehicleController().getVehicleModelsForRoute(companyResponse.getName(), controllerHandler.getRouteController().getRoute(routeNumber, companyResponse.getName()).getRouteNumber());
+                        VehicleResponse[] vehicleModels = controllerHandler.getVehicleController().getVehiclesForRoute(companyResponse.getName(), controllerHandler.getRouteController().getRoute(routeNumber, companyResponse.getName()).getRouteNumber()).getVehicleResponses();
                         for ( int k = 0; k < vehicleModels.length; k++ ) {
                             if ( vehicleModels[k].getAllocatedTour().contentEquals(allocationSplit[0]) ) {
                                 routeDetailPos = k;

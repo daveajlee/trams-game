@@ -81,7 +81,7 @@ public class PurchaseVehiclePanel {
         JPanel previousButtonPanel = new JPanel(new GridBagLayout());
         previousButtonPanel.setBackground(Color.WHITE);
         JButton previousVehicleTypeButton = new JButton("< Previous Vehicle Type");
-        if ( vehicleType.contentEquals(controllerHandler.getVehicleController().getFirstVehicleModel(controlScreen.getCompany())) ) { previousVehicleTypeButton.setEnabled(false); }
+        if ( vehicleType.contentEquals(controllerHandler.getVehicleController().getVehicles(controlScreen.getCompany()).getVehicleResponses()[0].getModelName()) ) { previousVehicleTypeButton.setEnabled(false); }
         previousVehicleTypeButton.addActionListener( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
                     controlScreen.redrawManagement(createPanel(controllerHandler.getVehicleController().getPreviousVehicleModel(controlScreen.getCompany(), vehicleType), controlScreen, managementPanel), companyResponse);
@@ -102,7 +102,7 @@ public class PurchaseVehiclePanel {
         JPanel nextButtonPanel = new JPanel(new GridBagLayout());
         nextButtonPanel.setBackground(Color.WHITE);
         JButton nextVehicleTypeButton = new JButton("Next Vehicle Type >");
-        if ( vehicleType.contentEquals(controllerHandler.getVehicleController().getLastVehicleModel(controlScreen.getCompany())))  { nextVehicleTypeButton.setEnabled(false); }
+        if ( vehicleType.contentEquals(controllerHandler.getVehicleController().getVehicles(controlScreen.getCompany()).getVehicleResponses()[0].getModelName()))  { nextVehicleTypeButton.setEnabled(false); }
         nextVehicleTypeButton.addActionListener( new ActionListener() {
             public void actionPerformed ( ActionEvent e ) {
                     controlScreen.redrawManagement(createPanel(controllerHandler.getVehicleController().getNextVehicleModel(controlScreen.getCompany(), vehicleType), controlScreen, managementPanel), companyResponse);

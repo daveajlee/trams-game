@@ -231,6 +231,7 @@ public class ControlScreen extends ButtonBar {
             updateVehicleStatus(companyResponse.getTime(), companyResponse.getDifficultyLevel(), companyResponse.getName());
             tabbedPane.addTab("Live Situation", graphicsPanel);
             tabbedPane.setSelectedIndex(0);
+            super.getControllerHandler().getSimulationController().runSimulation(ControlScreen.this);
         }
         else {
             drawVehicles(companyResponse);
@@ -430,7 +431,7 @@ public class ControlScreen extends ButtonBar {
     public void updateVehicleStatus ( final String time, final String difficultyLevel, final String company ) {
         String vehicleStatus = "";
 
-        VehicleResponse[] vehicleModels = super.getControllerHandler().getVehicleController().getVehicleModelsForRoute(company, routeList.getSelectedValue().toString().split(":")[0]);
+        VehicleResponse[] vehicleModels = super.getControllerHandler().getVehicleController().getVehiclesForRoute(company, routeList.getSelectedValue().toString().split(":")[0]).getVehicleResponses();
         for (int i = 0; i < vehicleModels.length; i++) {
             String vehiclePos = super.getControllerHandler().getVehicleController().getCurrentStopName(vehicleModels[i], time, difficultyLevel);
             vehicleStatus += "Schedule " + vehicleModels[i].getAllocatedTour() + " is at " + vehiclePos + " with a delay of " + vehicleModels[i].getDelayInMinutes() + " minutes.\n";
@@ -843,10 +844,10 @@ public class ControlScreen extends ButtonBar {
         //logger.debug("Min for this page is: " + min);
         currentPage = (minVehicle/4); if ( (minVehicle+1) % 4 !=0 || currentPage == 0 ) { currentPage++; }
         int totalPages;
-        final int routeScheduleModelsLength;
+        final long routeScheduleModelsLength;
         if ( routeList.getModel().getSize() > 0 ) {
-            routeScheduleModelsLength = super.getControllerHandler().getVehicleController().getVehicleModelsForRoute(companyResponse.getName(), routeList.getSelectedValue().toString()).length;
-            totalPages = (routeScheduleModelsLength/4); if ((routeScheduleModelsLength%4) !=0 || totalPages == 0 ) { totalPages++; }
+            routeScheduleModelsLength = super.getControllerHandler().getVehicleController().getVehiclesForRoute(companyResponse.getName(), routeList.getSelectedValue().toString()).getCount();
+            totalPages = ((int) routeScheduleModelsLength/4); if ((routeScheduleModelsLength%4) !=0 || totalPages == 0 ) { totalPages++; }
         }
         else {
             totalPages = 0;
@@ -885,7 +886,7 @@ public class ControlScreen extends ButtonBar {
                 minVehicle += 4; maxVehicle += 5;
                 //Now check if max vehicle is bigger than display vehicles - if it is then set it to display vehicles.
                 if ( maxVehicle > routeScheduleModelsLength ) {
-                    maxVehicle = routeScheduleModelsLength;
+                    maxVehicle = (int) routeScheduleModelsLength;
                 }
                 ControlScreen.super.getControllerHandler().getSimulationController().pauseSimulation();
                 ControlScreen.this.redrawVehicles(generateNewVehiclePanel(companyResponse));

@@ -44,11 +44,14 @@ public class StopController {
 	 */
 	public String[] getAllStops ( final String company ) {
 		StopsResponse stopsResponse = restTemplate.getForObject(operationsServerUrl + "stops/?company=" + company, StopsResponse.class);
-		String[] stopNames = new String[stopsResponse.getStopResponses().length];
-		for ( int i = 0; i < stopNames.length; i++ ) {
-			stopNames[i] = stopsResponse.getStopResponses()[i].getName();
+		if ( stopsResponse != null ) {
+			String[] stopNames = new String[stopsResponse.getCount().intValue()];
+			for (int i = 0; i < stopNames.length; i++) {
+				stopNames[i] = stopsResponse.getStopResponses()[i].getName();
+			}
+			return stopNames;
 		}
-		return stopNames;
+		return null;
     }
 
 	/**

@@ -1,10 +1,7 @@
 package de.davelee.trams.controllers;
 
 import de.davelee.trams.TramsGameApplication;
-import de.davelee.trams.api.response.CompanyResponse;
-import de.davelee.trams.api.response.SatisfactionRateResponse;
-import de.davelee.trams.api.response.TimeResponse;
-import de.davelee.trams.api.response.VehicleResponse;
+import de.davelee.trams.api.response.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -60,8 +57,11 @@ public class CompanyControllerTest {
 						.satisfactionRate(91)
 						.build()
 		);
-		Mockito.when(vehicleController.getVehicleModels("Mustermann GmbH")).thenReturn(
-				new VehicleResponse[0]
+		Mockito.when(vehicleController.getVehicles("Mustermann GmbH")).thenReturn(
+				VehiclesResponse.builder()
+						.count(0L)
+						.vehicleResponses(new VehicleResponse[0])
+						.build()
 		);
 		assertEquals(companyController.computeAndReturnPassengerSatisfaction("Mustermann GmbH", "EASY"), 91);
 	}

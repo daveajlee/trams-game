@@ -162,7 +162,7 @@ public class NewGameScreen extends JFrame {
                 //Create Game
                 CompanyResponse companyResponse = controllerHandler.getCompanyController().createCompany(playerNameField.getText(), scenarioModel.getScenarioName(), companyNameField.getText());
                 //Create supplied vehicles.
-                controllerHandler.getVehicleController().createSuppliedVehicles(scenarioModel, companyResponse.getTime(), companyNameField.getText());
+                controllerHandler.getVehicleController().createSuppliedVehicles(scenarioModel.getSuppliedVehicles(), companyResponse.getTime(), companyNameField.getText());
                 //Create supplied drivers.
                 controllerHandler.getDriverController().createSuppliedDrivers(scenarioModel.getSuppliedDrivers(), companyResponse.getTime(), companyNameField.getText());
                 //Create welcome message.

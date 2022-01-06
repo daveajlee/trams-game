@@ -35,7 +35,7 @@ public class CompanyController {
 	 * @param company a <code>String</code> with the name of the company.
 	 */
 	public void withdrawOrCreditBalance ( final double amount, final String company ) {
-		BalanceResponse balanceResponse = restTemplate.patchForObject(businessServerUrl + "company/balance",
+		restTemplate.patchForObject(businessServerUrl + "company/balance",
 				AdjustBalanceRequest.builder()
 						.company(company)
 						.value(amount).build(),
@@ -102,7 +102,7 @@ public class CompanyController {
 				TimeResponse.class);
 		//Convert time.
 		try {
-			return timeResponse.getTime();
+			return timeResponse != null ? timeResponse.getTime() : null;
 		} catch ( DateTimeParseException dateTimeParseException ) {
 			return null;
 		}
@@ -121,7 +121,7 @@ public class CompanyController {
 		//Now count number of route schedules into three groups: 1 - 5 minutes late, 6 - 15 minutes late, 16+ minutes late.
 		int numSmallLateSchedules = 0; int numMediumLateSchedules = 0; int numLargeLateSchedules = 0;
 		//Now go through all vehicles.
-		for ( VehicleResponse vehicleModel : vehicleController.getVehicleModels(company) ) {
+		for ( VehicleResponse vehicleModel : vehicleController.getVehicles(company).getVehicleResponses() ) {
 			//Running... 1 - 5 minutes late.
 			if ( vehicleModel.getDelayInMinutes() > 0 && vehicleModel.getDelayInMinutes() < 6 ) {
 				numSmallLateSchedules++;
@@ -163,7 +163,7 @@ public class CompanyController {
 						.company(company)
 						.satisfactionRate(totalSubtract).build(),
 				SatisfactionRateResponse.class);
-		return satisfactionRateResponse.getSatisfactionRate();
+		return satisfactionRateResponse != null ? satisfactionRateResponse.getSatisfactionRate() : -1.0;
 	}
 
 }
