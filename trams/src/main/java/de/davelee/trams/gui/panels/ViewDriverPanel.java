@@ -1,12 +1,8 @@
 package de.davelee.trams.gui.panels;
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 
 import de.davelee.trams.api.response.CompanyResponse;
 import de.davelee.trams.api.response.UserResponse;
@@ -17,17 +13,7 @@ import de.davelee.trams.gui.ControlScreen;
  * This class represents a panel to show a particular driver for a company.
  * @author Dave Lee
  */
-public class ViewDriverPanel {
-	
-	private ControllerHandler controllerHandler;
-
-    /**
-     * Create a new <code>ViewDriverPanel</code> with access to all Controllers to get or send data where needed.
-     * @param controllerHandler a <code>ControllerHandler</code> object allowing access to Controllers.
-     */
-	public ViewDriverPanel ( final ControllerHandler controllerHandler ) {
-	    this.controllerHandler = controllerHandler;
-    }
+public record ViewDriverPanel ( ControllerHandler controllerHandler ) {
 
     /**
      * Create a new <code>ViewDriverPanel</code> panel and display it to the user.
@@ -52,7 +38,7 @@ public class ViewDriverPanel {
         textLabelPanel.add(topLabel, BorderLayout.CENTER);
         driverScreenPanel.add(textLabelPanel);
 
-        //Now create a border layout so that we can have a choice of drivers on the right hand side.
+        //Now create a border layout so that we can have a choice of drivers on the right-hand side.
         JPanel driverBorderPanel = new JPanel(new BorderLayout());
         driverBorderPanel.setBackground(Color.WHITE);
 
@@ -61,11 +47,11 @@ public class ViewDriverPanel {
         centrePanel.setLayout ( new BoxLayout ( centrePanel, BoxLayout.PAGE_AXIS ) );
         centrePanel.setBackground(Color.WHITE);
 
-        //Get driver data now so that we can used to compile first!
-        DefaultListModel driversModel = new DefaultListModel();
+        //Get driver data now!
+        DefaultListModel<String> driversModel = new DefaultListModel<>();
         UserResponse[] driverModels = controllerHandler.getDriverController().getAllDrivers(companyResponse.getName());
-        for ( int i = 0; i < driverModels.length; i++ ) {
-            driversModel.addElement(driverModels[i].getUsername());
+        for (UserResponse model : driverModels) {
+            driversModel.addElement(model.getUsername());
         }
 
         //Create driver object so that we can pull information from it.
@@ -73,7 +59,7 @@ public class ViewDriverPanel {
         if ( !driverName.equalsIgnoreCase("") ) {
             driverModel = controllerHandler.getDriverController().getDriverByName(driverName, companyResponse.getName());
         } else {
-            driverModel = controllerHandler.getDriverController().getDriverByName(driversModel.get(0).toString(), companyResponse.getName());
+            driverModel = controllerHandler.getDriverController().getDriverByName(driversModel.get(0), companyResponse.getName());
         }
 
         //Create panel for information fields.
@@ -119,21 +105,15 @@ public class ViewDriverPanel {
 
         //Create sack driver button and add it to screen panel.
         JButton sackDriverButton = new JButton("Sack Driver");
-        sackDriverButton.addActionListener ( new ActionListener() {
-            public void actionPerformed ( ActionEvent e ) {
-                controllerHandler.getDriverController().sackDriver(driverModel.getCompany(), driverModel.getUsername());
-                controlScreen.redrawManagement(createPanel("", controlScreen), companyResponse);
-            }
+        sackDriverButton.addActionListener (e -> {
+            controllerHandler.getDriverController().sackDriver(driverModel.getCompany(), driverModel.getUsername());
+            controlScreen.redrawManagement(createPanel("", controlScreen), companyResponse);
         });
         bottomButtonPanel.add(sackDriverButton);
 
         //Create return to create game screen button and add it to screen panel.
         JButton managementScreenButton = new JButton("Return to Management Screen");
-        managementScreenButton.addActionListener ( new ActionListener() {
-            public void actionPerformed ( ActionEvent e ) {
-                controlScreen.redrawManagement(new ManagementPanel(controllerHandler).createPanel(controlScreen), companyResponse);
-            }
-        });
+        managementScreenButton.addActionListener (e -> controlScreen.redrawManagement(new ManagementPanel(controllerHandler).createPanel(controlScreen), companyResponse));
         bottomButtonPanel.add(managementScreenButton);
 
         //Add bottom button panel to the screen panel.
@@ -148,17 +128,15 @@ public class ViewDriverPanel {
         //Third part of route panel is list of routes.
         JPanel modelPanel = new JPanel();
         modelPanel.setBackground(Color.WHITE);
-        final JList driversList = new JList(driversModel);
+        final JList<String> driversList = new JList<>(driversModel);
         driversList.setFixedCellWidth(100);
         driversList.setVisibleRowCount(25);
         driversList.setSelectedValue(driverModel.getUsername(), true);
         driversList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         driversList.setFont(new Font("Arial", Font.PLAIN, 15));
-        driversList.addListSelectionListener(new ListSelectionListener() {
-            public void valueChanged ( ListSelectionEvent e ) {
-                String selectedValue = driversList.getSelectedValue().toString();
-                controlScreen.redrawManagement(createPanel(selectedValue, controlScreen), companyResponse);
-            }
+        driversList.addListSelectionListener(e -> {
+            String selectedValue = driversList.getSelectedValue();
+            controlScreen.redrawManagement(createPanel(selectedValue, controlScreen), companyResponse);
         });
         JScrollPane driversPane = new JScrollPane(driversList);
         modelPanel.add(driversPane);

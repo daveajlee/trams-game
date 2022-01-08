@@ -7,7 +7,6 @@ import java.awt.event.*;
 import java.io.*;
 //Import java swing packages.
 import javax.swing.*;
-import javax.swing.event.*;
 
 /**
  * HelpScreen.java is the screen to display the help screen for TraMS.
@@ -16,17 +15,18 @@ import javax.swing.event.*;
  */
 public class HelpScreen extends JFrame {
 
+    @Serial
 	private static final long serialVersionUID = 1L;
 
     /**
      * A list of topics that the user can choose from.
      */
-    private JList topicsList;
+    private JList<String> topicsList;
 
     /**
      * The control model which contains list of topics available.
      */
-    private DefaultListModel topicsModel;
+    private DefaultListModel<String> topicsModel;
 
     /**
      * The area where topic information can be displayed.
@@ -155,7 +155,7 @@ public class HelpScreen extends JFrame {
      */
     public JPanel addTopics ( ) {
         JPanel topicListPanel = new JPanel(new BorderLayout());
-        topicsModel = new DefaultListModel();
+        topicsModel = new DefaultListModel<>();
         topicsModel.addElement("Welcome"); topicsModel.addElement("Getting Started");
         topicsModel.addElement("Create New Game"); topicsModel.addElement("Add/Edit/Delete Route");
         topicsModel.addElement("Purchase/Sell Vehicle");
@@ -163,67 +163,65 @@ public class HelpScreen extends JFrame {
         topicsModel.addElement("Control Screen"); topicsModel.addElement("Make Contact with Vehicle");
         topicsModel.addElement("Vehicle Info Screen"); topicsModel.addElement("Web Site");
         /*theTopicsModel.addElement("Load Output"); theTopicsModel.addElement("Save Output");*/
-        topicsList = new JList(topicsModel);
+        topicsList = new JList<>(topicsModel);
         topicsList.setVisibleRowCount(10);
         topicsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         //Default.
         topicsList.setSelectedIndex(0);
         //Action Listener for when a particular help topic is selected.
-        topicsList.addListSelectionListener(new ListSelectionListener() {
-            public void valueChanged ( ListSelectionEvent lse ) {
-                //Get selected item.
-                String selectedItem;
-                try {
-                    selectedItem = topicsList.getSelectedValue().toString();
+        topicsList.addListSelectionListener(lse -> {
+            //Get selected item.
+            String selectedItem;
+            try {
+                selectedItem = topicsList.getSelectedValue();
+            }
+            catch ( NullPointerException npe ) {
+                selectedItem = topicsList.getModel().getElementAt(0);
+                topicsList.setSelectedValue(selectedItem, true);
+            }
+            //If loading content fails, then stack trace and dispose.
+            try {
+                //If statements to display correct content.
+                if ( selectedItem.equalsIgnoreCase("Welcome") ) {
+                    displayPane.setPage(HelpScreen.class.getResource("/intro.html"));
                 }
-                catch ( NullPointerException npe ) {
-                    selectedItem = topicsList.getModel().getElementAt(0).toString();
-                    topicsList.setSelectedValue(selectedItem, true);
+                else if ( selectedItem.equalsIgnoreCase("Getting Started") ) {
+                    displayPane.setPage(HelpScreen.class.getResource("/gettingstarted.html"));
                 }
-                //If loading content fails, then stack trace and dispose.
-                try {
-                    //If statements to display correct content.
-                    if ( selectedItem.equalsIgnoreCase("Welcome") ) {
-                        displayPane.setPage(HelpScreen.class.getResource("/intro.html"));
-                    }
-                    else if ( selectedItem.equalsIgnoreCase("Getting Started") ) {
-                        displayPane.setPage(HelpScreen.class.getResource("/gettingstarted.html"));
-                    }
-                    else if ( selectedItem.equalsIgnoreCase("Load Game") ) {
-                        displayPane.setPage(HelpScreen.class.getResource("/loadgame.html"));
-                    }
-                    else if ( selectedItem.equalsIgnoreCase("Web Site") ) {
-                        displayPane.setPage(HelpScreen.class.getResource("/website.html"));
-                    }
-                    else if ( selectedItem.equalsIgnoreCase("Create New Game") ) {
-                        displayPane.setPage(HelpScreen.class.getResource("/newgame.html"));
-                    }
-                    else if ( selectedItem.equalsIgnoreCase("Add/Edit/Delete Route") ) {
-                        displayPane.setPage(HelpScreen.class.getResource("/newroute.html"));
-                    }
-                    else if ( selectedItem.equalsIgnoreCase("Purchase/Sell Vehicle") ) {
-                        displayPane.setPage(HelpScreen.class.getResource("/newvehicle.html"));
-                    }
-                    else if ( selectedItem.equalsIgnoreCase("Allocate Vehicles to Routes") ) {
-                        displayPane.setPage(HelpScreen.class.getResource("/allocationscreen.html"));
-                    }
-                    else if ( selectedItem.equalsIgnoreCase("Control Screen") ) {
-                        displayPane.setPage(HelpScreen.class.getResource("/controlscreen.html"));
-                    }
-                    else if ( selectedItem.equalsIgnoreCase("Vehicle Info Screen") ) {
-                        displayPane.setPage(HelpScreen.class.getResource("/vehicleinfoscreen.html"));
-                    }
-                    else if ( selectedItem.equalsIgnoreCase("Make Contact With Vehicle") ) {
-                        displayPane.setPage(HelpScreen.class.getResource("/makecontact.html"));
-                    }
-                    /*else if ( selectedItem.equalsIgnoreCase("Save Output") ) {
-                        theDisplayPane.setPage(HelpScreen.class.getResource("/saveoutput.html"));
-                    }*/
+                else if ( selectedItem.equalsIgnoreCase("Load Game") ) {
+                    displayPane.setPage(HelpScreen.class.getResource("/loadgame.html"));
                 }
-                catch ( IOException e ) {
-                    e.printStackTrace();
-                    dispose();
+                else if ( selectedItem.equalsIgnoreCase("Web Site") ) {
+                    displayPane.setPage(HelpScreen.class.getResource("/website.html"));
                 }
+                else if ( selectedItem.equalsIgnoreCase("Create New Game") ) {
+                    displayPane.setPage(HelpScreen.class.getResource("/newgame.html"));
+                }
+                else if ( selectedItem.equalsIgnoreCase("Add/Edit/Delete Route") ) {
+                    displayPane.setPage(HelpScreen.class.getResource("/newroute.html"));
+                }
+                else if ( selectedItem.equalsIgnoreCase("Purchase/Sell Vehicle") ) {
+                    displayPane.setPage(HelpScreen.class.getResource("/newvehicle.html"));
+                }
+                else if ( selectedItem.equalsIgnoreCase("Allocate Vehicles to Routes") ) {
+                    displayPane.setPage(HelpScreen.class.getResource("/allocationscreen.html"));
+                }
+                else if ( selectedItem.equalsIgnoreCase("Control Screen") ) {
+                    displayPane.setPage(HelpScreen.class.getResource("/controlscreen.html"));
+                }
+                else if ( selectedItem.equalsIgnoreCase("Vehicle Info Screen") ) {
+                    displayPane.setPage(HelpScreen.class.getResource("/vehicleinfoscreen.html"));
+                }
+                else if ( selectedItem.equalsIgnoreCase("Make Contact With Vehicle") ) {
+                    displayPane.setPage(HelpScreen.class.getResource("/makecontact.html"));
+                }
+                /*else if ( selectedItem.equalsIgnoreCase("Save Output") ) {
+                    theDisplayPane.setPage(HelpScreen.class.getResource("/saveoutput.html"));
+                }*/
+            }
+            catch ( IOException e ) {
+                e.printStackTrace();
+                dispose();
             }
         });
         JScrollPane topicsPane = new JScrollPane(topicsList);
@@ -237,7 +235,7 @@ public class HelpScreen extends JFrame {
      */
     public void updateList ( String text ) {
         //Create temp model.
-        DefaultListModel tempModel = new DefaultListModel();
+        DefaultListModel<String> tempModel = new DefaultListModel<>();
         //If text is blank then set tempModel to fullModel.
         if ( text.equalsIgnoreCase("") ) {
             tempModel = topicsModel;
@@ -245,8 +243,8 @@ public class HelpScreen extends JFrame {
         //Otherwise, add those which have this prefix.
         else {
             for ( int i = 0; i < topicsModel.size(); i++ ) {
-                if ( includeString(text, topicsModel.get(i).toString()) ) {
-                    tempModel.addElement(topicsModel.get(i).toString());
+                if ( includeString(text, topicsModel.get(i)) ) {
+                    tempModel.addElement(topicsModel.get(i));
                 }
             }
         }

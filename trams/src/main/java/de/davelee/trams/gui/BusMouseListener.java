@@ -14,9 +14,9 @@ public class BusMouseListener implements MouseListener {
     @Autowired
     private SimulationController simulationController;
 
-    private String allocatedTour;
-    private String company;
-    private String playerName;
+    private final String allocatedTour;
+    private final String company;
+    private final String playerName;
     
     /**
      * Create a new BusMouseListener.

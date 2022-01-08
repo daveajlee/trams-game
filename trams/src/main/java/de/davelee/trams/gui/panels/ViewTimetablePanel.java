@@ -1,10 +1,7 @@
 package de.davelee.trams.gui.panels;
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.*;
-import java.util.List;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableColumnModel;
@@ -28,8 +25,8 @@ import de.davelee.trams.gui.ControlScreen;
  */
 public class ViewTimetablePanel {
 
-    private ControllerHandler controllerHandler;
-    private JTable myTable = new JTable();
+    private final ControllerHandler controllerHandler;
+    private final JTable myTable = new JTable();
 	private JComboBox<Direction> directionSelectionBox;
 	
 	private static final Logger logger = LoggerFactory.getLogger(ViewTimetablePanel.class);
@@ -76,55 +73,44 @@ public class ViewTimetablePanel {
         JLabel routeSelectionLabel = new JLabel("Route:");
         routeSelectionLabel.setFont(new Font("Arial", Font.BOLD, 16));
         selectionPanel.add(routeSelectionLabel);
-        final DefaultComboBoxModel routeSelectionModel = new DefaultComboBoxModel();
+        final DefaultComboBoxModel<String> routeSelectionModel = new DefaultComboBoxModel<>();
         RouteResponse[] routeModels = controllerHandler.getRouteController().getRoutes(companyResponse.getName()).getRouteResponses();
-        for ( int i = 0; i < routeModels.length; i++ ) {
-            routeSelectionModel.addElement(routeModels[i].getRouteNumber());
+        for (RouteResponse model : routeModels) {
+            routeSelectionModel.addElement(model.getRouteNumber());
         }
-        final JComboBox routeSelectionBox = new JComboBox(routeSelectionModel);
-        routeSelectionBox.addActionListener ( new ActionListener() {
-            public void actionPerformed ( ActionEvent e ) {
-                controlScreen.redrawManagement(createPanel(routeSelectionBox.getSelectedItem().toString(), controlScreen, managementPanel), companyResponse);
-            }
-        });
+        final JComboBox<String> routeSelectionBox = new JComboBox<>(routeSelectionModel);
+        routeSelectionBox.addActionListener (e -> controlScreen.redrawManagement(createPanel(routeSelectionBox.getSelectedItem().toString(), controlScreen, managementPanel), companyResponse));
         routeSelectionBox.setFont(new Font("Arial", Font.PLAIN, 15));
         selectionPanel.add(routeSelectionBox);
         //Choose stop.
         JLabel stopSelectionLabel = new JLabel("Stop:");
         stopSelectionLabel.setFont(new Font("Arial", Font.BOLD, 16));
         selectionPanel.add(stopSelectionLabel);
-        final DefaultComboBoxModel stopSelectionModel = new DefaultComboBoxModel();
+        final DefaultComboBoxModel<String> stopSelectionModel = new DefaultComboBoxModel<>();
         //TODO: Add a list of stop names served by this route.
-        List<String> routeStopNames = /*routeModel.getStopNames();*/ new ArrayList<>();
-        for ( int i = 0; i < routeStopNames.size(); i++ ) {
-            stopSelectionModel.addElement(routeStopNames.get(i));
-        }
-        final JComboBox stopSelectionBox = new JComboBox(stopSelectionModel);
+        stopSelectionModel.addElement("");
+        final JComboBox<String> stopSelectionBox = new JComboBox<>(stopSelectionModel);
         stopSelectionBox.setFont(new Font("Arial", Font.PLAIN, 15));
-        stopSelectionBox.addActionListener ( new ActionListener()  {
-        public void actionPerformed ( ActionEvent e ) {
+        stopSelectionBox.addActionListener (e -> {
             logger.debug("You chose stop " + stopSelectionBox.getSelectedItem().toString());
             myTable.setModel(createTableModel(routeModel.getRouteNumber(), stopSelectionBox.getSelectedItem().toString(), (Direction) directionSelectionBox.getSelectedItem(), companyResponse.getTime(), companyResponse.getName()));
             autoResizeColWidth(myTable, (DefaultTableModel) myTable.getModel());
-            }
-        });
+            });
         selectionPanel.add(stopSelectionBox);
         //Choose direction.
         JLabel directionSelectionLabel = new JLabel("Direction:");
         directionSelectionLabel.setFont(new Font("Arial", Font.BOLD, 16));
         selectionPanel.add(directionSelectionLabel);
-        final DefaultComboBoxModel<Direction> directionSelectionModel = new DefaultComboBoxModel();
+        final DefaultComboBoxModel<Direction> directionSelectionModel = new DefaultComboBoxModel<>();
         directionSelectionModel.addElement(Direction.OUTGOING);
         directionSelectionModel.addElement(Direction.RETURN);
-        directionSelectionBox = new JComboBox(directionSelectionModel);
+        directionSelectionBox = new JComboBox<>(directionSelectionModel);
         directionSelectionBox.setFont(new Font("Arial", Font.PLAIN, 15));
-        directionSelectionBox.addActionListener(new ActionListener() {
-        public void actionPerformed ( ActionEvent e ) {
+        directionSelectionBox.addActionListener(e -> {
             logger.debug("You chose direction " + directionSelectionBox.getSelectedIndex());
             myTable.setModel(createTableModel(routeModel.getRouteNumber(), stopSelectionBox.getSelectedItem().toString(), (Direction) directionSelectionBox.getSelectedItem(), companyResponse.getTime(), companyResponse.getName()));
             autoResizeColWidth(myTable, (DefaultTableModel) myTable.getModel());
-            }
-        });
+            });
         selectionPanel.add(directionSelectionBox);
         //Add to top panel.
         topPanel.add(selectionPanel, BorderLayout.NORTH);
@@ -159,24 +145,18 @@ public class ViewTimetablePanel {
         JPanel otherServicesButtonPanel = new JPanel();
         otherServicesButtonPanel.setBackground(Color.WHITE);
         JButton amendRouteButton = new JButton("Amend Route");
-        amendRouteButton.addActionListener(new ActionListener() {
-            public void actionPerformed ( ActionEvent e ) {
-                //Show the actual screen!
-                RoutePanel routePanel = new RoutePanel(controllerHandler);
-                controlScreen.redrawManagement(routePanel.createPanel(routeModel, controlScreen, managementPanel), companyResponse);
-                //int confirm = JOptionPane.showConfirmDialog(null, "Are you sure you wish to delete route " + ((Route) theRoutesModel.get(theRoutesList.getSelectedIndex())).getRouteNumber() + "?", "Confirm Delete", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-                //if ( confirm == JOptionPane.YES_OPTION ) {
-                //    theInterface.deleteRoute(((Route) theRoutesModel.get(theRoutesList.getSelectedIndex())));
-                //}
-            }
+        amendRouteButton.addActionListener(e -> {
+            //Show the actual screen!
+            RoutePanel routePanel = new RoutePanel(controllerHandler);
+            controlScreen.redrawManagement(routePanel.createPanel(routeModel, controlScreen, managementPanel), companyResponse);
+            //int confirm = JOptionPane.showConfirmDialog(null, "Are you sure you wish to delete route " + ((Route) theRoutesModel.get(theRoutesList.getSelectedIndex())).getRouteNumber() + "?", "Confirm Delete", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+            //if ( confirm == JOptionPane.YES_OPTION ) {
+            //    theInterface.deleteRoute(((Route) theRoutesModel.get(theRoutesList.getSelectedIndex())));
+            //}
         });
         otherServicesButtonPanel.add(amendRouteButton);
         JButton managementScreenButton = new JButton("Back to Management Screen");
-        managementScreenButton.addActionListener(new ActionListener() {
-            public void actionPerformed ( ActionEvent e ) {
-                controlScreen.redrawManagement(managementPanel.createPanel(controlScreen), companyResponse);
-            }
-        });
+        managementScreenButton.addActionListener(e -> controlScreen.redrawManagement(managementPanel.createPanel(controlScreen), companyResponse));
         otherServicesButtonPanel.add(managementScreenButton);
         routeScreenPanel.add(otherServicesButtonPanel);
             
@@ -192,12 +172,12 @@ public class ViewTimetablePanel {
         String[][] data = new String[24][4];
         //TODO: Preprocessing necessary?
         //TODO: Add multiple route schedules.
-        StopTimeResponse[] stopTimeModels = controllerHandler.getStopTimeController().getStopTimes(Optional.of(direction), routeNumber, date, company, Optional.empty() );
-        for ( int i = 0; i < stopTimeModels.length; i++ ) {
+        StopTimeResponse[] stopTimeResponses = controllerHandler.getStopTimeController().getStopTimes(Optional.of(direction), routeNumber, date, company, Optional.empty() );
+        for ( StopTimeResponse stopTimeResponse : stopTimeResponses ) {
             try {
-                String[] timeSplit = stopTimeModels[i].getDepartureTime().split(":");
+                String[] timeSplit = stopTimeResponse.getDepartureTime().split(":");
                 int displayPos = 1;
-                data[Integer.parseInt(timeSplit[0])][displayPos] = stopTimeModels[i].getDepartureTime();
+                data[Integer.parseInt(timeSplit[0])][displayPos] = stopTimeResponse.getDepartureTime();
                 /*if ( myDateTime.getDayOfWeek()==DayOfWeek.SATURDAY ) { displayPos = 2; }
                 else if ( myDateTime.getDayOfWeek()==DayOfWeek.SUNDAY ) { displayPos = 3; }*/
                 if ( data[Integer.parseInt(timeSplit[0])][displayPos] == null ) {
@@ -206,7 +186,7 @@ public class ViewTimetablePanel {
                     data[Integer.parseInt(timeSplit[0])][displayPos] = data[Integer.parseInt(timeSplit[0])][displayPos] + " " + timeSplit[1];
                 }
             } catch (NoSuchElementException ex) {
-                logger.debug("No stop time found for " + stopTimeModels[i] + " and stop name " + stopName);
+                logger.debug("No stop time found for " + stopTimeResponse + " and stop name " + stopName);
             }
         }
         //Null check.
@@ -224,20 +204,19 @@ public class ViewTimetablePanel {
 
     /**
  	 * http://ieatbinary.com/2008/08/13/auto-resize-jtable-column-width/
- 	 * @param table
- 	 * @param model
- 	 * @return
+ 	 * @param table a <code>JTable</code> object to adjust the width of.
+ 	 * @param model a <code>DefaultTableModel</code> object containing the content of the table.
+ 	 * @return a <code>JTable</code> with the adjusted width.
  	 */
-     private JTable autoResizeColWidth(JTable table, DefaultTableModel model) {
+     private JTable autoResizeColWidth(final JTable table, final DefaultTableModel model) {
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         table.setModel(model);
         int margin = 5;
 
         for (int i = 0; i < table.getColumnCount(); i++) {
-            int vColIndex = i;
             DefaultTableColumnModel colModel = (DefaultTableColumnModel) table.getColumnModel();
-            TableColumn col = colModel.getColumn(vColIndex);
-            int width = 0;
+            TableColumn col = colModel.getColumn(i);
+            int width;
 
             // Get width of column header
             TableCellRenderer renderer = col.getHeaderRenderer();
@@ -251,9 +230,9 @@ public class ViewTimetablePanel {
 
             // Get maximum width of column data
             for (int r = 0; r < table.getRowCount(); r++) {
-                renderer = table.getCellRenderer(r, vColIndex);
-                comp = renderer.getTableCellRendererComponent(table, table.getValueAt(r, vColIndex), false, false,
-                        r, vColIndex);
+                renderer = table.getCellRenderer(r, i);
+                comp = renderer.getTableCellRendererComponent(table, table.getValueAt(r, i), false, false,
+                        r, i);
                 width = Math.max(width, comp.getPreferredSize().width);
             }
 

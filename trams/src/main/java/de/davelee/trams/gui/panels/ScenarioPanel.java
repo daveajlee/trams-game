@@ -5,8 +5,6 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -25,17 +23,7 @@ import de.davelee.trams.gui.ControlScreen;
  * This class represents a panel to choose the scenario that the player would like to play.
  * @author Dave Lee
  */
-public class ScenarioPanel {
-
-    private ControllerHandler controllerHandler;
-
-    /**
-     * Create a new <code>ScenarioPanel</code> with access to all Controllers to get or send data where needed.
-     * @param controllerHandler a <code>ControllerHandler</code> object allowing access to Controllers.
-     */
-	public ScenarioPanel (final ControllerHandler controllerHandler) {
-        this.controllerHandler = controllerHandler;
-    }
+public record ScenarioPanel ( ControllerHandler controllerHandler) {
 
     /**
      * Create a new <code>ScenarioPanel</code> panel and display it to the user.
@@ -57,10 +45,6 @@ public class ScenarioPanel {
         topLabelPanel.add(topLabel, BorderLayout.CENTER);
         scenarioScreenPanel.add(topLabelPanel, BorderLayout.NORTH);
         scenarioScreenPanel.add(Box.createRigidArea(new Dimension(0,10)));
-
-        //Create info panel.
-        /*JPanel infoPanel = new JPanel(new BorderLayout());
-        infoPanel.setBackground(Color.WHITE);*/
         
         final CompanyResponse companyResponse = controllerHandler.getCompanyController().getCompany(controlScreen.getCompany(), controlScreen.getPlayerName());
 
@@ -84,7 +68,7 @@ public class ScenarioPanel {
         //Create panel for target field.
         JPanel targetPanel = new JPanel(new GridLayout(1,2,5,5));
         targetPanel.setBackground(Color.WHITE);
-        //Create label and area for senario description.
+        //Create label and area for scenario description.
         JLabel targetLabel = new JLabel("Scenario Targets: ", SwingConstants.CENTER);
         targetLabel.setFont(new Font("Arial", Font.BOLD, 17));
         targetPanel.add(targetLabel);
@@ -118,11 +102,7 @@ public class ScenarioPanel {
         JPanel optionsButtonPanel = new JPanel();
         optionsButtonPanel.setBackground(Color.WHITE);
         JButton managementScreenButton = new JButton("Return to Management Screen");
-        managementScreenButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                    controlScreen.redrawManagement(managementPanel.createPanel(controlScreen), companyResponse);
-            }
-        });
+        managementScreenButton.addActionListener(e -> controlScreen.redrawManagement(managementPanel.createPanel(controlScreen), companyResponse));
         optionsButtonPanel.add(managementScreenButton);
         
         //Add options button panel to screen panel.

@@ -5,8 +5,6 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
 
 import javax.swing.BoxLayout;
@@ -18,8 +16,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 
 import de.davelee.trams.api.response.CompanyResponse;
 import de.davelee.trams.api.response.VehicleResponse;
@@ -30,17 +26,7 @@ import de.davelee.trams.gui.ControlScreen;
  * This class represents a panel to show a particular vehicle in the depot for a company.
  * @author Dave Lee
  */
-public class VehicleDepotPanel {
-	
-	private ControllerHandler controllerHandler;
-
-    /**
-     * Create a new <code>VehicleDepotPanel</code> with access to all Controllers to get or send data where needed.
-     * @param controllerHandler a <code>ControllerHandler</code> object allowing access to Controllers.
-     */
-	public VehicleDepotPanel (final ControllerHandler controllerHandler ) {
-        this.controllerHandler = controllerHandler;
-    }
+public record VehicleDepotPanel ( ControllerHandler controllerHandler ) {
 
     /**
      * Create a new <code>VehicleDepotPanel</code> panel and display it to the user.
@@ -64,7 +50,7 @@ public class VehicleDepotPanel {
         textLabelPanel.add(topLabel, BorderLayout.CENTER);
         vehicleScreenPanel.add(textLabelPanel);
         
-        //Now create a border layout so that we can have a choice of vehicles on the right hand side.
+        //Now create a border layout so that we can have a choice of vehicles on the right-hand side.
         JPanel vehicleBorderPanel = new JPanel(new BorderLayout());
         vehicleBorderPanel.setBackground(Color.WHITE);
         
@@ -75,12 +61,12 @@ public class VehicleDepotPanel {
         
         final CompanyResponse companyResponse = controllerHandler.getCompanyController().getCompany(controlScreen.getCompany(), controlScreen.getPlayerName());
         
-        //Get vehicle data now so that we can used to compile first!
-        DefaultListModel vehiclesModel = new DefaultListModel();
+        //Get vehicle data now!
+        DefaultListModel<String> vehiclesModel = new DefaultListModel<>();
         VehicleResponse[] vehicleModels = controllerHandler.getVehicleController().getAllCreatedVehicles(companyResponse.getName()).getVehicleResponses();
-        for ( int i = 0; i < vehicleModels.length; i++ ) {
-            if ( controllerHandler.getVehicleController().hasVehicleBeenDelivered(vehicleModels[i].getDeliveryDate(), companyResponse.getTime()) ) {
-                vehiclesModel.addElement(vehicleModels[i].getAdditionalTypeInformationMap().get("Registration Number"));
+        for (VehicleResponse model : vehicleModels) {
+            if (controllerHandler.getVehicleController().hasVehicleBeenDelivered(model.getDeliveryDate(), companyResponse.getTime())) {
+                vehiclesModel.addElement(model.getAdditionalTypeInformationMap().get("Registration Number"));
             }
         }
         
@@ -89,7 +75,7 @@ public class VehicleDepotPanel {
         if ( !registrationNumber.equalsIgnoreCase("") ) {
             vehicleModel = controllerHandler.getVehicleController().getVehicleByRegistrationNumber(registrationNumber, companyResponse.getName());
         } else {
-        	vehicleModel = controllerHandler.getVehicleController().getVehicleByRegistrationNumber(vehiclesModel.get(0).toString(), companyResponse.getName());
+        	vehicleModel = controllerHandler.getVehicleController().getVehicleByRegistrationNumber(vehiclesModel.get(0), companyResponse.getName());
         }
         
         //Create picture panel.
@@ -187,22 +173,16 @@ public class VehicleDepotPanel {
                 
         //Create sell vehicle button and add it to screen panel.
         JButton sellVehicleButton = new JButton("Sell Vehicle");
-        sellVehicleButton.addActionListener ( new ActionListener() {
-            public void actionPerformed ( ActionEvent e ) {
-                double sellingPrice = controllerHandler.getVehicleController().sellVehicle(vehicleModel, companyResponse.getTime());
-                controllerHandler.getCompanyController().withdrawOrCreditBalance(sellingPrice, controlScreen.getPlayerName());
-                controlScreen.redrawManagement(createPanel("", controlScreen), companyResponse);
-            }
+        sellVehicleButton.addActionListener (e -> {
+            double sellingPrice = controllerHandler.getVehicleController().sellVehicle(vehicleModel, companyResponse.getTime());
+            controllerHandler.getCompanyController().withdrawOrCreditBalance(sellingPrice, controlScreen.getPlayerName());
+            controlScreen.redrawManagement(createPanel("", controlScreen), companyResponse);
         });
         bottomButtonPanel.add(sellVehicleButton);
         
         //Create return to create game screen button and add it to screen panel.
         JButton managementScreenButton = new JButton("Return to Management Screen");
-        managementScreenButton.addActionListener ( new ActionListener() {
-            public void actionPerformed ( ActionEvent e ) {
-                controlScreen.redrawManagement(new ManagementPanel(controllerHandler).createPanel(controlScreen), companyResponse);
-            }
-        });
+        managementScreenButton.addActionListener (e -> controlScreen.redrawManagement(new ManagementPanel(controllerHandler).createPanel(controlScreen), companyResponse));
         bottomButtonPanel.add(managementScreenButton);
         
         //Add bottom button panel to the screen panel.
@@ -217,17 +197,15 @@ public class VehicleDepotPanel {
         //Third part of route panel is list of routes.
         JPanel modelPanel = new JPanel();
         modelPanel.setBackground(Color.WHITE);
-        final JList vehiclesList = new JList(vehiclesModel);
+        final JList<String> vehiclesList = new JList<>(vehiclesModel);
         vehiclesList.setFixedCellWidth(100);
         vehiclesList.setVisibleRowCount(25);
         vehiclesList.setSelectedValue(vehicleModel.getAdditionalTypeInformationMap().get("Registration Number"), true);
         vehiclesList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         vehiclesList.setFont(new Font("Arial", Font.PLAIN, 15));
-        vehiclesList.addListSelectionListener(new ListSelectionListener() {
-            public void valueChanged ( ListSelectionEvent e ) {
-                String selectedValue = vehiclesList.getSelectedValue().toString();
-                controlScreen.redrawManagement(createPanel(selectedValue, controlScreen), companyResponse);
-            }
+        vehiclesList.addListSelectionListener(e -> {
+            String selectedValue = vehiclesList.getSelectedValue();
+            controlScreen.redrawManagement(createPanel(selectedValue, controlScreen), companyResponse);
         });
         JScrollPane vehiclesPane = new JScrollPane(vehiclesList);
         modelPanel.add(vehiclesPane);

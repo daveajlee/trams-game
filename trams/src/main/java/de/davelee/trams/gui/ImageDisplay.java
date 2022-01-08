@@ -16,7 +16,7 @@ public class ImageDisplay extends Canvas {
     /**
      * The image to be displayed.
      */
-    private Image image;
+    private final Image image;
 
     /**
      * The number of pixels for the left border (higher = move image to right).

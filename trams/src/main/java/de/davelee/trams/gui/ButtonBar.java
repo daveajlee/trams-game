@@ -1,7 +1,7 @@
 package de.davelee.trams.gui;
 
 import javax.swing.*;
-import java.awt.event.*;
+import java.io.Serial;
 
 import de.davelee.trams.controllers.ControllerHandler;
 
@@ -14,58 +14,55 @@ public class ButtonBar extends JFrame {
     /**
 	 * Serial Version id for serialisation.
 	 */
+    @Serial
 	private static final long serialVersionUID = 1L;
     /**
      * Menu Bar containing all Menu Items to show to the user.
      */
-	protected JMenuBar menuBar;
+	protected final JMenuBar menuBar;
     /**
      * New game item in Menu Bar.
      */
-    protected JMenuItem newGameItem;
+    protected final JMenuItem newGameItem;
     /**
      * Load game item in Menu Bar.
      */
-    protected JMenuItem loadGameItem;
+    protected final JMenuItem loadGameItem;
     /**
      * Save game item in Menu Bar.
      */
-    protected JMenuItem saveGameItem;
+    protected final JMenuItem saveGameItem;
     /**
      * Exit Game item in Menu Bar.
      */
-    protected JMenuItem exitGameItem;
+    protected final JMenuItem exitGameItem;
     /**
      * Options item in Menu Bar.
      */
-    protected JMenuItem optionsItem;
+    protected final JMenuItem optionsItem;
     /**
      * Help item in Menu Bar.
      */
-    protected JMenuItem helpItem;
-    /**
-     * Update item in Menu Bar.
-     */
-    protected JMenuItem updateItem;
+    protected final JMenuItem helpItem;
     /**
      * About item in Menu Bar.
      */
-    protected JMenuItem aboutItem;
+    protected final JMenuItem aboutItem;
 
     /**
      * A <code>ControllerHandler</code> obtaining the currently used controllers from Spring.
      */
-    private ControllerHandler controllerHandler;
+    private final ControllerHandler controllerHandler;
 
     /**
      * A <code>String</code> with the name of the company currently being played.
      */
-    private String company;
+    private final String company;
 
     /**
      * A <code>String</code> with the name of the player currently playing the game.
      */
-    private String playerName;
+    private final String playerName;
     
     /**
      * Create a new button bar.
@@ -85,44 +82,36 @@ public class ButtonBar extends JFrame {
         menuBar.add(fileMenu);
         
         newGameItem = new JMenuItem("New Game");
-        newGameItem.addActionListener( new ActionListener() {
-            public void actionPerformed ( ActionEvent e ) {
-                new NewGameScreen(controllerHandler);
-                dispose();
-            }
+        newGameItem.addActionListener(e -> {
+            new NewGameScreen(controllerHandler);
+            dispose();
         });
         fileMenu.add(newGameItem);
         
         loadGameItem = new JMenuItem("Load Game");
-        loadGameItem.addActionListener ( new ActionListener () {
-            public void actionPerformed ( ActionEvent e ) {
-                controllerHandler.getSimulationController().pauseSimulation();
-                FileDialog fileDialog = new FileDialog();
-                fileDialog.createLoadFileDialog(ButtonBar.this, controllerHandler);
-            }
+        loadGameItem.addActionListener (e -> {
+            controllerHandler.getSimulationController().pauseSimulation();
+            FileDialog fileDialog = new FileDialog();
+            fileDialog.createLoadFileDialog(ButtonBar.this, controllerHandler);
         });
         fileMenu.add(loadGameItem);
         
         fileMenu.addSeparator();
         
         saveGameItem = new JMenuItem("Save Game");
-        saveGameItem.addActionListener ( new ActionListener () {
-            public void actionPerformed ( ActionEvent e ) {
-                controllerHandler.getSimulationController().pauseSimulation();
-                FileDialog fileDialog = new FileDialog();
-                fileDialog.createSaveFileDialog(ButtonBar.this, controllerHandler);
-            }
+        saveGameItem.addActionListener (e -> {
+            controllerHandler.getSimulationController().pauseSimulation();
+            FileDialog fileDialog = new FileDialog();
+            fileDialog.createSaveFileDialog(ButtonBar.this, controllerHandler);
         });
         fileMenu.add(saveGameItem);
         
         fileMenu.addSeparator();
         
         exitGameItem = new JMenuItem("Exit Game");
-        exitGameItem.addActionListener ( new ActionListener () {
-            public void actionPerformed ( ActionEvent e ) {
-                ExitDialog exitDialog = new ExitDialog();
-                exitDialog.createExitDialog(ButtonBar.this);
-            }
+        exitGameItem.addActionListener (e -> {
+            ExitDialog exitDialog = new ExitDialog();
+            exitDialog.createExitDialog(ButtonBar.this);
         });
         fileMenu.add(exitGameItem);
         
@@ -130,11 +119,9 @@ public class ButtonBar extends JFrame {
         menuBar.add(toolsMenu);
         
         optionsItem = new JMenuItem("Options");
-        optionsItem.addActionListener ( new ActionListener() {
-            public void actionPerformed ( ActionEvent e ) {
-                controllerHandler.getSimulationController().pauseSimulation();
-                new OptionsScreen(controllerHandler, company, playerName);
-            }
+        optionsItem.addActionListener (e -> {
+            controllerHandler.getSimulationController().pauseSimulation();
+            new OptionsScreen(controllerHandler, company, playerName);
         });
         toolsMenu.add(optionsItem);
         

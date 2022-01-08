@@ -6,9 +6,6 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.BoxLayout;
@@ -35,9 +32,9 @@ import de.davelee.trams.gui.ControlScreen;
  */
 public class AllocationPanel {
 	
-	private ControllerHandler controllerHandler;
-	private DefaultListModel allocationsModel;
-	private JList allocationsList;
+	private final ControllerHandler controllerHandler;
+	private DefaultListModel<String> allocationsModel;
+	private JList<String> allocationsList;
 
     /**
      * Create a new allocation panel with access to all Controllers to get or send data where needed.
@@ -94,7 +91,7 @@ public class AllocationPanel {
         //Add the route label panel to the screen panel.
         allocationScreenPanel.add(routeLabelPanel);
 
-        //Create list of routes and vehicles created so far with scrollpane.
+        //Create list of routes and vehicles created so far.
         JPanel labelPanel = new JPanel(new BorderLayout());
         labelPanel.setBackground(Color.WHITE);
         //First part of label panel is route heading.
@@ -112,19 +109,19 @@ public class AllocationPanel {
         //Add label panel to screen panel.
         allocationScreenPanel.add(labelPanel);
 
-        //Create lists of routes and vehicles with scrollpane.
+        //Create lists of routes and vehicles.
         JPanel listPanel = new JPanel(new BorderLayout());
         listPanel.setBackground(Color.WHITE);
         //Third part of route panel is list of routes.
         JPanel routeModelPanel = new JPanel();
         routeModelPanel.setBackground(Color.WHITE);
-        final DefaultListModel routesModel = new DefaultListModel();
-        final JList routesList = new JList(routesModel);
+        final DefaultListModel<String> routesModel = new DefaultListModel<>();
+        final JList<String> routesList = new JList<>(routesModel);
         routesList.setFixedCellWidth(270);
         routesList.setFont(new Font("Arial", Font.PLAIN, 15));
         RouteResponse[] routeModels = controllerHandler.getRouteController().getRoutes(companyResponse.getName()).getRouteResponses();
-        for ( int i = 0; i < routeModels.length; i++ ) {
-            routesModel.addElement(routeModels[i].getRouteNumber());
+        for (RouteResponse routeModel : routeModels) {
+            routesModel.addElement(routeModel.getRouteNumber());
         }
         routesList.setVisibleRowCount(4);
         routesList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -134,15 +131,15 @@ public class AllocationPanel {
         //Third part of vehicle panel is vehicle list.
         JPanel modelPanel = new JPanel();
         modelPanel.setBackground(Color.WHITE);
-        final DefaultListModel vehiclesModel = new DefaultListModel();
-        VehicleResponse[] vehicleModels = controllerHandler.getVehicleController().getAllCreatedVehicles(companyResponse.getName()).getVehicleResponses();
-        for ( int i = 0; i < vehicleModels.length; i++ ) {
-            if ( vehicleModels[i].getAllocatedTour() != null ) {
-                vehiclesModel.addElement(vehicleModels[i].getAdditionalTypeInformationMap().get("Registration Number")
-                        + " (" + vehicleModels[i].getModelName() + ")");
+        final DefaultListModel<String> vehiclesModel = new DefaultListModel<>();
+        VehicleResponse[] vehicleResponses = controllerHandler.getVehicleController().getAllCreatedVehicles(companyResponse.getName()).getVehicleResponses();
+        for ( VehicleResponse vehicleResponse : vehicleResponses ) {
+            if ( vehicleResponse.getAllocatedTour() != null ) {
+                vehiclesModel.addElement(vehicleResponse.getAdditionalTypeInformationMap().get("Registration Number")
+                        + " (" + vehicleResponse.getModelName() + ")");
             }
         }
-        final JList vehiclesList = new JList(vehiclesModel);
+        final JList<String> vehiclesList = new JList<>(vehiclesModel);
         vehiclesList.setFixedCellWidth(320);
         vehiclesList.setVisibleRowCount(4);
         vehiclesList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -158,54 +155,43 @@ public class AllocationPanel {
         JPanel allocateButtonPanel = new JPanel();
         allocateButtonPanel.setBackground(Color.WHITE);
         JButton allocateButton = new JButton("Allocate");
-        allocateButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                if ( routesList.getSelectedValue() == null ) {
-                    JOptionPane.showMessageDialog(null, "You must select a route before you can assign a vehicle to it!", "ERROR: No Route Selected", JOptionPane.ERROR_MESSAGE);
-                }
-                else if ( vehiclesList.getSelectedValue() == null ) {
-                    JOptionPane.showMessageDialog(null, "You must select a vehicle before you can assign a route to it!", "ERROR: No Vehicle Selected", JOptionPane.ERROR_MESSAGE);
-                }
-                else {
-                    allocationsModel.addElement(routesList.getSelectedValue() + " & " + vehiclesList.getSelectedValue().toString().split(" ")[0]);
-                    routesModel.removeElement(routesList.getSelectedValue());
-                    vehiclesModel.removeElement(vehiclesList.getSelectedValue());
-                }
+        allocateButton.addActionListener(e -> {
+            if ( routesList.getSelectedValue() == null ) {
+                JOptionPane.showMessageDialog(null, "You must select a route before you can assign a vehicle to it!", "ERROR: No Route Selected", JOptionPane.ERROR_MESSAGE);
+            }
+            else if ( vehiclesList.getSelectedValue() == null ) {
+                JOptionPane.showMessageDialog(null, "You must select a vehicle before you can assign a route to it!", "ERROR: No Vehicle Selected", JOptionPane.ERROR_MESSAGE);
+            }
+            else {
+                allocationsModel.addElement(routesList.getSelectedValue() + " & " + vehiclesList.getSelectedValue().split(" ")[0]);
+                routesModel.removeElement(routesList.getSelectedValue());
+                vehiclesModel.removeElement(vehiclesList.getSelectedValue());
             }
         });
         allocateButtonPanel.add(allocateButton);
         JButton deAllocateButton = new JButton("Deallocate");
-        deAllocateButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                if ( allocationsList.getSelectedValue() == null ) {
-                    JOptionPane.showMessageDialog(null, "You must select an allocation before you can remove it!", "ERROR: No Allocation Selected", JOptionPane.ERROR_MESSAGE);
-                }
-                else {
-                    String text = allocationsList.getSelectedValue().toString();
-                    allocationsModel.removeElement(allocationsList.getSelectedValue());
-                    String[] textParts = text.split("&");
-                    routesModel.addElement(textParts[0].trim());
-                    VehicleResponse vehicleModel = controllerHandler.getVehicleController().getVehicleByRegistrationNumber(textParts[1].trim(), companyResponse.getName());
-                    vehiclesModel.addElement(vehicleModel.getAdditionalTypeInformationMap().get("Registration Number") +
-                    		" (" + vehicleModel.getModelName() + ")");
-                    //Remove this from the interface as well.
-                    /*String routeNumber = textParts[0].split("/")[0]; int routeDetailPos = -1;
-                    for ( int k = 0; k < theInterface.getRoute(routeNumber).getNumRouteSchedules(); k++ ) {
-                        if ( theInterface.getRoute(routeNumber).getRouteSchedule(k).toString().equalsIgnoreCase(textParts[0].trim()) ) {
-                            routeDetailPos = k;
-                        }
-                    }*/
-                    //Find vehicle object position.
-                    int vehiclePos = -1;
-                    VehicleResponse[] vehicleModels = controllerHandler.getVehicleController().getAllCreatedVehicles(companyResponse.getName()).getVehicleResponses();
-                    for ( int j = 0; j < vehicleModels.length; j++ ) {
-                        if ( vehicleModels[j].getAdditionalTypeInformationMap().get("Registration Number").equalsIgnoreCase(textParts[1].trim())) {
-                            vehiclePos = j;
-                        }
+        deAllocateButton.addActionListener(e -> {
+            if ( allocationsList.getSelectedValue() == null ) {
+                JOptionPane.showMessageDialog(null, "You must select an allocation before you can remove it!", "ERROR: No Allocation Selected", JOptionPane.ERROR_MESSAGE);
+            }
+            else {
+                String text = allocationsList.getSelectedValue();
+                allocationsModel.removeElement(allocationsList.getSelectedValue());
+                String[] textParts = text.split("&");
+                routesModel.addElement(textParts[0].trim());
+                VehicleResponse vehicleModel = controllerHandler.getVehicleController().getVehicleByRegistrationNumber(textParts[1].trim(), companyResponse.getName());
+                vehiclesModel.addElement(vehicleModel.getAdditionalTypeInformationMap().get("Registration Number") +
+                        " (" + vehicleModel.getModelName() + ")");
+                //Find vehicle object position.
+                int vehiclePos = -1;
+                VehicleResponse[] vehicleModels = controllerHandler.getVehicleController().getAllCreatedVehicles(companyResponse.getName()).getVehicleResponses();
+                for ( int j = 0; j < vehicleModels.length; j++ ) {
+                    if ( vehicleModels[j].getAdditionalTypeInformationMap().get("Registration Number").equalsIgnoreCase(textParts[1].trim())) {
+                        vehiclePos = j;
                     }
-                    //TODO: Set route and route schedule number.
-                    controllerHandler.getVehicleController().assignVehicleToTour(vehicleModels[vehiclePos].getAdditionalTypeInformationMap().get("Registration Number"), "0/0", companyResponse.getName());
                 }
+                //TODO: Set route and route schedule number.
+                controllerHandler.getVehicleController().assignVehicleToTour(vehicleModels[vehiclePos].getAdditionalTypeInformationMap().get("Registration Number"), "0/0", companyResponse.getName());
             }
         });
         allocateButtonPanel.add(deAllocateButton);
@@ -223,25 +209,20 @@ public class AllocationPanel {
         //Add allocation label panel to screen panel.
         allocationScreenPanel.add(allocationsPanel);
 
-        //Finally the allocation list.
+        //Finally, the allocation list.
         JPanel allocationListPanel = new JPanel();
         allocationListPanel.setBackground(Color.WHITE);
-        allocationsModel = new DefaultListModel();
+        allocationsModel = new DefaultListModel<>();
         List<String> allocations;
         allocations = controllerHandler.getVehicleController().getAllocations(companyResponse.getName());
-        for ( int i = 0; i < allocations.size(); i++ ) {
-            allocationsModel.addElement(allocations.get(i).toString());
+        for (String allocation : allocations) {
+            allocationsModel.addElement(allocation);
             //For each allocation, remove route and vehicle from list.
-            String[] allocateSplit = allocations.get(i).toString().split("&");
+            String[] allocateSplit = allocation.split("&");
             routesModel.removeElement(allocateSplit[0].trim());
-            vehiclesModel.removeElement(allocateSplit[1].substring(1,allocateSplit[1].length()));
+            vehiclesModel.removeElement(allocateSplit[1].substring(1));
         }
-        /*LinkedList<Vehicle> vehicles = theInterface.getVehicles();
-        Collections.sort(vehicles, new SortedVehicles());
-        for ( int i = 0; i < vehicles.size(); i++ ) {
-            theVehiclesModel.addElement(vehicles.get(i).toString());
-        }*/
-        allocationsList = new JList(allocationsModel);
+        allocationsList = new JList<>(allocationsModel);
         allocationsList.setFixedCellWidth(250);
         allocationsList.setVisibleRowCount(4);
         allocationsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -258,50 +239,43 @@ public class AllocationPanel {
 
         //Create save allocations button and add it to screen panel.
         JButton saveAllocationsButton = new JButton("Save Allocations");
-        saveAllocationsButton.addActionListener ( new ActionListener() {
-            public void actionPerformed ( ActionEvent e ) {
-                int result = JOptionPane.YES_OPTION;
-                if ( !routesModel.isEmpty() ) {
-                    result = JOptionPane.showConfirmDialog(null, "There are some route schedules which do not have vehicles. If you do not assign vehicles to these routes, your passenger satisfaction will decrease! Do you want to continue?", "WARNING: Some routes are unallocated!", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
-                }
-                if ( result == JOptionPane.YES_OPTION ) {
-                    //Save vehicle positions - then set other ones to null!
-                    ArrayList<Integer> vehiclePoses = new ArrayList<Integer>();
-                    //Do requested allocations.
-                    for ( int i = 0; i < allocationsModel.size(); i++ ) {
-                        //Separate route and vehicle data.
-                        String[] allocationSplit = allocationsModel.get(i).toString().split("&");
-                        //Store route detail object.
-                        String routeNumber = allocationSplit[0].split("/")[0]; int routeDetailPos = -1;
-                        VehicleResponse[] vehicleModels = controllerHandler.getVehicleController().getVehiclesForRoute(companyResponse.getName(), controllerHandler.getRouteController().getRoute(routeNumber, companyResponse.getName()).getRouteNumber()).getVehicleResponses();
-                        for ( int k = 0; k < vehicleModels.length; k++ ) {
-                            if ( vehicleModels[k].getAllocatedTour().contentEquals(allocationSplit[0]) ) {
-                                routeDetailPos = k;
-                            }
+        saveAllocationsButton.addActionListener (e -> {
+            int result = JOptionPane.YES_OPTION;
+            if ( !routesModel.isEmpty() ) {
+                result = JOptionPane.showConfirmDialog(null, "There are some route schedules which do not have vehicles. If you do not assign vehicles to these routes, your passenger satisfaction will decrease! Do you want to continue?", "WARNING: Some routes are unallocated!", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+            }
+            if ( result == JOptionPane.YES_OPTION ) {
+                //Perform requested allocations.
+                for ( int i = 0; i < allocationsModel.size(); i++ ) {
+                    //Separate route and vehicle data.
+                    String[] allocationSplit = allocationsModel.get(i).split("&");
+                    //Store route detail object.
+                    String routeNumber = allocationSplit[0].split("/")[0]; int routeDetailPos = -1;
+                    VehicleResponse[] vehicleModels = controllerHandler.getVehicleController().getVehiclesForRoute(companyResponse.getName(), controllerHandler.getRouteController().getRoute(routeNumber, companyResponse.getName()).getRouteNumber()).getVehicleResponses();
+                    for ( int k = 0; k < vehicleModels.length; k++ ) {
+                        if ( vehicleModels[k].getAllocatedTour().contentEquals(allocationSplit[0]) ) {
+                            routeDetailPos = k;
                         }
-                        //Find vehicle object position.
-                        int vehiclePos = -1;
-                        for ( int j = 0; j < vehicleModels.length; j++ ) {
-                            if ( vehicleModels[j].getAdditionalTypeInformationMap().get("Registration Number").equalsIgnoreCase(allocationSplit[1].trim())) {
-                                vehiclePos = j;
-                                vehiclePoses.add(vehiclePos);
-                            }
-                        }
-                        //Now assign route detail to vehicle.
-                        controllerHandler.getVehicleController().assignVehicleToTour(vehicleModels[vehiclePos].getAdditionalTypeInformationMap().get("Registration Number"), vehicleModels[routeDetailPos].getAllocatedTour(), companyResponse.getName());
                     }
-                    //Now return to previous screen.
-                    controlScreen.redrawManagement(managementPanel.createPanel(controlScreen), companyResponse);
+                    //Find vehicle object position.
+                    int vehiclePos = -1;
+                    for ( int j = 0; j < vehicleModels.length; j++ ) {
+                        if ( vehicleModels[j].getAdditionalTypeInformationMap().get("Registration Number").equalsIgnoreCase(allocationSplit[1].trim())) {
+                            vehiclePos = j;
+                        }
+                    }
+                    //Now assign route detail to vehicle.
+                    controllerHandler.getVehicleController().assignVehicleToTour(vehicleModels[vehiclePos].getAdditionalTypeInformationMap().get("Registration Number"), vehicleModels[routeDetailPos].getAllocatedTour(), companyResponse.getName());
                 }
+                //Now return to previous screen.
+                controlScreen.redrawManagement(managementPanel.createPanel(controlScreen), companyResponse);
             }
         });
         bottomButtonPanel.add(saveAllocationsButton);
         JButton previousScreenButton = new JButton("Return to Previous Screen");
-        previousScreenButton.addActionListener( new ActionListener() {
-            public void actionPerformed ( ActionEvent e ) {
-                //Now return to previous screen.
-                controlScreen.redrawManagement(managementPanel.createPanel(controlScreen), companyResponse);
-            }
+        previousScreenButton.addActionListener(e -> {
+            //Now return to previous screen.
+            controlScreen.redrawManagement(managementPanel.createPanel(controlScreen), companyResponse);
         });
         bottomButtonPanel.add(previousScreenButton);
 

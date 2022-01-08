@@ -19,7 +19,7 @@ public class NewGameScreen extends JFrame {
     /**
      * A <code>ControllerHandler</code> obtaining the currently used controllers from Spring.
      */
-    private ControllerHandler controllerHandler;
+    private final ControllerHandler controllerHandler;
 
     /**
      * Create a new game screen.

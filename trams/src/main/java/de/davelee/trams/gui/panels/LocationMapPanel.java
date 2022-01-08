@@ -2,8 +2,6 @@ package de.davelee.trams.gui.panels;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -18,17 +16,7 @@ import de.davelee.trams.gui.ImageDisplay;
  * This class represents a panel to display the location map to the user.
  * @author Dave Lee
  */
-public class LocationMapPanel {
-	
-	private ControllerHandler controllerHandler;
-
-    /**
-     * Create a new <code>LocationMapPanel</code> with access to all Controllers to get or send data where needed.
-     * @param controllerHandler a <code>ControllerHandler</code> object allowing access to Controllers.
-     */
-	public LocationMapPanel (final ControllerHandler controllerHandler ) {
-	    this.controllerHandler = controllerHandler;
-    }
+public record LocationMapPanel(ControllerHandler controllerHandler) {
 
     /**
      * Create a new <code>LocationMapPanel</code> panel and display it to the user.
@@ -53,11 +41,7 @@ public class LocationMapPanel {
         JPanel optionsButtonPanel = new JPanel();
         optionsButtonPanel.setBackground(Color.WHITE);
         JButton managementScreenButton = new JButton("Return to Management Screen");
-        managementScreenButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                controlScreen.redrawManagement(managementPanel.createPanel(controlScreen), companyResponse);
-            }
-        });
+        managementScreenButton.addActionListener(e -> controlScreen.redrawManagement(managementPanel.createPanel(controlScreen), companyResponse));
         optionsButtonPanel.add(managementScreenButton);
         picturePanel.add(optionsButtonPanel, BorderLayout.SOUTH);
         

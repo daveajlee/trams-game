@@ -18,6 +18,7 @@ import de.davelee.trams.util.MessageFolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.Serial;
 import java.text.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -30,6 +31,8 @@ import java.util.Locale;
 public class ControlScreen extends ButtonBar {
 	
 	private static final Logger logger = LoggerFactory.getLogger(ControlScreen.class);
+
+    @Serial
 	private static final long serialVersionUID = 1L;
 
     /**
@@ -75,12 +78,12 @@ public class ControlScreen extends ButtonBar {
     /**
      * A list of routes.
      */
-    private JList routeList;
+    private JList<String> routeList;
 
     /**
      * The content model for the list of routes.
      */
-    private DefaultListModel routeModel;
+    private DefaultListModel<String> routeModel;
 
     /**
      * A panel to add all other panels to in this screen or frame.
@@ -125,27 +128,27 @@ public class ControlScreen extends ButtonBar {
     /**
      * Model controlling the values shown in the list of messages.
      */
-    private DefaultListModel messagesModel;
+    private DefaultListModel<String> messagesModel;
 
     /**
      * Model controlling the values shown in the drop-down list of dates.
      */
-    private DefaultComboBoxModel dateModel;
+    private DefaultComboBoxModel<String> dateModel;
 
     /**
      * A list of messages which the user can choose to display.
      */
-    private JList messagesList;
+    private JList<String> messagesList;
 
     /**
      * A drop-down list of folder names.
      */
-    private JComboBox foldersBox;
+    private JComboBox<String> foldersBox;
 
     /**
      * A drop-down list of dates.
      */
-    private JComboBox dateBox;
+    private JComboBox<String> dateBox;
 
     /**
      * A boolean which prevents the routes being reloaded if the simulation is running.
@@ -214,8 +217,8 @@ public class ControlScreen extends ButtonBar {
         topPanel.add(timeLabel, BorderLayout.NORTH);
 
         //Initialise route list.
-        routeModel = new DefaultListModel();
-        routeList = new JList(routeModel);
+        routeModel = new DefaultListModel<>();
+        routeList = new JList<>(routeModel);
 
         //topPanel.add(makeOptionsPanel(gameModel), BorderLayout.CENTER);
         dialogPanel.add(topPanel, BorderLayout.NORTH);
@@ -343,22 +346,18 @@ public class ControlScreen extends ButtonBar {
         balanceLabel.setFont(new Font("Arial", Font.BOLD, 12));
         bottomInfoPanel.add(balanceLabel);
         JButton resignButton = new JButton("Resign");
-        resignButton.addActionListener( new ActionListener() {
-            public void actionPerformed ( ActionEvent e ) {
-                ControlScreen.super.getControllerHandler().getSimulationController().pauseSimulation();
-                new WelcomeScreen(ControlScreen.super.getControllerHandler());
-                dispose();
-            }
+        resignButton.addActionListener(e -> {
+            ControlScreen.super.getControllerHandler().getSimulationController().pauseSimulation();
+            new WelcomeScreen(ControlScreen.super.getControllerHandler());
+            dispose();
         });
         bottomInfoPanel.add(resignButton);
         JButton exitButton = new JButton("Exit Game");
-        exitButton.addActionListener( new ActionListener() {
-            public void actionPerformed ( ActionEvent e ) {
-                boolean wasSimulationRunning = ControlScreen.super.getControllerHandler().getSimulationController().pauseSimulation();
-                ExitDialog exitDialog = new ExitDialog();
-                exitDialog.createExitDialog(ControlScreen.this);
-                if (wasSimulationRunning) { ControlScreen.super.getControllerHandler().getSimulationController().resumeSimulation(ControlScreen.this); }
-            }
+        exitButton.addActionListener(e -> {
+            boolean wasSimulationRunning = ControlScreen.super.getControllerHandler().getSimulationController().pauseSimulation();
+            ExitDialog exitDialog = new ExitDialog();
+            exitDialog.createExitDialog(ControlScreen.this);
+            if (wasSimulationRunning) { ControlScreen.super.getControllerHandler().getSimulationController().resumeSimulation(ControlScreen.this); }
         });
         bottomInfoPanel.add(exitButton);
         bottomPanel.add(bottomInfoPanel, BorderLayout.SOUTH);
@@ -373,7 +372,7 @@ public class ControlScreen extends ButtonBar {
         Toolkit tools = Toolkit.getDefaultToolkit();
         Dimension screenDim = tools.getScreenSize();
         Dimension displayDim = new Dimension(800,600);
-        this.setLocation ( (int) (screenDim.width/2)-(displayDim.width/2), (int) (screenDim.height/2)-(displayDim.height/2));
+        this.setLocation ( (screenDim.width/2)-(displayDim.width/2), (screenDim.height/2)-(displayDim.height/2));
         
         //Display the front screen to the user.
         logger.debug("Completing generation of Control Screen!");
@@ -382,31 +381,21 @@ public class ControlScreen extends ButtonBar {
         this.setSize ( 800,600 );
         
         //Help Contents Item.
-        helpItem.addActionListener( new ActionListener() {
-            public void actionPerformed ( ActionEvent e ) {
-                //thePauseButton.setText("Resume Simulation");
-                ControlScreen.super.getControllerHandler().getSimulationController().pauseSimulation();
-                Thread contentsThread = new Thread() {
-                    public void run () {
-                        new HelpScreen();
-                    }
-                };
-                contentsThread.start();
-            }
+        helpItem.addActionListener(e -> {
+            //thePauseButton.setText("Resume Simulation");
+            ControlScreen.super.getControllerHandler().getSimulationController().pauseSimulation();
+            Thread contentsThread = new Thread(HelpScreen::new);
+            contentsThread.start();
         });
         //About Item.
-        aboutItem.addActionListener ( new ActionListener () {
-            public void actionPerformed ( ActionEvent e ) {
-                //thePauseButton.setText("Resume Simulation");
-                ControlScreen.super.getControllerHandler().getSimulationController().pauseSimulation();
-                Thread aboutThread = new Thread() {
-                    public void run () {
-                        SplashScreen splashScreen = new SplashScreen(ControlScreen.super.getControllerHandler());
-                        splashScreen.displayScreen(true);
-                    }
-                };
-                aboutThread.start();
-            }
+        aboutItem.addActionListener (e -> {
+            //thePauseButton.setText("Resume Simulation");
+            ControlScreen.super.getControllerHandler().getSimulationController().pauseSimulation();
+            Thread aboutThread = new Thread(() -> {
+                SplashScreen splashScreen = new SplashScreen(ControlScreen.super.getControllerHandler());
+                splashScreen.displayScreen(true);
+            });
+            aboutThread.start();
         });
         
     }
@@ -431,10 +420,10 @@ public class ControlScreen extends ButtonBar {
     public void updateVehicleStatus ( final String time, final String difficultyLevel, final String company ) {
         String vehicleStatus = "";
 
-        VehicleResponse[] vehicleModels = super.getControllerHandler().getVehicleController().getVehiclesForRoute(company, routeList.getSelectedValue().toString().split(":")[0]).getVehicleResponses();
-        for (int i = 0; i < vehicleModels.length; i++) {
-            String vehiclePos = super.getControllerHandler().getVehicleController().getCurrentStopName(vehicleModels[i], time, difficultyLevel);
-            vehicleStatus += "Schedule " + vehicleModels[i].getAllocatedTour() + " is at " + vehiclePos + " with a delay of " + vehicleModels[i].getDelayInMinutes() + " minutes.\n";
+        VehicleResponse[] vehicleModels = super.getControllerHandler().getVehicleController().getVehiclesForRoute(company, routeList.getSelectedValue().split(":")[0]).getVehicleResponses();
+        for (VehicleResponse vehicleModel : vehicleModels) {
+            String vehiclePos = super.getControllerHandler().getVehicleController().getCurrentStopName(vehicleModel, time, difficultyLevel);
+            vehicleStatus += "Schedule " + vehicleModel.getAllocatedTour() + " is at " + vehiclePos + " with a delay of " + vehicleModel.getDelayInMinutes() + " minutes.\n";
         }
 
         vehiclesStatusArea.setText(vehicleStatus);
@@ -468,8 +457,8 @@ public class ControlScreen extends ButtonBar {
             //Refresh messages.
             MessageResponse[] messageModels = super.getControllerHandler().getMessageController().getMessagesByFolderDateSender(companyResponse.getName(), foldersBox.getSelectedItem().toString(),dateBox.getSelectedItem().toString(),"Council");
             messagesModel.removeAllElements();
-            for ( int i = 0; i < messageModels.length; i++ ) {
-                messagesModel.addElement(messageModels[i].getSubject());
+            for (MessageResponse messageModel : messageModels) {
+                messagesModel.addElement(messageModel.getSubject());
             }
             messagesList.setSelectedIndex(0);
             if ( messageModels.length == 0 && dateBox.getSelectedItem().toString().equalsIgnoreCase("All Dates") ) {
@@ -527,8 +516,8 @@ public class ControlScreen extends ButtonBar {
         messagesPanel = new JPanel(new BorderLayout());
         messagesPanel.setBackground(Color.WHITE);
         //Create a list of messages as the north panel.
-        messagesModel = new DefaultListModel();
-        messagesList = new JList(messagesModel);
+        messagesModel = new DefaultListModel<>();
+        messagesList = new JList<>(messagesModel);
         messagesList.setVisibleRowCount(5);
         messagesArea = new JTextArea();
         MessageFolder[] messageFolders = MessageFolder.values();
@@ -536,18 +525,18 @@ public class ControlScreen extends ButtonBar {
         for ( int i = 0; i < messageFolders.length; i++ ) {
             messageFolderNames[i] = messageFolders[i].getDisplayName();
         }
-        foldersBox = new JComboBox(messageFolderNames);
+        foldersBox = new JComboBox<>(messageFolderNames);
         //Create combo box with date.
-        dateModel = new DefaultComboBoxModel();
+        dateModel = new DefaultComboBoxModel<>();
         dateModel.addElement("All Dates");
         final MessageResponse[] allMessageModels = super.getControllerHandler().getMessageController().getAllMessages(company);
-        for ( int i = 0; i < allMessageModels.length; i++ ) {
-            logger.debug("Index of " + dateModel.getIndexOf(allMessageModels[i].getDateTime()));
-            if ( dateModel.getIndexOf(allMessageModels[i].getDateTime()) == -1 ) {
-                dateModel.addElement(allMessageModels[i].getDateTime());
+        for (MessageResponse allMessageModel : allMessageModels) {
+            logger.debug("Index of " + dateModel.getIndexOf(allMessageModel.getDateTime()));
+            if (dateModel.getIndexOf(allMessageModel.getDateTime()) == -1) {
+                dateModel.addElement(allMessageModel.getDateTime());
             }
         }
-        dateBox = new JComboBox(dateModel);
+        dateBox = new JComboBox<>(dateModel);
 
         //Create a west panel - it is a box layout.
         JPanel westPanel = new JPanel(new BorderLayout());
@@ -561,23 +550,21 @@ public class ControlScreen extends ButtonBar {
         dateLabel.setFont(new Font("Arial", Font.BOLD, 14));
         datePanel.add(dateLabel);
         dateBox.setFont(new Font("Arial", Font.PLAIN, 12));
-        dateBox.addItemListener( new ItemListener() {
-            public void itemStateChanged ( ItemEvent e ) {
-                MessageResponse[] messageModels = ControlScreen.super.getControllerHandler().getMessageController().getMessagesByFolderDateSender(company, foldersBox.getSelectedItem().toString(),dateBox.getSelectedItem().toString(), "Council");
-                messagesModel.removeAllElements();
-                for ( int i = 0; i < messageModels.length; i++ ) {
-                    messagesModel.addElement(messageModels[i].getSubject());
-                }
-                messagesList.setSelectedIndex(0);
-                if ( messageModels.length == 0 && dateBox.getSelectedItem().toString().equalsIgnoreCase("All Dates") ) {
-                    messagesArea.setText("There are no messages in the " + foldersBox.getSelectedItem().toString() + " folder.");
-                }
-                else if ( messageModels.length == 0 ) {
-                    messagesArea.setText("There are no messages in the " + foldersBox.getSelectedItem().toString() + " folder for the date " + dateBox.getSelectedItem().toString() + ".");
-                }
-                else {
-                    messagesArea.setText(messageModels[messagesList.getSelectedIndex()].getText());
-                }
+        dateBox.addItemListener(e -> {
+            MessageResponse[] messageModels = ControlScreen.super.getControllerHandler().getMessageController().getMessagesByFolderDateSender(company, foldersBox.getSelectedItem().toString(),dateBox.getSelectedItem().toString(), "Council");
+            messagesModel.removeAllElements();
+            for (MessageResponse messageModel : messageModels) {
+                messagesModel.addElement(messageModel.getSubject());
+            }
+            messagesList.setSelectedIndex(0);
+            if ( messageModels.length == 0 && dateBox.getSelectedItem().toString().equalsIgnoreCase("All Dates") ) {
+                messagesArea.setText("There are no messages in the " + foldersBox.getSelectedItem().toString() + " folder.");
+            }
+            else if ( messageModels.length == 0 ) {
+                messagesArea.setText("There are no messages in the " + foldersBox.getSelectedItem().toString() + " folder for the date " + dateBox.getSelectedItem().toString() + ".");
+            }
+            else {
+                messagesArea.setText(messageModels[messagesList.getSelectedIndex()].getText());
             }
         });
         datePanel.add(dateBox);
@@ -592,23 +579,21 @@ public class ControlScreen extends ButtonBar {
         foldersPanel.add(foldersLabel);
         //Create combo box with folders list.
         foldersBox.setFont(new Font("Arial", Font.PLAIN, 12));
-        foldersBox.addItemListener ( new ItemListener() {
-            public void itemStateChanged ( ItemEvent e ) {
-                MessageResponse[] messageModels = ControlScreen.super.getControllerHandler().getMessageController().getMessagesByFolderDateSender(company, foldersBox.getSelectedItem().toString(),dateBox.getSelectedItem().toString(), "Council");
-                messagesModel.removeAllElements();
-                for ( int i = 0; i < messageModels.length; i++ ) {
-                    messagesModel.addElement(messageModels[i].getSubject());
-                }
-                messagesList.setSelectedIndex(0);
-                if ( messageModels.length == 0 && dateBox.getSelectedItem().toString().equalsIgnoreCase("All Dates") ) {
-                    messagesArea.setText("There are no messages in the " + foldersBox.getSelectedItem().toString() + " folder.");
-                }
-                else if ( messageModels.length == 0 ) {
-                    messagesArea.setText("There are no messages in the " + foldersBox.getSelectedItem().toString() + " folder for the date " + dateBox.getSelectedItem().toString() + ".");
-                }
-                else {
-                    messagesArea.setText(messageModels[messagesList.getSelectedIndex()].getText());
-                }
+        foldersBox.addItemListener (e -> {
+            MessageResponse[] messageResponses = ControlScreen.super.getControllerHandler().getMessageController().getMessagesByFolderDateSender(company, foldersBox.getSelectedItem().toString(),dateBox.getSelectedItem().toString(), "Council");
+            messagesModel.removeAllElements();
+            for ( MessageResponse messageResponse : messageResponses ) {
+                messagesModel.addElement(messageResponse.getSubject());
+            }
+            messagesList.setSelectedIndex(0);
+            if ( messageResponses.length == 0 && dateBox.getSelectedItem().toString().equalsIgnoreCase("All Dates") ) {
+                messagesArea.setText("There are no messages in the " + foldersBox.getSelectedItem().toString() + " folder.");
+            }
+            else if ( messageResponses.length == 0 ) {
+                messagesArea.setText("There are no messages in the " + foldersBox.getSelectedItem().toString() + " folder for the date " + dateBox.getSelectedItem().toString() + ".");
+            }
+            else {
+                messagesArea.setText(messageResponses[messagesList.getSelectedIndex()].getText());
             }
         });
         foldersPanel.add(foldersBox);
@@ -619,8 +604,8 @@ public class ControlScreen extends ButtonBar {
         //Initialise the messages list now.
         MessageResponse[] myMessageModels = super.getControllerHandler().getMessageController().getMessagesByFolder(company, foldersBox.getSelectedItem().toString());
         if ( myMessageModels != null ) {
-            for (int i = 0; i < myMessageModels.length; i++) {
-                messagesModel.addElement(myMessageModels[i].getSubject());
+            for (MessageResponse myMessageModel : myMessageModels) {
+                messagesModel.addElement(myMessageModel.getSubject());
             }
             messagesList.setSelectedIndex(0);
         }
@@ -640,11 +625,9 @@ public class ControlScreen extends ButtonBar {
         else {
             messageModels = super.getControllerHandler().getMessageController().getAllMessages(company);
         }
-        messagesList.addListSelectionListener( new ListSelectionListener() {
-            public void valueChanged ( ListSelectionEvent lse ) {
-                if ( messagesList.getSelectedIndex() != -1 ) {
-                    messagesArea.setText(messageModels[messagesList.getSelectedIndex()].getText());
-                }
+        messagesList.addListSelectionListener(lse -> {
+            if ( messagesList.getSelectedIndex() != -1 ) {
+                messagesArea.setText(messageModels[messagesList.getSelectedIndex()].getText());
             }
         });
         messageAndButtonPanel.add(messagesList, BorderLayout.NORTH);
@@ -757,10 +740,10 @@ public class ControlScreen extends ButtonBar {
      */
     public void populateRouteList ( final String company ) {
         routeModel.clear();
-        RouteResponse[] routeModels = super.getControllerHandler().getRouteController().getRoutes(company).getRouteResponses();
-        for ( int i = 0; i < routeModels.length; i++ ) {
+        RouteResponse[] routeResponses = super.getControllerHandler().getRouteController().getRoutes(company).getRouteResponses();
+        for ( RouteResponse routeResponse : routeResponses ) {
             //TODO: Add stops to the display of the route text
-            routeModel.addElement(routeModels[i].getRouteNumber() /*+ ":" + routeModels[i].getStopNames().get(0) + " - " + routeModels[i].getStopNames().get(routeModels[i].getStopNames().size()-1)*/);
+            routeModel.addElement(routeResponse.getRouteNumber() /*+ ":" + routeResponse.getStopNames().get(0) + " - " + routeResponse.getStopNames().get(routeResponse.getStopNames().size()-1)*/);
         }
         //theRouteList = new JList(allRouteStr);
         logger.debug("Route number in control screen is " + routeNumber);

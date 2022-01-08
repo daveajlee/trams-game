@@ -5,13 +5,11 @@ import javax.swing.UIManager;
 import de.davelee.trams.controllers.ControllerHandler;
 import de.davelee.trams.gui.SplashScreen;
 import de.davelee.trams.gui.WelcomeScreen;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
 

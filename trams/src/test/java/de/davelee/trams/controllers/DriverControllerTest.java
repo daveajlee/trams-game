@@ -18,9 +18,7 @@ import org.springframework.web.client.RestTemplate;
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.mock;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes= TramsGameApplication.class)

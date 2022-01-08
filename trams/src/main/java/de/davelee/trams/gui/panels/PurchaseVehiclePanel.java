@@ -6,8 +6,6 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -20,8 +18,6 @@ import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 import de.davelee.trams.api.response.CompanyResponse;
 import de.davelee.trams.api.response.VehicleResponse;
@@ -34,7 +30,7 @@ import de.davelee.trams.gui.ControlScreen;
  */
 public class PurchaseVehiclePanel {
 
-	private ControllerHandler controllerHandler;
+	private final ControllerHandler controllerHandler;
 	private JLabel totalPriceField;
 	private JButton purchaseVehicleButton;
 
@@ -82,32 +78,20 @@ public class PurchaseVehiclePanel {
         previousButtonPanel.setBackground(Color.WHITE);
         JButton previousVehicleTypeButton = new JButton("< Previous Vehicle Type");
         if ( vehicleType.contentEquals(controllerHandler.getVehicleController().getVehicles(controlScreen.getCompany()).getVehicleResponses()[0].getModelName()) ) { previousVehicleTypeButton.setEnabled(false); }
-        previousVehicleTypeButton.addActionListener( new ActionListener() {
-            public void actionPerformed ( ActionEvent e ) {
-                    controlScreen.redrawManagement(createPanel(controllerHandler.getVehicleController().getPreviousVehicleModel(controlScreen.getCompany(), vehicleType), controlScreen, managementPanel), companyResponse);
-            }
-        });
+        previousVehicleTypeButton.addActionListener(e -> controlScreen.redrawManagement(createPanel(controllerHandler.getVehicleController().getPreviousVehicleModel(controlScreen.getCompany(), vehicleType), controlScreen, managementPanel), companyResponse));
         previousButtonPanel.add(previousVehicleTypeButton);
         picturePanel.add(previousButtonPanel, BorderLayout.WEST);
         //Bus Display Picture.
         JPanel busPicture = new JPanel(new GridBagLayout());
         busPicture.setBackground(Color.WHITE);
         //TODO: Add a mapping from images to vehicle types.
-        /*ImageDisplay busDisplay = new ImageDisplay(vehicleResponse.getImagePath(),0,0);
-        busDisplay.setSize(220,180);
-        busDisplay.setBackground(Color.WHITE);
-        busPicture.add(busDisplay);*/
         picturePanel.add(busPicture, BorderLayout.CENTER);
         //Next vehicle type button.
         JPanel nextButtonPanel = new JPanel(new GridBagLayout());
         nextButtonPanel.setBackground(Color.WHITE);
         JButton nextVehicleTypeButton = new JButton("Next Vehicle Type >");
         if ( vehicleType.contentEquals(controllerHandler.getVehicleController().getVehicles(controlScreen.getCompany()).getVehicleResponses()[0].getModelName()))  { nextVehicleTypeButton.setEnabled(false); }
-        nextVehicleTypeButton.addActionListener( new ActionListener() {
-            public void actionPerformed ( ActionEvent e ) {
-                    controlScreen.redrawManagement(createPanel(controllerHandler.getVehicleController().getNextVehicleModel(controlScreen.getCompany(), vehicleType), controlScreen, managementPanel), companyResponse);
-            }
-        });
+        nextVehicleTypeButton.addActionListener(e -> controlScreen.redrawManagement(createPanel(controllerHandler.getVehicleController().getNextVehicleModel(controlScreen.getCompany(), vehicleType), controlScreen, managementPanel), companyResponse));
         nextButtonPanel.add(nextVehicleTypeButton);
         picturePanel.add(nextButtonPanel, BorderLayout.EAST);
         vehicleScreenPanel.add(picturePanel);
@@ -116,44 +100,24 @@ public class PurchaseVehiclePanel {
         JPanel gridPanel = new JPanel(new GridLayout(7,2,2,2));
         gridPanel.setBackground(Color.WHITE);      
         //Create label and field for vehicle type and add it to the type panel.
-        JPanel typeLabelPanel = new JPanel();
-        typeLabelPanel.setBackground(Color.WHITE);
-        JLabel typeLabel = new JLabel("Type:", SwingConstants.CENTER);
-        typeLabel.setFont(new Font("Arial", Font.ITALIC, 14));
-        typeLabelPanel.add(typeLabel);
-        gridPanel.add(typeLabel);
+        gridPanel.add(createLabel("Type:"));
         JLabel typeField = new JLabel(vehicleResponse.getModelName());
         typeField.setFont(new Font("Arial", Font.PLAIN, 12));
         gridPanel.add(typeField);
         //Create label and field for seating capacity and add it to the seating panel.
-        JPanel seatingLabelPanel = new JPanel();
-        seatingLabelPanel.setBackground(Color.WHITE);
-        JLabel seatingLabel = new JLabel("Seating Capacity:", SwingConstants.CENTER);
-        seatingLabel.setFont(new Font("Arial", Font.ITALIC, 14));
-        seatingLabelPanel.add(seatingLabel);
-        gridPanel.add(seatingLabel);
+        gridPanel.add(createLabel("Seating Capacity"));
         JLabel seatingField = new JLabel("" + vehicleResponse.getSeatingCapacity());
         seatingField.setFont(new Font("Arial", Font.PLAIN, 12));
         gridPanel.add(seatingField);
         //Create label and field for standing capacity and add it to the standing panel.
-        JPanel standingLabelPanel = new JPanel();
-        standingLabelPanel.setBackground(Color.WHITE);
-        JLabel standingLabel = new JLabel("Standing Capacity:", SwingConstants.CENTER);
-        standingLabel.setFont(new Font("Arial", Font.ITALIC, 14));
-        standingLabelPanel.add(standingLabel);
-        gridPanel.add(standingLabel);
+        gridPanel.add(createLabel("Standing Capacity:"));
         JLabel standingField = new JLabel("" + vehicleResponse.getStandingCapacity());
         standingField.setFont(new Font("Arial", Font.PLAIN, 12));
         gridPanel.add(standingField);
         //Create label and field for delivery date and add it to the delivery panel.
-        JPanel deliveryLabelPanel = new JPanel();
-        deliveryLabelPanel.setBackground(Color.WHITE);
-        JLabel deliveryLabel = new JLabel("Delivery Date:", SwingConstants.CENTER);
-        deliveryLabel.setFont(new Font("Arial", Font.ITALIC, 14));
-        deliveryLabelPanel.add(deliveryLabel);
-        gridPanel.add(deliveryLabel);
-        final LocalDate deliveryDate = LocalDate.parse(companyResponse.getTime(), DateTimeFormatter.ofPattern("dd-MM-yyyy"));
-        deliveryDate.plusDays(3);
+        gridPanel.add(createLabel("Delivery Date:"));
+        LocalDate deliveryDate = LocalDate.parse(companyResponse.getTime(), DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+        deliveryDate = deliveryDate.plusDays(3);
         JLabel deliveryField = new JLabel("" + DateTimeFormatter.RFC_1123_DATE_TIME.format(deliveryDate));
         deliveryField.setFont(new Font("Arial", Font.PLAIN, 12));
         gridPanel.add(deliveryField);
@@ -177,21 +141,19 @@ public class PurchaseVehiclePanel {
         gridPanel.add(quantityLabel);
         final JSpinner quantitySpinner = new JSpinner(new SpinnerNumberModel(1,1,40,1));
         quantitySpinner.setFont(new Font("Arial", Font.PLAIN, 12));
-        quantitySpinner.addChangeListener(new ChangeListener() {
-            public void stateChanged ( ChangeEvent e ) {
-                //TODO: make it possible to retrieve the purchase price of a vehicle
-                //double totalPrice = Double.parseDouble(quantitySpinner.getValue().toString()) * vehicleResponse.getPurchasePrice();
-                double totalPrice = 0.0;
-                if ( totalPrice > companyResponse.getBalance() ) {
-                    totalPriceField.setText("£" + format.format(totalPrice) + " (Insufficient funds available)");
-                    totalPriceField.setForeground(Color.RED);
-                    purchaseVehicleButton.setEnabled(false);
-                }
-                else {
-                    totalPriceField.setText("£" + format.format(totalPrice));
-                    totalPriceField.setForeground(Color.BLACK);
-                    purchaseVehicleButton.setEnabled(true);
-                }
+        quantitySpinner.addChangeListener(e -> {
+            //TODO: make it possible to retrieve the purchase price of a vehicle
+            //double totalPrice = Double.parseDouble(quantitySpinner.getValue().toString()) * vehicleResponse.getPurchasePrice();
+            double totalPrice = 0.0;
+            if ( totalPrice > companyResponse.getBalance() ) {
+                totalPriceField.setText("£" + format.format(totalPrice) + " (Insufficient funds available)");
+                totalPriceField.setForeground(Color.RED);
+                purchaseVehicleButton.setEnabled(false);
+            }
+            else {
+                totalPriceField.setText("£" + format.format(totalPrice));
+                totalPriceField.setForeground(Color.BLACK);
+                purchaseVehicleButton.setEnabled(true);
             }
         });
         quantitySpinner.setMaximumSize(new Dimension(10,15));
@@ -219,26 +181,20 @@ public class PurchaseVehiclePanel {
                 
         //Create purchase vehicle button and add it to screen panel.
         purchaseVehicleButton = new JButton("Purchase Vehicle");
-        purchaseVehicleButton.addActionListener ( new ActionListener() {
-            public void actionPerformed ( ActionEvent e ) {
-                int quantity = Integer.parseInt(quantitySpinner.getValue().toString());
-                for ( int i = 0; i < quantity; i++ ) {
-                    double purchasePrice = controllerHandler.getVehicleController().purchaseVehicle(
-                            vehicleResponse.getModelName(), companyResponse.getName(), LocalDate.parse(companyResponse.getTime(), DateTimeFormatter.ofPattern("dd-MM-yyyy")).getYear(), Optional.empty());
-                    controllerHandler.getCompanyController().withdrawOrCreditBalance(purchasePrice, controlScreen.getPlayerName());
-                }
-                controlScreen.redrawManagement(managementPanel.createPanel(controlScreen), companyResponse);
+        purchaseVehicleButton.addActionListener (e -> {
+            int quantity = Integer.parseInt(quantitySpinner.getValue().toString());
+            for ( int i = 0; i < quantity; i++ ) {
+                double purchasePrice = controllerHandler.getVehicleController().purchaseVehicle(
+                        vehicleResponse.getModelName(), companyResponse.getName(), LocalDate.parse(companyResponse.getTime(), DateTimeFormatter.ofPattern("dd-MM-yyyy")).getYear(), Optional.empty());
+                controllerHandler.getCompanyController().withdrawOrCreditBalance(purchasePrice, controlScreen.getPlayerName());
             }
+            controlScreen.redrawManagement(managementPanel.createPanel(controlScreen), companyResponse);
         });
         bottomButtonPanel.add(purchaseVehicleButton);
         
         //Create return to create game screen button and add it to screen panel.
         JButton managementScreenButton = new JButton("Return to Management Screen");
-        managementScreenButton.addActionListener ( new ActionListener() {
-            public void actionPerformed ( ActionEvent e ) {
-                    controlScreen.redrawManagement(managementPanel.createPanel(controlScreen), companyResponse);
-            }
-        });
+        managementScreenButton.addActionListener (e -> controlScreen.redrawManagement(managementPanel.createPanel(controlScreen), companyResponse));
         bottomButtonPanel.add(managementScreenButton);
         
         //Add bottom button panel to the screen panel.
@@ -246,5 +202,16 @@ public class PurchaseVehiclePanel {
         
         return vehicleScreenPanel;
 	}
+
+    /**
+     * This is a private helper method to generate a <code>JLabel</code> object with the desired text.
+     * @param text a <code>String</code> with the text to display to the user.
+     * @return a <code>JLabel</code> object which can be added to a panel.
+     */
+    private JLabel createLabel ( final String text ) {
+        JLabel label = new JLabel(text, SwingConstants.CENTER);
+        label.setFont(new Font("Arial", Font.ITALIC, 14));
+        return label;
+    }
 	
 }

@@ -2,8 +2,7 @@ package de.davelee.trams.gui;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.io.Serial;
 
 import javax.swing.*;
 
@@ -20,10 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author Dave Lee
  */
 public class BusInfoScreen extends JFrame {
-    
-    /**
-	 * 
-	 */
+
+    @Serial
 	private static final long serialVersionUID = 1L;
 
     /**
@@ -96,20 +93,14 @@ public class BusInfoScreen extends JFrame {
         southPanel.setBackground(Color.WHITE);
         //Make Contact button.
         JButton makeContactButton = new JButton("Make Contact");
-        makeContactButton.addActionListener( new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                new MakeContactScreen(allocatedTour, company, playerName);
-                dispose();
-            }
+        makeContactButton.addActionListener(e -> {
+            new MakeContactScreen(allocatedTour, company, playerName);
+            dispose();
         });
         southPanel.add(makeContactButton);
         //Close button.
         JButton closeButton = new JButton("Close Window");
-        closeButton.addActionListener( new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                dispose();
-            }
-        });
+        closeButton.addActionListener(e -> dispose());
         southPanel.add(closeButton);
         
         //Add south panel to screen panel.
@@ -122,7 +113,7 @@ public class BusInfoScreen extends JFrame {
         Toolkit tools = Toolkit.getDefaultToolkit();
         Dimension screenDim = tools.getScreenSize();
         Dimension displayDim = new Dimension(400,300);
-        this.setLocation ( (int) (screenDim.width/2)-(displayDim.width/2), (int) (screenDim.height/2)-(displayDim.height/2));
+        this.setLocation (  (screenDim.width/2)-(displayDim.width/2), (screenDim.height/2)-(displayDim.height/2));
         
         //Display the front screen to the user.
         this.pack ();

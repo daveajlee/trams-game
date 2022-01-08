@@ -4,8 +4,6 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.text.DateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -28,17 +26,7 @@ import de.davelee.trams.gui.ControlScreen;
  * This class represents a panel to employ drivers.
  * @author Dave Lee
  */
-public class EmployDriverPanel {
-
-    private ControllerHandler controllerHandler;
-
-    /**
-     * Create a new <code>EmployDriverPanel</code> with access to all Controllers to get or send data where needed.
-     * @param controllerHandler a <code>ControllerHandler</code> object allowing access to Controllers.
-     */
-	public EmployDriverPanel (final ControllerHandler controllerHandler ) {
-        this.controllerHandler = controllerHandler;
-    }
+public record EmployDriverPanel (ControllerHandler controllerHandler) {
 
     /**
      * Create a new <code>EmployDriverPanel</code> panel and display it to the user.
@@ -97,8 +85,8 @@ public class EmployDriverPanel {
         JLabel startLabel = new JLabel("Start Date:", SwingConstants.CENTER);
         startLabel.setFont(new Font("Arial", Font.BOLD, 16));
         startLabelPanel.add(startLabel);
-        final LocalDate startDate = LocalDate.parse(companyResponse.getTime(), DateTimeFormatter.ofPattern("dd-MM-yyyy"));
-        startDate.plusDays(3);
+        LocalDate startDate = LocalDate.parse(companyResponse.getTime(), DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+        startDate = startDate.plusDays(3);
         JLabel startField = new JLabel("" + DateFormat.getDateInstance(DateFormat.FULL, Locale.UK).format(startDate));
         startField.setFont(new Font("Arial", Font.ITALIC, 14));
         startLabelPanel.add(startField);
@@ -109,21 +97,15 @@ public class EmployDriverPanel {
         JPanel buttonPanel = new JPanel();
         buttonPanel.setBackground(Color.WHITE);
         JButton employDriverButton = new JButton("Employ Driver");
-        employDriverButton.addActionListener( new ActionListener() {
-            public void actionPerformed ( ActionEvent e ) {
-                controllerHandler.getDriverController().employDriver(driverNameField.getText(), companyResponse.getName(), startField.getText());
-                //TODO: Employing drivers should cost money.
-                controllerHandler.getCompanyController().withdrawOrCreditBalance(0, companyResponse.getPlayerName());
-                controlScreen.redrawManagement(managementPanel.createPanel(controlScreen), companyResponse);
-            }
+        employDriverButton.addActionListener(e -> {
+            controllerHandler.getDriverController().employDriver(driverNameField.getText(), companyResponse.getName(), startField.getText());
+            //TODO: Employing drivers should cost money.
+            controllerHandler.getCompanyController().withdrawOrCreditBalance(0, companyResponse.getPlayerName());
+            controlScreen.redrawManagement(managementPanel.createPanel(controlScreen), companyResponse);
         });
         buttonPanel.add(employDriverButton);
         JButton managementScreenButton = new JButton("Return to Management Screen");
-        managementScreenButton.addActionListener ( new ActionListener() {
-            public void actionPerformed ( ActionEvent e ) {
-                    controlScreen.redrawManagement(managementPanel.createPanel(controlScreen), companyResponse);
-            }
-        });
+        managementScreenButton.addActionListener (e -> controlScreen.redrawManagement(managementPanel.createPanel(controlScreen), companyResponse));
         buttonPanel.add(managementScreenButton);
         driverScreenPanel.add(buttonPanel);
 

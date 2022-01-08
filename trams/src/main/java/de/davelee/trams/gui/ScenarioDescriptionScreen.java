@@ -18,7 +18,7 @@ public class ScenarioDescriptionScreen extends JFrame {
     /**
      * A <code>ControllerHandler</code> obtaining the currently used controllers from Spring.
      */
-    private ControllerHandler controllerHandler;
+    private final ControllerHandler controllerHandler;
     
     /**
      * Create a new scenario description screen.

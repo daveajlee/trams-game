@@ -11,11 +11,11 @@ import de.davelee.trams.gui.ControlScreen;
  */
 public class GameThread extends Thread implements Runnable {
 
-	private CompanyController companyController;
-	private SimulationController simulationController;
-	private ControlScreen controlScreen;
+	private final CompanyController companyController;
+	private final SimulationController simulationController;
+	private final ControlScreen controlScreen;
 
-	private int simulationSpeed;
+	private final int simulationSpeed;
 
 	/**
 	 * Create a new thread to run the simulation.
