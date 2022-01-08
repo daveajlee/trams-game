@@ -82,10 +82,6 @@ public record VehicleDepotPanel ( ControllerHandler controllerHandler ) {
         JPanel picturePanel = new JPanel(new GridBagLayout());
         picturePanel.setBackground(Color.WHITE);
         //TODO: Add a mapping of images to model names.
-        /*ImageDisplay busDisplay = new ImageDisplay(vehicleModel.getImagePath(),0,0);
-        busDisplay.setSize(220,200);
-        busDisplay.setBackground(Color.WHITE);
-        picturePanel.add(busDisplay);*/
         centrePanel.add(picturePanel);
             
         //Create panel for information fields.

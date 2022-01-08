@@ -49,8 +49,6 @@ public class FileControllerTest {
                 .build());
         assertEquals("Bob Smith", companyController.getCompany("Mustermann GmbH", "Bob Smith").getPlayerName());
         //TODO: test load file after implementation of save file is completed.
-        /*fileController.loadFile(new File("test-game.json"));
-        assertEquals("Dave Lee", companyController.getCurrentPlayerName());*/
     }
 
     @Test
@@ -61,10 +59,8 @@ public class FileControllerTest {
 
     @Test
     public void testLoadFile ( ) {
-        CompanyResponse companyResponse = fileController.loadFile(new File("test-game-service.json"));
+        fileController.loadFile(new File("test-game-service.json"));
         //TODO: Fix save and load file logic and replace test with correct test.
-        /*assertNotNull(companyResponse);
-        assertEquals("Dave Lee", companyResponse.getPlayerName());*/
     }
 
 }

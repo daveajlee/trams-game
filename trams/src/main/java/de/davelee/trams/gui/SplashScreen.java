@@ -3,6 +3,7 @@ package de.davelee.trams.gui;
 //Import the Java GUI packages.
 import java.awt.*;
 import java.awt.event.*;
+import java.io.Serial;
 import javax.swing.*;
 
 import de.davelee.trams.controllers.ControllerHandler;
@@ -12,7 +13,8 @@ import de.davelee.trams.controllers.ControllerHandler;
  * @author Dave Lee.
  */
 public class SplashScreen extends JFrame {
-    
+
+    @Serial
 	private static final long serialVersionUID = 1L;
 
     /**
@@ -108,7 +110,7 @@ public class SplashScreen extends JFrame {
         Toolkit tools = Toolkit.getDefaultToolkit();
         Dimension screenDim = tools.getScreenSize();
         Dimension displayDim = getPreferredSize();
-        this.setLocation ( (int) (screenDim.width/2)-(displayDim.width/2), (int) (screenDim.height/2)-(displayDim.height/2));
+        this.setLocation ( (screenDim.width/2)-(displayDim.width/2),  (screenDim.height/2)-(displayDim.height/2));
         
         //Display the front screen to the user.
         this.pack ();

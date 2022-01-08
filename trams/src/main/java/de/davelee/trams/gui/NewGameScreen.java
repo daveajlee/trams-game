@@ -2,6 +2,7 @@ package de.davelee.trams.gui;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.io.Serial;
 import javax.swing.*;
 
 import de.davelee.trams.api.response.CompanyResponse;
@@ -13,7 +14,8 @@ import de.davelee.trams.controllers.ControllerHandler;
  * @author Dave Lee
  */
 public class NewGameScreen extends JFrame {
-    
+
+    @Serial
 	private static final long serialVersionUID = 1L;
 
     /**
@@ -90,12 +92,7 @@ public class NewGameScreen extends JFrame {
         companyNameField.setColumns(25);
         companyNameField.addKeyListener( new KeyListener() {
             public void keyReleased(KeyEvent e) {
-                if ( companyNameField.getText().length() > 0 ) {
-                    createGameButton.setEnabled(true);
-                }
-                else {
-                    createGameButton.setEnabled(false);
-                }
+                createGameButton.setEnabled(companyNameField.getText().length() > 0);
             }
             public void keyTyped(KeyEvent e) {
                 //Nothing happens when key typed.
@@ -118,12 +115,7 @@ public class NewGameScreen extends JFrame {
         playerNameField.setColumns(25);
         playerNameField.addKeyListener( new KeyListener() {
             public void keyReleased(KeyEvent e) {
-                if ( playerNameField.getText().length() > 0 ) {
-                    createGameButton.setEnabled(true);
-                }
-                else {
-                    createGameButton.setEnabled(false);
-                }
+                createGameButton.setEnabled(playerNameField.getText().length() > 0);
             }
             public void keyTyped(KeyEvent e) {
                 //Nothing happens when key typed.
@@ -145,7 +137,7 @@ public class NewGameScreen extends JFrame {
         scenarioPanel.add(scenarioLabel, BorderLayout.NORTH);
         
         //Create the actual scenario radio buttons.
-        JComboBox<String> availableScenariosComboBox = new JComboBox<String>(controllerHandler.getScenarioController().getAvailableScenarios().toArray(new String[controllerHandler.getScenarioController().getAvailableScenarios().size()]));
+        JComboBox<String> availableScenariosComboBox = new JComboBox<>(controllerHandler.getScenarioController().getAvailableScenarios().toArray(new String[0]));
         //Add scenarioRadioPanel to scenarioPanel.
         scenarioPanel.add(availableScenariosComboBox, BorderLayout.SOUTH);
         //scenarioPanel.add(scenarioRadioPanel, BorderLayout.SOUTH);
@@ -156,32 +148,28 @@ public class NewGameScreen extends JFrame {
         JPanel buttonPanel = new JPanel();
         buttonPanel.setBackground(Color.WHITE);
         createGameButton.setEnabled(false);
-        createGameButton.addActionListener ( new ActionListener() {
-            public void actionPerformed ( ActionEvent e ) {
-                Scenario scenarioModel = controllerHandler.getScenarioController().getScenario(availableScenariosComboBox.getSelectedItem().toString());
-                //Create Game
-                CompanyResponse companyResponse = controllerHandler.getCompanyController().createCompany(playerNameField.getText(), scenarioModel.getScenarioName(), companyNameField.getText());
-                //Create supplied vehicles.
-                controllerHandler.getVehicleController().createSuppliedVehicles(scenarioModel.getSuppliedVehicles(), companyResponse.getTime(), companyNameField.getText());
-                //Create supplied drivers.
-                controllerHandler.getDriverController().createSuppliedDrivers(scenarioModel.getSuppliedDrivers(), companyResponse.getTime(), companyNameField.getText());
-                //Create welcome message.
-                controllerHandler.getMessageController().addMessage(companyNameField.getText(), "Welcome Message", "Congratulations on your appointment as Managing Director of the " +
-                        scenarioModel.getScenarioName() + "! \n\n Your targets for the coming days and months are: " +
-                        scenarioModel.getTargets(),"Council","INBOX", companyResponse.getTime());
-                ScenarioDescriptionScreen scenarioDescriptionScreen = new ScenarioDescriptionScreen(controllerHandler);
-                scenarioDescriptionScreen.displayScreen(scenarioModel.getDescription(), companyNameField.getText(), playerNameField.getText());
-                dispose();
-            }
+        createGameButton.addActionListener (e -> {
+            Scenario scenarioModel = controllerHandler.getScenarioController().getScenario(availableScenariosComboBox.getSelectedItem().toString());
+            //Create Game
+            CompanyResponse companyResponse = controllerHandler.getCompanyController().createCompany(playerNameField.getText(), scenarioModel.getScenarioName(), companyNameField.getText());
+            //Create supplied vehicles.
+            controllerHandler.getVehicleController().createSuppliedVehicles(scenarioModel.getSuppliedVehicles(), companyResponse.getTime(), companyNameField.getText());
+            //Create supplied drivers.
+            controllerHandler.getDriverController().createSuppliedDrivers(scenarioModel.getSuppliedDrivers(), companyResponse.getTime(), companyNameField.getText());
+            //Create welcome message.
+            controllerHandler.getMessageController().addMessage(companyNameField.getText(), "Welcome Message", "Congratulations on your appointment as Managing Director of the " +
+                    scenarioModel.getScenarioName() + "! \n\n Your targets for the coming days and months are: " +
+                    scenarioModel.getTargets(),"Council","INBOX", companyResponse.getTime());
+            ScenarioDescriptionScreen scenarioDescriptionScreen = new ScenarioDescriptionScreen(controllerHandler);
+            scenarioDescriptionScreen.displayScreen(scenarioModel.getDescription(), companyNameField.getText(), playerNameField.getText());
+            dispose();
         });
         buttonPanel.add(createGameButton);
         JButton welcomeScreenButton = new JButton("Back to Welcome Screen");
-        welcomeScreenButton.addActionListener ( new ActionListener() {
-            public void actionPerformed ( ActionEvent e ) {
-                WelcomeScreen welcomeScreen = new WelcomeScreen(controllerHandler);
-                welcomeScreen.displayScreen();
-                dispose();
-            }
+        welcomeScreenButton.addActionListener (e -> {
+            WelcomeScreen welcomeScreen = new WelcomeScreen(controllerHandler);
+            welcomeScreen.displayScreen();
+            dispose();
         });
         buttonPanel.add(welcomeScreenButton);
         //Add buttonPanel to screenPanel.
@@ -193,7 +181,7 @@ public class NewGameScreen extends JFrame {
         Toolkit tools = Toolkit.getDefaultToolkit();
         Dimension screenDim = tools.getScreenSize();
         Dimension displayDim = new Dimension(650,300);
-        this.setLocation ( (int) (screenDim.width/2)-(displayDim.width/2), (int) (screenDim.height/2)-(displayDim.height/2));
+        this.setLocation ( (screenDim.width/2)-(displayDim.width/2), (screenDim.height/2)-(displayDim.height/2));
         
         //Display the front screen to the user.
         this.pack ();

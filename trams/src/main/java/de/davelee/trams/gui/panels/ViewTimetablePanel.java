@@ -149,10 +149,6 @@ public class ViewTimetablePanel {
             //Show the actual screen!
             RoutePanel routePanel = new RoutePanel(controllerHandler);
             controlScreen.redrawManagement(routePanel.createPanel(routeModel, controlScreen, managementPanel), companyResponse);
-            //int confirm = JOptionPane.showConfirmDialog(null, "Are you sure you wish to delete route " + ((Route) theRoutesModel.get(theRoutesList.getSelectedIndex())).getRouteNumber() + "?", "Confirm Delete", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-            //if ( confirm == JOptionPane.YES_OPTION ) {
-            //    theInterface.deleteRoute(((Route) theRoutesModel.get(theRoutesList.getSelectedIndex())));
-            //}
         });
         otherServicesButtonPanel.add(amendRouteButton);
         JButton managementScreenButton = new JButton("Back to Management Screen");
@@ -178,8 +174,6 @@ public class ViewTimetablePanel {
                 String[] timeSplit = stopTimeResponse.getDepartureTime().split(":");
                 int displayPos = 1;
                 data[Integer.parseInt(timeSplit[0])][displayPos] = stopTimeResponse.getDepartureTime();
-                /*if ( myDateTime.getDayOfWeek()==DayOfWeek.SATURDAY ) { displayPos = 2; }
-                else if ( myDateTime.getDayOfWeek()==DayOfWeek.SUNDAY ) { displayPos = 3; }*/
                 if ( data[Integer.parseInt(timeSplit[0])][displayPos] == null ) {
                     data[Integer.parseInt(timeSplit[0])][displayPos] = "" + timeSplit[1];
                 } else {

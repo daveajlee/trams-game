@@ -4,6 +4,8 @@ import de.davelee.trams.api.response.CompanyResponse;
 import de.davelee.trams.controllers.CompanyController;
 import de.davelee.trams.controllers.SimulationController;
 import de.davelee.trams.gui.ControlScreen;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class represents a thread which runs the simulation independently from the GUI.
@@ -16,6 +18,8 @@ public class GameThread extends Thread implements Runnable {
 	private final ControlScreen controlScreen;
 
 	private final int simulationSpeed;
+
+	private static final Logger logger = LoggerFactory.getLogger(GameThread.class);
 
 	/**
 	 * Create a new thread to run the simulation.
@@ -39,7 +43,11 @@ public class GameThread extends Thread implements Runnable {
     @SuppressWarnings("static-access")
     public void run() {
         //First of all, sleep for theSimulationSpeed seconds.
-        try { this.sleep(simulationSpeed); } catch (InterruptedException ie) {}
+        try {
+			this.sleep(simulationSpeed);
+		} catch (InterruptedException ie) {
+			logger.error("Error whilst running simulation", ie);
+		}
         //Keep running this until pause.
         while ( !simulationController.stillRunning() ) {
 			//Get company response.
@@ -49,7 +57,11 @@ public class GameThread extends Thread implements Runnable {
 					companyResponse.getDifficultyLevel(), controlScreen.getCompany());
 			controlScreen.updatePassengerBar((int) Math.round(companyController.computeAndReturnPassengerSatisfaction(controlScreen.getCompany(), companyResponse.getDifficultyLevel())));
             //Now sleep!
-            try { this.sleep(simulationSpeed); } catch (InterruptedException ie) {}
+            try {
+				this.sleep(simulationSpeed);
+			} catch (InterruptedException ie) {
+				logger.error("Error whilst running simulation", ie);
+			}
         }
     }
 

@@ -2,20 +2,26 @@ package de.davelee.trams.gui;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.io.Serial;
 
 import javax.swing.*;
 
 import de.davelee.trams.api.response.CompanyResponse;
 import de.davelee.trams.controllers.ControllerHandler;
 import de.davelee.trams.util.DifficultyLevel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Class to display options within the TraMS program.
  * @author Dave Lee.
  */
 public class OptionsScreen extends JFrame {
-    
+
+    @Serial
 	private static final long serialVersionUID = 1L;
+
+    private static final Logger logger = LoggerFactory.getLogger(OptionsScreen.class);
 
     /**
      * Create a new options screen.
@@ -115,36 +121,34 @@ public class OptionsScreen extends JFrame {
         southPanel.setBackground(Color.WHITE);
         //Make Contact button.
         JButton okButton = new JButton("OK");
-        okButton.addActionListener( new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                //Process options - set difficulty level!
-                if ( difficultButtons[0].isSelected() ) {
-                    //TODO: set the difficulty level via game controller to EASY.
-                    //controllerHandler.getcompanyController().setDifficultyLevel(DifficultyLevel.EASY);
-                }
-                else if ( difficultButtons[1].isSelected() ) {
-                    //TODO: set the difficulty level via game controller to INTERMEDIATE.
-                    //controllerHandler.getcompanyController().setDifficultyLevel(DifficultyLevel.INTERMEDIATE);
-                }
-                else if ( difficultButtons[2].isSelected() ) {
-                    //TODO: set the difficulty level via game controller to MEDIUM.
-                    //controllerHandler.getcompanyController().setDifficultyLevel(DifficultyLevel.MEDIUM);
-                }
-                else if ( difficultButtons[3].isSelected() ) {
-                    //TODO: set the difficulty level via game controller to HARD.
-                    //controllerHandler.getcompanyController().setDifficultyLevel(DifficultyLevel.HARD);
-                }
-                dispose();
+        okButton.addActionListener(e -> {
+            //Process options - set difficulty level!
+            if ( difficultButtons[0].isSelected() ) {
+                //TODO: set the difficulty level via game controller to EASY.
+                logger.info("Set difficulty level to EASY");
+                //controllerHandler.getcompanyController().setDifficultyLevel(DifficultyLevel.EASY);
             }
+            else if ( difficultButtons[1].isSelected() ) {
+                //TODO: set the difficulty level via game controller to INTERMEDIATE.
+                logger.info("Set difficulty level to INTERMEDIATE");
+                //controllerHandler.getcompanyController().setDifficultyLevel(DifficultyLevel.INTERMEDIATE);
+            }
+            else if ( difficultButtons[2].isSelected() ) {
+                //TODO: set the difficulty level via game controller to MEDIUM.
+                logger.info("Set difficulty level to MEDIUM");
+                //controllerHandler.getcompanyController().setDifficultyLevel(DifficultyLevel.MEDIUM);
+            }
+            else if ( difficultButtons[3].isSelected() ) {
+                logger.info("Set difficulty level to HARD");
+                //TODO: set the difficulty level via game controller to HARD.
+                //controllerHandler.getcompanyController().setDifficultyLevel(DifficultyLevel.HARD);
+            }
+            dispose();
         });
         southPanel.add(okButton);
         //Close button.
         JButton closeButton = new JButton("Close Window");
-        closeButton.addActionListener( new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                dispose();
-            }
-        });
+        closeButton.addActionListener(e -> dispose());
         southPanel.add(closeButton);
         
         //Add south panel to screen panel.
@@ -157,7 +161,7 @@ public class OptionsScreen extends JFrame {
         Toolkit tools = Toolkit.getDefaultToolkit();
         Dimension screenDim = tools.getScreenSize();
         Dimension displayDim = new Dimension(550,300);
-        this.setLocation ( (int) (screenDim.width/2)-(displayDim.width/2), (int) (screenDim.height/2)-(displayDim.height/2));
+        this.setLocation ( (screenDim.width/2)-(displayDim.width/2), (screenDim.height/2)-(displayDim.height/2));
         
         //Display the front screen to the user.
         this.pack ();

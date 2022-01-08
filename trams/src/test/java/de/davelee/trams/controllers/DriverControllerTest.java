@@ -15,8 +15,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.client.RestTemplate;
 
-import java.time.LocalDate;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 
@@ -56,7 +54,6 @@ public class DriverControllerTest {
                 .balance(8000.0)
                 .time("01-01-2020")
                 .build()));
-        LocalDate startDate = LocalDate.of(2013,4,20);
         driverController.employDriver("Micha Mustermann", "Mustermann GmbH", "20-04-2013");
         assertTrue(driverController.hasSomeDriversBeenEmployed(CompanyResponse.builder()
                 .playerName("Dave Lee")

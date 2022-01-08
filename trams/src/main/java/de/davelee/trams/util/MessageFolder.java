@@ -68,25 +68,6 @@ public enum MessageFolder {
 	 */
 	public abstract String getDisplayName();
 
-	/**
-	 * Convert the displayed name to the constant used in the enum.
-	 * @param displayName a <code>String</code> containing the name of the folder as it is displayed to the user.
-	 * @return a <code>MessageFolder</code> object matching the specified name.
-	 */
-	public static MessageFolder getFolderEnum ( final String displayName ) {
-		if ( displayName.equalsIgnoreCase("Inbox") ) {
-			return INBOX;
-		} else if ( displayName.equalsIgnoreCase("Outbox")) {
-			return OUTBOX;
-		} else if ( displayName.equalsIgnoreCase("Sent Items")) {
-			return SENT;
-		} else if ( displayName.equalsIgnoreCase("Trash")) {
-			return TRASH;
-		} else {
-			return null;
-		}
-	}
-
 }
 
 

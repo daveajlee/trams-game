@@ -5,7 +5,6 @@ import de.davelee.trams.api.request.PurchaseVehicleRequest;
 import de.davelee.trams.api.response.PurchaseVehicleResponse;
 import de.davelee.trams.api.response.VehicleResponse;
 import de.davelee.trams.api.response.VehiclesResponse;
-import de.davelee.trams.util.DifficultyLevel;
 import de.davelee.trams.util.SortedVehicleResponses;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
@@ -137,7 +136,7 @@ public class VehicleController {
 		logger.info("getValue method with " + vehicleResponse + " & " + currentDate);
 		//TODO: Calculate depreciation factor in the server.
 		//return vehicleResponse.getPurchasePrice() - ((vehicleResponse.getDepreciationFactor() * getAge(vehicleResponse.getDeliveryDate(), currentDate)) * vehicleResponse.getPurchasePrice());
-		return 0.0;
+		return Math.random();
 	}
 
 	/**
@@ -245,45 +244,7 @@ public class VehicleController {
 	public String getCurrentStopName (final VehicleResponse vehicleResponse, final String currentDateTime, final String difficultyLevel ) {
 		logger.info("getCurrentStopName method with " + vehicleResponse + " & " + currentDateTime + " & " + difficultyLevel);
 		//TODO: implement method completely.
-		return "";
-	}
-
-	/**
-	 * Return the destination of the vehicle for the specified date time and configured difficulty level.
-	 * @param vehicleResponse a <code>VehicleResponse</code> containing the information about the vehicle to get destination for.
-	 * @param currentDateTime a <code>String</code> containing the date and time in the format dd-MM-yyyy HH:mm
-	 * @param difficultyLevel a <code>String</code> containing the difficulty level which can be either EASY, MEDIUM, HARD.
-	 * @return a <code>String</code> containing the current destination of the vehicle.
-	 */
-	public String getDestination ( final VehicleResponse vehicleResponse, final String currentDateTime, final DifficultyLevel difficultyLevel ) {
-		logger.info("getDestination method with " + vehicleResponse + " & " + currentDateTime + " & " + difficultyLevel);
-		//TODO: implement method completely.
-		return "";
-	}
-
-	/**
-	 * Shorten the tour of the specified vehicle so that it ends at the specified destination.
-	 * @param vehicleResponse a <code>VehicleResponse</code> containing the information about the vehicle to shorten.
-	 * @param newDestination a <code>String</code> containing the new destination.
-	 * @param currentDateTime a <code>String</code> containing the date and time in the format dd-MM-yyyy HH:mm
-	 */
-	public void shortenSchedule ( final VehicleResponse vehicleResponse, final String newDestination, final String currentDateTime ) {
-		logger.info("getDestination method with " + vehicleResponse + " & " + currentDateTime + " & " + newDestination);
-		//TODO: implement shorten schedule correctly.
-	}
-
-	/**
-	 * Put the vehicle out of service until the specified stop for the specified date time and configured difficulty level.
-	 * @param vehicleResponse a <code>VehicleResponse</code> containing the information about the vehicle to put out of service.
-	 * @param restartStop a <code>String</code> containing the stop name where the vehicle should resume service.
-	 * @param currentDateTime a <code>String</code> containing the date and time in the format dd-MM-yyyy HH:mm
-	 * @param difficultyLevel a <code>String</code> containing the difficulty level which can be either EASY, MEDIUM, HARD.
-	 */
-	public void outOfService ( final VehicleResponse vehicleResponse, final String restartStop, final String currentDateTime,
-							   final String difficultyLevel ) {
-		logger.info("outOfService method with " + vehicleResponse + " & " + currentDateTime + " & " + difficultyLevel + " & " + restartStop);
-		final String currentStopName = getCurrentStopName(vehicleResponse, currentDateTime, difficultyLevel);
-		logger.info("currentStopName is " + currentStopName);
+		return RandomStringUtils.randomAlphabetic(7);
 	}
 
 	/**

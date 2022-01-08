@@ -215,9 +215,6 @@ public class HelpScreen extends JFrame {
                 else if ( selectedItem.equalsIgnoreCase("Make Contact With Vehicle") ) {
                     displayPane.setPage(HelpScreen.class.getResource("/makecontact.html"));
                 }
-                /*else if ( selectedItem.equalsIgnoreCase("Save Output") ) {
-                    theDisplayPane.setPage(HelpScreen.class.getResource("/saveoutput.html"));
-                }*/
             }
             catch ( IOException e ) {
                 e.printStackTrace();

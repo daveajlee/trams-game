@@ -5,6 +5,8 @@ import javax.swing.UIManager;
 import de.davelee.trams.controllers.ControllerHandler;
 import de.davelee.trams.gui.SplashScreen;
 import de.davelee.trams.gui.WelcomeScreen;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -22,6 +24,8 @@ import org.springframework.web.client.RestTemplate;
 @EnableConfigurationProperties
 public class TramsGameApplication {
 
+    private static final Logger logger = LoggerFactory.getLogger(TramsGameApplication.class);
+
     /**
      * Create a RestTemplate which can be autowired into other components.
      * @return a <code>RestTemplate</code> object which can be used by other components.
@@ -38,8 +42,9 @@ public class TramsGameApplication {
 	public static void main ( String[] args ) {
 		try {
             UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
+        } catch ( Exception e ) {
+            logger.error("Error whilst setting look and feel", e);
         }
-        catch ( Exception e ) { }
         //Display splash screen to the user.
         SpringApplicationBuilder builder = new SpringApplicationBuilder(TramsGameApplication.class);
 
@@ -51,7 +56,9 @@ public class TramsGameApplication {
         ss.displayScreen(false);
         try {
             Thread.sleep(2000);
-        } catch ( InterruptedException ie ) {}
+        } catch ( InterruptedException ie ) {
+            logger.error("Error whilst sleeping thread", ie);
+        }
         ss.dispose();
         WelcomeScreen welcomeScreen = new WelcomeScreen(controllerHandler);
         welcomeScreen.displayScreen();

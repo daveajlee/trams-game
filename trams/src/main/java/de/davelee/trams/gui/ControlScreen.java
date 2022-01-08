@@ -5,7 +5,6 @@ import java.awt.*;
 import java.awt.event.*;
 
 import javax.swing.*;
-import javax.swing.event.*;
 
 import de.davelee.trams.api.response.CompanyResponse;
 import de.davelee.trams.api.response.MessageResponse;
@@ -243,10 +242,6 @@ public class ControlScreen extends ButtonBar {
         //Create Messages tab.
         drawMessages(companyResponse.getName());
         tabbedPane.addTab("Messages", messagesPanel);
-        /*if ( userInterface.getMessageScreen() ) {
-            topPanel.getComponent(1).setVisible(false);
-            tabbedPane.setSelectedIndex(1);
-        }*/
         tabbedPane.addMouseListener(new MouseListener() {
             public void mousePressed(MouseEvent e) {
                 //Nothing happens when mouse pressed.
@@ -264,15 +259,11 @@ public class ControlScreen extends ButtonBar {
                 if ( tabbedPane.getSelectedIndex() == 1) {
                     logger.debug("You just selected message screen");
                     topPanel.getComponent(1).setVisible(false);
-                    //userInterface.setMessageScreen(true);
-                    //userInterface.setManagementScreen(false);
                     ControlScreen.super.getControllerHandler().getSimulationController().pauseSimulation(); //Pause simulation for message screen.
                 }
                 else if ( tabbedPane.getSelectedIndex() == 2 ) {
                     logger.debug("You just selected management screen");
                     topPanel.getComponent(1).setVisible(false);
-                    //userInterface.setManagementScreen(true);
-                    //userInterface.setMessageScreen(false);
                     ControlScreen.super.getControllerHandler().getSimulationController().pauseSimulation(); //Pause simulation for management screen.
                 }
                 else {
@@ -281,9 +272,6 @@ public class ControlScreen extends ButtonBar {
                     populateRouteList(ControlScreen.super.getControllerHandler().getCompanyController().getCompany(getCompany(), getPlayerName()).getName());
                     redrawOnRouteChange = true;
                     logger.debug("Route list has been re-populated!");
-                    //topPanel.getComponent(1).setVisible(true);
-                    //userInterface.setMessageScreen(false);
-                    //userInterface.setManagementScreen(false);
                     ControlScreen.super.getControllerHandler().getSimulationController().resumeSimulation(ControlScreen.this); //Resume simulation for live screen.
                 }
             }
@@ -291,43 +279,19 @@ public class ControlScreen extends ButtonBar {
         //Create manage tab.
         ManagementPanel managementPanel = new ManagementPanel(getControllerHandler());
         tabbedPane.addTab("Management", managementPanel.createPanel(this));
-        /*if ( userInterface.getManagementScreen() ) {
-            topPanel.getComponent(1).setVisible(false);
-            tabbedPane.setSelectedIndex(2);
-        }*/
         //Disable the live situation tab if appropriate.
         if ( numberRoutes > 0 ) {
             tabbedPane.setEnabledAt(0, true);
         } else {
             tabbedPane.setSelectedIndex(2);
         }
-        /*theTabbedPane.addChangeListener(new ChangeListener() {
-            public void stateChanged ( ChangeEvent e ) {
-                logger.debug("You just selected the " + theTabbedPane.getSelectedIndex() + " component");
-                if ( theTabbedPane.getSelectedIndex() == 1) {
-                    theInterface.setMessageScreen(true);
-                }
-                else {
-                    theInterface.setMessageScreen(false);
-                }
-            }
-        });*/
-        //Vehicles - the main bit!
-        //Centre panel displays control display of vehicle movements.
-        //theCentrePanel = new JPanel();
-        //theCentrePanel.setLayout ( new BorderLayout() );
-        //theCentrePanel.setBackground(Color.WHITE);
-        //theCentrePanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.black,1), BorderFactory.createEmptyBorder(5,5,5,5)));
-        //theCentrePanel.add(Box.createRigidArea(new Dimension(0,10))); //Spacer.
-        
-        //theCentrePanel.add(theGraphicsPanel, BorderLayout.CENTER);
+
         //Add it to the dialogPanel.
         dialogPanel.add(tabbedPane, BorderLayout.CENTER);
         
         //Bottom panel consists of passenger satisfactions and buttons.
         JPanel bottomPanel = new JPanel(new BorderLayout());
         bottomPanel.setBackground(Color.WHITE);
-        //bottomPanel.add(makeVehicleInfoPanel(), BorderLayout.NORTH);
         //Create passenger satisfaction bar.
         JPanel passengerSatisfactionPanel = new JPanel();
         passengerSatisfactionPanel.setBackground(Color.WHITE);
@@ -418,15 +382,21 @@ public class ControlScreen extends ButtonBar {
      * @param company a <code>String</code> with the name of the company currently being played.
      */
     public void updateVehicleStatus ( final String time, final String difficultyLevel, final String company ) {
-        String vehicleStatus = "";
+        StringBuilder vehicleStatus = new StringBuilder();
 
         VehicleResponse[] vehicleModels = super.getControllerHandler().getVehicleController().getVehiclesForRoute(company, routeList.getSelectedValue().split(":")[0]).getVehicleResponses();
         for (VehicleResponse vehicleModel : vehicleModels) {
             String vehiclePos = super.getControllerHandler().getVehicleController().getCurrentStopName(vehicleModel, time, difficultyLevel);
-            vehicleStatus += "Schedule " + vehicleModel.getAllocatedTour() + " is at " + vehiclePos + " with a delay of " + vehicleModel.getDelayInMinutes() + " minutes.\n";
+            vehicleStatus.append("Schedule ");
+            vehicleStatus.append(vehicleModel.getAllocatedTour());
+            vehicleStatus.append(" is at ");
+            vehicleStatus.append(vehiclePos);
+            vehicleStatus.append(" with a delay of ");
+            vehicleStatus.append(vehicleModel.getDelayInMinutes());
+            vehicleStatus.append(" minutes.\n");
         }
 
-        vehiclesStatusArea.setText(vehicleStatus);
+        vehiclesStatusArea.setText(vehicleStatus.toString());
 
     }
 
@@ -455,23 +425,23 @@ public class ControlScreen extends ButtonBar {
                             "%.\n\nNow you need to allocate vehicles to routes for " + companyResponse.getTime() + " and keep the passenger satisfaction up! Click on the Management tab and then choose Allocations. Good luck!",
                     "Council", "INBOX", companyResponse.getTime());
             //Refresh messages.
-            MessageResponse[] messageModels = super.getControllerHandler().getMessageController().getMessagesByFolderDateSender(companyResponse.getName(), foldersBox.getSelectedItem().toString(),dateBox.getSelectedItem().toString(),"Council");
-            messagesModel.removeAllElements();
-            for (MessageResponse messageModel : messageModels) {
-                messagesModel.addElement(messageModel.getSubject());
-            }
-            messagesList.setSelectedIndex(0);
-            if ( messageModels.length == 0 && dateBox.getSelectedItem().toString().equalsIgnoreCase("All Dates") ) {
-                messagesArea.setText("There are no messages in the " + foldersBox.getSelectedItem().toString() + " folder.");
-            }
-            else if ( messageModels.length == 0 ) {
-                messagesArea.setText("There are no messages in the " + foldersBox.getSelectedItem().toString() + " folder for the date " + dateBox.getSelectedItem().toString() + ".");
-            }
-            else {
-                messagesArea.setText(messageModels[messagesList.getSelectedIndex()].getText());
-            }
+            if ( foldersBox.getSelectedItem() != null && dateBox.getSelectedItem() != null ) {
+                MessageResponse[] messageResponses = super.getControllerHandler().getMessageController().getMessagesByFolderDateSender(companyResponse.getName(), foldersBox.getSelectedItem().toString(), dateBox.getSelectedItem().toString(), "Council");
+                messagesModel.removeAllElements();
+                for (MessageResponse messageResponse : messageResponses) {
+                    messagesModel.addElement(messageResponse.getSubject());
+                }
+                messagesList.setSelectedIndex(0);
+                if (messageResponses.length == 0 && dateBox.getSelectedItem().toString().equalsIgnoreCase("All Dates")) {
+                    messagesArea.setText("There are no messages in the " + foldersBox.getSelectedItem().toString() + " folder.");
+                } else if (messageResponses.length == 0) {
+                    messagesArea.setText("There are no messages in the " + foldersBox.getSelectedItem().toString() + " folder for the date " + dateBox.getSelectedItem().toString() + ".");
+                } else {
+                    messagesArea.setText(messageResponses[messagesList.getSelectedIndex()].getText());
+                }
 
-            dateModel.addElement(companyResponse.getTime());
+                dateModel.addElement(companyResponse.getTime());
+            }
             //Then display it to the user.
             doneAllocations = true;
             super.getControllerHandler().getSimulationController().pauseSimulation();
@@ -490,15 +460,9 @@ public class ControlScreen extends ButtonBar {
             passengerSatisfactionBar.setValue(satValue);
             passengerSatisfactionBar.setString("Passenger Satisfaction Rating - " + passengerSatisfactionBar.getValue() + "%");
             passengerSatisfactionBar.setFont(new Font("Arial", Font.ITALIC, 20));
-            //Update graphics panel.
-            //theDialogPanel.remove(theGraphicsPanel);
-            //theDialogPanel.add(theGraphicsPanel);
             //Repaint the whole interface immediately.
             dialogPanel.paintImmediately(dialogPanel.getBounds());
             return;
-            //logger.debug("I need to do allocations!");
-            //AllocationScreen as = new AllocationScreen(theInterface, true, true, theSimulator);
-            //dispose();
         }
         //Set doneAllocations to false.
         doneAllocations = false;
@@ -551,20 +515,20 @@ public class ControlScreen extends ButtonBar {
         datePanel.add(dateLabel);
         dateBox.setFont(new Font("Arial", Font.PLAIN, 12));
         dateBox.addItemListener(e -> {
-            MessageResponse[] messageModels = ControlScreen.super.getControllerHandler().getMessageController().getMessagesByFolderDateSender(company, foldersBox.getSelectedItem().toString(),dateBox.getSelectedItem().toString(), "Council");
-            messagesModel.removeAllElements();
-            for (MessageResponse messageModel : messageModels) {
-                messagesModel.addElement(messageModel.getSubject());
-            }
-            messagesList.setSelectedIndex(0);
-            if ( messageModels.length == 0 && dateBox.getSelectedItem().toString().equalsIgnoreCase("All Dates") ) {
-                messagesArea.setText("There are no messages in the " + foldersBox.getSelectedItem().toString() + " folder.");
-            }
-            else if ( messageModels.length == 0 ) {
-                messagesArea.setText("There are no messages in the " + foldersBox.getSelectedItem().toString() + " folder for the date " + dateBox.getSelectedItem().toString() + ".");
-            }
-            else {
-                messagesArea.setText(messageModels[messagesList.getSelectedIndex()].getText());
+            if ( foldersBox.getSelectedItem() != null && dateBox.getSelectedItem() != null ) {
+                MessageResponse[] messageResponses = ControlScreen.super.getControllerHandler().getMessageController().getMessagesByFolderDateSender(company, foldersBox.getSelectedItem().toString(), dateBox.getSelectedItem().toString(), "Council");
+                messagesModel.removeAllElements();
+                for (MessageResponse messageModel : messageResponses) {
+                    messagesModel.addElement(messageModel.getSubject());
+                }
+                messagesList.setSelectedIndex(0);
+                if (messageResponses.length == 0 && dateBox.getSelectedItem().toString().equalsIgnoreCase("All Dates")) {
+                    messagesArea.setText("There are no messages in the " + foldersBox.getSelectedItem().toString() + " folder.");
+                } else if (messageResponses.length == 0) {
+                    messagesArea.setText("There are no messages in the " + foldersBox.getSelectedItem().toString() + " folder for the date " + dateBox.getSelectedItem().toString() + ".");
+                } else {
+                    messagesArea.setText(messageResponses[messagesList.getSelectedIndex()].getText());
+                }
             }
         });
         datePanel.add(dateBox);
@@ -580,20 +544,20 @@ public class ControlScreen extends ButtonBar {
         //Create combo box with folders list.
         foldersBox.setFont(new Font("Arial", Font.PLAIN, 12));
         foldersBox.addItemListener (e -> {
-            MessageResponse[] messageResponses = ControlScreen.super.getControllerHandler().getMessageController().getMessagesByFolderDateSender(company, foldersBox.getSelectedItem().toString(),dateBox.getSelectedItem().toString(), "Council");
-            messagesModel.removeAllElements();
-            for ( MessageResponse messageResponse : messageResponses ) {
-                messagesModel.addElement(messageResponse.getSubject());
-            }
-            messagesList.setSelectedIndex(0);
-            if ( messageResponses.length == 0 && dateBox.getSelectedItem().toString().equalsIgnoreCase("All Dates") ) {
-                messagesArea.setText("There are no messages in the " + foldersBox.getSelectedItem().toString() + " folder.");
-            }
-            else if ( messageResponses.length == 0 ) {
-                messagesArea.setText("There are no messages in the " + foldersBox.getSelectedItem().toString() + " folder for the date " + dateBox.getSelectedItem().toString() + ".");
-            }
-            else {
-                messagesArea.setText(messageResponses[messagesList.getSelectedIndex()].getText());
+            if ( foldersBox.getSelectedItem() != null && dateBox.getSelectedItem() != null) {
+                MessageResponse[] messageResponses = ControlScreen.super.getControllerHandler().getMessageController().getMessagesByFolderDateSender(company, foldersBox.getSelectedItem().toString(), dateBox.getSelectedItem().toString(), "Council");
+                messagesModel.removeAllElements();
+                for (MessageResponse messageResponse : messageResponses) {
+                    messagesModel.addElement(messageResponse.getSubject());
+                }
+                messagesList.setSelectedIndex(0);
+                if (messageResponses.length == 0 && dateBox.getSelectedItem().toString().equalsIgnoreCase("All Dates")) {
+                    messagesArea.setText("There are no messages in the " + foldersBox.getSelectedItem().toString() + " folder.");
+                } else if (messageResponses.length == 0) {
+                    messagesArea.setText("There are no messages in the " + foldersBox.getSelectedItem().toString() + " folder for the date " + dateBox.getSelectedItem().toString() + ".");
+                } else {
+                    messagesArea.setText(messageResponses[messagesList.getSelectedIndex()].getText());
+                }
             }
         });
         foldersPanel.add(foldersBox);
@@ -602,7 +566,9 @@ public class ControlScreen extends ButtonBar {
         //Add west panel to messages panel.
         messagesPanel.add(westPanel, BorderLayout.WEST);
         //Initialise the messages list now.
-        MessageResponse[] myMessageModels = super.getControllerHandler().getMessageController().getMessagesByFolder(company, foldersBox.getSelectedItem().toString());
+        MessageResponse[] myMessageModels = foldersBox.getSelectedItem() != null ?
+                        super.getControllerHandler().getMessageController().getMessagesByFolder(company, foldersBox.getSelectedItem().toString()) :
+                        super.getControllerHandler().getMessageController().getAllMessages(company);
         if ( myMessageModels != null ) {
             for (MessageResponse myMessageModel : myMessageModels) {
                 messagesModel.addElement(myMessageModel.getSubject());
@@ -661,13 +627,8 @@ public class ControlScreen extends ButtonBar {
      */
     public void redrawManagement (final JPanel newManagePanel, final CompanyResponse companyResponse) {
         //Disable the live situation tab if appropriate.
-        if ( super.getControllerHandler().getRouteController().getRoutes(companyResponse.getName()).getCount() == 0 ) {
-            tabbedPane.setEnabledAt(0, false);
-        }
         //Otherwise, re-enable live panel.
-        else {
-            tabbedPane.setEnabledAt(0, true);
-        }
+        tabbedPane.setEnabledAt(0, super.getControllerHandler().getRouteController().getRoutes(companyResponse.getName()).getCount() != 0);
 
         tabbedPane.setComponentAt(2, newManagePanel);
         dialogPanel.paintImmediately(dialogPanel.getBounds());
@@ -711,7 +672,7 @@ public class ControlScreen extends ButtonBar {
     private boolean isPastMidnight ( final String currentDateTime, final int timeIncrement ) {
         LocalDateTime myCurrentDateTime = LocalDateTime.parse(currentDateTime, DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"));
         LocalDateTime previousDateTime = LocalDateTime.parse(currentDateTime, DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"));
-        previousDateTime.minusMinutes(timeIncrement);
+        previousDateTime = previousDateTime.minusMinutes(timeIncrement);
         return previousDateTime.getDayOfWeek() != myCurrentDateTime.getDayOfWeek();
     }
 
@@ -723,15 +684,7 @@ public class ControlScreen extends ButtonBar {
      */
     private LocalDateTime getPreviousDateTime ( final String currentDateTime, final int timeIncrement ) {
         LocalDateTime previousDateTime = LocalDateTime.parse(currentDateTime, DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"));
-        previousDateTime.minusMinutes(timeIncrement);
-        return previousDateTime;
-    }
-    
-    /**
-     * Pause the simulation.
-     */
-    public void pauseSimulation ( ) {
-        super.getControllerHandler().getSimulationController().pauseSimulation();
+        return previousDateTime.minusMinutes(timeIncrement);
     }
 
     /**
@@ -752,7 +705,7 @@ public class ControlScreen extends ButtonBar {
         }
         else if ( routeList.getModel().getSize() > 0 ){
             routeList.setSelectedIndex(0);
-            routeNumber = routeList.getSelectedValue().toString();
+            routeNumber = routeList.getSelectedValue();
         }
     }
 
@@ -771,18 +724,11 @@ public class ControlScreen extends ButtonBar {
         if ( super.getControllerHandler().getRouteController().getRoutes(companyResponse.getName()).getCount() != 0 ) {
             populateRouteList(companyResponse.getName());
         }
-        routeList.addListSelectionListener(new ListSelectionListener() {
-            public void valueChanged (ListSelectionEvent ie ) {
-                if ( redrawOnRouteChange ) {
-                    ControlScreen.super.getControllerHandler().getSimulationController().pauseSimulation();
-                    ControlScreen.this.redrawVehicles(generateNewVehiclePanel(companyResponse));
-                    ControlScreen.super.getControllerHandler().getSimulationController().resumeSimulation(ControlScreen.this);
-                }
-                //logger.debug("Moving to route " + theRouteList.getSelectedValue().toString().split(":")[0]);
-                //theInterface.setSimulator(theSimulator);
-                //theInterface.changeRoute(theRouteList.getSelectedValue().toString());
-                //logger.debug("You now want " + theRouteList.getSelectedValue().toString());
-                //dispose();
+        routeList.addListSelectionListener(ie -> {
+            if ( redrawOnRouteChange ) {
+                ControlScreen.super.getControllerHandler().getSimulationController().pauseSimulation();
+                ControlScreen.this.redrawVehicles(generateNewVehiclePanel(companyResponse));
+                ControlScreen.super.getControllerHandler().getSimulationController().resumeSimulation(ControlScreen.this);
             }
         });
         optionsPanel.add(routeList, BorderLayout.CENTER);
@@ -795,16 +741,14 @@ public class ControlScreen extends ButtonBar {
         simulatorControlPanel.add(simulatorOptionsLabel);
         //Pause Simulation Button.
         pauseSimulationButton = new JButton("Pause Simulation");
-        pauseSimulationButton.addActionListener(new ActionListener() {
-            public void actionPerformed ( ActionEvent e ) {
-                if ( pauseSimulationButton.getText().equalsIgnoreCase("Pause Simulation") ) {
-                    pauseSimulationButton.setText("Resume Simulation");
-                    ControlScreen.super.getControllerHandler().getSimulationController().pauseSimulation();
-                }
-                else if ( pauseSimulationButton.getText().equalsIgnoreCase("Resume Simulation") ) {
-                    pauseSimulationButton.setText("Pause Simulation");
-                    ControlScreen.super.getControllerHandler().getSimulationController().resumeSimulation(ControlScreen.this);
-                }
+        pauseSimulationButton.addActionListener(e -> {
+            if ( pauseSimulationButton.getText().equalsIgnoreCase("Pause Simulation") ) {
+                pauseSimulationButton.setText("Resume Simulation");
+                ControlScreen.super.getControllerHandler().getSimulationController().pauseSimulation();
+            }
+            else if ( pauseSimulationButton.getText().equalsIgnoreCase("Resume Simulation") ) {
+                pauseSimulationButton.setText("Pause Simulation");
+                ControlScreen.super.getControllerHandler().getSimulationController().resumeSimulation(ControlScreen.this);
             }
         });
         simulatorControlPanel.add(pauseSimulationButton);
@@ -829,7 +773,7 @@ public class ControlScreen extends ButtonBar {
         int totalPages;
         final long routeScheduleModelsLength;
         if ( routeList.getModel().getSize() > 0 ) {
-            routeScheduleModelsLength = super.getControllerHandler().getVehicleController().getVehiclesForRoute(companyResponse.getName(), routeList.getSelectedValue().toString()).getCount();
+            routeScheduleModelsLength = super.getControllerHandler().getVehicleController().getVehiclesForRoute(companyResponse.getName(), routeList.getSelectedValue()).getCount();
             totalPages = ((int) routeScheduleModelsLength/4); if ((routeScheduleModelsLength%4) !=0 || totalPages == 0 ) { totalPages++; }
         }
         else {
@@ -841,21 +785,17 @@ public class ControlScreen extends ButtonBar {
         vehicleInfoPanel.add(numPagesLabel);
         //Previous vehicle button.
         JButton previousVehiclesButton = new JButton("Previous Vehicles");
-        previousVehiclesButton.addActionListener( new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                //Subtract 4 to the min and max.
-                currentPage--;
-                minVehicle = (currentPage * 4)-4; maxVehicle = (currentPage*4);
-                //Now check if min vehicle is less than 0 - set it to 0.
-                if ( minVehicle < 0 ) {
-                    minVehicle = 0;
-                }
-                ControlScreen.super.getControllerHandler().getSimulationController().pauseSimulation();
-                ControlScreen.this.redrawVehicles(generateNewVehiclePanel(companyResponse));
-                ControlScreen.super.getControllerHandler().getSimulationController().resumeSimulation(ControlScreen.this);
-                //theInterface.changeDisplay(theRouteList.getSelectedValue().toString(), theMinVehicle, theMaxVehicle, false);
-                //dispose();
+        previousVehiclesButton.addActionListener(e -> {
+            //Subtract 4 to the min and max.
+            currentPage--;
+            minVehicle = (currentPage * 4)-4; maxVehicle = (currentPage*4);
+            //Now check if min vehicle is less than 0 - set it to 0.
+            if ( minVehicle < 0 ) {
+                minVehicle = 0;
             }
+            ControlScreen.super.getControllerHandler().getSimulationController().pauseSimulation();
+            ControlScreen.this.redrawVehicles(generateNewVehiclePanel(companyResponse));
+            ControlScreen.super.getControllerHandler().getSimulationController().resumeSimulation(ControlScreen.this);
         });
         if ( totalPages == 0 || routeScheduleModelsLength < 5 || minVehicle == 0 ) {
             previousVehiclesButton.setEnabled(false);
@@ -863,20 +803,16 @@ public class ControlScreen extends ButtonBar {
         vehicleInfoPanel.add(previousVehiclesButton);
         //Next vehicle button.
         JButton nextVehiclesButton = new JButton("Next Vehicles");
-        nextVehiclesButton.addActionListener( new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                //Add 4 to the min and max.
-                minVehicle += 4; maxVehicle += 5;
-                //Now check if max vehicle is bigger than display vehicles - if it is then set it to display vehicles.
-                if ( maxVehicle > routeScheduleModelsLength ) {
-                    maxVehicle = (int) routeScheduleModelsLength;
-                }
-                ControlScreen.super.getControllerHandler().getSimulationController().pauseSimulation();
-                ControlScreen.this.redrawVehicles(generateNewVehiclePanel(companyResponse));
-                ControlScreen.super.getControllerHandler().getSimulationController().resumeSimulation(ControlScreen.this);
-                //theInterface.changeDisplay(theRouteNumber, theMinVehicle, theMaxVehicle, false);
-                //dispose();
+        nextVehiclesButton.addActionListener(e -> {
+            //Add 4 to the min and max.
+            minVehicle += 4; maxVehicle += 5;
+            //Now check if max vehicle is bigger than display vehicles - if it is then set it to display vehicles.
+            if ( maxVehicle > routeScheduleModelsLength ) {
+                maxVehicle = (int) routeScheduleModelsLength;
             }
+            ControlScreen.super.getControllerHandler().getSimulationController().pauseSimulation();
+            ControlScreen.this.redrawVehicles(generateNewVehiclePanel(companyResponse));
+            ControlScreen.super.getControllerHandler().getSimulationController().resumeSimulation(ControlScreen.this);
         });
         if ( totalPages == 0 || routeScheduleModelsLength < 5 || maxVehicle == routeScheduleModelsLength ) {
             nextVehiclesButton.setEnabled(false);
@@ -884,50 +820,6 @@ public class ControlScreen extends ButtonBar {
         vehicleInfoPanel.add(nextVehiclesButton);
         //Return vehicleInfoPanel.
         return vehicleInfoPanel;
-    }
-
-    /**
-     * Run simulation!
-     * @param currentFrame a <code>JFrame</code> with the current frame.
-     */
-    public void runSimulation ( final JFrame currentFrame ) {
-        currentFrame.dispose();
-        displayScreen("", 0, 4, false);
-        setVisible(true);
-    }
-
-    /**
-     * Change the selected route.
-     * @param routeNumber a <code>String</code> with the new route number.
-     * @param currentFrame a <code>JFrame</code> with the current frame.
-     */
-    public void changeRoute ( String routeNumber, final JFrame currentFrame ) {
-        //Now create new control screen.
-        displayScreen(routeNumber, 0, 4, false);
-        currentFrame.setVisible(true);
-        //Set control screen.
-        setVisible(true);
-        //Resume simulation.
-        super.getControllerHandler().getSimulationController().resumeSimulation(ControlScreen.this);
-    }
-
-    /**
-     * Change the display to show other vehicles.
-     * @param routeNumber a <code>String</code> with the route number.
-     * @param min a <code>int</code> with the new min vehicle id.
-     * @param max a <code>int</code> with the new max vehicle id.
-     * @param allocations a <code>boolean</code> which is true iff allocations have been performed.
-     * @param currentFrame a <code>JFrame</code> with the current frame.
-     */
-    public void changeDisplay ( String routeNumber, int min, int max, boolean allocations, final JFrame currentFrame ) {
-        //Now create new control screen.
-        displayScreen(routeNumber, min, max, allocations);
-        //cs.drawVehicles(true);
-        currentFrame.setVisible(true);
-        //Set control screen.
-        setVisible(true);
-        //Resume simulation.
-        super.getControllerHandler().getSimulationController().resumeSimulation(ControlScreen.this);
     }
 
 }

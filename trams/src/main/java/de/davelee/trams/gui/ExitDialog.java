@@ -1,6 +1,7 @@
 package de.davelee.trams.gui;
 
 import javax.swing.*;
+import java.net.URL;
 
 /**
  * This class represents a dialog which will be shown to confirm that the user would like to exit the game.
@@ -14,7 +15,8 @@ public class ExitDialog {
 	 */
 	public void createExitDialog ( final JFrame currentFrame ) {
 		//Create image with exit.
-		ImageIcon imageIcon = new ImageIcon(ExitDialog.class.getResource("/TraMSlogo-small.png"));
+		URL url = ExitDialog.class.getResource("/TraMSlogo-small.png");
+		ImageIcon imageIcon = new ImageIcon(url);
 
 		//Confirm user did wish to exit.
 	    int result = JOptionPane.showOptionDialog(currentFrame, "Are you sure you wish to exit TraMS?", "Please Confirm Exit", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, imageIcon, new String[] { "Yes", "No" }, "No");

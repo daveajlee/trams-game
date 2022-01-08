@@ -12,7 +12,7 @@ import de.davelee.trams.api.response.VehicleResponse;
 public class SortedVehicleResponses implements Comparator<VehicleResponse> {
     
     public int compare (VehicleResponse o1, VehicleResponse o2 ) {
-        return new String(o1.getFleetNumber()).compareTo(new String(o2.getFleetNumber()));
+        return o1.getFleetNumber().compareTo(o2.getFleetNumber());
     }
 
 }

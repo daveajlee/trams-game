@@ -1,6 +1,10 @@
 package de.davelee.trams.gui;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.awt.*;
+import java.io.Serial;
 
 /**
  * Class to display an image in the TraMS program.
@@ -8,9 +12,7 @@ import java.awt.*;
  */
 public class ImageDisplay extends Canvas {
     
-    /**
-	 * 
-	 */
+    @Serial
 	private static final long serialVersionUID = 1L;
 
     /**
@@ -21,12 +23,14 @@ public class ImageDisplay extends Canvas {
     /**
      * The number of pixels for the left border (higher = move image to right).
      */
-    private int leftBorder;
+    private final int leftBorder;
 
     /**
      * The number of pixels for the top border (higher = move image to bottom).
      */
-    private int topBorder;
+    private final int topBorder;
+
+    private static final Logger logger = LoggerFactory.getLogger(ImageDisplay.class);
     
     /**
      * Create a new image display.
@@ -44,13 +48,10 @@ public class ImageDisplay extends Canvas {
         //theImage = toolkit.getImage(fileName);
         MediaTracker mediaTracker = new MediaTracker(this);
         mediaTracker.addImage(image, 0);
-        try
-	{
+        try {
             mediaTracker.waitForID(0);
-        }
-	catch (InterruptedException ie)
-	{
-            System.err.println(ie);
+        } catch (InterruptedException ie) {
+            logger.error("Exception whilst displaying image", ie);
             System.exit(1);
         }
     }
@@ -71,17 +72,6 @@ public class ImageDisplay extends Canvas {
         g.setColor(Color.WHITE);
         g.fillRect(-1000,-1000,2000,2000);
         paint ( g );
-    }
-    
-    /**
-     * Move the image on the screen.
-     * @param leftBorder a <code>int</code> with the left part of the border.
-     * @param topBorder a <code>int</code> with the top part of the border.
-     */
-    public void moveImage ( int leftBorder, int topBorder ) {
-        this.leftBorder = leftBorder;
-        this.topBorder = topBorder;
-        repaint();
     }
     
     

@@ -4,6 +4,7 @@ import de.davelee.trams.controllers.ControllerHandler;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.io.Serial;
 
 import javax.swing.*;
 
@@ -13,6 +14,7 @@ import javax.swing.*;
  */
 public class ScenarioDescriptionScreen extends JFrame {
 
+    @Serial
 	private static final long serialVersionUID = 1L;
 
     /**
@@ -101,13 +103,11 @@ public class ScenarioDescriptionScreen extends JFrame {
         JPanel buttonPanel = new JPanel();
         buttonPanel.setBackground(Color.WHITE);
         JButton continueButton = new JButton("Continue");
-        continueButton.addActionListener(new ActionListener() {
-            public void actionPerformed ( ActionEvent e ) {
-                ControlScreen controlScreen = new ControlScreen(controllerHandler, company, playerName);
-                controlScreen.displayScreen("", 0, 4, false);
-                controlScreen.setVisible(true);
-                dispose();
-            }
+        continueButton.addActionListener(e -> {
+            ControlScreen controlScreen = new ControlScreen(controllerHandler, company, playerName);
+            controlScreen.displayScreen("", 0, 4, false);
+            controlScreen.setVisible(true);
+            dispose();
         });
         buttonPanel.add(continueButton);
         screenPanel.add(buttonPanel);
@@ -119,7 +119,7 @@ public class ScenarioDescriptionScreen extends JFrame {
         Toolkit tools = Toolkit.getDefaultToolkit();
         Dimension screenDim = tools.getScreenSize();
         Dimension displayDim = new Dimension(700,500);
-        this.setLocation ( (int) (screenDim.width/2)-(displayDim.width/2), (int) (screenDim.height/2)-(displayDim.height/2));
+        this.setLocation ( (screenDim.width/2)-(displayDim.width/2), (screenDim.height/2)-(displayDim.height/2));
         
         //Display the front screen to the user.
         this.pack ();
