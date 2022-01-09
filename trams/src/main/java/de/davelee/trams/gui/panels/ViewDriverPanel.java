@@ -8,12 +8,14 @@ import de.davelee.trams.api.response.CompanyResponse;
 import de.davelee.trams.api.response.UserResponse;
 import de.davelee.trams.controllers.ControllerHandler;
 import de.davelee.trams.gui.ControlScreen;
+import de.davelee.trams.gui.EditingScreen;
+import de.davelee.trams.util.GuiUtils;
 
 /**
  * This class represents a panel to show a particular driver for a company.
  * @author Dave Lee
  */
-public record ViewDriverPanel ( ControllerHandler controllerHandler ) {
+public record ViewDriverPanel ( ControllerHandler controllerHandler ) implements EditingScreen {
 
     /**
      * Create a new <code>ViewDriverPanel</code> panel and display it to the user.
@@ -30,13 +32,7 @@ public record ViewDriverPanel ( ControllerHandler controllerHandler ) {
         driverScreenPanel.setBackground(Color.WHITE);
 
         //Create label at top of screen in a topLabelPanel added to screenPanel.
-        JPanel textLabelPanel = new JPanel(new BorderLayout());
-        textLabelPanel.setBackground(Color.WHITE);
-        JLabel topLabel = new JLabel("View Drivers", SwingConstants.CENTER);
-        topLabel.setFont(new Font("Arial", Font.BOLD, 25));
-        topLabel.setVerticalAlignment(JLabel.CENTER);
-        textLabelPanel.add(topLabel, BorderLayout.CENTER);
-        driverScreenPanel.add(textLabelPanel);
+        driverScreenPanel.add(GuiUtils.createHeadingPanel("View Drivers"));
 
         //Now create a border layout so that we can have a choice of drivers on the right-hand side.
         JPanel driverBorderPanel = new JPanel(new BorderLayout());
@@ -50,17 +46,17 @@ public record ViewDriverPanel ( ControllerHandler controllerHandler ) {
         //Get driver data now!
         DefaultListModel<String> driversModel = new DefaultListModel<>();
         //TODO: determine how to get the username.
-        UserResponse[] driverModels = controllerHandler.getDriverController().getAllDrivers(companyResponse.getName(), "mmustermann");
-        for (UserResponse model : driverModels) {
-            driversModel.addElement(model.getUsername());
+        UserResponse[] userResponses = controllerHandler.getDriverController().getAllDrivers(companyResponse.getName(), "mmustermann");
+        for (UserResponse userResponse : userResponses) {
+            driversModel.addElement(userResponse.getUsername());
         }
 
         //Create driver object so that we can pull information from it.
-        final UserResponse driverModel;
+        final UserResponse userResponse;
         if ( !driverName.equalsIgnoreCase("") ) {
-            driverModel = controllerHandler.getDriverController().getDriverByName(driverName, companyResponse.getName());
+            userResponse = controllerHandler.getDriverController().getDriverByName(driverName, companyResponse.getName());
         } else {
-            driverModel = controllerHandler.getDriverController().getDriverByName(driversModel.get(0), companyResponse.getName());
+            userResponse = controllerHandler.getDriverController().getDriverByName(driversModel.get(0), companyResponse.getName());
         }
 
         //Create panel for information fields.
@@ -73,7 +69,7 @@ public record ViewDriverPanel ( ControllerHandler controllerHandler ) {
         nameLabel.setFont(new Font("Arial", Font.ITALIC, 14));
         nameLabelPanel.add(nameLabel);
         gridPanel.add(nameLabel);
-        JLabel nameField = new JLabel(driverModel.getFirstName() + " " + driverModel.getSurname());
+        JLabel nameField = new JLabel(userResponse.getFirstName() + " " + userResponse.getSurname());
         nameField.setFont(new Font("Arial", Font.PLAIN, 12));
         gridPanel.add(nameField);
         //Create label and field for contracted hours and add it to the hours panel.
@@ -83,7 +79,7 @@ public record ViewDriverPanel ( ControllerHandler controllerHandler ) {
         hoursLabel.setFont(new Font("Arial", Font.ITALIC, 14));
         hoursLabelPanel.add(hoursLabel);
         gridPanel.add(hoursLabel);
-        JLabel hoursField = new JLabel("" + driverModel.getContractedHoursPerWeek());
+        JLabel hoursField = new JLabel("" + userResponse.getContractedHoursPerWeek());
         hoursField.setFont(new Font("Arial", Font.PLAIN, 12));
         gridPanel.add(hoursField);
         //Create label and field for start date and add it to the start date panel.
@@ -93,7 +89,7 @@ public record ViewDriverPanel ( ControllerHandler controllerHandler ) {
         startDateLabel.setFont(new Font("Arial", Font.ITALIC, 14));
         startDateLabelPanel.add(startDateLabel);
         gridPanel.add(startDateLabel);
-        JLabel startDateField = new JLabel(driverModel.getStartDate());
+        JLabel startDateField = new JLabel(userResponse.getStartDate());
         startDateField.setFont(new Font("Arial", Font.PLAIN, 12));
         gridPanel.add(startDateField);
 
@@ -105,17 +101,14 @@ public record ViewDriverPanel ( ControllerHandler controllerHandler ) {
         bottomButtonPanel.setBackground(Color.WHITE);
 
         //Create sack driver button and add it to screen panel.
-        JButton sackDriverButton = new JButton("Sack Driver");
-        sackDriverButton.addActionListener (e -> {
-            controllerHandler.getDriverController().sackDriver(driverModel.getCompany(), driverModel.getUsername());
+        bottomButtonPanel.add(GuiUtils.createButton("Sack Driver", e -> {
+            controllerHandler.getDriverController().sackDriver(userResponse.getCompany(), userResponse.getUsername());
             controlScreen.redrawManagement(createPanel("", controlScreen), companyResponse);
-        });
-        bottomButtonPanel.add(sackDriverButton);
+        }, true));
 
         //Create return to create game screen button and add it to screen panel.
-        JButton managementScreenButton = new JButton("Return to Management Screen");
-        managementScreenButton.addActionListener (e -> controlScreen.redrawManagement(new ManagementPanel(controllerHandler).createPanel(controlScreen), companyResponse));
-        bottomButtonPanel.add(managementScreenButton);
+        bottomButtonPanel.add(GuiUtils.createButton("Return to Management Screen", e -> controlScreen.redrawManagement(new ManagementPanel(controllerHandler).createPanel(controlScreen), companyResponse), true
+        ));
 
         //Add bottom button panel to the screen panel.
         centrePanel.add(bottomButtonPanel);
@@ -123,28 +116,8 @@ public record ViewDriverPanel ( ControllerHandler controllerHandler ) {
         //Add centre panel to border panel.
         driverBorderPanel.add(centrePanel, BorderLayout.CENTER);
 
-        //Now create the east panel to display the driver list.
-        JPanel eastPanel = new JPanel(new BorderLayout());
-        eastPanel.setBackground(Color.WHITE);
-        //Third part of route panel is list of routes.
-        JPanel modelPanel = new JPanel();
-        modelPanel.setBackground(Color.WHITE);
-        final JList<String> driversList = new JList<>(driversModel);
-        driversList.setFixedCellWidth(100);
-        driversList.setVisibleRowCount(25);
-        driversList.setSelectedValue(driverModel.getUsername(), true);
-        driversList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        driversList.setFont(new Font("Arial", Font.PLAIN, 15));
-        driversList.addListSelectionListener(e -> {
-            String selectedValue = driversList.getSelectedValue();
-            controlScreen.redrawManagement(createPanel(selectedValue, controlScreen), companyResponse);
-        });
-        JScrollPane driversPane = new JScrollPane(driversList);
-        modelPanel.add(driversPane);
-        eastPanel.add(modelPanel, BorderLayout.CENTER);
-
         //Add east panel to border panel.
-        driverBorderPanel.add(eastPanel, BorderLayout.EAST);
+        driverBorderPanel.add(GuiUtils.createListPanel(driversModel, userResponse.getUsername(), controlScreen, companyResponse, ViewDriverPanel.this), BorderLayout.EAST);
 
         //Add driverBorderPanel to driverScreenPanel.
         driverScreenPanel.add(driverBorderPanel);

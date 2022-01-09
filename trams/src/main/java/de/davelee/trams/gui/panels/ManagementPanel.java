@@ -1,7 +1,6 @@
 package de.davelee.trams.gui.panels;
 
 import java.awt.*;
-import java.awt.event.ActionListener;
 
 import javax.swing.*;
 
@@ -10,6 +9,7 @@ import de.davelee.trams.controllers.ControllerHandler;
 
 import de.davelee.trams.gui.ControlScreen;
 import de.davelee.trams.gui.ImageDisplay;
+import de.davelee.trams.util.GuiUtils;
 
 /**
  * This class represents the panel that is shown on the control screen to manage the game e.g. add/remove drivers, vehicles etc.
@@ -100,7 +100,7 @@ public record ManagementPanel(ControllerHandler controllerHandler) {
         scenarioButtonPanel.add(Box.createRigidArea(new Dimension(0,10)));
         JPanel locationMapButtonPanel = new JPanel(new GridBagLayout());
         locationMapButtonPanel.setBackground(Color.WHITE);
-        locationMapButtonPanel.add(createButton("Location Map", e -> {
+        locationMapButtonPanel.add(GuiUtils.createButton("Location Map", e -> {
             //Show the actual screen!
             LocationMapPanel myLocationMapPanel = new LocationMapPanel(controllerHandler);
             controlScreen.redrawManagement(myLocationMapPanel.createPanel(controlScreen, ManagementPanel.this), companyResponse);
@@ -146,7 +146,7 @@ public record ManagementPanel(ControllerHandler controllerHandler) {
         routeButtonPanel.add(Box.createRigidArea(new Dimension(0, 10)));
         JPanel timetableButtonPanel = new JPanel(new GridBagLayout());
         timetableButtonPanel.setBackground(Color.WHITE);
-        timetableButtonPanel.add(createButton("View Route Info", e -> {
+        timetableButtonPanel.add(GuiUtils.createButton("View Route Info", e -> {
             ViewTimetablePanel myViewTimetablePanel = new ViewTimetablePanel(controllerHandler);
             //Show the actual screen!
             controlScreen.redrawManagement(myViewTimetablePanel.createPanel(controllerHandler.getRouteController().getRoutes(company).getRouteResponses()[0].getRouteNumber(), controlScreen, ManagementPanel.this), companyResponse);
@@ -185,7 +185,7 @@ public record ManagementPanel(ControllerHandler controllerHandler) {
         vehicleButtonPanel.add(Box.createRigidArea(new Dimension(0,10)));
         JPanel viewDepotButtonPanel = new JPanel(new GridBagLayout());
         viewDepotButtonPanel.setBackground(Color.WHITE);
-        viewDepotButtonPanel.add(createButton("View Depot", e -> {
+        viewDepotButtonPanel.add(GuiUtils.createButton("View Depot", e -> {
             VehicleDepotPanel vehicleDepotPanel = new VehicleDepotPanel(controllerHandler);
             //Show the actual screen!
             controlScreen.redrawManagement(vehicleDepotPanel.createPanel("", controlScreen), companyResponse);
@@ -222,7 +222,7 @@ public record ManagementPanel(ControllerHandler controllerHandler) {
         employDriverButtonPanel.add(employDriversButton);
         driverButtonPanel.add(employDriverButtonPanel);
         driverButtonPanel.add(Box.createRigidArea(new Dimension(0,10)));
-        driverButtonPanel.add(createPanelWithOneComponent(createButton("View Drivers", e -> {
+        driverButtonPanel.add(createPanelWithOneComponent(GuiUtils.createButton("View Drivers", e -> {
             //Show the actual screen!
             controlScreen.redrawManagement(new ViewDriverPanel(controllerHandler).createPanel("", controlScreen), companyResponse);
         }, controllerHandler.getDriverController().hasSomeDriversBeenEmployed(companyResponse)), new GridBagLayout()));
@@ -242,7 +242,7 @@ public record ManagementPanel(ControllerHandler controllerHandler) {
         //Allocation button.
         JPanel allocationButtonPanel = new JPanel();
         allocationButtonPanel.setBackground(Color.WHITE);
-        allocationButtonPanel.add(createButton("Change", e -> {
+        allocationButtonPanel.add(GuiUtils.createButton("Change", e -> {
             AllocationPanel myAllocationPanel = new AllocationPanel(controllerHandler);
             //Show the actual screen!
             controlScreen.redrawManagement(myAllocationPanel.createPanel(controlScreen, ManagementPanel.this, companyResponse.getName(), companyResponse.getPlayerName()), companyResponse);
@@ -260,20 +260,6 @@ public record ManagementPanel(ControllerHandler controllerHandler) {
         
         return overallScreenPanel;
 	}
-
-    /**
-     * This is a private helper method to create a button.
-     * @param buttonText a <code>String</code> containing the text to display on the button.
-     * @param buttonActionListener a <code>ActionListener</code> containing the action to perform when the button is clicked on.
-     * @param enableCondition a <code>boolean</code> which is true iff the button should be shown as enabled.
-     * @return a <code>JButton</code> object which can be added to a panel.
-     */
-    private JButton createButton (final String buttonText, final ActionListener buttonActionListener, final boolean enableCondition) {
-        final JButton button = new JButton(buttonText);
-        button.addActionListener(buttonActionListener);
-        button.setEnabled(enableCondition);
-        return button;
-    }
 
     /**
      * This is a private helper method to create a text area.

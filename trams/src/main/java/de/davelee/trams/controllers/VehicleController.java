@@ -40,13 +40,13 @@ public class VehicleController {
 	 * @param company a <code>String</code> with the name of the company to assign the vehicle for.
 	 */
 	public void assignVehicleToTour ( final String registrationNumber, final String allocatedTour, final String company ) {
-		VehicleResponse[] vehicleModels = getVehicles(company).getVehicleResponses();
-		for ( VehicleResponse vehicleModel : vehicleModels ) {
-			if ( vehicleModel.getAdditionalTypeInformationMap().get("Registration Number").contentEquals(registrationNumber) ) {
+		VehicleResponse[] vehicleResponses = getVehicles(company).getVehicleResponses();
+		for ( VehicleResponse vehicleResponse : vehicleResponses ) {
+			if ( vehicleResponse.getAdditionalTypeInformationMap().get("Registration Number").contentEquals(registrationNumber) ) {
 				restTemplate.patchForObject(operationsServerUrl + "vehicle/allocate/",
 						AllocateVehicleRequest.builder()
 								.allocatedTour(allocatedTour)
-								.fleetNumber(vehicleModel.getFleetNumber())
+								.fleetNumber(vehicleResponse.getFleetNumber())
 								.company(company)
 								.build(),
 						Void.class);
@@ -98,7 +98,7 @@ public class VehicleController {
 	 * Get a vehicle based on its registration number.
 	 * @param registrationNumber a <code>String</code> with the registration number.
 	 * @param company a <code>String</code> with the name of the company.
-	 * @return a <code>VehicleModel</code> object.
+	 * @return a <code>VehicleResponse</code> object.
 	 */
 	public VehicleResponse getVehicleByRegistrationNumber ( final String registrationNumber, final String company ) {
 		VehicleResponse[] vehicleResponses = getVehicles(company).getVehicleResponses();
@@ -331,6 +331,10 @@ public class VehicleController {
 		return randomReg;
 	}
 
+	/**
+	 * Set the rest template object via Spring.
+	 * @param restTemplate a <code>RestTemplate</code> object.
+	 */
 	@Autowired
 	public void setRestTemplate(final RestTemplate restTemplate) {
 		this.restTemplate = restTemplate;

@@ -27,12 +27,12 @@ public record LocationMapPanel(ControllerHandler controllerHandler) {
 	public JPanel createPanel ( final ControlScreen controlScreen, final ManagementPanel managementPanel  ) {
 		final CompanyResponse companyResponse = controllerHandler.getCompanyController().getCompany(controlScreen.getCompany(), controlScreen.getPlayerName());
     	
-    	Scenario scenarioModel = controllerHandler.getScenarioController().getScenario(companyResponse.getScenarioName());
+    	Scenario scenario = controllerHandler.getScenarioController().getScenario(companyResponse.getScenarioName());
         
         //Create picture panel.
         JPanel picturePanel = new JPanel(new BorderLayout());
         picturePanel.setBackground(Color.WHITE);
-        ImageDisplay busDisplay = new ImageDisplay(scenarioModel.getLocationMapFileName(),0,0);
+        ImageDisplay busDisplay = new ImageDisplay(scenario.getLocationMapFileName(),0,0);
         busDisplay.setSize(750,380);
         busDisplay.setBackground(Color.WHITE);
         picturePanel.add(busDisplay, BorderLayout.CENTER);

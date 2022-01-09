@@ -164,11 +164,19 @@ public class CompanyController {
 		return satisfactionRateResponse != null ? satisfactionRateResponse.getSatisfactionRate() : -1.0;
 	}
 
+	/**
+	 * Set the rest template object via Spring.
+	 * @param restTemplate a <code>RestTemplate</code> object.
+	 */
 	@Autowired
 	public void setRestTemplate(final RestTemplate restTemplate) {
 		this.restTemplate = restTemplate;
 	}
 
+	/**
+	 * Set the vehicle controller object via Spring.
+	 * @param vehicleController a <code>VehicleController</code> object.
+	 */
 	@Autowired
 	public void setVehicleController(final VehicleController vehicleController) {
 		this.vehicleController = vehicleController;

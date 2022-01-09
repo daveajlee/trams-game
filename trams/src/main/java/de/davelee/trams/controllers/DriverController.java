@@ -6,6 +6,8 @@ import de.davelee.trams.api.response.UserResponse;
 import de.davelee.trams.api.response.UsersResponse;
 import lombok.Getter;
 import lombok.Setter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -32,6 +34,8 @@ public class DriverController {
     private String personalManServerUrl;
 
     private String token;
+
+    private static final Logger logger = LoggerFactory.getLogger(DriverController.class);
 
     /**
      * Return all drivers belonging to the supplied company.
@@ -93,19 +97,19 @@ public class DriverController {
      */
     public void loadDrivers ( final UserResponse[] userResponses, final String company ) {
         restTemplate.delete(personalManServerUrl + "api/company/?name=" + company + "&token=" + token);
-        for ( UserResponse driverModel : userResponses ) {
+        for ( UserResponse userResponse : userResponses ) {
             restTemplate.postForObject(personalManServerUrl + "user/", UserRequest.builder()
                     .dateOfBirth("01-01-1990")
-                    .firstName(driverModel.getFirstName())
-                    .surname(driverModel.getSurname())
+                    .firstName(userResponse.getFirstName())
+                    .surname(userResponse.getSurname())
                     .leaveEntitlementPerYear(25)
                     .company(company)
                     .password("test")
                     .position("Tester")
                     .role("ADMIN")
-                    .username(driverModel.getUsername())
+                    .username(userResponse.getUsername())
                     .workingDays("Monday,Tuesday")
-                    .startDate(driverModel.getStartDate())
+                    .startDate(userResponse.getStartDate())
                     .build(), Void.class);
         }
     }
@@ -118,9 +122,7 @@ public class DriverController {
     public boolean hasSomeDriversBeenEmployed ( final CompanyResponse companyResponse ) {
         //TODO: determine how to get username.
         UserResponse[] userResponses = getAllDrivers(companyResponse.getName(), "mmustermann");
-        System.out.println("Attempted to get responses");
         if (userResponses != null && userResponses.length > 0) {
-            System.out.println("I have responses...");
             for (UserResponse userResponse : userResponses) {
                 LocalDate currentDate = LocalDate.parse(companyResponse.getTime(), DateTimeFormatter.ofPattern("dd-MM-yyyy"));
                 LocalDate startDate = LocalDate.parse(userResponse.getStartDate(), DateTimeFormatter.ofPattern("dd-MM-yyyy"));
@@ -152,6 +154,10 @@ public class DriverController {
         restTemplate.delete(personalManServerUrl + "user/?company=" + company + "&username=" + username + "&token=" + token);
     }
 
+    /**
+     * Set the rest template object via Spring.
+     * @param restTemplate a <code>RestTemplate</code> object.
+     */
     @Autowired
     public void setRestTemplate(final RestTemplate restTemplate) {
         this.restTemplate = restTemplate;

@@ -53,28 +53,28 @@ public class FileController {
 			}
 			TramsFile myFile = mapper.readValue(out.toString(), TramsFile.class);
 			//Load game.
-			for ( CompanyResponse companyResponse : myFile.getGameModel() ) {
+			for ( CompanyResponse companyResponse : myFile.getCompanyResponses() ) {
 				companyController.loadCompany(companyResponse);
 			}
 			//Load drivers.
-			if ( myFile.getDriverModels() != null ) {
-				driverController.loadDrivers(myFile.getDriverModels(), myFile.getGameModel()[0].getName());
+			if ( myFile.getUserResponses() != null ) {
+				driverController.loadDrivers(myFile.getUserResponses(), myFile.getCompanyResponses()[0].getName());
 			}
 			//Load messages.
-			if ( myFile.getMessageModels() != null ) {
-				messageController.loadMessages(myFile.getMessageModels(), myFile.getGameModel()[0].getName());
+			if ( myFile.getMessageResponses() != null ) {
+				messageController.loadMessages(myFile.getMessageResponses(), myFile.getCompanyResponses()[0].getName());
 			}
 			//Load routes.
-			if ( myFile.getRouteModels() != null ) {
-				routeController.loadRoutes(myFile.getRouteModels(), myFile.getGameModel()[0].getName());
+			if ( myFile.getRouteResponses() != null ) {
+				routeController.loadRoutes(myFile.getRouteResponses(), myFile.getCompanyResponses()[0].getName());
 			}
 			//Load vehicles.
-			if ( myFile.getVehicleModels() != null ) {
-				vehicleController.loadVehicles(myFile.getVehicleModels(), myFile.getGameModel()[0].getName(),
-						LocalDate.parse(myFile.getGameModel()[0].getTime(), DateTimeFormatter.ofPattern("dd-MM-yyyy")));
+			if ( myFile.getVehicleResponses() != null ) {
+				vehicleController.loadVehicles(myFile.getVehicleResponses(), myFile.getCompanyResponses()[0].getName(),
+						LocalDate.parse(myFile.getCompanyResponses()[0].getTime(), DateTimeFormatter.ofPattern("dd-MM-yyyy")));
 			}
 			simulationController.pauseSimulation();
-			return myFile.getGameModel()[0];
+			return myFile.getCompanyResponses()[0];
 		} catch ( Exception exception ) {
 			logger.error("exception whilst loading file", exception);
 			return null;
@@ -98,12 +98,6 @@ public class FileController {
 				mapper.registerModule(new JavaTimeModule());
 				//TODO: rebuild the trams file with all classes in a suitable structure.
 				mapper.writeValue(selectedFile, TramsFile.builder()
-						/*.driverModels(driverController.getAllDrivers(companyController.getGameModel().getCompany()))
-                        .gameModel(new GameModel[] { companyController.getGameModel() })
-                        .messageModels(messageController.getAllMessages(companyController.getGameModel().getCompany()))
-                        .routeModels(routeController.getRouteModels(companyController.getGameModel().getCompany()))
-                        .stops(journeyController.getAllStops(companyController.getGameModel().getCompany()))
-                        .vehicleModels(vehicleController.getVehicleModels(companyController.getGameModel().getCompany()))*/
 						.build());
 				return true;
 			}
@@ -114,31 +108,55 @@ public class FileController {
 		}
     }
 
+	/**
+	 * Set the driver controller object via Spring.
+	 * @param driverController a <code>DriverController</code> object.
+	 */
 	@Autowired
 	public void setDriverController(final DriverController driverController) {
 		this.driverController = driverController;
 	}
 
+	/**
+	 * Set the company controller object via Spring.
+	 * @param companyController a <code>CompanyController</code> object.
+	 */
 	@Autowired
 	public void setCompanyController(final CompanyController companyController) {
 		this.companyController = companyController;
 	}
 
+	/**
+	 * Set the message controller object via Spring.
+	 * @param messageController a <code>MessageController</code> object.
+	 */
 	@Autowired
 	public void setMessageController(final MessageController messageController) {
 		this.messageController = messageController;
 	}
 
+	/**
+	 * Set the route controller object via Spring.
+	 * @param routeController a <code>RouteController</code> object.
+	 */
 	@Autowired
 	public void setRouteController(final RouteController routeController) {
 		this.routeController = routeController;
 	}
 
+	/**
+	 * Set the simulation object via Spring.
+	 * @param simulationController a <code>SimulationController</code> object.
+	 */
 	@Autowired
 	public void setSimulationController(final SimulationController simulationController) {
 		this.simulationController = simulationController;
 	}
 
+	/**
+	 * Set the vehicle controller object via Spring.
+	 * @param vehicleController a <code>VehicleController</code> object.
+	 */
 	@Autowired
 	public void setVehicleController(final VehicleController vehicleController) {
 		this.vehicleController = vehicleController;

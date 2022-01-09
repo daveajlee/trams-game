@@ -9,25 +9,22 @@ import java.text.DecimalFormat;
 
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
-import javax.swing.JButton;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 
 import de.davelee.trams.api.response.CompanyResponse;
 import de.davelee.trams.api.response.VehicleResponse;
 import de.davelee.trams.controllers.ControllerHandler;
 import de.davelee.trams.gui.ControlScreen;
+import de.davelee.trams.gui.EditingScreen;
 import de.davelee.trams.util.GuiUtils;
 
 /**
  * This class represents a panel to show a particular vehicle in the depot for a company.
  * @author Dave Lee
  */
-public record VehicleDepotPanel ( ControllerHandler controllerHandler ) {
+public record VehicleDepotPanel ( ControllerHandler controllerHandler ) implements EditingScreen  {
 
     /**
      * Create a new <code>VehicleDepotPanel</code> panel and display it to the user.
@@ -43,13 +40,7 @@ public record VehicleDepotPanel ( ControllerHandler controllerHandler ) {
         vehicleScreenPanel.setBackground(Color.WHITE);
         
         //Create label at top of screen in a topLabelPanel added to screenPanel.
-        JPanel textLabelPanel = new JPanel(new BorderLayout());
-        textLabelPanel.setBackground(Color.WHITE);
-        JLabel topLabel = new JLabel("Vehicle Depot", SwingConstants.CENTER);
-        topLabel.setFont(new Font("Arial", Font.BOLD, 25));
-        topLabel.setVerticalAlignment(JLabel.CENTER);
-        textLabelPanel.add(topLabel, BorderLayout.CENTER);
-        vehicleScreenPanel.add(textLabelPanel);
+        vehicleScreenPanel.add(GuiUtils.createHeadingPanel("Vehicle Depot"));
         
         //Now create a border layout so that we can have a choice of vehicles on the right-hand side.
         JPanel vehicleBorderPanel = new JPanel(new BorderLayout());
@@ -62,19 +53,19 @@ public record VehicleDepotPanel ( ControllerHandler controllerHandler ) {
         
         //Get vehicle data now!
         DefaultListModel<String> vehiclesModel = new DefaultListModel<>();
-        VehicleResponse[] vehicleModels = controllerHandler.getVehicleController().getAllCreatedVehicles(companyResponse.getName()).getVehicleResponses();
-        for (VehicleResponse model : vehicleModels) {
-            if (controllerHandler.getVehicleController().hasVehicleBeenDelivered(model.getDeliveryDate(), companyResponse.getTime())) {
-                vehiclesModel.addElement(model.getAdditionalTypeInformationMap().get("Registration Number"));
+        VehicleResponse[] vehicleResponses = controllerHandler.getVehicleController().getAllCreatedVehicles(companyResponse.getName()).getVehicleResponses();
+        for (VehicleResponse vehicleResponse : vehicleResponses) {
+            if (controllerHandler.getVehicleController().hasVehicleBeenDelivered(vehicleResponse.getDeliveryDate(), companyResponse.getTime())) {
+                vehiclesModel.addElement(vehicleResponse.getAdditionalTypeInformationMap().get("Registration Number"));
             }
         }
         
         //Create vehicle object so that we can pull information from it.
-        final VehicleResponse vehicleModel;
+        final VehicleResponse vehicleResponse;
         if ( !registrationNumber.equalsIgnoreCase("") ) {
-            vehicleModel = controllerHandler.getVehicleController().getVehicleByRegistrationNumber(registrationNumber, companyResponse.getName());
+            vehicleResponse = controllerHandler.getVehicleController().getVehicleByRegistrationNumber(registrationNumber, companyResponse.getName());
         } else {
-        	vehicleModel = controllerHandler.getVehicleController().getVehicleByRegistrationNumber(vehiclesModel.get(0), companyResponse.getName());
+        	vehicleResponse = controllerHandler.getVehicleController().getVehicleByRegistrationNumber(vehiclesModel.get(0), companyResponse.getName());
         }
         
         //Create picture panel.
@@ -93,7 +84,7 @@ public record VehicleDepotPanel ( ControllerHandler controllerHandler ) {
         idLabel.setFont(new Font("Arial", Font.ITALIC, 14));
         idLabelPanel.add(idLabel);
         gridPanel.add(idLabel);
-        JLabel idField = new JLabel(vehicleModel.getAdditionalTypeInformationMap().get("Registration Number"));
+        JLabel idField = new JLabel(vehicleResponse.getAdditionalTypeInformationMap().get("Registration Number"));
         idField.setFont(new Font("Arial", Font.PLAIN, 12));
         gridPanel.add(idField);
         //Create label and field for vehicle type and add it to the type panel.
@@ -103,7 +94,7 @@ public record VehicleDepotPanel ( ControllerHandler controllerHandler ) {
         typeLabel.setFont(new Font("Arial", Font.ITALIC, 14));
         typeLabelPanel.add(typeLabel);
         gridPanel.add(typeLabel);
-        JLabel typeField = new JLabel(vehicleModel.getModelName());
+        JLabel typeField = new JLabel(vehicleResponse.getModelName());
         typeField.setFont(new Font("Arial", Font.PLAIN, 12));
         gridPanel.add(typeField);
         //Create label and field for age and add it to the age panel.
@@ -113,7 +104,7 @@ public record VehicleDepotPanel ( ControllerHandler controllerHandler ) {
         ageLabel.setFont(new Font("Arial", Font.ITALIC, 14));
         ageLabelPanel.add(ageLabel);
         gridPanel.add(ageLabel);
-        JLabel ageField = new JLabel(controllerHandler.getVehicleController().getAge(vehicleModel.getDeliveryDate(),
+        JLabel ageField = new JLabel(controllerHandler.getVehicleController().getAge(vehicleResponse.getDeliveryDate(),
         		companyResponse.getTime()) + " months");
         ageField.setFont(new Font("Arial", Font.PLAIN, 12));
         gridPanel.add(ageField);
@@ -124,7 +115,7 @@ public record VehicleDepotPanel ( ControllerHandler controllerHandler ) {
         seatingLabel.setFont(new Font("Arial", Font.ITALIC, 14));
         seatingLabelPanel.add(seatingLabel);
         gridPanel.add(seatingLabel);
-        JLabel seatingField = new JLabel("" + vehicleModel.getSeatingCapacity());
+        JLabel seatingField = new JLabel("" + vehicleResponse.getSeatingCapacity());
         seatingField.setFont(new Font("Arial", Font.PLAIN, 12));
         gridPanel.add(seatingField);
         //Create label and field for standing capacity and add it to the standing panel.
@@ -134,7 +125,7 @@ public record VehicleDepotPanel ( ControllerHandler controllerHandler ) {
         standingLabel.setFont(new Font("Arial", Font.ITALIC, 14));
         standingLabelPanel.add(standingLabel);
         gridPanel.add(standingLabel);
-        JLabel standingField = new JLabel("" + vehicleModel.getStandingCapacity());
+        JLabel standingField = new JLabel("" + vehicleResponse.getStandingCapacity());
         standingField.setFont(new Font("Arial", Font.PLAIN, 12));
         gridPanel.add(standingField);
         //Create label and field for assigned schedule and add it to the schedule panel.
@@ -144,7 +135,7 @@ public record VehicleDepotPanel ( ControllerHandler controllerHandler ) {
         assignedLabel.setFont(new Font("Arial", Font.ITALIC, 14));
         assignedLabelPanel.add(assignedLabel);
         gridPanel.add(assignedLabel);
-        JLabel assignedField = new JLabel(displayAssignedRoute(vehicleModel));
+        JLabel assignedField = new JLabel(displayAssignedRoute(vehicleResponse));
         assignedField.setFont(new Font("Arial", Font.PLAIN, 12));
         gridPanel.add(assignedField);
         //Create label and field for value and add it to the value panel.
@@ -155,7 +146,7 @@ public record VehicleDepotPanel ( ControllerHandler controllerHandler ) {
         valueLabelPanel.add(valueLabel);
         gridPanel.add(valueLabel);
         DecimalFormat format = new DecimalFormat("0.00");
-        JLabel valueField = new JLabel("£" + format.format(controllerHandler.getVehicleController().getValue(vehicleModel, companyResponse.getTime())));
+        JLabel valueField = new JLabel("£" + format.format(controllerHandler.getVehicleController().getValue(vehicleResponse, companyResponse.getTime())));
         valueField.setFont(new Font("Arial", Font.PLAIN, 12));
         gridPanel.add(valueField);
         
@@ -167,18 +158,15 @@ public record VehicleDepotPanel ( ControllerHandler controllerHandler ) {
         bottomButtonPanel.setBackground(Color.WHITE);
                 
         //Create sell vehicle button and add it to screen panel.
-        JButton sellVehicleButton = new JButton("Sell Vehicle");
-        sellVehicleButton.addActionListener (e -> {
-            double sellingPrice = controllerHandler.getVehicleController().sellVehicle(vehicleModel, companyResponse.getTime());
+        bottomButtonPanel.add(GuiUtils.createButton("Sell Vehicle", e -> {
+            double sellingPrice = controllerHandler.getVehicleController().sellVehicle(vehicleResponse, companyResponse.getTime());
             controllerHandler.getCompanyController().withdrawOrCreditBalance(sellingPrice, controlScreen.getPlayerName());
             controlScreen.redrawManagement(createPanel("", controlScreen), companyResponse);
-        });
-        bottomButtonPanel.add(sellVehicleButton);
+        }, true));
         
         //Create return to create game screen button and add it to screen panel.
-        JButton managementScreenButton = new JButton("Return to Management Screen");
-        managementScreenButton.addActionListener (e -> controlScreen.redrawManagement(new ManagementPanel(controllerHandler).createPanel(controlScreen), companyResponse));
-        bottomButtonPanel.add(managementScreenButton);
+        bottomButtonPanel.add(GuiUtils.createButton("Return to Management Screen", e -> controlScreen.redrawManagement(new ManagementPanel(controllerHandler).createPanel(controlScreen), companyResponse), true
+                ));
         
         //Add bottom button panel to the screen panel.
         centrePanel.add(bottomButtonPanel);
@@ -186,28 +174,10 @@ public record VehicleDepotPanel ( ControllerHandler controllerHandler ) {
         //Add centre panel to border panel.
         vehicleBorderPanel.add(centrePanel, BorderLayout.CENTER);
         
-        //Now create the east panel to display the vehicle list.
-        JPanel eastPanel = new JPanel(new BorderLayout());
-        eastPanel.setBackground(Color.WHITE);
-        //Third part of route panel is list of routes.
-        JPanel modelPanel = new JPanel();
-        modelPanel.setBackground(Color.WHITE);
-        final JList<String> vehiclesList = new JList<>(vehiclesModel);
-        vehiclesList.setFixedCellWidth(100);
-        vehiclesList.setVisibleRowCount(25);
-        vehiclesList.setSelectedValue(vehicleModel.getAdditionalTypeInformationMap().get("Registration Number"), true);
-        vehiclesList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        vehiclesList.setFont(new Font("Arial", Font.PLAIN, 15));
-        vehiclesList.addListSelectionListener(e -> {
-            String selectedValue = vehiclesList.getSelectedValue();
-            controlScreen.redrawManagement(createPanel(selectedValue, controlScreen), companyResponse);
-        });
-        JScrollPane vehiclesPane = new JScrollPane(vehiclesList);
-        modelPanel.add(vehiclesPane);
-        eastPanel.add(modelPanel, BorderLayout.CENTER);
-        
         //Add east panel to border panel.
-        vehicleBorderPanel.add(eastPanel, BorderLayout.EAST);
+        vehicleBorderPanel.add(GuiUtils.createListPanel(vehiclesModel,
+                vehicleResponse.getAdditionalTypeInformationMap().get("Registration Number"),
+                controlScreen, companyResponse, VehicleDepotPanel.this), BorderLayout.EAST);
         
         //Add vehicleBorderPanel to vehicleScreenPanel.
         vehicleScreenPanel.add(vehicleBorderPanel);

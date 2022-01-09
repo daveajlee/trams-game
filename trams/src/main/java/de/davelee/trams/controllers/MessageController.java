@@ -94,14 +94,14 @@ public class MessageController {
      */
     public void loadMessages ( final MessageResponse[] messageResponses, final String company ) {
         restTemplate.delete(crmServerUrl + "messages/?company=" + company);
-        for ( MessageResponse messageModel : messageResponses ) {
+        for ( MessageResponse messageResponse : messageResponses ) {
             restTemplate.postForObject(crmServerUrl + "message/", MessageRequest.builder()
                     .company(company)
-                    .subject(messageModel.getSubject())
-                    .text(messageModel.getText())
-                    .sender(messageModel.getSender())
-                    .folder(messageModel.getFolder())
-                    .dateTime(messageModel.getDateTime())
+                    .subject(messageResponse.getSubject())
+                    .text(messageResponse.getText())
+                    .sender(messageResponse.getSender())
+                    .folder(messageResponse.getFolder())
+                    .dateTime(messageResponse.getDateTime())
                     .build(), Void.class);
         }
     }

@@ -68,6 +68,10 @@ public class StopController {
 		return Integer.parseInt(scenarioController.getScenario(scenarioName).getStopDistances().get(stop1Pos).split(":")[1].split(",")[stop2Pos]);
 	}
 
+	/**
+	 * Set the scenario controller object via Spring.
+	 * @param scenarioController a <code>ScenarioController</code> object.
+	 */
 	@Autowired
 	public void setScenarioController(final ScenarioController scenarioController) {
 		this.scenarioController = scenarioController;

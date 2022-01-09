@@ -99,19 +99,19 @@ public class NewGameScreen extends JFrame {
         createGameButton.setEnabled(false);
         createGameButton.addActionListener (e -> {
             if ( availableScenariosComboBox.getSelectedItem() != null ) {
-                Scenario scenarioModel = controllerHandler.getScenarioController().getScenario(availableScenariosComboBox.getSelectedItem().toString());
+                Scenario scenario = controllerHandler.getScenarioController().getScenario(availableScenariosComboBox.getSelectedItem().toString());
                 //Create Game
-                CompanyResponse companyResponse = controllerHandler.getCompanyController().createCompany(playerNameField.getText(), scenarioModel.getScenarioName(), companyNameField.getText());
+                CompanyResponse companyResponse = controllerHandler.getCompanyController().createCompany(playerNameField.getText(), scenario.getScenarioName(), companyNameField.getText());
                 //Create supplied vehicles.
-                controllerHandler.getVehicleController().createSuppliedVehicles(scenarioModel.getSuppliedVehicles(), companyResponse.getTime(), companyNameField.getText());
+                controllerHandler.getVehicleController().createSuppliedVehicles(scenario.getSuppliedVehicles(), companyResponse.getTime(), companyNameField.getText());
                 //Create supplied drivers.
-                controllerHandler.getDriverController().createSuppliedDrivers(scenarioModel.getSuppliedDrivers(), companyResponse.getTime(), companyNameField.getText());
+                controllerHandler.getDriverController().createSuppliedDrivers(scenario.getSuppliedDrivers(), companyResponse.getTime(), companyNameField.getText());
                 //Create welcome message.
                 controllerHandler.getMessageController().addMessage(companyNameField.getText(), "Welcome Message", "Congratulations on your appointment as Managing Director of the " +
-                        scenarioModel.getScenarioName() + "! \n\n Your targets for the coming days and months are: " +
-                        scenarioModel.getTargets(), "Council", "INBOX", companyResponse.getTime());
+                        scenario.getScenarioName() + "! \n\n Your targets for the coming days and months are: " +
+                        scenario.getTargets(), "Council", "INBOX", companyResponse.getTime());
                 ScenarioDescriptionScreen scenarioDescriptionScreen = new ScenarioDescriptionScreen(controllerHandler);
-                scenarioDescriptionScreen.displayScreen(scenarioModel.getDescription(), companyNameField.getText(), playerNameField.getText());
+                scenarioDescriptionScreen.displayScreen(scenario.getDescription(), companyNameField.getText(), playerNameField.getText());
                 dispose();
             }
         });

@@ -57,12 +57,16 @@ public class GameThread extends Thread implements Runnable {
 					companyResponse.getDifficultyLevel(), controlScreen.getCompany());
 			controlScreen.updatePassengerBar((int) Math.round(companyController.computeAndReturnPassengerSatisfaction(controlScreen.getCompany(), companyResponse.getDifficultyLevel())));
             //Now sleep!
-            try {
-				this.sleep(simulationSpeed);
-			} catch (InterruptedException ie) {
-				logger.error("Error whilst running simulation", ie);
-			}
+            pauseSimulation(simulationSpeed);
         }
     }
+
+	private void pauseSimulation( final int simulationSpeed) {
+		try {
+			Thread.sleep(simulationSpeed);
+		} catch (InterruptedException ie) {
+			logger.error("Error whilst running simulation", ie);
+		}
+	}
 
 }

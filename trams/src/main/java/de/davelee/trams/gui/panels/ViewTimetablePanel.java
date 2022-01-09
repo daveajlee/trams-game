@@ -53,7 +53,7 @@ public class ViewTimetablePanel {
         routeScreenPanel.setLayout( new BoxLayout(routeScreenPanel, BoxLayout.PAGE_AXIS));
         routeScreenPanel.setBackground(Color.WHITE);
      
-        final RouteResponse routeModel = controllerHandler.getRouteController().getRoute(route, controlScreen.getCompany());
+        final RouteResponse initialRouteResponse = controllerHandler.getRouteController().getRoute(route, controlScreen.getCompany());
         final CompanyResponse companyResponse = controllerHandler.getCompanyController().getCompany(controlScreen.getCompany(), controlScreen.getPlayerName());
             
         //Create an overall screen panel.
@@ -74,8 +74,8 @@ public class ViewTimetablePanel {
         routeSelectionLabel.setFont(new Font("Arial", Font.BOLD, 16));
         selectionPanel.add(routeSelectionLabel);
         final DefaultComboBoxModel<String> routeSelectionModel = new DefaultComboBoxModel<>();
-        RouteResponse[] routeModels = controllerHandler.getRouteController().getRoutes(companyResponse.getName()).getRouteResponses();
-        for (RouteResponse model : routeModels) {
+        RouteResponse[] routeResponses = controllerHandler.getRouteController().getRoutes(companyResponse.getName()).getRouteResponses();
+        for (RouteResponse model : routeResponses) {
             routeSelectionModel.addElement(model.getRouteNumber());
         }
         final JComboBox<String> routeSelectionBox = new JComboBox<>(routeSelectionModel);
@@ -98,7 +98,7 @@ public class ViewTimetablePanel {
         stopSelectionBox.addActionListener (e -> {
             if ( stopSelectionBox.getSelectedItem() != null ) {
                 logger.debug("You chose stop " + stopSelectionBox.getSelectedItem().toString());
-                myTable.setModel(createTableModel(routeModel.getRouteNumber(), stopSelectionBox.getSelectedItem().toString(), (Direction) directionSelectionBox.getSelectedItem(), companyResponse.getTime(), companyResponse.getName()));
+                myTable.setModel(createTableModel(initialRouteResponse.getRouteNumber(), stopSelectionBox.getSelectedItem().toString(), (Direction) directionSelectionBox.getSelectedItem(), companyResponse.getTime(), companyResponse.getName()));
                 autoResizeColWidth(myTable, (DefaultTableModel) myTable.getModel());
             }
             });
@@ -115,7 +115,7 @@ public class ViewTimetablePanel {
         directionSelectionBox.addActionListener(e -> {
             if ( directionSelectionBox.getSelectedItem() != null && stopSelectionBox.getSelectedItem() != null ) {
                 logger.debug("You chose direction " + directionSelectionBox.getSelectedIndex());
-                myTable.setModel(createTableModel(routeModel.getRouteNumber(), stopSelectionBox.getSelectedItem().toString(), (Direction) directionSelectionBox.getSelectedItem(), companyResponse.getTime(), companyResponse.getName()));
+                myTable.setModel(createTableModel(initialRouteResponse.getRouteNumber(), stopSelectionBox.getSelectedItem().toString(), (Direction) directionSelectionBox.getSelectedItem(), companyResponse.getTime(), companyResponse.getName()));
                 autoResizeColWidth(myTable, (DefaultTableModel) myTable.getModel());
             }
             });
@@ -125,7 +125,7 @@ public class ViewTimetablePanel {
         //Show valid information.
         JPanel validityPanel = new JPanel(new BorderLayout());
         validityPanel.setBackground(Color.WHITE);
-        StopTimeResponse[] stopTimeModels = controllerHandler.getStopTimeController().getStopTimes(Optional.empty(), routeModel.getRouteNumber(), companyResponse.getTime(), companyResponse.getName(), Optional.empty());
+        StopTimeResponse[] stopTimeModels = controllerHandler.getStopTimeController().getStopTimes(Optional.empty(), initialRouteResponse.getRouteNumber(), companyResponse.getTime(), companyResponse.getName(), Optional.empty());
         JLabel validFromDateLabel = new JLabel("Valid From: " + stopTimeModels[0].getValidFromDate());
         validFromDateLabel.setFont(new Font("Arial", Font.ITALIC, 14));
         validityPanel.add(validFromDateLabel, BorderLayout.NORTH);
@@ -143,7 +143,7 @@ public class ViewTimetablePanel {
 
         //Display it!
         if ( stopSelectionBox.getSelectedItem() != null ) {
-            myTable.setModel(createTableModel(routeModel.getRouteNumber(), stopSelectionBox.getSelectedItem().toString(), Direction.OUTGOING, companyResponse.getTime(), companyResponse.getName()));
+            myTable.setModel(createTableModel(initialRouteResponse.getRouteNumber(), stopSelectionBox.getSelectedItem().toString(), Direction.OUTGOING, companyResponse.getTime(), companyResponse.getName()));
         }
         myTable.setFont(new Font("Arial", Font.PLAIN, 12));
         JScrollPane tableScrollPane = new JScrollPane(autoResizeColWidth(myTable, (DefaultTableModel) myTable.getModel()));
@@ -158,7 +158,7 @@ public class ViewTimetablePanel {
         amendRouteButton.addActionListener(e -> {
             //Show the actual screen!
             RoutePanel routePanel = new RoutePanel(controllerHandler);
-            controlScreen.redrawManagement(routePanel.createPanel(routeModel, controlScreen, managementPanel), companyResponse);
+            controlScreen.redrawManagement(routePanel.createPanel(initialRouteResponse, controlScreen, managementPanel), companyResponse);
         });
         otherServicesButtonPanel.add(amendRouteButton);
         JButton managementScreenButton = new JButton("Back to Management Screen");

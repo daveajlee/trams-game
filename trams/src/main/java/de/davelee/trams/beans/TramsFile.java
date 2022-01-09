@@ -17,11 +17,11 @@ import lombok.Setter;
 @Setter
 public class TramsFile {
 
-    private UserResponse[] driverModels;
-    private CompanyResponse[] gameModel;
-    private MessageResponse[] messageModels;
-    private RouteResponse[] routeModels;
+    private UserResponse[] userResponses;
+    private CompanyResponse[] companyResponses;
+    private MessageResponse[] messageResponses;
+    private RouteResponse[] routeResponses;
 	private String[] stops;
-    private VehicleResponse[] vehicleModels;
+    private VehicleResponse[] vehicleResponses;
 
 }

@@ -6,6 +6,9 @@ import java.io.Serial;
 import javax.swing.*;
 
 import de.davelee.trams.controllers.ControllerHandler;
+import de.davelee.trams.gui.listeners.ExitMouseListener;
+import de.davelee.trams.gui.listeners.LoadGameMouseListener;
+import de.davelee.trams.gui.listeners.NewGameMouseListener;
 
 /**
  * Class to display the welcome screen to the TraMS program.
@@ -86,25 +89,7 @@ public class WelcomeScreen extends JFrame {
         ImageDisplay newBusDisplay = new ImageDisplay("new-game-bus-welcome-screen.png",25,0);
         newBusDisplay.setSize(225,190);
         newBusDisplay.setBackground(Color.WHITE);
-        newBusDisplay.addMouseListener ( new MouseListener () {
-            public void mouseClicked(MouseEvent e) {
-                NewGameScreen newGameScreen = new NewGameScreen(controllerHandler);
-                newGameScreen.displayScreen();
-                dispose();
-            }
-            public void mousePressed(MouseEvent e) {
-                //Nothing happens when mouse pressed.
-            }
-            public void mouseReleased(MouseEvent e) {
-                //Nothing happens when mouse released.
-            }
-            public void mouseEntered(MouseEvent e) {
-                //Nothing happens when mouse entered.
-            }
-            public void mouseExited(MouseEvent e) {
-                //Nothing happens when mouse exited.
-            }
-        });
+        newBusDisplay.addMouseListener ( new NewGameMouseListener(WelcomeScreen.this, controllerHandler));
         busPanel.add(newBusDisplay);
         newPanel.add(busPanel);
         newPanel.add(Box.createRigidArea(new Dimension(0,10))); //Spacer.
@@ -119,26 +104,7 @@ public class WelcomeScreen extends JFrame {
         ImageDisplay loadBusDisplay = new ImageDisplay("load-game-tram-welcome-screen.png",25,0);
         loadBusDisplay.setSize(240,190);
         loadBusDisplay.setBackground(Color.WHITE);
-        loadBusDisplay.addMouseListener ( new MouseListener () {
-            public void mouseClicked(MouseEvent e) {
-                FileDialog fileDialog = new FileDialog();
-                if ( fileDialog.createLoadFileDialog(WelcomeScreen.this, controllerHandler) ) {
-                    dispose();
-                }
-            }
-            public void mousePressed(MouseEvent e) {
-                //Nothing happens when mouse pressed.
-            }
-            public void mouseReleased(MouseEvent e) {
-                //Nothing happens when mouse released.
-            }
-            public void mouseEntered(MouseEvent e) {
-                //Nothing happens when mouse entered.
-            }
-            public void mouseExited(MouseEvent e) {
-                //Nothing happens when mouse exited.
-            }
-        });
+        loadBusDisplay.addMouseListener ( new LoadGameMouseListener(WelcomeScreen.this, controllerHandler));
         busLoadPanel.add(loadBusDisplay);
         loadPanel.add(busLoadPanel);
         loadPanel.add(Box.createRigidArea(new Dimension(0,10))); //Spacer.
@@ -152,46 +118,12 @@ public class WelcomeScreen extends JFrame {
         ImageDisplay exitBusDisplay = new ImageDisplay("exit-game-bendy-small.png",25,0);
         exitBusDisplay.setSize(240,190);
         exitBusDisplay.setBackground(Color.WHITE);
-        exitBusDisplay.addMouseListener ( new MouseListener () {
-            public void mouseClicked(MouseEvent e) {
-                ExitDialog exitDialog = new ExitDialog();
-                exitDialog.createExitDialog(WelcomeScreen.this);
-            }
-            public void mousePressed(MouseEvent e) {
-                //Nothing happens when mouse pressed.
-            }
-            public void mouseReleased(MouseEvent e) {
-                //Nothing happens when mouse released.
-            }
-            public void mouseEntered(MouseEvent e) {
-                //Nothing happens when mouse entered.
-            }
-            public void mouseExited(MouseEvent e) {
-                //Nothing happens when mouse exited.
-            }
-        });
+        exitBusDisplay.addMouseListener ( new ExitMouseListener (WelcomeScreen.this) );
         busExitPanel.add(exitBusDisplay);
         exitPanel.add(busExitPanel);
         exitPanel.add(Box.createRigidArea(new Dimension(0,10))); //Spacer.
         bottomPanel.add(exitPanel);
-        bottomPanel.addMouseListener ( new MouseListener () {
-            public void mouseClicked(MouseEvent e) {
-                ExitDialog exitDialog = new ExitDialog();
-                exitDialog.createExitDialog(WelcomeScreen.this);
-            }
-            public void mousePressed(MouseEvent e) {
-                //Nothing happens when mouse pressed.
-            }
-            public void mouseReleased(MouseEvent e) {
-                //Nothing happens when mouse released.
-            }
-            public void mouseEntered(MouseEvent e) {
-                //Nothing happens when mouse entered.
-            }
-            public void mouseExited(MouseEvent e) {
-                //Nothing happens when mouse exited.
-            }
-        });
+        bottomPanel.addMouseListener ( new ExitMouseListener (WelcomeScreen.this));
         
         //Add centre and bottom panels to container.
         c.add(topPanel, BorderLayout.NORTH);
@@ -274,24 +206,7 @@ public class WelcomeScreen extends JFrame {
      */
     public void initialiseExitPanel ( JPanel panel ) {
         panel.setBackground(Color.WHITE);
-        panel.addMouseListener ( new MouseListener () {
-            public void mouseClicked(MouseEvent e) {
-                ExitDialog exitDialog = new ExitDialog();
-                exitDialog.createExitDialog(WelcomeScreen.this);
-            }
-            public void mousePressed(MouseEvent e) {
-                //Nothing happens when mouse pressed.
-            }
-            public void mouseReleased(MouseEvent e) {
-                //Nothing happens when mouse released.
-            }
-            public void mouseEntered(MouseEvent e) {
-                //Nothing happens when mouse entered.
-            }
-            public void mouseExited(MouseEvent e) {
-                //Nothing happens when mouse exited.
-            }
-        });
+        panel.addMouseListener ( new ExitMouseListener(WelcomeScreen.this));
     }
     
 }

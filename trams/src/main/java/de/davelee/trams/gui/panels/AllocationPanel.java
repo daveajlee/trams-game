@@ -119,9 +119,9 @@ public class AllocationPanel {
         final JList<String> routesList = new JList<>(routesModel);
         routesList.setFixedCellWidth(270);
         routesList.setFont(new Font("Arial", Font.PLAIN, 15));
-        RouteResponse[] routeModels = controllerHandler.getRouteController().getRoutes(companyResponse.getName()).getRouteResponses();
-        for (RouteResponse routeModel : routeModels) {
-            routesModel.addElement(routeModel.getRouteNumber());
+        RouteResponse[] routeResponses = controllerHandler.getRouteController().getRoutes(companyResponse.getName()).getRouteResponses();
+        for (RouteResponse routeResponse : routeResponses) {
+            routesModel.addElement(routeResponse.getRouteNumber());
         }
         routesList.setVisibleRowCount(4);
         routesList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
