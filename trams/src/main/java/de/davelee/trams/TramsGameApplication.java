@@ -41,7 +41,7 @@ public class TramsGameApplication {
      */
 	public static void main ( String[] args ) {
 		try {
-            UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
+            UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
         } catch ( Exception e ) {
             logger.error("Error whilst setting look and feel", e);
         }

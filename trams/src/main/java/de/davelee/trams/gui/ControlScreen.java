@@ -191,7 +191,7 @@ public class ControlScreen extends ButtonBar {
         this.setJMenuBar(menuBar);
         
         //Set image icon.
-        Image img = Toolkit.getDefaultToolkit().getImage(ControlScreen.class.getResource("/TraMSlogo.png"));
+        Image img = Toolkit.getDefaultToolkit().getImage(ControlScreen.class.getResource("/trams-logo.png"));
         setIconImage(img);
         
         //Call the Exit method in the UserInterface class if the user hits exit.
@@ -414,7 +414,7 @@ public class ControlScreen extends ButtonBar {
      * @param companyResponse a <code>CompanyResponse</code> representing the game currently modeled.
      */
     public void drawVehicles ( final CompanyResponse companyResponse ) {
-        //Now check if it is past midnight! If it is dispose, and create Allocation Screen.
+        //Now check if it is past midnight! If it is then dispose, and create Allocation Screen.
         if ( isPastMidnight(companyResponse.getTime(), getControllerHandler().getSimulationSpeed()) && !doneAllocations ) {
             //Now add a message to summarise days events!!!
             super.getControllerHandler().getMessageController().addMessage(companyResponse.getName(),"Passenger Satisfaction for " +
@@ -453,7 +453,7 @@ public class ControlScreen extends ButtonBar {
             Scenario scenario = super.getControllerHandler().getScenarioController().getScenario(companyResponse.getScenarioName());
             if ( satValue < scenario.getMinimumSatisfaction() ) {
                 super.getControllerHandler().getSimulationController().pauseSimulation();
-                JOptionPane.showMessageDialog(ControlScreen.this, companyResponse.getScenarioName() + " have relunctanly decided to relieve you of your duties as managing director as passenger satisfaction is now " + satValue + "%.", "Sorry You Have Been Sacked!", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(ControlScreen.this, companyResponse.getScenarioName() + " have unfortunately decided to relieve you of your duties as managing director as passenger satisfaction is now " + satValue + "%.", "Sorry You Have Been Sacked!", JOptionPane.ERROR_MESSAGE);
                 new WelcomeScreen(super.getControllerHandler());
                 dispose();
             }
@@ -563,7 +563,7 @@ public class ControlScreen extends ButtonBar {
         foldersPanel.add(foldersBox);
         //Add folders panel to west panel.
         westPanel.add(foldersPanel, BorderLayout.SOUTH);
-        //Add west panel to messages panel.
+        //Add west panel to the messages panel.
         messagesPanel.add(westPanel, BorderLayout.WEST);
         //Initialise the messages list now.
         MessageResponse[] myMessageModels = foldersBox.getSelectedItem() != null ?
@@ -599,7 +599,7 @@ public class ControlScreen extends ButtonBar {
         messageAndButtonPanel.add(messagesList, BorderLayout.NORTH);
 
         JScrollPane messagesPane = new JScrollPane();
-        if ( myMessageModels == null || (myMessageModels.length == 0 && dateBox.getSelectedItem().toString().equalsIgnoreCase("All Dates") )) {
+        if ( myMessageModels == null || (myMessageModels.length == 0 && (dateBox.getSelectedItem() != null && dateBox.getSelectedItem().toString().equalsIgnoreCase("All Dates")) )) {
             messagesArea.setText("There are no messages in the " + foldersBox.getSelectedItem().toString() + " folder.");
         }
         else if ( myMessageModels.length == 0 ) {
@@ -801,7 +801,7 @@ public class ControlScreen extends ButtonBar {
             previousVehiclesButton.setEnabled(false);
         }
         vehicleInfoPanel.add(previousVehiclesButton);
-        //Next vehicle button.
+        //Button to go to next vehicle.
         JButton nextVehiclesButton = new JButton("Next Vehicles");
         nextVehiclesButton.addActionListener(e -> {
             //Add 4 to the min and max.

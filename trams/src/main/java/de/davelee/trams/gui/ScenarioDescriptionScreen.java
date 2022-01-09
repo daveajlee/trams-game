@@ -44,7 +44,7 @@ public class ScenarioDescriptionScreen extends JFrame {
         this.setBackground(Color.WHITE);
         
         //Set image icon.
-        Image img = Toolkit.getDefaultToolkit().getImage(ScenarioDescriptionScreen.class.getResource("/TraMSlogo.png"));
+        Image img = Toolkit.getDefaultToolkit().getImage(ScenarioDescriptionScreen.class.getResource("/trams-logo.png"));
         setIconImage(img);
         
         //Call the Exit method in the UserInterface class if the user hits exit.
@@ -73,14 +73,14 @@ public class ScenarioDescriptionScreen extends JFrame {
         welcomePanel.add(welcomeLabel);
         JPanel logoPanel = new JPanel();
         logoPanel.setBackground(Color.WHITE);
-        ImageDisplay logoDisplay = new ImageDisplay("TraMSlogo-small.png", 0, 0);
+        ImageDisplay logoDisplay = new ImageDisplay("trams-logo-small.png", 0, 0);
         logoDisplay.setSize(157,62);
         logoDisplay.setBackground(Color.WHITE);
         logoPanel.add(logoDisplay);
         welcomePanel.add(logoPanel);
         screenPanel.add(welcomePanel);
         
-        //Create the MDLabelPanel first of all.
+        //Create the MDLabelPanel.
         JPanel MDLabelPanel = new JPanel();
         MDLabelPanel.setBackground(Color.WHITE);
         JLabel mDLabel = new JLabel(playerName + " appointed Managing Director of " + company);

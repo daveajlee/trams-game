@@ -43,7 +43,7 @@ public class NewGameScreen extends JFrame {
         this.setBackground(Color.WHITE);
         
         //Set image icon.
-        Image img = Toolkit.getDefaultToolkit().getImage(NewGameScreen.class.getResource("/TraMSlogo.png"));
+        Image img = Toolkit.getDefaultToolkit().getImage(NewGameScreen.class.getResource("/trams-logo.png"));
         setIconImage(img);
         
         //Call the Exit method in the UserInterface class if the user hits exit.
@@ -72,7 +72,7 @@ public class NewGameScreen extends JFrame {
         welcomePanel.add(welcomeLabel);
         JPanel logoPanel = new JPanel();
         logoPanel.setBackground(Color.WHITE);
-        ImageDisplay logoDisplay = new ImageDisplay("TraMSlogo-small.png", 0, 0);
+        ImageDisplay logoDisplay = new ImageDisplay("trams-logo-small.png", 0, 0);
         logoDisplay.setSize(157,62);
         logoDisplay.setBackground(Color.WHITE);
         logoPanel.add(logoDisplay);
@@ -149,20 +149,22 @@ public class NewGameScreen extends JFrame {
         buttonPanel.setBackground(Color.WHITE);
         createGameButton.setEnabled(false);
         createGameButton.addActionListener (e -> {
-            Scenario scenarioModel = controllerHandler.getScenarioController().getScenario(availableScenariosComboBox.getSelectedItem().toString());
-            //Create Game
-            CompanyResponse companyResponse = controllerHandler.getCompanyController().createCompany(playerNameField.getText(), scenarioModel.getScenarioName(), companyNameField.getText());
-            //Create supplied vehicles.
-            controllerHandler.getVehicleController().createSuppliedVehicles(scenarioModel.getSuppliedVehicles(), companyResponse.getTime(), companyNameField.getText());
-            //Create supplied drivers.
-            controllerHandler.getDriverController().createSuppliedDrivers(scenarioModel.getSuppliedDrivers(), companyResponse.getTime(), companyNameField.getText());
-            //Create welcome message.
-            controllerHandler.getMessageController().addMessage(companyNameField.getText(), "Welcome Message", "Congratulations on your appointment as Managing Director of the " +
-                    scenarioModel.getScenarioName() + "! \n\n Your targets for the coming days and months are: " +
-                    scenarioModel.getTargets(),"Council","INBOX", companyResponse.getTime());
-            ScenarioDescriptionScreen scenarioDescriptionScreen = new ScenarioDescriptionScreen(controllerHandler);
-            scenarioDescriptionScreen.displayScreen(scenarioModel.getDescription(), companyNameField.getText(), playerNameField.getText());
-            dispose();
+            if ( availableScenariosComboBox.getSelectedItem() != null ) {
+                Scenario scenarioModel = controllerHandler.getScenarioController().getScenario(availableScenariosComboBox.getSelectedItem().toString());
+                //Create Game
+                CompanyResponse companyResponse = controllerHandler.getCompanyController().createCompany(playerNameField.getText(), scenarioModel.getScenarioName(), companyNameField.getText());
+                //Create supplied vehicles.
+                controllerHandler.getVehicleController().createSuppliedVehicles(scenarioModel.getSuppliedVehicles(), companyResponse.getTime(), companyNameField.getText());
+                //Create supplied drivers.
+                controllerHandler.getDriverController().createSuppliedDrivers(scenarioModel.getSuppliedDrivers(), companyResponse.getTime(), companyNameField.getText());
+                //Create welcome message.
+                controllerHandler.getMessageController().addMessage(companyNameField.getText(), "Welcome Message", "Congratulations on your appointment as Managing Director of the " +
+                        scenarioModel.getScenarioName() + "! \n\n Your targets for the coming days and months are: " +
+                        scenarioModel.getTargets(), "Council", "INBOX", companyResponse.getTime());
+                ScenarioDescriptionScreen scenarioDescriptionScreen = new ScenarioDescriptionScreen(controllerHandler);
+                scenarioDescriptionScreen.displayScreen(scenarioModel.getDescription(), companyNameField.getText(), playerNameField.getText());
+                dispose();
+            }
         });
         buttonPanel.add(createGameButton);
         JButton welcomeScreenButton = new JButton("Back to Welcome Screen");

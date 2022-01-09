@@ -12,6 +12,7 @@ import javax.swing.*;
 
 import de.davelee.trams.api.response.CompanyResponse;
 import de.davelee.trams.api.response.RouteResponse;
+import de.davelee.trams.api.response.StopResponse;
 import de.davelee.trams.controllers.ControllerHandler;
 
 import de.davelee.trams.gui.ControlScreen;
@@ -137,19 +138,19 @@ public class TimetablePanel {
         betweenStopsPanel.add(betweenLabel);
         //Save the stop names to a variable.
         //TODO: Add a list of the names of stops served by this route.
-        String[] stopNames = controllerHandler.getStopController().getAllStops(controlScreen.getCompany());
+        StopResponse[] stopResponses = controllerHandler.getStopController().getAllStops(controlScreen.getCompany());
         //Terminus 1 Combo box.
         terminus1Box = new JComboBox<>();
-        for ( int i = 0; i < stopNames.length-1; i++ ) {
-            terminus1Box.addItem(stopNames[i]);
+        for ( int i = 0; i < stopResponses.length-1; i++ ) {
+            terminus1Box.addItem(stopResponses[i].getName());
         }
         terminus1Box.setSelectedIndex(0);
         terminus1Box.setFont(new Font("Arial", Font.PLAIN, 14));
         terminus1Box.addItemListener(e -> {
             //Update terminus 2 box!!!
             terminus2Box.removeAllItems();
-            for ( String stopName : stopNames ) {
-                terminus2Box.addItem(stopName);
+            for ( StopResponse stopResponse : stopResponses ) {
+                terminus2Box.addItem(stopResponse.getName());
             }
             //Update spinner!
             everyMinuteModel.setMaximum(getCurrentRouteDuration(Integer.parseInt(everyMinuteSpinner.getValue().toString()), companyResponse.getScenarioName()));
@@ -161,8 +162,8 @@ public class TimetablePanel {
         betweenStopsPanel.add(andLabel);
         //Terminus 2 Combo box.
         terminus2Box = new JComboBox<>();
-        for ( int i = 1; i < stopNames.length; i++ ) {
-            terminus2Box.addItem(stopNames[i]);
+        for ( int i = 1; i < stopResponses.length; i++ ) {
+            terminus2Box.addItem(stopResponses[i].getName());
         }
         terminus2Box.setSelectedIndex(terminus2Box.getItemCount() - 1);
         terminus2Box.setFont(new Font("Arial", Font.PLAIN, 14));
@@ -273,34 +274,50 @@ public class TimetablePanel {
         //Create new route button and add it to screen panel.
         JButton generateTimetableButton = new JButton("Generate Timetable");
         generateTimetableButton.addActionListener (e -> {
-            String[] validFromMonthYear = validFromMonthBox.getSelectedItem().toString().split(" ");
-            LocalDate validFromDate = LocalDate.of(Integer.parseInt(validFromMonthYear[1]), Month.valueOf(validFromMonthYear[0]).getValue(), validFromDayBox.getSelectedIndex());
-            String[] validToMonthYear = validToMonthBox.getSelectedItem().toString().split(" ");
-            LocalDate validToDate = LocalDate.of(Integer.parseInt(validToMonthYear[1]), Month.valueOf(validToMonthYear[0]).getValue(), validToDayBox.getSelectedIndex());
-            //Create a linked list of days selected.
-            String operatingDays = "";
-            if ( daysBox[0].isSelected() ) { operatingDays += DayOfWeek.SUNDAY.name(); }
-            if ( daysBox[1].isSelected() ) { operatingDays += DayOfWeek.MONDAY.name(); }
-            if ( daysBox[2].isSelected() ) { operatingDays += DayOfWeek.TUESDAY.name(); }
-            if ( daysBox[3].isSelected() ) { operatingDays += DayOfWeek.WEDNESDAY.name(); }
-            if ( daysBox[4].isSelected() ) { operatingDays += DayOfWeek.THURSDAY.name(); }
-            if ( daysBox[5].isSelected() ) { operatingDays += DayOfWeek.FRIDAY.name(); }
-            if ( daysBox[6].isSelected() ) { operatingDays += DayOfWeek.SATURDAY.name(); }
-            //Create time from.
-            LocalTime timeFrom = LocalTime.of(Integer.parseInt(fromHourSpinner.getValue().toString()), Integer.parseInt(fromMinuteSpinner.getValue().toString()));
-            //Create time to.
-            LocalTime timeTo = LocalTime.of(Integer.parseInt(toHourSpinner.getValue().toString()), Integer.parseInt(toMinuteSpinner.getValue().toString()));
-            //Generate timetable as a series of stop times.
-            //TODO: implement the stoppingTimes and distances arrays in the GUI correctly instead of arrays of 0.
-            int[] stoppingTimes = new int[stopNames.length];
-            int[] distances = new int[stopNames.length-1];
-            controllerHandler.getStopTimeController().generateStopTimes(companyResponse.getName(), stoppingTimes,
-                    stopNames, routeResponse.getRouteNumber(), distances, timeFrom.format(DateTimeFormatter.ofPattern("HH:mm")),
-                    timeTo.format(DateTimeFormatter.ofPattern("HH:mm")), (Integer) everyMinuteSpinner.getValue(),
-                    validFromDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")), validToDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")),
-                    operatingDays);
-            //Return to management screen.
-            controlScreen.redrawManagement(managementPanel.createPanel(controlScreen), companyResponse);
+            if ( validFromMonthBox.getSelectedItem() != null && validToMonthBox.getSelectedItem() != null ) {
+                String[] validFromMonthYear = validFromMonthBox.getSelectedItem().toString().split(" ");
+                LocalDate validFromDate = LocalDate.of(Integer.parseInt(validFromMonthYear[1]), Month.valueOf(validFromMonthYear[0]).getValue(), validFromDayBox.getSelectedIndex());
+                String[] validToMonthYear = validToMonthBox.getSelectedItem().toString().split(" ");
+                LocalDate validToDate = LocalDate.of(Integer.parseInt(validToMonthYear[1]), Month.valueOf(validToMonthYear[0]).getValue(), validToDayBox.getSelectedIndex());
+                //Create a linked list of days selected.
+                String operatingDays = "";
+                if (daysBox[0].isSelected()) {
+                    operatingDays += DayOfWeek.SUNDAY.name();
+                }
+                if (daysBox[1].isSelected()) {
+                    operatingDays += DayOfWeek.MONDAY.name();
+                }
+                if (daysBox[2].isSelected()) {
+                    operatingDays += DayOfWeek.TUESDAY.name();
+                }
+                if (daysBox[3].isSelected()) {
+                    operatingDays += DayOfWeek.WEDNESDAY.name();
+                }
+                if (daysBox[4].isSelected()) {
+                    operatingDays += DayOfWeek.THURSDAY.name();
+                }
+                if (daysBox[5].isSelected()) {
+                    operatingDays += DayOfWeek.FRIDAY.name();
+                }
+                if (daysBox[6].isSelected()) {
+                    operatingDays += DayOfWeek.SATURDAY.name();
+                }
+                //Create time from.
+                LocalTime timeFrom = LocalTime.of(Integer.parseInt(fromHourSpinner.getValue().toString()), Integer.parseInt(fromMinuteSpinner.getValue().toString()));
+                //Create time to.
+                LocalTime timeTo = LocalTime.of(Integer.parseInt(toHourSpinner.getValue().toString()), Integer.parseInt(toMinuteSpinner.getValue().toString()));
+                //Generate timetable as a series of stop times.
+                //TODO: implement the stoppingTimes and distances arrays in the GUI correctly instead of arrays of 0.
+                int[] stoppingTimes = new int[stopResponses.length];
+                int[] distances = new int[stopResponses.length - 1];
+                controllerHandler.getStopTimeController().generateStopTimes(companyResponse.getName(), stoppingTimes,
+                        stopResponses, routeResponse.getRouteNumber(), distances, timeFrom.format(DateTimeFormatter.ofPattern("HH:mm")),
+                        timeTo.format(DateTimeFormatter.ofPattern("HH:mm")), (Integer) everyMinuteSpinner.getValue(),
+                        validFromDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")), validToDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")),
+                        operatingDays);
+                //Return to management screen.
+                controlScreen.redrawManagement(managementPanel.createPanel(controlScreen), companyResponse);
+            }
         });
         bottomButtonPanel.add(generateTimetableButton);
         JButton previousScreenButton = new JButton("Return to Previous Screen");
@@ -323,7 +340,9 @@ public class TimetablePanel {
         //Note cumulative total.
         int cumDistance = 0;
         //Add distance of terminus1 and first item of terminus2 - this is guaranteed.
-        cumDistance += controllerHandler.getJourneyController().getDistance(scenarioName, terminus1Box.getSelectedItem().toString(), terminus2Box.getItemAt(0));
+        if ( terminus1Box.getSelectedItem() != null ) {
+            cumDistance += controllerHandler.getJourneyController().getDistance(scenarioName, terminus1Box.getSelectedItem().toString(), terminus2Box.getItemAt(0));
+        }
         //Now from 0 up until the selected index - add distances for terminus 2.
         int selectIndex = terminus2Box.getSelectedIndex();
         if ( selectIndex == 0 ) {
@@ -345,7 +364,9 @@ public class TimetablePanel {
         //Note cumulative total.
         int cumDistance = 0;
         //Add distance of terminus1 and first item of terminus2 - this is guaranteed.
-        cumDistance += controllerHandler.getJourneyController().getDistance(scenarioName, terminus1Box.getSelectedItem().toString(), terminus2Box.getItemAt(0));
+        if ( terminus1Box.getSelectedItem() != null ) {
+            cumDistance += controllerHandler.getJourneyController().getDistance(scenarioName, terminus1Box.getSelectedItem().toString(), terminus2Box.getItemAt(0));
+        }
         //Now from 0 up until the selected index - add distances for terminus 2.
         int selectIndex = terminus2Box.getSelectedIndex();
         if ( selectIndex == 0 ) {

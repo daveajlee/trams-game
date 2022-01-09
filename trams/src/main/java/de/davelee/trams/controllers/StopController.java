@@ -1,6 +1,7 @@
 package de.davelee.trams.controllers;
 
 import de.davelee.trams.api.request.AddStopRequest;
+import de.davelee.trams.api.response.StopResponse;
 import de.davelee.trams.api.response.StopsResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -42,14 +43,10 @@ public class StopController {
 	 * @param company a <code>String</code> containing the name of the company to retrieve routes for.
 	 * @return a <code>String</code> array containing all stop names for this company.
 	 */
-	public String[] getAllStops ( final String company ) {
+	public StopResponse[] getAllStops (final String company ) {
 		StopsResponse stopsResponse = restTemplate.getForObject(operationsServerUrl + "stops/?company=" + company, StopsResponse.class);
 		if ( stopsResponse != null ) {
-			String[] stopNames = new String[stopsResponse.getCount().intValue()];
-			for (int i = 0; i < stopNames.length; i++) {
-				stopNames[i] = stopsResponse.getStopResponses()[i].getName();
-			}
-			return stopNames;
+			return stopsResponse.getStopResponses();
 		}
 		return null;
     }

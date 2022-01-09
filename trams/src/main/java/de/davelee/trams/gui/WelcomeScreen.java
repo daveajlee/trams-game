@@ -41,7 +41,7 @@ public class WelcomeScreen extends JFrame {
         this.setBackground(Color.WHITE);
         
         //Set image icon.
-        Image img = Toolkit.getDefaultToolkit().getImage(WelcomeScreen.class.getResource("/TraMSlogo.png"));
+        Image img = Toolkit.getDefaultToolkit().getImage(WelcomeScreen.class.getResource("/trams-logo.png"));
         setIconImage(img);
         
         //Call the Exit method in the UserInterface class if the user hits exit.
@@ -71,7 +71,7 @@ public class WelcomeScreen extends JFrame {
         welcomePanel.add(welcomeLabel);
         JPanel logoPanel = new JPanel();
         logoPanel.setBackground(Color.WHITE);
-        ImageDisplay logoDisplay = new ImageDisplay("TraMSlogo-small.png", 0, 0);
+        ImageDisplay logoDisplay = new ImageDisplay("trams-logo-small.png", 0, 0);
         logoDisplay.setSize(157,62);
         logoDisplay.setBackground(Color.WHITE);
         logoPanel.add(logoDisplay);
@@ -83,7 +83,7 @@ public class WelcomeScreen extends JFrame {
         newPanel.setLayout ( new BoxLayout ( newPanel, BoxLayout.PAGE_AXIS ) );
         JPanel busPanel = new JPanel();
         initialiseNewPanel(busPanel);
-        ImageDisplay newBusDisplay = new ImageDisplay("newgamebuswelcome.png",25,0);
+        ImageDisplay newBusDisplay = new ImageDisplay("new-game-bus-welcome-screen.png",25,0);
         newBusDisplay.setSize(225,190);
         newBusDisplay.setBackground(Color.WHITE);
         newBusDisplay.addMouseListener ( new MouseListener () {
@@ -116,7 +116,7 @@ public class WelcomeScreen extends JFrame {
         loadPanel.setLayout ( new BoxLayout ( loadPanel, BoxLayout.PAGE_AXIS ) );
         JPanel busLoadPanel = new JPanel();
         initialiseLoadPanel(busLoadPanel);
-        ImageDisplay loadBusDisplay = new ImageDisplay("loadgametramwelcome.png",25,0);
+        ImageDisplay loadBusDisplay = new ImageDisplay("load-game-tram-welcome-screen.png",25,0);
         loadBusDisplay.setSize(240,190);
         loadBusDisplay.setBackground(Color.WHITE);
         loadBusDisplay.addMouseListener ( new MouseListener () {
@@ -149,7 +149,7 @@ public class WelcomeScreen extends JFrame {
         exitPanel.setLayout ( new BoxLayout ( exitPanel, BoxLayout.PAGE_AXIS ) );
         JPanel busExitPanel = new JPanel();
         initialiseExitPanel(busExitPanel);
-        ImageDisplay exitBusDisplay = new ImageDisplay("exitgamebendysmall.png",25,0);
+        ImageDisplay exitBusDisplay = new ImageDisplay("exit-game-bendy-small.png",25,0);
         exitBusDisplay.setSize(240,190);
         exitBusDisplay.setBackground(Color.WHITE);
         exitBusDisplay.addMouseListener ( new MouseListener () {
@@ -212,7 +212,7 @@ public class WelcomeScreen extends JFrame {
     
     /**
      * Initialise the panel to create a new game.
-     * @param panel a <code>JPanel</code> to diplay the new game panel.
+     * @param panel a <code>JPanel</code> to display the new game panel.
      */
     public void initialiseNewPanel ( JPanel panel ) {
         panel.setBackground(Color.WHITE);
@@ -239,7 +239,7 @@ public class WelcomeScreen extends JFrame {
     
     /**
      * Initialise the panel to load a game.
-     * @param panel a <code>JPanel</code> to diplay the load panel.
+     * @param panel a <code>JPanel</code> to display the load panel.
      */
     public void initialiseLoadPanel ( JPanel panel ) {
         panel.setBackground(Color.WHITE);
@@ -270,7 +270,7 @@ public class WelcomeScreen extends JFrame {
     
     /**
      * Initialise the panel to exit the game.
-     * @param panel a <code>JPanel</code> to diplay the exit panel.
+     * @param panel a <code>JPanel</code> to display the exit panel.
      */
     public void initialiseExitPanel ( JPanel panel ) {
         panel.setBackground(Color.WHITE);

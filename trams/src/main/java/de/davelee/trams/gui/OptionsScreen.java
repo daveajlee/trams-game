@@ -32,7 +32,7 @@ public class OptionsScreen extends JFrame {
     public OptionsScreen ( final ControllerHandler controllerHandler, final String company, final String playerName ) {
         
         //Set image icon.
-        Image img = Toolkit.getDefaultToolkit().getImage(OptionsScreen.class.getResource("/TraMSlogo.png"));
+        Image img = Toolkit.getDefaultToolkit().getImage(OptionsScreen.class.getResource("/trams-logo.png"));
         setIconImage(img);
         
         //Initialise GUI with title and close attributes.
@@ -84,19 +84,19 @@ public class OptionsScreen extends JFrame {
         DifficultyLevel[] levels = DifficultyLevel.values();
         //Now put them into the interface.
         JRadioButton[] difficultButtons = new JRadioButton[levels.length];
-        JTextArea[] difficultDescrips = new JTextArea[levels.length];
+        JTextArea[] difficultDescriptions = new JTextArea[levels.length];
         ButtonGroup difficultGroup = new ButtonGroup();
         for ( int i = 0; i < levels.length; i++ ) {
             difficultButtons[i] = new JRadioButton(levels[i].getName());
             difficultButtons[i].setBackground(Color.WHITE);
             difficultyPanel.add(difficultButtons[i]);
             difficultGroup.add(difficultButtons[i]);
-            difficultDescrips[i] = new JTextArea(levels[i].getDescription());
-            difficultDescrips[i].setLineWrap(true);
-            difficultDescrips[i].setWrapStyleWord(true);
-            difficultDescrips[i].setEditable(false);
-            difficultDescrips[i].setFont(new Font("Arial", Font.ITALIC, 11));
-            difficultyPanel.add(difficultDescrips[i]);
+            difficultDescriptions[i] = new JTextArea(levels[i].getDescription());
+            difficultDescriptions[i].setLineWrap(true);
+            difficultDescriptions[i].setWrapStyleWord(true);
+            difficultDescriptions[i].setEditable(false);
+            difficultDescriptions[i].setFont(new Font("Arial", Font.ITALIC, 11));
+            difficultyPanel.add(difficultDescriptions[i]);
         }
         DifficultyLevel difficultyLevel = DifficultyLevel.valueOf(companyResponse.getDifficultyLevel());
         if ( difficultyLevel == DifficultyLevel.EASY ) {
@@ -126,22 +126,22 @@ public class OptionsScreen extends JFrame {
             if ( difficultButtons[0].isSelected() ) {
                 //TODO: set the difficulty level via game controller to EASY.
                 logger.info("Set difficulty level to EASY");
-                //controllerHandler.getcompanyController().setDifficultyLevel(DifficultyLevel.EASY);
+                //controllerHandler.getCompanyController().setDifficultyLevel(DifficultyLevel.EASY);
             }
             else if ( difficultButtons[1].isSelected() ) {
                 //TODO: set the difficulty level via game controller to INTERMEDIATE.
                 logger.info("Set difficulty level to INTERMEDIATE");
-                //controllerHandler.getcompanyController().setDifficultyLevel(DifficultyLevel.INTERMEDIATE);
+                //controllerHandler.getCompanyController().setDifficultyLevel(DifficultyLevel.INTERMEDIATE);
             }
             else if ( difficultButtons[2].isSelected() ) {
                 //TODO: set the difficulty level via game controller to MEDIUM.
                 logger.info("Set difficulty level to MEDIUM");
-                //controllerHandler.getcompanyController().setDifficultyLevel(DifficultyLevel.MEDIUM);
+                //controllerHandler.getCompanyController().setDifficultyLevel(DifficultyLevel.MEDIUM);
             }
             else if ( difficultButtons[3].isSelected() ) {
                 logger.info("Set difficulty level to HARD");
                 //TODO: set the difficulty level via game controller to HARD.
-                //controllerHandler.getcompanyController().setDifficultyLevel(DifficultyLevel.HARD);
+                //controllerHandler.getCompanyController().setDifficultyLevel(DifficultyLevel.HARD);
             }
             dispose();
         });

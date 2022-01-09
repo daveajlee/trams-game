@@ -79,7 +79,11 @@ public class ViewTimetablePanel {
             routeSelectionModel.addElement(model.getRouteNumber());
         }
         final JComboBox<String> routeSelectionBox = new JComboBox<>(routeSelectionModel);
-        routeSelectionBox.addActionListener (e -> controlScreen.redrawManagement(createPanel(routeSelectionBox.getSelectedItem().toString(), controlScreen, managementPanel), companyResponse));
+        routeSelectionBox.addActionListener (e -> {
+            if ( routeSelectionBox.getSelectedItem() != null ) {
+                controlScreen.redrawManagement(createPanel(routeSelectionBox.getSelectedItem().toString(), controlScreen, managementPanel), companyResponse);
+            }
+        });
         routeSelectionBox.setFont(new Font("Arial", Font.PLAIN, 15));
         selectionPanel.add(routeSelectionBox);
         //Choose stop.
@@ -92,9 +96,11 @@ public class ViewTimetablePanel {
         final JComboBox<String> stopSelectionBox = new JComboBox<>(stopSelectionModel);
         stopSelectionBox.setFont(new Font("Arial", Font.PLAIN, 15));
         stopSelectionBox.addActionListener (e -> {
-            logger.debug("You chose stop " + stopSelectionBox.getSelectedItem().toString());
-            myTable.setModel(createTableModel(routeModel.getRouteNumber(), stopSelectionBox.getSelectedItem().toString(), (Direction) directionSelectionBox.getSelectedItem(), companyResponse.getTime(), companyResponse.getName()));
-            autoResizeColWidth(myTable, (DefaultTableModel) myTable.getModel());
+            if ( stopSelectionBox.getSelectedItem() != null ) {
+                logger.debug("You chose stop " + stopSelectionBox.getSelectedItem().toString());
+                myTable.setModel(createTableModel(routeModel.getRouteNumber(), stopSelectionBox.getSelectedItem().toString(), (Direction) directionSelectionBox.getSelectedItem(), companyResponse.getTime(), companyResponse.getName()));
+                autoResizeColWidth(myTable, (DefaultTableModel) myTable.getModel());
+            }
             });
         selectionPanel.add(stopSelectionBox);
         //Choose direction.
@@ -107,9 +113,11 @@ public class ViewTimetablePanel {
         directionSelectionBox = new JComboBox<>(directionSelectionModel);
         directionSelectionBox.setFont(new Font("Arial", Font.PLAIN, 15));
         directionSelectionBox.addActionListener(e -> {
-            logger.debug("You chose direction " + directionSelectionBox.getSelectedIndex());
-            myTable.setModel(createTableModel(routeModel.getRouteNumber(), stopSelectionBox.getSelectedItem().toString(), (Direction) directionSelectionBox.getSelectedItem(), companyResponse.getTime(), companyResponse.getName()));
-            autoResizeColWidth(myTable, (DefaultTableModel) myTable.getModel());
+            if ( directionSelectionBox.getSelectedItem() != null && stopSelectionBox.getSelectedItem() != null ) {
+                logger.debug("You chose direction " + directionSelectionBox.getSelectedIndex());
+                myTable.setModel(createTableModel(routeModel.getRouteNumber(), stopSelectionBox.getSelectedItem().toString(), (Direction) directionSelectionBox.getSelectedItem(), companyResponse.getTime(), companyResponse.getName()));
+                autoResizeColWidth(myTable, (DefaultTableModel) myTable.getModel());
+            }
             });
         selectionPanel.add(directionSelectionBox);
         //Add to top panel.
@@ -134,7 +142,9 @@ public class ViewTimetablePanel {
         tablePanel.setBackground(Color.WHITE);
 
         //Display it!
-        myTable.setModel(createTableModel(routeModel.getRouteNumber(), stopSelectionBox.getSelectedItem().toString(), Direction.OUTGOING, companyResponse.getTime(), companyResponse.getName()));
+        if ( stopSelectionBox.getSelectedItem() != null ) {
+            myTable.setModel(createTableModel(routeModel.getRouteNumber(), stopSelectionBox.getSelectedItem().toString(), Direction.OUTGOING, companyResponse.getTime(), companyResponse.getName()));
+        }
         myTable.setFont(new Font("Arial", Font.PLAIN, 12));
         JScrollPane tableScrollPane = new JScrollPane(autoResizeColWidth(myTable, (DefaultTableModel) myTable.getModel()));
         tablePanel.add(tableScrollPane, BorderLayout.CENTER);

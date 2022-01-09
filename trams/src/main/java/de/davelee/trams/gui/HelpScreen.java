@@ -39,7 +39,7 @@ public class HelpScreen extends JFrame {
     public HelpScreen ( ) {
         
         //Set image icon.
-        Image img = Toolkit.getDefaultToolkit().getImage(HelpScreen.class.getResource("/TraMSlogo.png"));
+        Image img = Toolkit.getDefaultToolkit().getImage(HelpScreen.class.getResource("/trams-logo.png"));
         setIconImage(img);
         
         //Close this window if the user hits exit.
@@ -67,7 +67,7 @@ public class HelpScreen extends JFrame {
         helpPanel.setLayout(new BoxLayout( helpPanel, BoxLayout.LINE_AXIS ) );
         helpPanel.add(Box.createRigidArea(new Dimension(10, 0)));
         
-        //Create left hand panel.
+        //Create left panel.
         JPanel leftPanel = new JPanel();
         leftPanel.setLayout( new BoxLayout ( leftPanel, BoxLayout.PAGE_AXIS ) );
         leftPanel.add(Box.createRigidArea(new Dimension(0, 10))); //Spacer.
@@ -150,7 +150,7 @@ public class HelpScreen extends JFrame {
     }
 
     /**
-     * Add a panel containing all of the topics for the help screen.
+     * Add a panel containing all the topics for the help screen.
      * @return a <code>JPanel</code> object containing the topics.
      */
     public JPanel addTopics ( ) {
@@ -186,34 +186,34 @@ public class HelpScreen extends JFrame {
                     displayPane.setPage(HelpScreen.class.getResource("/intro.html"));
                 }
                 else if ( selectedItem.equalsIgnoreCase("Getting Started") ) {
-                    displayPane.setPage(HelpScreen.class.getResource("/gettingstarted.html"));
+                    displayPane.setPage(HelpScreen.class.getResource("/getting-started.html"));
                 }
                 else if ( selectedItem.equalsIgnoreCase("Load Game") ) {
-                    displayPane.setPage(HelpScreen.class.getResource("/loadgame.html"));
+                    displayPane.setPage(HelpScreen.class.getResource("/load-game.html"));
                 }
                 else if ( selectedItem.equalsIgnoreCase("Web Site") ) {
                     displayPane.setPage(HelpScreen.class.getResource("/website.html"));
                 }
                 else if ( selectedItem.equalsIgnoreCase("Create New Game") ) {
-                    displayPane.setPage(HelpScreen.class.getResource("/newgame.html"));
+                    displayPane.setPage(HelpScreen.class.getResource("/new-game.html"));
                 }
                 else if ( selectedItem.equalsIgnoreCase("Add/Edit/Delete Route") ) {
-                    displayPane.setPage(HelpScreen.class.getResource("/newroute.html"));
+                    displayPane.setPage(HelpScreen.class.getResource("/new-route.html"));
                 }
                 else if ( selectedItem.equalsIgnoreCase("Purchase/Sell Vehicle") ) {
-                    displayPane.setPage(HelpScreen.class.getResource("/newvehicle.html"));
+                    displayPane.setPage(HelpScreen.class.getResource("/new-vehicle.html"));
                 }
                 else if ( selectedItem.equalsIgnoreCase("Allocate Vehicles to Routes") ) {
-                    displayPane.setPage(HelpScreen.class.getResource("/allocationscreen.html"));
+                    displayPane.setPage(HelpScreen.class.getResource("/allocation-screen.html"));
                 }
                 else if ( selectedItem.equalsIgnoreCase("Control Screen") ) {
-                    displayPane.setPage(HelpScreen.class.getResource("/controlscreen.html"));
+                    displayPane.setPage(HelpScreen.class.getResource("/control-screen.html"));
                 }
                 else if ( selectedItem.equalsIgnoreCase("Vehicle Info Screen") ) {
-                    displayPane.setPage(HelpScreen.class.getResource("/vehicleinfoscreen.html"));
+                    displayPane.setPage(HelpScreen.class.getResource("/vehicle-info-screen.html"));
                 }
                 else if ( selectedItem.equalsIgnoreCase("Make Contact With Vehicle") ) {
-                    displayPane.setPage(HelpScreen.class.getResource("/makecontact.html"));
+                    displayPane.setPage(HelpScreen.class.getResource("/make-contact.html"));
                 }
             }
             catch ( IOException e ) {
@@ -252,7 +252,7 @@ public class HelpScreen extends JFrame {
     
     /**
      * This method determines whether a string should be included (strToCheck) against another String (strCheckAgainst).
-     * Specifically e.g. statsres (in model) should be included if user's text was stats.
+     * Specifically e.g. statistics (in model) should be included if user's text was stat.
      * @param strToCheck a <code>String</code> containing the user's text.
      * @param strCheckAgainst a <code>String</code> containing the text in model.
      * @return a <code>boolean</code> which is true if and only if text in model should be included based on user's text.

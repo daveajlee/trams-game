@@ -15,11 +15,10 @@ public class ExitDialog {
 	 */
 	public void createExitDialog ( final JFrame currentFrame ) {
 		//Create image with exit.
-		URL url = ExitDialog.class.getResource("/TraMSlogo-small.png");
-		ImageIcon imageIcon = new ImageIcon(url);
+		URL url = ExitDialog.class.getResource("/trams-logo-small.png");
 
 		//Confirm user did wish to exit.
-	    int result = JOptionPane.showOptionDialog(currentFrame, "Are you sure you wish to exit TraMS?", "Please Confirm Exit", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, imageIcon, new String[] { "Yes", "No" }, "No");
+	    int result = JOptionPane.showOptionDialog(currentFrame, "Are you sure you wish to exit TraMS?", "Please Confirm Exit", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, url != null ? new ImageIcon(url) : null, new String[] { "Yes", "No" }, "No");
 	    if ( result == JOptionPane.YES_OPTION ) {
 	    	System.exit(0);
 	    }

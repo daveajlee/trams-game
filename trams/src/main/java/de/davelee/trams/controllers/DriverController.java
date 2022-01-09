@@ -37,11 +37,12 @@ public class DriverController {
     /**
      * Return all drivers belonging to the supplied company.
      * @param company a <code>String</code> containing the name of the company to return drivers for.
+     * @param username a <code>String</code> containing the username of the user requesting this feature.
      * @return an array of <code>UserResponse</code> objects containing all drivers belonging to the supplied company.
      */
-    public UserResponse[] getAllDrivers (final String company) {
+    public UserResponse[] getAllDrivers (final String company, final String username) {
         try {
-            UsersResponse usersResponse = restTemplate.getForObject(personalManServerUrl + "user/?company=" + company + "&username=mmustermann&token=" + token, UsersResponse.class);
+            UsersResponse usersResponse = restTemplate.getForObject(personalManServerUrl + "user/?company=" + company + "&username="+ username + "&token=" + token, UsersResponse.class);
             if (usersResponse != null && usersResponse.getUserResponses() != null) {
                 return usersResponse.getUserResponses();
             }
@@ -116,7 +117,8 @@ public class DriverController {
      * @return a <code>boolean</code> which is true iff some drivers have started working.
      */
     public boolean hasSomeDriversBeenEmployed ( final CompanyResponse companyResponse ) {
-        UserResponse[] userResponses = getAllDrivers(companyResponse.getName());
+        //TODO: determine how to get username.
+        UserResponse[] userResponses = getAllDrivers(companyResponse.getName(), "mmustermann");
         System.out.println("Attempted to get responses");
         if (userResponses != null && userResponses.length > 0) {
             System.out.println("I have responses...");

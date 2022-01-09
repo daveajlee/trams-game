@@ -179,16 +179,6 @@ public class VehicleController {
 	}
 
 	/**
-	 * Return the vehicle which is allocated to a particular tour for a particular company.
-	 * @param allocatedTour a <code>String</code> with the tour that the vehicle should be allocated to.
-	 * @param company a <code>String</code> containing the name of the company that the vehicle should belong to.
-	 * @return a <code>VehicleResponse</code> object with information about the vehicle which may be null if no vehicle matches.
-	 */
-	public VehicleResponse getVehicleByAllocatedTour ( final String allocatedTour, final String company ) {
-		return restTemplate.getForObject(operationsServerUrl + "vehicle/allocate/?company=" + company + "&allocatedTour=" + allocatedTour, VehicleResponse.class);
-	}
-
-	/**
 	 * Purchase the vehicles with the supplied vehicles in the scenario.
 	 * @param suppliedVehicles a <code>HashMap</code> containing per entry the model that should be purchased as String and the number that should be purchased as Integer.
 	 * @param currentDate a <code>String</code> containing the current date in the format dd-MM-yyyy

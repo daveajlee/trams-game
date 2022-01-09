@@ -8,7 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This class represents a thread which runs the simulation independently from the GUI.
+ * This class represents a thread which runs the simulation independently of the GUI.
  * @author Dave Lee
  */
 public class GameThread extends Thread implements Runnable {
@@ -42,7 +42,7 @@ public class GameThread extends Thread implements Runnable {
      */
     @SuppressWarnings("static-access")
     public void run() {
-        //First of all, sleep for theSimulationSpeed seconds.
+        //Sleep for theSimulationSpeed seconds.
         try {
 			this.sleep(simulationSpeed);
 		} catch (InterruptedException ie) {

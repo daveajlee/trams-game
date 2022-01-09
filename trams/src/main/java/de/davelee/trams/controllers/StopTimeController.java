@@ -2,6 +2,7 @@ package de.davelee.trams.controllers;
 
 import de.davelee.trams.api.request.GenerateStopTimesRequest;
 import de.davelee.trams.api.request.StopPatternRequest;
+import de.davelee.trams.api.response.StopResponse;
 import de.davelee.trams.api.response.StopTimeResponse;
 import de.davelee.trams.api.response.StopTimesResponse;
 import de.davelee.trams.util.Direction;
@@ -31,7 +32,7 @@ public class StopTimeController {
      * Generate a set of stop times based on the specified criteria.
      * @param company a <code>String</code> with the name of the company to generate stop times for.
      * @param stoppingTimes a <code>int</code> array containing the amount of minutes that a vehicle should stop at the particular stop position in the array.
-     * @param stopNames a <code>String</code> array containing the list of stop names that should be served.
+     * @param stopResponses a <code>StopResponse</code> array containing the list of stop responses that should be served.
      * @param routeNumber a <code>String</code> with the route number to use to generate stop times.
      * @param distances a <code>int</code> array containing the distances in minutes between stops. Position 0 is the distance between stop 0 and stop 1.
      * @param startTime a <code>String</code> with the start time in the format HH:mm
@@ -41,10 +42,16 @@ public class StopTimeController {
      * @param validToDate a <code>String</code> with the valid to date for departures in the format dd-MM-yyyy
      * @param operatingDays a <code>String</code> with comma-separated Strings with those days when the departure runs.
      */
-    public void generateStopTimes ( final String company, final int[] stoppingTimes, final String[] stopNames,
+    public void generateStopTimes ( final String company, final int[] stoppingTimes, final StopResponse[] stopResponses,
                                     final String routeNumber, final int[] distances, final String startTime,
                                     final String endTime, final int frequency, final String validFromDate,
                                     final String validToDate, final String operatingDays  ) {
+        //Convert stop responses to string array for stop names.
+        String[] stopNames = new String[stopResponses.length];
+        for ( int i = 0; i < stopNames.length; i++ ) {
+            stopNames[i] = stopResponses[i].getName();
+        }
+        //Send data to the server.
         restTemplate.postForObject(operationsServerUrl + "stopTimes/generate",
                 GenerateStopTimesRequest.builder()
                         .company(company)
@@ -70,6 +77,7 @@ public class StopTimeController {
      * @param routeNumber a <code>String</code> with the route number to return stop times for.
      * @param date a <code>String</code> with the date to return departures or arrivals for in the format dd-MM-yyyy
      * @param company a <code>String</code> with the name of the company to return departures for.
+     * @param startingTime a <code>Optional</code> of type <code>String</code> containing the time in format HH:mm to deliver departure or arrival times from.
      * @return a <code>StopTimeResponse</code> array containing all stop times which matched the specified criteria.
      */
     public StopTimeResponse[] getStopTimes (final Optional<Direction> direction, final String routeNumber, final String date, final String company,

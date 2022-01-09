@@ -42,7 +42,7 @@ public class SplashScreen extends JFrame {
         this.setUndecorated(true);
         
         //Set image icon.
-        Image img = Toolkit.getDefaultToolkit().getImage(SplashScreen.class.getResource("/TraMSlogo.png"));
+        Image img = Toolkit.getDefaultToolkit().getImage(SplashScreen.class.getResource("/trams-logo.png"));
         setIconImage(img);
         
         //Get a container to add things to.
@@ -58,7 +58,7 @@ public class SplashScreen extends JFrame {
         //Construct logo panel to add to the centre panel.
         JPanel logoPanel = new JPanel();
         logoPanel.setBackground(Color.WHITE);
-        ImageDisplay logoDisplay = new ImageDisplay("TraMSlogo.png", 0, 0);
+        ImageDisplay logoDisplay = new ImageDisplay("trams-logo.png", 0, 0);
         logoDisplay.setSize(872,346);
         logoDisplay.setBackground(Color.WHITE);
         logoPanel.add(logoDisplay);

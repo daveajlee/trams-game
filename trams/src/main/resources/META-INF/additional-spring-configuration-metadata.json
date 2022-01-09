@@ -1,0 +1,33 @@
+{
+  "properties": [
+    {
+      "name": "server.business.url",
+      "type": "java.lang.String",
+      "description": "URL for the TraMS Business REST Server."
+    },
+    {
+      "name": "trams.version",
+      "type": "java.lang.String",
+      "description": "Current version of TraMS."
+    },
+    {
+      "name": "server.crm.url",
+      "type": "java.lang.String",
+      "description": "URL for the TraMS CRM REST Server."
+    },
+    {
+      "name": "server.operations.url",
+      "type": "java.lang.String",
+      "description": "URL for the TraMS Operations REST Server."
+    },
+    {
+      "name": "server.personalman.url",
+      "type": "java.lang.String",
+      "description": "URL for the PersonalMan REST Server."
+    },
+    {
+      "name": "simulation.speed",
+      "type": "java.lang.String",
+      "description": "The number of minutes between each run of the simulation."
+    }
+  ] }

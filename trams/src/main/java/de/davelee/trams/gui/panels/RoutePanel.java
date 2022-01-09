@@ -176,7 +176,7 @@ public class RoutePanel {
 	}
 
     /**
-     * This is a private methdo to enable the create buttons based on the specified criteria.
+     * This is a private method to enable the create buttons based on the specified criteria.
      */
 	private void enableCreateButtons ( ) {
         //To enable create timetable button we need the selected item in stop1Box and stop2Box to not be -.
