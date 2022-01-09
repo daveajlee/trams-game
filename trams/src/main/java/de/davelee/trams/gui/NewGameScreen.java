@@ -8,6 +8,7 @@ import javax.swing.*;
 import de.davelee.trams.api.response.CompanyResponse;
 import de.davelee.trams.beans.Scenario;
 import de.davelee.trams.controllers.ControllerHandler;
+import de.davelee.trams.util.GuiUtils;
 
 /**
  * Class to display the new game screen to the TraMS program.
@@ -60,73 +61,21 @@ public class NewGameScreen extends JFrame {
         c.add(Box.createRigidArea(new Dimension(0,10))); //Spacer.
         
         //Create a screen panel in box layout to store everything.
-        JPanel screenPanel = new JPanel();
-        screenPanel.setLayout ( new BoxLayout ( screenPanel, BoxLayout.PAGE_AXIS ) );
-        screenPanel.setBackground(Color.WHITE);
+        JPanel screenPanel = createBoxPanel();
         
         //Create welcome panel.
-        JPanel welcomePanel = new JPanel();
-        welcomePanel.setBackground(Color.WHITE);
-        JLabel welcomeLabel = new JLabel("Welcome to ", SwingConstants.CENTER);
-        welcomeLabel.setFont(new Font("Arial", Font.BOLD + Font.ITALIC, 40));
-        welcomePanel.add(welcomeLabel);
-        JPanel logoPanel = new JPanel();
-        logoPanel.setBackground(Color.WHITE);
-        ImageDisplay logoDisplay = new ImageDisplay("trams-logo-small.png", 0, 0);
-        logoDisplay.setSize(157,62);
-        logoDisplay.setBackground(Color.WHITE);
-        logoPanel.add(logoDisplay);
-        welcomePanel.add(logoPanel);
-        screenPanel.add(welcomePanel);
+        screenPanel.add(GuiUtils.createWelcomePanel());
 
         //Create button but do not display it yet.
         JButton createGameButton = new JButton("Create Game");
 
         //Create a new company name panel.
-        JPanel newCompanyPanel = new JPanel();
-        newCompanyPanel.setBackground(Color.WHITE);
-        JLabel companyNameLabel = new JLabel("Company Name:");
-        companyNameLabel.setFont(new Font("Arial", Font.BOLD, 18));
-        JTextField companyNameField = new JTextField("");
-        companyNameField.setFont(new Font("Arial", Font.PLAIN, 18));
-        companyNameField.setColumns(25);
-        companyNameField.addKeyListener( new KeyListener() {
-            public void keyReleased(KeyEvent e) {
-                createGameButton.setEnabled(companyNameField.getText().length() > 0);
-            }
-            public void keyTyped(KeyEvent e) {
-                //Nothing happens when key typed.
-            }
-            public void keyPressed(KeyEvent e) {
-                //Nothing happens when key pressed.
-            }
-        });
-        newCompanyPanel.add(companyNameLabel);
-        newCompanyPanel.add(companyNameField);
-        screenPanel.add(newCompanyPanel);
+        JTextField companyNameField = createTextField(createGameButton);
+        screenPanel.add(createPanelWithTwoComponent(createLabel("Company Name:"), companyNameField));
         
         //Create a new player name panel.
-        JPanel newPlayerPanel = new JPanel();
-        newPlayerPanel.setBackground(Color.WHITE);
-        JLabel playerNameLabel = new JLabel("Player Name:");
-        playerNameLabel.setFont(new Font("Arial", Font.BOLD, 18));
-        JTextField playerNameField = new JTextField("");
-        playerNameField.setFont(new Font("Arial", Font.PLAIN, 18));
-        playerNameField.setColumns(25);
-        playerNameField.addKeyListener( new KeyListener() {
-            public void keyReleased(KeyEvent e) {
-                createGameButton.setEnabled(playerNameField.getText().length() > 0);
-            }
-            public void keyTyped(KeyEvent e) {
-                //Nothing happens when key typed.
-            }
-            public void keyPressed(KeyEvent e) {
-                //Nothing happens when key pressed.
-            }
-        });
-        newPlayerPanel.add(playerNameLabel);
-        newPlayerPanel.add(playerNameField);
-        screenPanel.add(newPlayerPanel);
+        JTextField playerNameField = createTextField(createGameButton);
+        screenPanel.add(createPanelWithTwoComponent(createLabel("Player Name:"), playerNameField));
         
         //Create the scenario panel.
         JPanel scenarioPanel = new JPanel(new BorderLayout());
@@ -190,6 +139,56 @@ public class NewGameScreen extends JFrame {
         this.setVisible (true);
         this.setSize ( new Dimension(650,300) );
         
+    }
+
+    /**
+     * This is a private method to create a <code>JPanel</code> with two component.
+     * @param component a <code>JComponent</code> object to add to the panel.
+     * @param component2 a <code>JComponent</code> object to add to the panel.
+     * @return a <code>JPanel</code> object which can be added to another panel.
+     */
+    private JPanel createPanelWithTwoComponent (final JComponent component, final JComponent component2) {
+        JPanel twoComponentPanel = new JPanel();
+        twoComponentPanel.setBackground(Color.WHITE);
+        twoComponentPanel.add(component);
+        twoComponentPanel.add(component2);
+        return twoComponentPanel;
+    }
+
+    /**
+     * This is a private helper method to create a <code>JPanel</code> with box layout.
+     * @return a <code>JPanel</code> object which can be added to another panel.
+     */
+    private JPanel createBoxPanel ( ) {
+        JPanel boxPanel = new JPanel();
+        boxPanel.setBackground(Color.WHITE);
+        boxPanel.setLayout ( new BoxLayout ( boxPanel, BoxLayout.PAGE_AXIS ) );
+        boxPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        return boxPanel;
+    }
+
+    private JLabel createLabel ( final String text ) {
+        JLabel foldersLabel = new JLabel(text);
+        foldersLabel.setFont(new Font("Arial", Font.BOLD, 14));
+        return foldersLabel;
+    }
+
+    private JTextField createTextField ( final JButton createGameButton ) {
+        JTextField textField = new JTextField("");
+        textField.setFont(new Font("Arial", Font.PLAIN, 14));
+        textField.setColumns(25);
+        textField.addKeyListener( new KeyListener() {
+            public void keyReleased(KeyEvent e) {
+                createGameButton.setEnabled(textField.getText().length() > 0);
+            }
+            public void keyTyped(KeyEvent e) {
+                //Nothing happens when key typed.
+            }
+            public void keyPressed(KeyEvent e) {
+                //Nothing happens when key pressed.
+            }
+        });
+        return textField;
     }
     
 }

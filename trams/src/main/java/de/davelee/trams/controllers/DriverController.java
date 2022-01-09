@@ -26,7 +26,6 @@ import java.util.List;
 @Setter
 public class DriverController {
 
-    @Autowired
     private RestTemplate restTemplate;
 
     @Value("${server.personalman.url}")
@@ -153,4 +152,8 @@ public class DriverController {
         restTemplate.delete(personalManServerUrl + "user/?company=" + company + "&username=" + username + "&token=" + token);
     }
 
+    @Autowired
+    public void setRestTemplate(final RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
+    }
 }

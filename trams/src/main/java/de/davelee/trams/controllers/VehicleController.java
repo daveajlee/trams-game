@@ -26,7 +26,6 @@ import java.util.*;
 @Controller
 public class VehicleController {
 
-	@Autowired
 	private RestTemplate restTemplate;
 
 	@Value("${server.operations.url}")
@@ -332,4 +331,8 @@ public class VehicleController {
 		return randomReg;
 	}
 
+	@Autowired
+	public void setRestTemplate(final RestTemplate restTemplate) {
+		this.restTemplate = restTemplate;
+	}
 }

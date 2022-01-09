@@ -9,7 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Controller;
 
 import java.io.BufferedReader;
@@ -23,7 +22,6 @@ import java.util.List;
  */
 @Controller
 @ConfigurationProperties(prefix="scenarios")
-@PropertySource("classpath:scenarios.properties")
 @Getter
 @Setter
 public class ScenarioController {

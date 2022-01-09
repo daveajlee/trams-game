@@ -16,6 +16,7 @@ import de.davelee.trams.api.response.StopResponse;
 import de.davelee.trams.controllers.ControllerHandler;
 
 import de.davelee.trams.gui.ControlScreen;
+import de.davelee.trams.util.GuiUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,12 +52,9 @@ public class TimetablePanel {
      * @return a <code>JPanel</code> object which can be displayed to the user.
      */
 	public JPanel createPanel (final RouteResponse routeResponse, final ControlScreen controlScreen, final ManagementPanel managementPanel ) {
-		final CompanyResponse companyResponse = controllerHandler.getCompanyController().getCompany(controlScreen.getCompany(), controlScreen.getPlayerName());
         
         //Create timetableScreen panel to add things to.
-        JPanel timetableScreenPanel = new JPanel();
-        timetableScreenPanel.setLayout ( new BoxLayout ( timetableScreenPanel, BoxLayout.PAGE_AXIS ) );
-        timetableScreenPanel.setBackground(Color.WHITE);
+        JPanel timetableScreenPanel = GuiUtils.createBoxPanel();
         
         //Create label at top of screen in a topLabelPanel added to screenPanel.
         JPanel topLabelPanel = new JPanel(new BorderLayout());
@@ -78,6 +76,8 @@ public class TimetablePanel {
             dayOfWeekPanel.add(daysBox[i]);
         }
         timetableScreenPanel.add(dayOfWeekPanel);
+
+        final CompanyResponse companyResponse = controllerHandler.getCompanyController().getCompany(controlScreen.getCompany(), controlScreen.getPlayerName());
 
         //Create panel with between times and every x frequency - this is basically full of spinners.
         JPanel timesPanel = new JPanel(new GridBagLayout());
@@ -202,23 +202,7 @@ public class TimetablePanel {
             monthNames = monthNames.plusMonths(1);
         }
         validFromMonthBox.setFont(new Font("Arial", Font.PLAIN, 14));
-        validFromMonthBox.addActionListener(e -> {
-            int month = validFromMonthBox.getSelectedIndex();
-            if ( validFromMonthBox.getSelectedIndex() == 0 ) {
-                validFromDayModel.removeAllElements();
-                YearMonth yearMonth1 = YearMonth.of(LocalDate.now().getYear(), month);
-                for (int i = fromStartDay; i <= yearMonth1.lengthOfMonth(); i++ ) {
-                    validFromDayModel.addElement(i);
-                }
-            }
-            else {
-                validFromDayModel.removeAllElements();
-                YearMonth yearMonth1 = YearMonth.of(LocalDate.now().getYear(), month);
-                for (int i = 1; i <= yearMonth1.lengthOfMonth(); i++ ) {
-                    validFromDayModel.addElement(i);
-                }
-            }
-        });
+        validFromMonthBox.addActionListener(e -> processMonth(validFromMonthBox, validFromDayModel, fromStartDay));
         validityPanel.add(validFromMonthBox);
         //Valid to!!!
         JLabel validToLabel = new JLabel("Valid To: ", SwingConstants.CENTER);
@@ -244,23 +228,7 @@ public class TimetablePanel {
             defaultValidToDate = defaultValidToDate.plusMonths(1);
         }
         validToMonthBox.setFont(new Font("Arial", Font.PLAIN, 14));
-        validToMonthBox.addActionListener(e -> {
-            int month = validToMonthBox.getSelectedIndex();
-            if ( validToMonthBox.getSelectedIndex() == 0 ) {
-                validToDayModel.removeAllElements();
-                YearMonth yearMonth12 = YearMonth.of(LocalDate.now().getYear(), month);
-                for (int i = toStartDay; i <= yearMonth12.lengthOfMonth(); i++ ) {
-                    validToDayModel.addElement(i);
-                }
-            }
-            else {
-                validToDayModel.removeAllElements();
-                YearMonth yearMonth12 = YearMonth.of(LocalDate.now().getYear(), month);
-                for (int i = 1; i <= yearMonth12.lengthOfMonth(); i++ ) {
-                    validToDayModel.addElement(i);
-                }
-            }
-        });
+        validToMonthBox.addActionListener(e -> processMonth(validToMonthBox, validToDayModel, toStartDay));
         validityPanel.add(validToMonthBox);
        
         //Add validityPanel to the screen panel.
@@ -341,7 +309,7 @@ public class TimetablePanel {
         int cumDistance = 0;
         //Add distance of terminus1 and first item of terminus2 - this is guaranteed.
         if ( terminus1Box.getSelectedItem() != null ) {
-            cumDistance += controllerHandler.getJourneyController().getDistance(scenarioName, terminus1Box.getSelectedItem().toString(), terminus2Box.getItemAt(0));
+            cumDistance += controllerHandler.getStopController().getDistance(scenarioName, terminus1Box.getSelectedItem().toString(), terminus2Box.getItemAt(0));
         }
         //Now from 0 up until the selected index - add distances for terminus 2.
         int selectIndex = terminus2Box.getSelectedIndex();
@@ -349,7 +317,7 @@ public class TimetablePanel {
             return cumDistance*2;
         }
         for ( int i = 1; i <= selectIndex; i++ ) {
-            cumDistance += controllerHandler.getJourneyController().getDistance(scenarioName, terminus2Box.getItemAt(i-1), terminus2Box.getItemAt(i));
+            cumDistance += controllerHandler.getStopController().getDistance(scenarioName, terminus2Box.getItemAt(i-1), terminus2Box.getItemAt(i));
         }
         //Return distance * 2.
         return cumDistance*2;
@@ -365,24 +333,39 @@ public class TimetablePanel {
         int cumDistance = 0;
         //Add distance of terminus1 and first item of terminus2 - this is guaranteed.
         if ( terminus1Box.getSelectedItem() != null ) {
-            cumDistance += controllerHandler.getJourneyController().getDistance(scenarioName, terminus1Box.getSelectedItem().toString(), terminus2Box.getItemAt(0));
+            cumDistance += controllerHandler.getStopController().getDistance(scenarioName, terminus1Box.getSelectedItem().toString(), terminus2Box.getItemAt(0));
         }
         //Now from 0 up until the selected index - add distances for terminus 2.
         int selectIndex = terminus2Box.getSelectedIndex();
         if ( selectIndex == 0 ) {
-            int myDistance = (cumDistance*2);
-            int myCumFreq = (frequency*2);
-            logger.debug("Distance was " + myDistance);
-            while ( myCumFreq < myDistance ) {
-                myCumFreq += (frequency*2);
-            }
-            logger.debug("Actual distance is " + myCumFreq);
-            return myCumFreq;
+            return calculateDistance(cumDistance, frequency);
         }
         for ( int i = 1; i <= selectIndex; i++ ) {
-            cumDistance += controllerHandler.getJourneyController().getDistance(scenarioName, terminus2Box.getItemAt(i-1), terminus2Box.getItemAt(i));
+            cumDistance += controllerHandler.getStopController().getDistance(scenarioName, terminus2Box.getItemAt(i-1), terminus2Box.getItemAt(i));
         }
         //Return distance * 2.
+        return calculateDistance(cumDistance, frequency);
+    }
+
+    private void processMonth ( final JComboBox<String> validMonthBox, final DefaultComboBoxModel<Integer> validDayModel, final int startDay) {
+        int month = validMonthBox.getSelectedIndex();
+        if ( validMonthBox.getSelectedIndex() == 0 ) {
+            validDayModel.removeAllElements();
+            YearMonth yearMonth1 = YearMonth.of(LocalDate.now().getYear(), month);
+            for (int i = startDay; i <= yearMonth1.lengthOfMonth(); i++ ) {
+                validDayModel.addElement(i);
+            }
+        }
+        else {
+            validDayModel.removeAllElements();
+            YearMonth yearMonth1 = YearMonth.of(LocalDate.now().getYear(), month);
+            for (int i = 1; i <= yearMonth1.lengthOfMonth(); i++ ) {
+                validDayModel.addElement(i);
+            }
+        }
+    }
+
+    private int calculateDistance ( int cumDistance, int frequency ) {
         int myDistance = (cumDistance*2);
         int myCumFreq = (frequency*2);
         logger.debug("Distance was " + myDistance);

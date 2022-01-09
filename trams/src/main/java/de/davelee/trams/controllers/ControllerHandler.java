@@ -17,40 +17,26 @@ import org.springframework.stereotype.Controller;
 @Setter
 public class ControllerHandler {
 
-    @Autowired
     private FileController fileController;
 
-    @Autowired
     private CompanyController companyController;
 
-    @Autowired
     private ScenarioController scenarioController;
 
-    @Autowired
     private VehicleController vehicleController;
 
-    @Autowired
     private MessageController messageController;
 
-    @Autowired
-    private StopController journeyController;
-
-    @Autowired
     private RouteController routeController;
 
-    @Autowired
     private DriverController driverController;
 
-    @Autowired
     private TipController tipController;
 
-    @Autowired
     private StopTimeController stopTimeController;
 
-    @Autowired
     private SimulationController simulationController;
 
-    @Autowired
     private StopController stopController;
 
     @Value("${trams.version}")
@@ -59,4 +45,58 @@ public class ControllerHandler {
     @Value("${simulation.speed}")
     private int simulationSpeed;
 
+    @Autowired
+    public void setFileController(final FileController fileController) {
+        this.fileController = fileController;
+    }
+
+    @Autowired
+    public void setCompanyController(final CompanyController companyController) {
+        this.companyController = companyController;
+    }
+
+    @Autowired
+    public void setScenarioController(final ScenarioController scenarioController) {
+        this.scenarioController = scenarioController;
+    }
+
+    @Autowired
+    public void setVehicleController(final VehicleController vehicleController) {
+        this.vehicleController = vehicleController;
+    }
+
+    @Autowired
+    public void setMessageController(final MessageController messageController) {
+        this.messageController = messageController;
+    }
+
+    @Autowired
+    public void setRouteController(final RouteController routeController) {
+        this.routeController = routeController;
+    }
+
+    @Autowired
+    public void setDriverController(final DriverController driverController) {
+        this.driverController = driverController;
+    }
+
+    @Autowired
+    public void setTipController(final TipController tipController) {
+        this.tipController = tipController;
+    }
+
+    @Autowired
+    public void setStopTimeController(final StopTimeController stopTimeController) {
+        this.stopTimeController = stopTimeController;
+    }
+
+    @Autowired
+    public void setSimulationController(final SimulationController simulationController) {
+        this.simulationController = simulationController;
+    }
+
+    @Autowired
+    public void setStopController(final StopController stopController) {
+        this.stopController = stopController;
+    }
 }

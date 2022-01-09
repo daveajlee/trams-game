@@ -38,8 +38,7 @@ public record LocationMapPanel(ControllerHandler controllerHandler) {
         picturePanel.add(busDisplay, BorderLayout.CENTER);
         
         //Options button panel with save details and return to management screen buttons.
-        JPanel optionsButtonPanel = new JPanel();
-        optionsButtonPanel.setBackground(Color.WHITE);
+        JPanel optionsButtonPanel = createPanel();
         JButton managementScreenButton = new JButton("Return to Management Screen");
         managementScreenButton.addActionListener(e -> controlScreen.redrawManagement(managementPanel.createPanel(controlScreen), companyResponse));
         optionsButtonPanel.add(managementScreenButton);
@@ -47,5 +46,11 @@ public record LocationMapPanel(ControllerHandler controllerHandler) {
         
         return picturePanel;
 	}
+
+    private JPanel createPanel() {
+        JPanel optionsButtonPanel = new JPanel();
+        optionsButtonPanel.setBackground(Color.WHITE);
+        return optionsButtonPanel;
+    }
 
 }

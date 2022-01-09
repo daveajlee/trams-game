@@ -228,15 +228,14 @@ public class ControlScreen extends ButtonBar {
         //get count of routes.
         final long numberRoutes = super.getControllerHandler().getRouteController().getRoutes(companyResponse.getName()).getCount();
         //Create Live Situation tab.
+        drawVehicles(companyResponse);
         if ( numberRoutes > 0 ) {
-            drawVehicles(companyResponse);
             updateVehicleStatus(companyResponse.getTime(), companyResponse.getDifficultyLevel(), companyResponse.getName());
             tabbedPane.addTab("Live Situation", graphicsPanel);
             tabbedPane.setSelectedIndex(0);
             super.getControllerHandler().getSimulationController().runSimulation(ControlScreen.this);
         }
         else {
-            drawVehicles(companyResponse);
             tabbedPane.addTab("Live Situation", graphicsPanel);
         }
         //Create Messages tab.
@@ -425,23 +424,7 @@ public class ControlScreen extends ButtonBar {
                             "%.\n\nNow you need to allocate vehicles to routes for " + companyResponse.getTime() + " and keep the passenger satisfaction up! Click on the Management tab and then choose Allocations. Good luck!",
                     "Council", "INBOX", companyResponse.getTime());
             //Refresh messages.
-            if ( foldersBox.getSelectedItem() != null && dateBox.getSelectedItem() != null ) {
-                MessageResponse[] messageResponses = super.getControllerHandler().getMessageController().getMessagesByFolderDateSender(companyResponse.getName(), foldersBox.getSelectedItem().toString(), dateBox.getSelectedItem().toString(), "Council");
-                messagesModel.removeAllElements();
-                for (MessageResponse messageResponse : messageResponses) {
-                    messagesModel.addElement(messageResponse.getSubject());
-                }
-                messagesList.setSelectedIndex(0);
-                if (messageResponses.length == 0 && dateBox.getSelectedItem().toString().equalsIgnoreCase("All Dates")) {
-                    messagesArea.setText("There are no messages in the " + foldersBox.getSelectedItem().toString() + " folder.");
-                } else if (messageResponses.length == 0) {
-                    messagesArea.setText("There are no messages in the " + foldersBox.getSelectedItem().toString() + " folder for the date " + dateBox.getSelectedItem().toString() + ".");
-                } else {
-                    messagesArea.setText(messageResponses[messagesList.getSelectedIndex()].getText());
-                }
-
-                dateModel.addElement(companyResponse.getTime());
-            }
+            refreshMessages(companyResponse.getName(), companyResponse.getTime());
             //Then display it to the user.
             doneAllocations = true;
             super.getControllerHandler().getSimulationController().pauseSimulation();
@@ -510,27 +493,9 @@ public class ControlScreen extends ButtonBar {
         JPanel datePanel = new JPanel(new GridBagLayout());
         datePanel.setBackground(Color.WHITE);
         //Create date heading.
-        JLabel dateLabel = new JLabel("Date:");
-        dateLabel.setFont(new Font("Arial", Font.BOLD, 14));
-        datePanel.add(dateLabel);
+        datePanel.add(createLabel("Date:"));
         dateBox.setFont(new Font("Arial", Font.PLAIN, 12));
-        dateBox.addItemListener(e -> {
-            if ( foldersBox.getSelectedItem() != null && dateBox.getSelectedItem() != null ) {
-                MessageResponse[] messageResponses = ControlScreen.super.getControllerHandler().getMessageController().getMessagesByFolderDateSender(company, foldersBox.getSelectedItem().toString(), dateBox.getSelectedItem().toString(), "Council");
-                messagesModel.removeAllElements();
-                for (MessageResponse messageModel : messageResponses) {
-                    messagesModel.addElement(messageModel.getSubject());
-                }
-                messagesList.setSelectedIndex(0);
-                if (messageResponses.length == 0 && dateBox.getSelectedItem().toString().equalsIgnoreCase("All Dates")) {
-                    messagesArea.setText("There are no messages in the " + foldersBox.getSelectedItem().toString() + " folder.");
-                } else if (messageResponses.length == 0) {
-                    messagesArea.setText("There are no messages in the " + foldersBox.getSelectedItem().toString() + " folder for the date " + dateBox.getSelectedItem().toString() + ".");
-                } else {
-                    messagesArea.setText(messageResponses[messagesList.getSelectedIndex()].getText());
-                }
-            }
-        });
+        dateBox.addItemListener(e -> refreshMessages(company, ""));
         datePanel.add(dateBox);
         //Add datePanel to westPanel.
         westPanel.add(datePanel, BorderLayout.NORTH);
@@ -538,28 +503,10 @@ public class ControlScreen extends ButtonBar {
         JPanel foldersPanel = new JPanel(new GridBagLayout());
         foldersPanel.setBackground(Color.WHITE);
         //Create folders heading.
-        JLabel foldersLabel = new JLabel("Folders:");
-        foldersLabel.setFont(new Font("Arial", Font.BOLD, 14));
-        foldersPanel.add(foldersLabel);
+        foldersPanel.add(createLabel("Folders:"));
         //Create combo box with folders list.
         foldersBox.setFont(new Font("Arial", Font.PLAIN, 12));
-        foldersBox.addItemListener (e -> {
-            if ( foldersBox.getSelectedItem() != null && dateBox.getSelectedItem() != null) {
-                MessageResponse[] messageResponses = ControlScreen.super.getControllerHandler().getMessageController().getMessagesByFolderDateSender(company, foldersBox.getSelectedItem().toString(), dateBox.getSelectedItem().toString(), "Council");
-                messagesModel.removeAllElements();
-                for (MessageResponse messageResponse : messageResponses) {
-                    messagesModel.addElement(messageResponse.getSubject());
-                }
-                messagesList.setSelectedIndex(0);
-                if (messageResponses.length == 0 && dateBox.getSelectedItem().toString().equalsIgnoreCase("All Dates")) {
-                    messagesArea.setText("There are no messages in the " + foldersBox.getSelectedItem().toString() + " folder.");
-                } else if (messageResponses.length == 0) {
-                    messagesArea.setText("There are no messages in the " + foldersBox.getSelectedItem().toString() + " folder for the date " + dateBox.getSelectedItem().toString() + ".");
-                } else {
-                    messagesArea.setText(messageResponses[messagesList.getSelectedIndex()].getText());
-                }
-            }
-        });
+        foldersBox.addItemListener (e -> refreshMessages(company, ""));
         foldersPanel.add(foldersBox);
         //Add folders panel to west panel.
         westPanel.add(foldersPanel, BorderLayout.SOUTH);
@@ -820,6 +767,31 @@ public class ControlScreen extends ButtonBar {
         vehicleInfoPanel.add(nextVehiclesButton);
         //Return vehicleInfoPanel.
         return vehicleInfoPanel;
+    }
+
+    private void refreshMessages( final String company, final String time) {
+        if ( foldersBox.getSelectedItem() != null && dateBox.getSelectedItem() != null ) {
+            MessageResponse[] messageResponses = super.getControllerHandler().getMessageController().getMessagesByFolderDateSender(company, foldersBox.getSelectedItem().toString(), dateBox.getSelectedItem().toString(), "Council");
+            messagesModel.removeAllElements();
+            for (MessageResponse messageResponse : messageResponses) {
+                messagesModel.addElement(messageResponse.getSubject());
+            }
+            messagesList.setSelectedIndex(0);
+            if (messageResponses.length == 0 && dateBox.getSelectedItem().toString().equalsIgnoreCase("All Dates")) {
+                messagesArea.setText("There are no messages in the " + foldersBox.getSelectedItem().toString() + " folder.");
+            } else if (messageResponses.length == 0) {
+                messagesArea.setText("There are no messages in the " + foldersBox.getSelectedItem().toString() + " folder for the date " + dateBox.getSelectedItem().toString() + ".");
+            } else {
+                messagesArea.setText(messageResponses[messagesList.getSelectedIndex()].getText());
+            }
+            if ( !time.isEmpty() ) { dateModel.addElement(time); }
+        }
+    }
+
+    private JLabel createLabel ( final String text ) {
+        JLabel foldersLabel = new JLabel(text);
+        foldersLabel.setFont(new Font("Arial", Font.BOLD, 14));
+        return foldersLabel;
     }
 
 }

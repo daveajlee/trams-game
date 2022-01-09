@@ -21,6 +21,7 @@ import de.davelee.trams.api.response.CompanyResponse;
 import de.davelee.trams.api.response.VehicleResponse;
 import de.davelee.trams.controllers.ControllerHandler;
 import de.davelee.trams.gui.ControlScreen;
+import de.davelee.trams.util.GuiUtils;
 
 /**
  * This class represents a panel to show a particular vehicle in the depot for a company.
@@ -55,9 +56,7 @@ public record VehicleDepotPanel ( ControllerHandler controllerHandler ) {
         vehicleBorderPanel.setBackground(Color.WHITE);
         
         //Create centre panel and add all those to appear in the centre panel to it!
-        JPanel centrePanel = new JPanel();
-        centrePanel.setLayout ( new BoxLayout ( centrePanel, BoxLayout.PAGE_AXIS ) );
-        centrePanel.setBackground(Color.WHITE);
+        JPanel centrePanel = GuiUtils.createBoxPanel();
         
         final CompanyResponse companyResponse = controllerHandler.getCompanyController().getCompany(controlScreen.getCompany(), controlScreen.getPlayerName());
         

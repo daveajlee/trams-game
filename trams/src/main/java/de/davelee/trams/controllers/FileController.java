@@ -20,23 +20,17 @@ import java.time.format.DateTimeFormatter;
  */
 @Controller
 public class FileController {
-	
-	@Autowired
+
 	private DriverController driverController;
-	
-	@Autowired
+
 	private CompanyController companyController;
-	
-	@Autowired
+
 	private MessageController messageController;
-	
-	@Autowired
+
 	private RouteController routeController;
 
-	@Autowired
 	private SimulationController simulationController;
-	
-	@Autowired
+
 	private VehicleController vehicleController;
 
 	private static final Logger logger = LoggerFactory.getLogger(FileController.class);
@@ -120,4 +114,33 @@ public class FileController {
 		}
     }
 
+	@Autowired
+	public void setDriverController(final DriverController driverController) {
+		this.driverController = driverController;
+	}
+
+	@Autowired
+	public void setCompanyController(final CompanyController companyController) {
+		this.companyController = companyController;
+	}
+
+	@Autowired
+	public void setMessageController(final MessageController messageController) {
+		this.messageController = messageController;
+	}
+
+	@Autowired
+	public void setRouteController(final RouteController routeController) {
+		this.routeController = routeController;
+	}
+
+	@Autowired
+	public void setSimulationController(final SimulationController simulationController) {
+		this.simulationController = simulationController;
+	}
+
+	@Autowired
+	public void setVehicleController(final VehicleController vehicleController) {
+		this.vehicleController = vehicleController;
+	}
 }

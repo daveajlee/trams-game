@@ -20,13 +20,11 @@ import org.springframework.web.client.RestTemplate;
 @Controller
 public class CompanyController {
 
-	@Autowired
 	private RestTemplate restTemplate;
 
 	@Value("${server.business.url}")
 	private String businessServerUrl;
 
-	@Autowired
 	private VehicleController vehicleController;
 
 	/**
@@ -166,4 +164,13 @@ public class CompanyController {
 		return satisfactionRateResponse != null ? satisfactionRateResponse.getSatisfactionRate() : -1.0;
 	}
 
+	@Autowired
+	public void setRestTemplate(final RestTemplate restTemplate) {
+		this.restTemplate = restTemplate;
+	}
+
+	@Autowired
+	public void setVehicleController(final VehicleController vehicleController) {
+		this.vehicleController = vehicleController;
+	}
 }

@@ -1,6 +1,7 @@
 package de.davelee.trams.gui;
 
 import de.davelee.trams.controllers.ControllerHandler;
+import de.davelee.trams.util.GuiUtils;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -66,26 +67,12 @@ public class ScenarioDescriptionScreen extends JFrame {
         screenPanel.setBackground(Color.WHITE);
         
         //Construct logo panel to add to the centre panel.
-        JPanel welcomePanel = new JPanel();
-        welcomePanel.setBackground(Color.WHITE);
-        JLabel welcomeLabel = new JLabel("Welcome to ", SwingConstants.CENTER);
-        welcomeLabel.setFont(new Font("Arial", Font.BOLD + Font.ITALIC, 40));
-        welcomePanel.add(welcomeLabel);
-        JPanel logoPanel = new JPanel();
-        logoPanel.setBackground(Color.WHITE);
-        ImageDisplay logoDisplay = new ImageDisplay("trams-logo-small.png", 0, 0);
-        logoDisplay.setSize(157,62);
-        logoDisplay.setBackground(Color.WHITE);
-        logoPanel.add(logoDisplay);
-        welcomePanel.add(logoPanel);
-        screenPanel.add(welcomePanel);
+        screenPanel.add(GuiUtils.createWelcomePanel());
         
         //Create the MDLabelPanel.
         JPanel MDLabelPanel = new JPanel();
         MDLabelPanel.setBackground(Color.WHITE);
-        JLabel mDLabel = new JLabel(playerName + " appointed Managing Director of " + company);
-        mDLabel.setFont(new Font("Arial", Font.BOLD, 18));
-        MDLabelPanel.add(mDLabel);
+        MDLabelPanel.add(createLabel(playerName + " appointed Managing Director of " + company));
         screenPanel.add(MDLabelPanel);
         
         //Create the descriptionPanel.
@@ -125,6 +112,12 @@ public class ScenarioDescriptionScreen extends JFrame {
         this.pack ();
         this.setVisible (true);
         this.setSize ( new Dimension(700,500) );
+    }
+
+    private JLabel createLabel ( final String text ) {
+        JLabel foldersLabel = new JLabel(text);
+        foldersLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        return foldersLabel;
     }
     
 }

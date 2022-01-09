@@ -67,7 +67,7 @@ public class VehicleControllerTest {
 	@Test
 	public void testValue () {
 		//TODO: implement value correctly and then redo test.
-		assertNotNull(vehicleController.getValue(null, "20-04-2014"));
+		assertTrue(vehicleController.getValue(null, "20-04-2014") > 0.0);
 	}
 
 	@Test
