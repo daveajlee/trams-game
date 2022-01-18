@@ -74,7 +74,7 @@ public class DriverController {
                 .role("ADMIN")
                 .username(name.split(" ")[0].charAt(0) + name.split(" ")[1])
                 .workingDays("Monday,Tuesday")
-                .startDate(startDate)
+                .startDate(startDate.substring(0, 10))
                 .build(), Void.class);
     }
 

@@ -5,6 +5,7 @@ import java.awt.*;
 import javax.swing.*;
 
 import de.davelee.trams.api.response.CompanyResponse;
+import de.davelee.trams.api.response.RoutesResponse;
 import de.davelee.trams.controllers.ControllerHandler;
 
 import de.davelee.trams.gui.ControlScreen;
@@ -28,7 +29,8 @@ public record ManagementPanel(ControllerHandler controllerHandler) {
         CompanyResponse companyResponse = controllerHandler.getCompanyController().getCompany(controlScreen.getCompany(), controlScreen.getPlayerName());
 
         //Store number of routes.
-        long numberRoutes = controllerHandler.getRouteController().getRoutes(companyResponse.getName()).getCount();
+        RoutesResponse routesResponse = controllerHandler.getRouteController().getRoutes(companyResponse.getName());
+        long numberRoutes = routesResponse != null ? routesResponse.getCount() : 0;
 
         //Create an overall screen panel.
         JPanel overallScreenPanel = new JPanel(new BorderLayout());

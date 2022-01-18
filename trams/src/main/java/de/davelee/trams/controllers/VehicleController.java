@@ -75,8 +75,8 @@ public class VehicleController {
 	 * @return a <code>boolean</code> which is true iff the vehicle has been delivered.
 	 */
 	public boolean hasVehicleBeenDelivered (final String deliveryDate, final String currentDate ) {
-		return LocalDate.parse(currentDate, DateTimeFormatter.ofPattern("dd-MM-yyyy")).isAfter(LocalDate.parse(deliveryDate, DateTimeFormatter.ofPattern("dd-MM-yyyy")))
-				|| LocalDate.parse(currentDate, DateTimeFormatter.ofPattern("dd-MM-yyyy")).isEqual(LocalDate.parse(deliveryDate, DateTimeFormatter.ofPattern("dd-MM-yyyy")));
+		return LocalDate.parse(currentDate, DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm")).isAfter(LocalDate.parse(deliveryDate, DateTimeFormatter.ofPattern("dd-MM-yyyy")))
+				|| LocalDate.parse(currentDate, DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm")).isEqual(LocalDate.parse(deliveryDate, DateTimeFormatter.ofPattern("dd-MM-yyyy")));
 	}
 
 	/**
@@ -191,7 +191,7 @@ public class VehicleController {
 			String vehicleModel = vehicleModels.next();
 			for ( int i = 0; i < suppliedVehicles.get(vehicleModel); i++ )  {
 				int fleetNumber = 100 + i;
-				purchaseVehicle(vehicleModel, company, LocalDate.parse(currentDate, DateTimeFormatter.ofPattern("dd-MM-yyyy")).getYear(), Optional.of(fleetNumber));
+				purchaseVehicle(vehicleModel, company, LocalDate.parse(currentDate, DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm")).getYear(), Optional.of(fleetNumber));
 				numCreatedVehicles++;
 			}
 		}
@@ -315,9 +315,9 @@ public class VehicleController {
 			//Here is random reg.
 			randomReg += RandomStringUtils.randomAlphabetic(5);
 			//Now check that random reg not been generated before.
-			VehicleResponse[] vehicleModels = getVehicles(company).getVehicleResponses();
-			if ( vehicleModels != null ) {
-				for ( VehicleResponse vehicleModel : vehicleModels ) {
+			VehiclesResponse vehiclesResponse = getVehicles(company);
+			if ( vehiclesResponse != null && vehiclesResponse.getVehicleResponses() != null ) {
+				for ( VehicleResponse vehicleModel : vehiclesResponse.getVehicleResponses() ) {
 					if ( vehicleModel.getAdditionalTypeInformationMap().get("Registration Number").equalsIgnoreCase(randomReg) ) {
 						isUniqueReg = false;
 						break;

@@ -6,10 +6,7 @@ import java.awt.event.*;
 
 import javax.swing.*;
 
-import de.davelee.trams.api.response.CompanyResponse;
-import de.davelee.trams.api.response.MessageResponse;
-import de.davelee.trams.api.response.RouteResponse;
-import de.davelee.trams.api.response.VehicleResponse;
+import de.davelee.trams.api.response.*;
 import de.davelee.trams.beans.Scenario;
 import de.davelee.trams.controllers.ControllerHandler;
 import de.davelee.trams.gui.panels.ManagementPanel;
@@ -226,7 +223,11 @@ public class ControlScreen extends ButtonBar {
         tabbedPane = new JTabbedPane();
         tabbedPane.setBackground(Color.WHITE);
         //get count of routes.
-        final long numberRoutes = super.getControllerHandler().getRouteController().getRoutes(companyResponse.getName()).getCount();
+        RoutesResponse routesResponse = super.getControllerHandler().getRouteController().getRoutes(companyResponse.getName());
+        long numberRoutes = 0;
+        if ( routesResponse != null ) {
+            numberRoutes = routesResponse.getCount();
+        }
         //Create Live Situation tab.
         drawVehicles(companyResponse);
         if ( numberRoutes > 0 ) {
@@ -477,10 +478,12 @@ public class ControlScreen extends ButtonBar {
         dateModel = new DefaultComboBoxModel<>();
         dateModel.addElement("All Dates");
         final MessageResponse[] allMessageModels = super.getControllerHandler().getMessageController().getAllMessages(company);
-        for (MessageResponse allMessageModel : allMessageModels) {
-            logger.debug("Index of " + dateModel.getIndexOf(allMessageModel.getDateTime()));
-            if (dateModel.getIndexOf(allMessageModel.getDateTime()) == -1) {
-                dateModel.addElement(allMessageModel.getDateTime());
+        if ( allMessageModels != null ) {
+            for (MessageResponse allMessageModel : allMessageModels) {
+                logger.debug("Index of " + dateModel.getIndexOf(allMessageModel.getDateTime()));
+                if (dateModel.getIndexOf(allMessageModel.getDateTime()) == -1) {
+                    dateModel.addElement(allMessageModel.getDateTime());
+                }
             }
         }
         dateBox = new JComboBox<>(dateModel);
@@ -575,7 +578,8 @@ public class ControlScreen extends ButtonBar {
     public void redrawManagement (final JPanel newManagePanel, final CompanyResponse companyResponse) {
         //Disable the live situation tab if appropriate.
         //Otherwise, re-enable live panel.
-        tabbedPane.setEnabledAt(0, super.getControllerHandler().getRouteController().getRoutes(companyResponse.getName()).getCount() != 0);
+        RoutesResponse routesResponse = super.getControllerHandler().getRouteController().getRoutes(companyResponse.getName());
+        tabbedPane.setEnabledAt(0, routesResponse != null ? routesResponse.getCount() != 0 : false);
 
         tabbedPane.setComponentAt(2, newManagePanel);
         dialogPanel.paintImmediately(dialogPanel.getBounds());
@@ -668,7 +672,8 @@ public class ControlScreen extends ButtonBar {
         optionsPanel.setBackground(Color.WHITE);
         optionsPanel.setLayout(new BorderLayout());
         //Construct route listing box!
-        if ( super.getControllerHandler().getRouteController().getRoutes(companyResponse.getName()).getCount() != 0 ) {
+        RoutesResponse routesResponse = super.getControllerHandler().getRouteController().getRoutes(companyResponse.getName());
+        if ( routesResponse != null && routesResponse.getCount() != 0 ) {
             populateRouteList(companyResponse.getName());
         }
         routeList.addListSelectionListener(ie -> {
