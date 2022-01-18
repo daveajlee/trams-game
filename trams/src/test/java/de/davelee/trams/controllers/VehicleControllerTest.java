@@ -46,22 +46,22 @@ public class VehicleControllerTest {
 		Mockito.when(vehicleController.getVehicles("Mustermann GmbH")).thenReturn(VehiclesResponse.builder()
 				.count(0L)
 				.vehicleResponses(new VehicleResponse[0]).build());
-		assertEquals(1, vehicleController.createSuppliedVehicles(scenario.getSuppliedVehicles(), "01-01-2014", "Mustermann GmbH"));
+		assertEquals(1, vehicleController.createSuppliedVehicles(scenario.getSuppliedVehicles(), "01-01-2014 10:00", "Mustermann GmbH"));
 	}
 
 	@Test
 	public void testVehicleDelivered() {
 		//Test data.
 		//Before - not been delivered.
-		Assertions.assertFalse(vehicleController.hasVehicleBeenDelivered("20-04-2014", "20-04-2013"));
-		Assertions.assertFalse(vehicleController.hasVehicleBeenDelivered("20-04-2014", "20-03-2014"));
-		Assertions.assertFalse(vehicleController.hasVehicleBeenDelivered("20-04-2014", "19-04-2014"));
+		Assertions.assertFalse(vehicleController.hasVehicleBeenDelivered("20-04-2014", "20-04-2013 10:00"));
+		Assertions.assertFalse(vehicleController.hasVehicleBeenDelivered("20-04-2014", "20-03-2014 10:00"));
+		Assertions.assertFalse(vehicleController.hasVehicleBeenDelivered("20-04-2014", "19-04-2014 10:00"));
 		//Same - been delivered.
-		assertTrue(vehicleController.hasVehicleBeenDelivered("20-04-2014", "20-04-2014"));
+		assertTrue(vehicleController.hasVehicleBeenDelivered("20-04-2014", "20-04-2014 10:00"));
 		//After - been delivered.
-		assertTrue(vehicleController.hasVehicleBeenDelivered("20-04-2014", "21-04-2014"));
-		assertTrue(vehicleController.hasVehicleBeenDelivered("20-04-2014", "20-05-2014"));
-		assertTrue(vehicleController.hasVehicleBeenDelivered("20-04-2014", "20-04-2015"));
+		assertTrue(vehicleController.hasVehicleBeenDelivered("20-04-2014", "21-04-2014 10:00"));
+		assertTrue(vehicleController.hasVehicleBeenDelivered("20-04-2014", "20-05-2014 10:00"));
+		assertTrue(vehicleController.hasVehicleBeenDelivered("20-04-2014", "20-04-2015 10:00"));
 	}
 
 	@Test
