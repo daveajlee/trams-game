@@ -45,8 +45,7 @@ public record ViewDriverPanel ( ControllerHandler controllerHandler ) implements
 
         //Get driver data now!
         DefaultListModel<String> driversModel = new DefaultListModel<>();
-        //TODO: determine how to get the username.
-        UserResponse[] userResponses = controllerHandler.getDriverController().getAllDrivers(companyResponse.getName(), "mmustermann");
+        UserResponse[] userResponses = controllerHandler.getDriverController().getAllDrivers(companyResponse.getName());
         for (UserResponse userResponse : userResponses) {
             driversModel.addElement(userResponse.getUsername());
         }

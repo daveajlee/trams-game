@@ -99,8 +99,7 @@ public record EmployDriverPanel (ControllerHandler controllerHandler) {
         JButton employDriverButton = new JButton("Employ Driver");
         employDriverButton.addActionListener(e -> {
             controllerHandler.getDriverController().employDriver(driverNameField.getText(), companyResponse.getName(), startField.getText());
-            //TODO: Employing drivers should cost money.
-            controllerHandler.getCompanyController().withdrawOrCreditBalance(0, companyResponse.getPlayerName());
+            //Hiring drivers cost nothing initially but then monthly costs.
             controlScreen.redrawManagement(managementPanel.createPanel(controlScreen), companyResponse);
         });
         buttonPanel.add(employDriverButton);

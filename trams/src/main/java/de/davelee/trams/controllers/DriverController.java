@@ -40,12 +40,11 @@ public class DriverController {
     /**
      * Return all drivers belonging to the supplied company.
      * @param company a <code>String</code> containing the name of the company to return drivers for.
-     * @param username a <code>String</code> containing the username of the user requesting this feature.
      * @return an array of <code>UserResponse</code> objects containing all drivers belonging to the supplied company.
      */
-    public UserResponse[] getAllDrivers (final String company, final String username) {
+    public UserResponse[] getAllDrivers (final String company) {
         try {
-            UsersResponse usersResponse = restTemplate.getForObject(personalManServerUrl + "user/?company=" + company + "&username="+ username + "&token=" + token, UsersResponse.class);
+            UsersResponse usersResponse = restTemplate.getForObject(personalManServerUrl + "users/?company=" + company + "&token=" + token, UsersResponse.class);
             if (usersResponse != null && usersResponse.getUserResponses() != null) {
                 return usersResponse.getUserResponses();
             }
@@ -120,8 +119,7 @@ public class DriverController {
      * @return a <code>boolean</code> which is true iff some drivers have started working.
      */
     public boolean hasSomeDriversBeenEmployed ( final CompanyResponse companyResponse ) {
-        //TODO: determine how to get username.
-        UserResponse[] userResponses = getAllDrivers(companyResponse.getName(), "mmustermann");
+        UserResponse[] userResponses = getAllDrivers(companyResponse.getName());
         if (userResponses != null && userResponses.length > 0) {
             for (UserResponse userResponse : userResponses) {
                 LocalDate currentDate = LocalDate.parse(companyResponse.getTime(), DateTimeFormatter.ofPattern("dd-MM-yyyy"));

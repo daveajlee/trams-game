@@ -176,7 +176,6 @@ public class ViewTimetablePanel {
                                                  final String date, final String company) {
         String[] columnNames = new String[] { "", "Monday - Friday", "Saturday", "Sunday" };
         String[][] data = new String[24][4];
-        //TODO: Preprocessing necessary?
         //TODO: Add multiple route schedules.
         StopTimeResponse[] stopTimeResponses = controllerHandler.getStopTimeController().getStopTimes(Optional.of(direction), routeNumber, date, company, Optional.empty() );
         for ( StopTimeResponse stopTimeResponse : stopTimeResponses ) {
