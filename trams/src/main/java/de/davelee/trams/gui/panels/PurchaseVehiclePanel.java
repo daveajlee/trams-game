@@ -23,6 +23,7 @@ import de.davelee.trams.api.response.CompanyResponse;
 import de.davelee.trams.api.response.VehicleResponse;
 import de.davelee.trams.controllers.ControllerHandler;
 import de.davelee.trams.gui.ControlScreen;
+import de.davelee.trams.gui.ImageDisplay;
 
 /**
  * This class represents a panel to purchase a vehicle.
@@ -84,7 +85,10 @@ public class PurchaseVehiclePanel {
         //Bus Display Picture.
         JPanel busPicture = new JPanel(new GridBagLayout());
         busPicture.setBackground(Color.WHITE);
-        //TODO: Add a mapping from images to vehicle types.
+        ImageDisplay busDisplay = new ImageDisplay(vehicleResponse.getVehicleType() != null ? vehicleResponse.getVehicleType() + ".jpg" : "Bus.jpg",0,0);
+        busDisplay.setSize(220,180);
+        busDisplay.setBackground(Color.WHITE);
+        busPicture.add(busDisplay);
         picturePanel.add(busPicture, BorderLayout.CENTER);
         //Next vehicle type button.
         JPanel nextButtonPanel = new JPanel(new GridBagLayout());
@@ -116,9 +120,9 @@ public class PurchaseVehiclePanel {
         gridPanel.add(standingField);
         //Create label and field for delivery date and add it to the delivery panel.
         gridPanel.add(createLabel("Delivery Date:"));
-        LocalDate deliveryDate = LocalDate.parse(companyResponse.getTime(), DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+        LocalDate deliveryDate = LocalDate.parse(companyResponse.getTime(), DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"));
         deliveryDate = deliveryDate.plusDays(3);
-        JLabel deliveryField = new JLabel("" + DateTimeFormatter.RFC_1123_DATE_TIME.format(deliveryDate));
+        JLabel deliveryField = new JLabel("" + companyResponse.getTime().substring(0, 10));
         deliveryField.setFont(new Font("Arial", Font.PLAIN, 12));
         gridPanel.add(deliveryField);
         //Create label and field for purchase price and add it to the price panel.

@@ -18,6 +18,7 @@ import de.davelee.trams.api.response.VehicleResponse;
 import de.davelee.trams.controllers.ControllerHandler;
 import de.davelee.trams.gui.ControlScreen;
 import de.davelee.trams.gui.EditingScreen;
+import de.davelee.trams.gui.ImageDisplay;
 import de.davelee.trams.util.GuiUtils;
 
 /**
@@ -71,7 +72,10 @@ public record VehicleDepotPanel ( ControllerHandler controllerHandler ) implemen
         //Create picture panel.
         JPanel picturePanel = new JPanel(new GridBagLayout());
         picturePanel.setBackground(Color.WHITE);
-        //TODO: Add a mapping of images to model names.
+        ImageDisplay busDisplay = new ImageDisplay(vehicleResponse.getVehicleType() != null ? vehicleResponse.getVehicleType() + ".jpg" : "Bus.jpg",0,0);
+        busDisplay.setSize(220,180);
+        busDisplay.setBackground(Color.WHITE);
+        picturePanel.add(busDisplay);
         centrePanel.add(picturePanel);
             
         //Create panel for information fields.
