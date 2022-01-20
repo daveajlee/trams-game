@@ -9,8 +9,6 @@ import javax.swing.*;
 import de.davelee.trams.api.response.CompanyResponse;
 import de.davelee.trams.controllers.ControllerHandler;
 import de.davelee.trams.util.DifficultyLevel;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Class to display options within the TraMS program.
@@ -20,8 +18,6 @@ public class OptionsScreen extends JFrame {
 
     @Serial
 	private static final long serialVersionUID = 1L;
-
-    private static final Logger logger = LoggerFactory.getLogger(OptionsScreen.class);
 
     /**
      * Create a new options screen.
@@ -124,24 +120,16 @@ public class OptionsScreen extends JFrame {
         okButton.addActionListener(e -> {
             //Process options - set difficulty level!
             if ( difficultButtons[0].isSelected() ) {
-                //TODO: set the difficulty level via game controller to EASY.
-                logger.info("Set difficulty level to EASY");
-                //controllerHandler.getCompanyController().setDifficultyLevel(DifficultyLevel.EASY);
+                controllerHandler.getCompanyController().setDifficultyLevel(companyResponse.getName(), DifficultyLevel.EASY.name());
             }
             else if ( difficultButtons[1].isSelected() ) {
-                //TODO: set the difficulty level via game controller to INTERMEDIATE.
-                logger.info("Set difficulty level to INTERMEDIATE");
-                //controllerHandler.getCompanyController().setDifficultyLevel(DifficultyLevel.INTERMEDIATE);
+                controllerHandler.getCompanyController().setDifficultyLevel(companyResponse.getName(), DifficultyLevel.INTERMEDIATE.name());
             }
             else if ( difficultButtons[2].isSelected() ) {
-                //TODO: set the difficulty level via game controller to MEDIUM.
-                logger.info("Set difficulty level to MEDIUM");
-                //controllerHandler.getCompanyController().setDifficultyLevel(DifficultyLevel.MEDIUM);
+                controllerHandler.getCompanyController().setDifficultyLevel(companyResponse.getName(), DifficultyLevel.MEDIUM.name());
             }
             else if ( difficultButtons[3].isSelected() ) {
-                logger.info("Set difficulty level to HARD");
-                //TODO: set the difficulty level via game controller to HARD.
-                //controllerHandler.getCompanyController().setDifficultyLevel(DifficultyLevel.HARD);
+                controllerHandler.getCompanyController().setDifficultyLevel(companyResponse.getName(), DifficultyLevel.HARD.name());
             }
             dispose();
         });

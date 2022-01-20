@@ -1,10 +1,8 @@
 package de.davelee.trams.controllers;
 
 import java.time.format.DateTimeParseException;
-import de.davelee.trams.api.request.AddTimeRequest;
-import de.davelee.trams.api.request.AdjustBalanceRequest;
-import de.davelee.trams.api.request.AdjustSatisfactionRequest;
-import de.davelee.trams.api.request.CompanyRequest;
+
+import de.davelee.trams.api.request.*;
 import de.davelee.trams.api.response.*;
 import de.davelee.trams.util.DifficultyLevel;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -106,7 +104,22 @@ public class CompanyController {
 		}
 	}
 
-
+	/**
+	 * Set a new difficulty level for this company.
+	 * @param company a <code>String</code> with the name of the company.
+	 * @param difficultyLevel a <code>String</code> containing the difficulty level that should be set for this company.
+	 * @return a <code>String</code> with the new difficulty level.
+	 */
+	public String setDifficultyLevel ( final String company, final String difficultyLevel ) {
+		//Get data from API.
+		DifficultyLevelResponse difficultyLevelResponse = restTemplate.patchForObject(businessServerUrl + "company/difficultyLevel",
+				AdjustDifficultyLevelRequest.builder()
+						.company(company)
+						.difficultyLevel(difficultyLevel).build(),
+				DifficultyLevelResponse.class);
+		//Return response from API.
+		return difficultyLevelResponse.getDifficultyLevel();
+	}
 
 	/**
 	 * Compute and return the passenger satisfaction for the current game.
