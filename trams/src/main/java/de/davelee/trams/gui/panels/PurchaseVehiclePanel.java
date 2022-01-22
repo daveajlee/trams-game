@@ -133,7 +133,7 @@ public class PurchaseVehiclePanel {
         priceLabelPanel.add(priceLabel);
         gridPanel.add(priceLabel);
         final DecimalFormat format = new DecimalFormat("0.00");
-        JLabel priceField = new JLabel("£");
+        JLabel priceField = new JLabel("€" + format.format(vehicleResponse.getPurchasePrice()));
         priceField.setFont(new Font("Arial", Font.PLAIN, 12));
         gridPanel.add(priceField);
         //Create label and field for quantity and add it to the quantity panel.
@@ -146,19 +146,8 @@ public class PurchaseVehiclePanel {
         final JSpinner quantitySpinner = new JSpinner(new SpinnerNumberModel(1,1,40,1));
         quantitySpinner.setFont(new Font("Arial", Font.PLAIN, 12));
         quantitySpinner.addChangeListener(e -> {
-            //TODO: make it possible to retrieve the purchase price of a vehicle
-            //double totalPrice = Double.parseDouble(quantitySpinner.getValue().toString()) * vehicleResponse.getPurchasePrice();
-            double totalPrice = 0.0;
-            if ( totalPrice > companyResponse.getBalance() ) {
-                totalPriceField.setText("£" + format.format(totalPrice) + " (Insufficient funds available)");
-                totalPriceField.setForeground(Color.RED);
-                purchaseVehicleButton.setEnabled(false);
-            }
-            else {
-                totalPriceField.setText("£" + format.format(totalPrice));
-                totalPriceField.setForeground(Color.BLACK);
-                purchaseVehicleButton.setEnabled(true);
-            }
+            double totalPrice = Double.parseDouble(quantitySpinner.getValue().toString()) * vehicleResponse.getPurchasePrice();
+            checkSufficientFunds(totalPrice, companyResponse.getBalance(), format);
         });
         quantitySpinner.setMaximumSize(new Dimension(10,15));
         gridPanel.add(quantitySpinner);
@@ -169,9 +158,7 @@ public class PurchaseVehiclePanel {
         totalPriceLabel.setFont(new Font("Arial", Font.ITALIC, 14));
         totalPriceLabelPanel.add(totalPriceLabel);
         gridPanel.add(totalPriceLabel);
-        //TODO: make it possible to calculate total price after retrieving purchase price.
-        //double totalPrice = Double.parseDouble(quantitySpinner.getValue().toString()) * vehicleResponse.getPurchasePrice();
-        double totalPrice = 0.0;
+        double totalPrice = Double.parseDouble(quantitySpinner.getValue().toString()) * vehicleResponse.getPurchasePrice();
         totalPriceField = new JLabel("£" + format.format(totalPrice));
         totalPriceField.setFont(new Font("Arial", Font.PLAIN, 12));
         gridPanel.add(totalPriceField);
@@ -185,6 +172,7 @@ public class PurchaseVehiclePanel {
                 
         //Create purchase vehicle button and add it to screen panel.
         purchaseVehicleButton = new JButton("Purchase Vehicle");
+        checkSufficientFunds(vehicleResponse.getPurchasePrice(), companyResponse.getBalance(), format);
         purchaseVehicleButton.addActionListener (e -> {
             int quantity = Integer.parseInt(quantitySpinner.getValue().toString());
             for ( int i = 0; i < quantity; i++ ) {
@@ -217,5 +205,24 @@ public class PurchaseVehiclePanel {
         label.setFont(new Font("Arial", Font.ITALIC, 14));
         return label;
     }
-	
+
+    /**
+     * This is a private helper method which ensures that sufficient funds are available to purchase.
+     * @param price a <code>double</code> containing the current price to check if sufficient funds exist.
+     * @param balance a <code>double</code> containing the current balance.
+     * @param decimalFormat a <code>DecimalFormat</code> containing the decimal format to be displayed.
+     */
+    private void checkSufficientFunds ( final double price, final double balance, final DecimalFormat decimalFormat ) {
+        if ( price > balance ) {
+            totalPriceField.setText("€" + decimalFormat.format(price) + " (Insufficient funds available)");
+            totalPriceField.setForeground(Color.RED);
+            purchaseVehicleButton.setEnabled(false);
+        }
+        else {
+            totalPriceField.setText("€" + decimalFormat.format(price));
+            totalPriceField.setForeground(Color.BLACK);
+            purchaseVehicleButton.setEnabled(true);
+        }
+    }
+
 }

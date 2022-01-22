@@ -43,6 +43,11 @@ public class VehicleResponse {
     private String vehicleType;
 
     /**
+     * The purchase price of the vehicle.
+     */
+    private double purchasePrice;
+
+    /**
      * The current status of the vehicle which is mapped from the Enum.
      */
     private String vehicleStatus;
