@@ -30,6 +30,12 @@ public class ScenarioControllerTest {
         Scenario landuffScenario = scenarioController.getScenario("Landuff Town (EASY)");
         assertNotNull(landuffScenario);
         assertEquals("Landuff Transport Company", landuffScenario.getScenarioName());
+        assertNotNull(landuffScenario.getDescription());
+        assertNotNull(landuffScenario.getCityDescription());
+        assertNotNull(landuffScenario.getTargets());
+        assertNotNull(landuffScenario.getMinimumBalance());
+        assertNotNull(landuffScenario.getLocationMapFileName());
+        assertNotNull(landuffScenario.getSuppliedDrivers());
         assertEquals(70, landuffScenario.getMinimumSatisfaction());
     }
 

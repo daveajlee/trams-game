@@ -16,7 +16,7 @@ import org.springframework.web.client.RestTemplate;
 @Controller
 public class StopController {
 
-	private final RestTemplate restTemplate = new RestTemplate();
+	private RestTemplate restTemplate;
 
 	@Value("${server.operations.url}")
 	private String operationsServerUrl;
@@ -75,5 +75,14 @@ public class StopController {
 	@Autowired
 	public void setScenarioController(final ScenarioController scenarioController) {
 		this.scenarioController = scenarioController;
+	}
+
+	/**
+	 * Set the rest template object via Spring.
+	 * @param restTemplate a <code>RestTemplate</code> object.
+	 */
+	@Autowired
+	public void setRestTemplate(final RestTemplate restTemplate) {
+		this.restTemplate = restTemplate;
 	}
 }

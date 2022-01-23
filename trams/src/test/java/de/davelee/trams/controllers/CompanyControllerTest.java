@@ -59,11 +59,44 @@ public class CompanyControllerTest {
 		);
 		Mockito.when(vehicleController.getVehicles("Mustermann GmbH")).thenReturn(
 				VehiclesResponse.builder()
-						.count(0L)
-						.vehicleResponses(new VehicleResponse[0])
+						.count(3L)
+						.vehicleResponses(new VehicleResponse[] {
+								VehicleResponse.builder()
+										.delayInMinutes(3).build(),
+								VehicleResponse.builder()
+										.delayInMinutes(7).build(),
+								VehicleResponse.builder()
+										.delayInMinutes(17).build()
+						})
 						.build()
 		);
 		assertEquals(companyController.computeAndReturnPassengerSatisfaction("Mustermann GmbH", "EASY"), 91);
+		assertEquals(companyController.computeAndReturnPassengerSatisfaction("Mustermann GmbH", "MEDIUM"), 91);
+		assertEquals(companyController.computeAndReturnPassengerSatisfaction("Mustermann GmbH", "INTERMEDIATE"), 91);
+		assertEquals(companyController.computeAndReturnPassengerSatisfaction("Mustermann GmbH", "HARD"), 91);
+	}
+
+	@Test
+	public void testLoadCompany() {
+		Mockito.when(restTemplate.postForObject(anyString(), any(), eq(Void.class))).thenReturn(null);
+		companyController.loadCompany(CompanyResponse.builder()
+						.balance(80000.0)
+						.playerName("Max Mustermann")
+						.name("Mustermann GmbH")
+						.time("01-01-2017 04:00")
+						.difficultyLevel("EASY")
+						.satisfactionRate(100.0)
+						.scenarioName("Landuff")
+				.build());
+	}
+
+	@Test
+	public void setDifficultyLevel() {
+		Mockito.when(restTemplate.patchForObject(anyString(), any(), eq(DifficultyLevelResponse.class))).thenReturn(
+				DifficultyLevelResponse.builder()
+						.company("Mustermann GmbH")
+						.difficultyLevel("HARD").build());
+		assertEquals("HARD", companyController.setDifficultyLevel("Mustermann GmbH", "HARD"));
 	}
 
 }

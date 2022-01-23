@@ -4,6 +4,7 @@ import de.davelee.trams.api.request.AddRouteRequest;
 import de.davelee.trams.api.response.RouteResponse;
 import de.davelee.trams.api.response.RoutesResponse;
 import de.davelee.trams.util.SortedRouteResponses;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.client.RestTemplate;
@@ -17,7 +18,7 @@ import java.util.Arrays;
 @Controller
 public class RouteController {
 
-	private final RestTemplate restTemplate = new RestTemplate();
+	private RestTemplate restTemplate;
 
 	@Value("${server.operations.url}")
 	private String operationsServerUrl;
@@ -71,6 +72,15 @@ public class RouteController {
 					.routeNumber(routeResponse.getRouteNumber())
 					.build(), Void.class);
 		}
+	}
+
+	/**
+	 * Set the rest template object via Spring.
+	 * @param restTemplate a <code>RestTemplate</code> object.
+	 */
+	@Autowired
+	public void setRestTemplate(final RestTemplate restTemplate) {
+		this.restTemplate = restTemplate;
 	}
 
 }

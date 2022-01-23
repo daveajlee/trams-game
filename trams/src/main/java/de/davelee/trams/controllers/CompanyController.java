@@ -1,7 +1,5 @@
 package de.davelee.trams.controllers;
 
-import java.time.format.DateTimeParseException;
-
 import de.davelee.trams.api.request.*;
 import de.davelee.trams.api.response.*;
 import de.davelee.trams.util.DifficultyLevel;
@@ -96,12 +94,7 @@ public class CompanyController {
 						.company(company)
 						.minutes(15).build(),
 				TimeResponse.class);
-		//Convert time.
-		try {
-			return timeResponse != null ? timeResponse.getTime() : null;
-		} catch ( DateTimeParseException dateTimeParseException ) {
-			return null;
-		}
+		return timeResponse != null ? timeResponse.getTime() : null;
 	}
 
 	/**
