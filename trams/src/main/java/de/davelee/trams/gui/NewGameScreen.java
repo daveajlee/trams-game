@@ -102,17 +102,22 @@ public class NewGameScreen extends JFrame {
                 Scenario scenario = controllerHandler.getScenarioController().getScenario(availableScenariosComboBox.getSelectedItem().toString());
                 //Create Game
                 CompanyResponse companyResponse = controllerHandler.getCompanyController().createCompany(playerNameField.getText(), scenario.getScenarioName(), companyNameField.getText());
-                //Create supplied vehicles.
-                controllerHandler.getVehicleController().createSuppliedVehicles(scenario.getSuppliedVehicles(), companyResponse.getTime(), companyNameField.getText());
-                //Create supplied drivers.
-                controllerHandler.getDriverController().createSuppliedDrivers(scenario.getSuppliedDrivers(), companyResponse.getTime(), companyNameField.getText());
-                //Create welcome message.
-                controllerHandler.getMessageController().addMessage(companyNameField.getText(), "Welcome Message", "Congratulations on your appointment as Managing Director of the " +
-                        scenario.getScenarioName() + "! \n\n Your targets for the coming days and months are: " +
-                        scenario.getTargets(), "Council", "INBOX", companyResponse.getTime());
-                ScenarioDescriptionScreen scenarioDescriptionScreen = new ScenarioDescriptionScreen(controllerHandler);
-                scenarioDescriptionScreen.displayScreen(scenario.getDescription(), companyNameField.getText(), playerNameField.getText());
-                dispose();
+                if ( companyResponse != null ) {
+                    //Create supplied vehicles.
+                    controllerHandler.getVehicleController().createSuppliedVehicles(scenario.getSuppliedVehicles(), companyResponse.getTime(), companyNameField.getText());
+                    //Create supplied drivers.
+                    controllerHandler.getDriverController().createSuppliedDrivers(scenario.getSuppliedDrivers(), companyResponse.getTime(), companyNameField.getText());
+                    //Create welcome message.
+                    controllerHandler.getMessageController().addMessage(companyNameField.getText(), "Welcome Message", "Congratulations on your appointment as Managing Director of the " +
+                            scenario.getScenarioName() + "! \n\n Your targets for the coming days and months are: " +
+                            scenario.getTargets(), "Council", "INBOX", companyResponse.getTime());
+                    ScenarioDescriptionScreen scenarioDescriptionScreen = new ScenarioDescriptionScreen(controllerHandler);
+                    scenarioDescriptionScreen.displayScreen(scenario.getDescription(), companyNameField.getText(), playerNameField.getText());
+                    dispose();
+                } else {
+                    //Show error message if this combination already exists.
+                    JOptionPane.showMessageDialog(this, "A company with this name already exists. Please choose another name for your company", "ERROR: Company already exists!", JOptionPane.ERROR_MESSAGE);
+                }
             }
         });
         buttonPanel.add(createGameButton);

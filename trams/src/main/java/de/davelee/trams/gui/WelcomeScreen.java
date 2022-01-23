@@ -62,7 +62,7 @@ public class WelcomeScreen extends JFrame {
         
         //Create top, centre and bottom panels to add things to.
         JPanel topPanel = new JPanel();
-        JPanel centrePanel = new JPanel(new GridLayout(1,2,5,5)); JPanel bottomPanel = new JPanel();
+        JPanel centrePanel = new JPanel(new GridLayout(1,3,5,5)); JPanel bottomPanel = new JPanel();
         topPanel.setBackground(Color.WHITE);
         centrePanel.setBackground(Color.WHITE); bottomPanel.setBackground(Color.WHITE);
         
@@ -86,8 +86,8 @@ public class WelcomeScreen extends JFrame {
         newPanel.setLayout ( new BoxLayout ( newPanel, BoxLayout.PAGE_AXIS ) );
         JPanel busPanel = new JPanel();
         initialiseNewPanel(busPanel);
-        ImageDisplay newBusDisplay = new ImageDisplay("new-game-bus-welcome-screen.png",25,0);
-        newBusDisplay.setSize(225,190);
+        ImageDisplay newBusDisplay = new ImageDisplay("new-game-button.png",25,0);
+        newBusDisplay.setSize(160,100);
         newBusDisplay.setBackground(Color.WHITE);
         newBusDisplay.addMouseListener ( new NewGameMouseListener(WelcomeScreen.this, controllerHandler));
         busPanel.add(newBusDisplay);
@@ -101,8 +101,8 @@ public class WelcomeScreen extends JFrame {
         loadPanel.setLayout ( new BoxLayout ( loadPanel, BoxLayout.PAGE_AXIS ) );
         JPanel busLoadPanel = new JPanel();
         initialiseLoadPanel(busLoadPanel);
-        ImageDisplay loadBusDisplay = new ImageDisplay("load-game-tram-welcome-screen.png",25,0);
-        loadBusDisplay.setSize(240,190);
+        ImageDisplay loadBusDisplay = new ImageDisplay("load-game-button.png",25,0);
+        loadBusDisplay.setSize(160,100);
         loadBusDisplay.setBackground(Color.WHITE);
         loadBusDisplay.addMouseListener ( new LoadGameMouseListener(WelcomeScreen.this, controllerHandler));
         busLoadPanel.add(loadBusDisplay);
@@ -115,31 +115,30 @@ public class WelcomeScreen extends JFrame {
         exitPanel.setLayout ( new BoxLayout ( exitPanel, BoxLayout.PAGE_AXIS ) );
         JPanel busExitPanel = new JPanel();
         initialiseExitPanel(busExitPanel);
-        ImageDisplay exitBusDisplay = new ImageDisplay("exit-game-bendy-small.png",25,0);
-        exitBusDisplay.setSize(240,190);
+        ImageDisplay exitBusDisplay = new ImageDisplay("exit-button.png",25,0);
+        exitBusDisplay.setSize(160,100);
         exitBusDisplay.setBackground(Color.WHITE);
         exitBusDisplay.addMouseListener ( new ExitMouseListener (WelcomeScreen.this) );
         busExitPanel.add(exitBusDisplay);
         exitPanel.add(busExitPanel);
         exitPanel.add(Box.createRigidArea(new Dimension(0,10))); //Spacer.
-        bottomPanel.add(exitPanel);
-        bottomPanel.addMouseListener ( new ExitMouseListener (WelcomeScreen.this));
+        centrePanel.add(exitPanel);
+        centrePanel.addMouseListener ( new ExitMouseListener (WelcomeScreen.this));
         
         //Add centre and bottom panels to container.
         c.add(topPanel, BorderLayout.NORTH);
         c.add(centrePanel, BorderLayout.CENTER);
-        c.add(bottomPanel, BorderLayout.SOUTH);
         
         //Position the screen at the center of the screen.
         Toolkit tools = Toolkit.getDefaultToolkit();
         Dimension screenDim = tools.getScreenSize();
-        Dimension displayDim = new Dimension(750,600);
+        Dimension displayDim = getPreferredSize();;
         this.setLocation ( (screenDim.width/2)-(displayDim.width/2), (screenDim.height/2)-(displayDim.height/2));
         
         //Display the front screen to the user.
         this.pack ();
         this.setVisible (true);
-        this.setSize ( new Dimension(750,600) );
+        this.setSize ( getPreferredSize() );
     }
     
     /**

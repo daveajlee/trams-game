@@ -41,10 +41,10 @@ public record ManagementPanel(ControllerHandler controllerHandler) {
         ImageDisplay infoDisplay;
         String company = companyResponse.getName();
         if ( numberRoutes == 0 || (controllerHandler.getVehicleController().getAllCreatedVehicles(company) != null && controllerHandler.getVehicleController().getAllCreatedVehicles(company).getCount() == 0) || (controllerHandler.getVehicleController().getAllocations(company) != null && controllerHandler.getVehicleController().getAllocations(company).size() == 0 )) {
-            infoDisplay = new ImageDisplay("cross-picture.png",0,0);
+            infoDisplay = new ImageDisplay("stop-icon.png",0,0);
         }
         else {
-            infoDisplay = new ImageDisplay("info-picture.png",0,0);
+            infoDisplay = new ImageDisplay("info-icon.png",0,0);
         }
         infoDisplay.setSize(50,50);
         infoDisplay.setBackground(Color.WHITE);

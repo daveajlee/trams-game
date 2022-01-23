@@ -85,9 +85,9 @@ public record EmployDriverPanel (ControllerHandler controllerHandler) {
         JLabel startLabel = new JLabel("Start Date:", SwingConstants.CENTER);
         startLabel.setFont(new Font("Arial", Font.BOLD, 16));
         startLabelPanel.add(startLabel);
-        LocalDate startDate = LocalDate.parse(companyResponse.getTime(), DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+        LocalDate startDate = LocalDate.parse(companyResponse.getTime(), DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"));
         startDate = startDate.plusDays(3);
-        JLabel startField = new JLabel("" + DateFormat.getDateInstance(DateFormat.FULL, Locale.UK).format(startDate));
+        JLabel startField = new JLabel("" + startDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")));
         startField.setFont(new Font("Arial", Font.ITALIC, 14));
         startLabelPanel.add(startField);
         gridPanel.add(startLabelPanel);

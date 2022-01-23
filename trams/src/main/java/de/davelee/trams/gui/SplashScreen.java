@@ -76,7 +76,7 @@ public class SplashScreen extends JFrame {
         //Construct copyright panel to add to the centre panel.
         JPanel copyrightPanel = new JPanel();
         copyrightPanel.setBackground(Color.WHITE);
-        JLabel copyrightLabel = new JLabel("Copyright 2014-2020 Dr. David A J Lee. All rights reserved.");
+        JLabel copyrightLabel = new JLabel("Copyright 2014-2022 Dr. David A J Lee. All rights reserved.");
         copyrightLabel.setFont(new Font("Arial", Font.PLAIN, 10));
         copyrightPanel.add(copyrightLabel);
         centrePanel.add(copyrightPanel);

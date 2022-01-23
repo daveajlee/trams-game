@@ -6,6 +6,7 @@ import de.davelee.trams.util.GuiUtils;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.Serial;
+import java.text.MessageFormat;
 
 import javax.swing.*;
 
@@ -78,7 +79,7 @@ public class ScenarioDescriptionScreen extends JFrame {
         //Create the descriptionPanel.
         JPanel descriptionPanel = new JPanel();
         descriptionPanel.setBackground(Color.WHITE);
-        JTextArea scenarioDescriptionArea = new JTextArea(playerName + " " + description);
+        JTextArea scenarioDescriptionArea = new JTextArea(playerName + " " + MessageFormat.format(description, company));
         scenarioDescriptionArea.setFont(new Font("Arial", Font.PLAIN, 16));
         scenarioDescriptionArea.setLineWrap(true);
         scenarioDescriptionArea.setWrapStyleWord(true);

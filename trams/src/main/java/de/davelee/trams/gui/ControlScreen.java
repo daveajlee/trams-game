@@ -208,7 +208,7 @@ public class ControlScreen extends ButtonBar {
         topPanel = new JPanel();
         topPanel.setLayout ( new BorderLayout () );
         topPanel.setBackground(Color.WHITE);
-        timeLabel = new JLabel(companyResponse.getTime(), SwingConstants.CENTER);
+        timeLabel = new JLabel(formatTime(companyResponse.getTime()), SwingConstants.CENTER);
         timeLabel.setFont(new Font("Arial", Font.ITALIC, 20));
         topPanel.add(timeLabel, BorderLayout.NORTH);
 
@@ -797,6 +797,25 @@ public class ControlScreen extends ButtonBar {
         JLabel foldersLabel = new JLabel(text);
         foldersLabel.setFont(new Font("Arial", Font.BOLD, 14));
         return foldersLabel;
+    }
+
+    private String formatTime ( final String time ) {
+        LocalDateTime currentDateTime = LocalDateTime.parse(time, DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"));
+        return currentDateTime.format(DateTimeFormatter.ofPattern("EEEE d", Locale.UK)) + getDateEnding(currentDateTime.getDayOfMonth()) +
+                " " +  currentDateTime.format(DateTimeFormatter.ofPattern("MMMM y", Locale.UK)) + " at "
+                + currentDateTime.format(DateTimeFormatter.ofPattern("H:mm a", Locale.UK));
+    }
+
+    private String getDateEnding ( final int dayNum ) {
+        if ( dayNum == 1 || dayNum == 21 || dayNum == 31) {
+            return "st";
+        } else if ( dayNum == 2 || dayNum == 22 ) {
+            return "nd";
+        } else if ( dayNum == 3 || dayNum == 23) {
+            return "rd";
+        } else {
+            return "th";
+        }
     }
 
 }
