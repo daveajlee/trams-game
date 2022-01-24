@@ -20,9 +20,14 @@ public class ControllerHandlerTest {
     @Mock
     private FileController fileController;
 
+    @Mock
+    private CompanyController companyController;
+
     @Test
     public void testSetters() {
+        controllerHandler.setFileController(fileController);
         assertNotNull(controllerHandler.getFileController());
+        controllerHandler.setCompanyController(companyController);
         assertNotNull(controllerHandler.getCompanyController());
         assertNotNull(controllerHandler.getScenarioController());
         assertNotNull(controllerHandler.getVehicleController());
