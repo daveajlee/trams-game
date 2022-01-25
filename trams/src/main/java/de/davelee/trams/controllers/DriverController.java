@@ -24,8 +24,6 @@ import java.util.List;
  * @author Dave Lee
  */
 @Controller
-@Getter
-@Setter
 public class DriverController {
 
     private RestTemplate restTemplate;
@@ -122,7 +120,7 @@ public class DriverController {
         UserResponse[] userResponses = getAllDrivers(companyResponse.getName());
         if (userResponses != null && userResponses.length > 0) {
             for (UserResponse userResponse : userResponses) {
-                LocalDate currentDate = LocalDate.parse(companyResponse.getTime(), DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+                LocalDate currentDate = LocalDate.parse(companyResponse.getTime(), DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"));
                 LocalDate startDate = LocalDate.parse(userResponse.getStartDate(), DateTimeFormatter.ofPattern("dd-MM-yyyy"));
                 if (currentDate.isAfter(startDate) || currentDate.isEqual(startDate)) {
                     return true;

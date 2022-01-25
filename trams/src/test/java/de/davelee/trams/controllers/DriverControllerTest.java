@@ -4,8 +4,6 @@ import de.davelee.trams.TramsGameApplication;
 import de.davelee.trams.api.response.CompanyResponse;
 import de.davelee.trams.api.response.UserResponse;
 import de.davelee.trams.api.response.UsersResponse;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -70,5 +68,45 @@ public class DriverControllerTest {
                         .startDate("01-01-2020 02:00").build()
         }, "Mustermann GmbH");
     }
+
+    @Test
+    public void testHasSomeDriversBeenEmployed() {
+        Mockito.when(restTemplate.getForObject(anyString(), eq(UsersResponse.class))).thenReturn(
+                UsersResponse.builder()
+                        .userResponses(new UserResponse[] {
+                                UserResponse.builder()
+                                        .company("Mustermann GmbH")
+                                        .firstName("Max")
+                                        .surname("Mustermann")
+                                        .startDate("01-01-2020")
+                                        .build()
+                        }).build()
+        );
+        assertTrue(driverController.hasSomeDriversBeenEmployed(CompanyResponse.builder().name("Mustermann GmbH").time("01-01-2021 18:40").build()));
+        assertFalse(driverController.hasSomeDriversBeenEmployed(CompanyResponse.builder().name("Mustermann GmbH").time("01-01-2019 18:40").build()));
+        Mockito.when(restTemplate.getForObject(anyString(), eq(UsersResponse.class))).thenReturn(
+                UsersResponse.builder()
+                        .userResponses(new UserResponse[0]).build()
+        );
+        assertFalse(driverController.hasSomeDriversBeenEmployed(CompanyResponse.builder().name("Mustermann GmbH").time("01-01-2021 18:40").build()));
+    }
+
+    @Test
+    public void testGetDriverByName() {
+        Mockito.when(restTemplate.getForObject(anyString(), eq(UserResponse.class))).thenReturn(
+                                UserResponse.builder()
+                                        .company("Mustermann GmbH")
+                                        .firstName("Max")
+                                        .surname("Mustermann")
+                                        .startDate("01-01-2020")
+                                        .build());
+        assertNotNull(driverController.getDriverByName("Max Mustermann", "Mustermann GmbH"));
+    }
+    @Test
+    public void testSackDriver() {
+        Mockito.doNothing().when(restTemplate).delete(anyString());
+        driverController.sackDriver("Mustermann GmbH", "mmustermann");
+    }
+
 
 }
