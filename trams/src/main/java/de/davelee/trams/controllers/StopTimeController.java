@@ -8,6 +8,7 @@ import de.davelee.trams.api.response.StopTimesResponse;
 import de.davelee.trams.util.Direction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.client.RestTemplate;
@@ -21,7 +22,7 @@ import java.util.Optional;
 @Controller
 public class StopTimeController {
 
-    private final RestTemplate restTemplate = new RestTemplate();
+    private RestTemplate restTemplate;
 
     @Value("${server.operations.url}")
     private String operationsServerUrl;
@@ -96,6 +97,15 @@ public class StopTimeController {
             return stopTimesResponse.getStopTimeResponses();
         }
         return null;
+    }
+
+    /**
+     * Set the rest template object via Spring.
+     * @param restTemplate a <code>RestTemplate</code> object.
+     */
+    @Autowired
+    public void setRestTemplate(final RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
     }
 
 }

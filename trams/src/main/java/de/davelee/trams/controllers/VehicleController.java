@@ -289,14 +289,14 @@ public class VehicleController {
 
 	/**
 	 * Load Vehicles.
-	 * @param vehicleModels an array of <code>VehicleModel</code> objects with vehicles to store and delete all other vehicles.
+	 * @param vehicleResponses an array of <code>VehicleModel</code> objects with vehicles to store and delete all other vehicles.
 	 * @param company a <code>String</code> with the name of the company.
 	 * @param currentDate a <code>String</code> with the current date in format dd-MM-yyyy.
 	 */
-	public void loadVehicles ( final VehicleResponse[] vehicleModels, final String company, final LocalDate currentDate ) {
+	public void loadVehicles ( final VehicleResponse[] vehicleResponses, final String company, final LocalDate currentDate ) {
 		restTemplate.delete(operationsServerUrl + "vehicles/?company=" + company);
-		for ( VehicleResponse vehicleModel : vehicleModels ) {
-			purchaseVehicle(vehicleModel.getModelName(), vehicleModel.getCompany(), currentDate.getYear(), Optional.of(Integer.parseInt(vehicleModel.getFleetNumber())));
+		for ( VehicleResponse vehicleResponse : vehicleResponses ) {
+			purchaseVehicle(vehicleResponse.getModelName(), vehicleResponse.getCompany(), currentDate.getYear(), Optional.of(Integer.parseInt(vehicleResponse.getFleetNumber())));
 		}
 	}
 
@@ -309,26 +309,33 @@ public class VehicleController {
 	public String generateRandomReg ( final int year, final String company ) {
 		//Generate random registration - in form 2 digit year - then 5 random letters.
 		boolean isUniqueReg = true;
-		String randomReg = "" + year + "-";
+		String randomReg = "";
 		//This is our loop - till we get unique reg.
 		do {
 			//Here is random reg.
-			randomReg += RandomStringUtils.randomAlphabetic(5);
+			randomReg = "" + year + "-" + RandomStringUtils.randomAlphabetic(5);
 			//Now check that random reg not been generated before.
-			VehiclesResponse vehiclesResponse = getVehicles(company);
-			if ( vehiclesResponse != null && vehiclesResponse.getVehicleResponses() != null ) {
-				for ( VehicleResponse vehicleModel : vehiclesResponse.getVehicleResponses() ) {
-					if ( vehicleModel.getAdditionalTypeInformationMap().get("Registration Number").equalsIgnoreCase(randomReg) ) {
-						isUniqueReg = false;
-						break;
-					}
-				}
-			}
-			if ( !isUniqueReg ) {
-				randomReg = "" + year + "-";
-			}
+			isUniqueReg = checkIfRegExists(company, randomReg);
 		} while ( !isUniqueReg );
 		return randomReg;
+	}
+
+	/**
+	 * This method checks if the supplied registration number already exists for the supplied company.
+	 * @param company a <code>String</code> with the name of the company to check registrations for.
+	 * @param randomReg a <code>String</code> with the registration number to check.
+	 * @return a <code>boolean</code> which is true iff the registration number already exists for this company.
+	 */
+	public boolean checkIfRegExists(final String company, final String randomReg) {
+		VehiclesResponse vehiclesResponse = getVehicles(company);
+		if ( vehiclesResponse != null && vehiclesResponse.getVehicleResponses() != null ) {
+			for ( VehicleResponse vehicleModel : vehiclesResponse.getVehicleResponses() ) {
+				if ( vehicleModel.getAdditionalTypeInformationMap().get("Registration Number").equalsIgnoreCase(randomReg) ) {
+					return false;
+				}
+			}
+		}
+		return true;
 	}
 
 	/**

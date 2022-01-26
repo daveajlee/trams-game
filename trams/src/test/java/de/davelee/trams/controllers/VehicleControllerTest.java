@@ -1,5 +1,6 @@
 package de.davelee.trams.controllers;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -99,6 +100,30 @@ public class VehicleControllerTest {
 		assertEquals(1, vehicleController.getVehicles("Mustermann GmbH").getCount());
 		assertNotNull(vehicleController.getVehicleByRegistrationNumber("DDD2 HJK", "Mustermann GmbH"));
 		Assertions.assertNull(vehicleController.getVehicleByRegistrationNumber("2013-001", "Mustermann GmbH"));
+	}
+
+	@Test
+	public void testCheckIfRegExists() {
+		Mockito.when(restTemplate.getForObject(anyString(), eq(VehiclesResponse.class))).
+				thenReturn(VehiclesResponse.builder()
+						.count(1L)
+						.vehicleResponses(new VehicleResponse[] { VehicleResponse.builder().company("Mustermann GmbH")
+								.additionalTypeInformationMap(Map.of("Registration Number", "DDD2 HJK"))
+								.deliveryDate("24-12-2020").build() })
+						.build());
+		assertFalse(vehicleController.checkIfRegExists("Mustermann GmbH", "DDD2 HJK"));
+	}
+
+	@Test
+	public void testLoadVehicles() {
+		Mockito.doNothing().when(restTemplate).delete(anyString());
+		vehicleController.loadVehicles(new VehicleResponse[] {
+				VehicleResponse.builder()
+						.company("Mustermann GmbH")
+						.modelName("BendyBus 2000")
+						.fleetNumber("2003")
+						.build()
+		}, "Mustermann GmbH", LocalDate.of(2021, 12, 1));
 	}
 
 	@Test

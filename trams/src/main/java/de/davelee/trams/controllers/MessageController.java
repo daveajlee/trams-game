@@ -3,6 +3,7 @@ package de.davelee.trams.controllers;
 import de.davelee.trams.api.request.MessageRequest;
 import de.davelee.trams.api.response.MessageResponse;
 import de.davelee.trams.api.response.MessagesResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.client.RestTemplate;
@@ -14,7 +15,7 @@ import org.springframework.web.client.RestTemplate;
 @Controller
 public class MessageController {
 
-    private final RestTemplate restTemplate = new RestTemplate();
+    private RestTemplate restTemplate;
 
     @Value("${server.crm.url}")
     private String crmServerUrl;
@@ -104,6 +105,15 @@ public class MessageController {
                     .dateTime(messageResponse.getDateTime())
                     .build(), Void.class);
         }
+    }
+
+    /**
+     * Set the rest template object via Spring.
+     * @param restTemplate a <code>RestTemplate</code> object.
+     */
+    @Autowired
+    public void setRestTemplate(final RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
     }
 
 }

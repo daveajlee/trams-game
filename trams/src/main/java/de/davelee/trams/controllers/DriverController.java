@@ -4,10 +4,6 @@ import de.davelee.trams.api.request.UserRequest;
 import de.davelee.trams.api.response.CompanyResponse;
 import de.davelee.trams.api.response.UserResponse;
 import de.davelee.trams.api.response.UsersResponse;
-import lombok.Getter;
-import lombok.Setter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -32,8 +28,6 @@ public class DriverController {
     private String personalManServerUrl;
 
     private String token;
-
-    private static final Logger logger = LoggerFactory.getLogger(DriverController.class);
 
     /**
      * Return all drivers belonging to the supplied company.
