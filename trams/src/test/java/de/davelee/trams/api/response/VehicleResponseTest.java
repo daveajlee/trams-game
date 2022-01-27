@@ -36,6 +36,8 @@ public class VehicleResponseTest {
         assertEquals("XXX2 BBB", vehicleResponse.getAdditionalTypeInformationMap().get("Registration Number"));
         assertEquals("Inspected", vehicleResponse.getInspectionStatus());
         assertEquals(100, vehicleResponse.getNextInspectionDueInDays());
+        vehicleResponse = new VehicleResponse();
+        vehicleResponse.setCompany("Lee Buses");
         vehicleResponse.setLivery("Blue with orange text");
         vehicleResponse.setFleetNumber("1213");
         vehicleResponse.setAllocatedTour("1/2");
