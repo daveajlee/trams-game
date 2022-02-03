@@ -21,11 +21,12 @@ public class RouteResponseTest {
                 .build();
         assertEquals("405", routeResponse.getRouteNumber());
         assertEquals("Mustermann Bus GmbH", routeResponse.getCompany());
-        routeResponse.setCompany("Mustermann Buses GmbH");
-        routeResponse.setRouteNumber("405A");
-        assertEquals("405A", routeResponse.getRouteNumber());
-        assertEquals("Mustermann Buses GmbH", routeResponse.getCompany());
-        assertEquals("RouteResponse(routeNumber=405A, company=Mustermann Buses GmbH)", routeResponse.toString());
+        RouteResponse routeResponse2 = new RouteResponse();
+        routeResponse2.setCompany("Mustermann Buses GmbH");
+        routeResponse2.setRouteNumber("405A");
+        assertEquals("405A", routeResponse2.getRouteNumber());
+        assertEquals("Mustermann Buses GmbH", routeResponse2.getCompany());
+        assertEquals("RouteResponse(routeNumber=405A, company=Mustermann Buses GmbH)", routeResponse2.toString());
     }
 
 }

@@ -3,7 +3,6 @@ package de.davelee.trams.gui.panels;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.util.List;
 
 import javax.swing.*;
 
@@ -20,8 +19,6 @@ import de.davelee.trams.controllers.ControllerHandler;
 public class RoutePanel {
 
     private final ControllerHandler controllerHandler;
-    private DefaultListModel<String> availableStopModel;
-	private DefaultListModel<String> routeStopModel;
 	private JButton createRouteButton;
 	private JTextField routeNumberField;
 
@@ -76,78 +73,13 @@ public class RoutePanel {
         routeScreenPanel.add(routeNumberPanel);
         routeScreenPanel.add(Box.createRigidArea(new Dimension(0,10))); //Spacer.
         
-        //Now create stops - a 1 x 3 grid layout.
-        JPanel stopGridPanel = new JPanel(new GridLayout(1,3,5,5));
-        stopGridPanel.setBackground(Color.WHITE);
-
-        //Create the route stop panel.
-        routeStopModel = new DefaultListModel<>();
-        if ( routeResponse != null ) {
-            //TODO: Add each stop served by this route in a drop down.
-            routeStopModel.addElement("");
-        }
-        CompanyResponse companyResponse = controllerHandler.getCompanyController().getCompany(controlScreen.getCompany(), controlScreen.getPlayerName());
-        String[] stopNames = convertToStopNames(controllerHandler.getScenarioController().getScenario(companyResponse.getScenarioName()).getStopDistances());
-        availableStopModel = new DefaultListModel<>();
-        for (String stopName : stopNames) {
-            availableStopModel.addElement(stopName);
-        }
-        final JList<String> availableStopList = new JList<>(availableStopModel);
-        final JList<String> routeStopList = new JList<>(routeStopModel);
-        final JPanel routeStopListPanel = new JPanel(new BorderLayout());
-        routeStopListPanel.setBackground(Color.WHITE);
-        JLabel routeStopListLabel = new JLabel("Route Stops:");
-        routeStopListLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        routeStopListLabel.setFont(new Font("Arial", Font.BOLD + Font.ITALIC, 14));
-        routeStopListPanel.add(routeStopListLabel, BorderLayout.NORTH);
-        final JScrollPane routeScrollPane = new JScrollPane(routeStopList);
-        routeStopList.setVisibleRowCount(5);
-        routeStopList.setFont(new Font("Arial", Font.PLAIN, 12));
-        routeStopListPanel.add(routeScrollPane, BorderLayout.SOUTH);
-        stopGridPanel.add(routeStopListPanel);
-        //Create the buttons panel.
-        final JPanel stopButtonPanel = new JPanel(new BorderLayout());
-        stopButtonPanel.setBackground(Color.WHITE);
-        final JButton routeAddStopButton = new JButton("<<");
-        routeAddStopButton.addActionListener(e -> {
-            String stopName = availableStopList.getSelectedValue();
-            controllerHandler.getStopController().saveStop(stopName, controlScreen.getCompany());
-            routeStopModel.addElement(stopName);
-            availableStopModel.removeElement(stopName);
-            enableCreateButtons();
-        });
-        routeAddStopButton.setHorizontalAlignment(SwingConstants.CENTER);
-        stopButtonPanel.add(routeAddStopButton, BorderLayout.NORTH);
-        final JButton routeRemoveStopButton = new JButton(">>");
-        routeRemoveStopButton.addActionListener(e -> {
-            String stopName = routeStopList.getSelectedValue();
-            availableStopModel.addElement(stopName);
-            routeStopModel.removeElement(stopName);
-            enableCreateButtons();
-        });
-        routeRemoveStopButton.setHorizontalAlignment(SwingConstants.CENTER);
-        stopButtonPanel.add(routeRemoveStopButton, BorderLayout.SOUTH);
-        stopGridPanel.add(stopButtonPanel);
-        final JPanel availableStopListPanel = new JPanel(new BorderLayout());
-        availableStopListPanel.setBackground(Color.WHITE);
-        JLabel availableStopListLabel = new JLabel("Available Stops:");
-        availableStopListLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        availableStopListLabel.setFont(new Font("Arial", Font.BOLD + Font.ITALIC, 14));
-        availableStopListPanel.add(createPanelWithOneComponent(availableStopListLabel, new BorderLayout()), BorderLayout.NORTH);
-        final JScrollPane availableScrollPane = new JScrollPane(availableStopList);
-        availableStopList.setVisibleRowCount(5);
-        availableStopList.setFont(new Font("Arial", Font.PLAIN, 12));
-        availableStopListPanel.add(availableScrollPane, BorderLayout.SOUTH);
-        stopGridPanel.add(availableStopListPanel);
-        
-        //Add the stopGrid panel to the screen panel.
-        routeScreenPanel.add(stopGridPanel);
-        routeScreenPanel.add(Box.createRigidArea(new Dimension(0,10))); //Spacer.
-        
         //Create bottom button panel for next two buttons.
         JPanel bottomButtonPanel = new JPanel();
         bottomButtonPanel.setBackground(Color.WHITE);
-        
+
+        //Retrieve company response for further processing.
+        CompanyResponse companyResponse = controlScreen.getControllerHandler().getCompanyController().getCompany(controlScreen.getCompany(), controlScreen.getPlayerName());
+
         //Create new route button and add it to screen panel.
         createRouteButton = new JButton("Create Route");
         createRouteButton.setEnabled(false);
@@ -180,23 +112,9 @@ public class RoutePanel {
      */
 	private void enableCreateButtons ( ) {
         //To enable create timetable button we need the selected item in stop1Box and stop2Box to not be -.
-        if ( routeStopModel.getSize() > 1 && !routeNumberField.getText().equalsIgnoreCase("") ) {
+        if ( !routeNumberField.getText().equalsIgnoreCase("") ) {
             createRouteButton.setEnabled(true);
         }
-    }
-
-    /**
-     * This is a private method to convert the stop distances text in the format stop name : distance to
-     * retrieve an array of only stop names.
-     * @param stopDistances a <code>List</code> of <code>String</code> containing the stop distances in the format stop name : distance.
-     * @return a <code>String</code> array with the stop names.
-     */
-    private String[] convertToStopNames ( final List<String> stopDistances ) {
-        String[] stopNames = new String[stopDistances.size()];
-        for ( int i = 0; i < stopDistances.size(); i++ ) {
-            stopNames[i] = stopDistances.get(i).split(":")[0];
-        }
-        return stopNames;
     }
 
     /**

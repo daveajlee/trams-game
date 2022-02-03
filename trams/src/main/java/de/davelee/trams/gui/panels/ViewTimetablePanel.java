@@ -125,11 +125,12 @@ public class ViewTimetablePanel {
         //Show valid information.
         JPanel validityPanel = new JPanel(new BorderLayout());
         validityPanel.setBackground(Color.WHITE);
-        StopTimeResponse[] stopTimeModels = controllerHandler.getStopTimeController().getStopTimes(Optional.empty(), initialRouteResponse.getRouteNumber(), companyResponse.getTime(), companyResponse.getName(), Optional.empty());
-        JLabel validFromDateLabel = new JLabel("Valid From: " + stopTimeModels[0].getValidFromDate());
+        //TODO: choose a concrete stop and not Test Stop.
+        StopTimeResponse[] stopTimeModels = controllerHandler.getStopTimeController().getStopTimes(Optional.empty(), initialRouteResponse.getRouteNumber(), companyResponse.getTime(), companyResponse.getName(), Optional.empty(), "Test Stop");
+        JLabel validFromDateLabel = new JLabel("Valid From: " + stopTimeModels == null ? stopTimeModels[0].getValidFromDate() : "");
         validFromDateLabel.setFont(new Font("Arial", Font.ITALIC, 14));
         validityPanel.add(validFromDateLabel, BorderLayout.NORTH);
-        JLabel validToDateLabel = new JLabel("Valid To: " + stopTimeModels[0].getValidToDate());
+        JLabel validToDateLabel = new JLabel("Valid To: " + stopTimeModels == null ? stopTimeModels[0].getValidToDate() : "");
         validToDateLabel.setFont(new Font("Arial", Font.ITALIC, 14));
         validityPanel.add(validToDateLabel, BorderLayout.SOUTH);
         topPanel.add(validityPanel, BorderLayout.SOUTH);
@@ -143,7 +144,8 @@ public class ViewTimetablePanel {
 
         //Display it!
         if ( stopSelectionBox.getSelectedItem() != null ) {
-            myTable.setModel(createTableModel(initialRouteResponse.getRouteNumber(), stopSelectionBox.getSelectedItem().toString(), Direction.OUTGOING, companyResponse.getTime(), companyResponse.getName()));
+            //TODO: Replace Test Stop with a correct stop name.
+            myTable.setModel(createTableModel(initialRouteResponse.getRouteNumber(), "Test Stop", Direction.OUTGOING, companyResponse.getTime(), companyResponse.getName()));
         }
         myTable.setFont(new Font("Arial", Font.PLAIN, 12));
         JScrollPane tableScrollPane = new JScrollPane(autoResizeColWidth(myTable, (DefaultTableModel) myTable.getModel()));
@@ -177,19 +179,21 @@ public class ViewTimetablePanel {
         String[] columnNames = new String[] { "", "Monday - Friday", "Saturday", "Sunday" };
         String[][] data = new String[24][4];
         //TODO: Add multiple route schedules.
-        StopTimeResponse[] stopTimeResponses = controllerHandler.getStopTimeController().getStopTimes(Optional.of(direction), routeNumber, date, company, Optional.empty() );
-        for ( StopTimeResponse stopTimeResponse : stopTimeResponses ) {
-            try {
-                String[] timeSplit = stopTimeResponse.getDepartureTime().split(":");
-                int displayPos = 1;
-                data[Integer.parseInt(timeSplit[0])][displayPos] = stopTimeResponse.getDepartureTime();
-                if ( data[Integer.parseInt(timeSplit[0])][displayPos] == null ) {
-                    data[Integer.parseInt(timeSplit[0])][displayPos] = "" + timeSplit[1];
-                } else {
-                    data[Integer.parseInt(timeSplit[0])][displayPos] = data[Integer.parseInt(timeSplit[0])][displayPos] + " " + timeSplit[1];
+        StopTimeResponse[] stopTimeResponses = controllerHandler.getStopTimeController().getStopTimes(Optional.of(direction), routeNumber, date, company, Optional.empty(), stopName );
+        if ( stopTimeResponses != null ) {
+            for (StopTimeResponse stopTimeResponse : stopTimeResponses) {
+                try {
+                    String[] timeSplit = stopTimeResponse.getDepartureTime().split(":");
+                    int displayPos = 1;
+                    data[Integer.parseInt(timeSplit[0])][displayPos] = stopTimeResponse.getDepartureTime();
+                    if (data[Integer.parseInt(timeSplit[0])][displayPos] == null) {
+                        data[Integer.parseInt(timeSplit[0])][displayPos] = "" + timeSplit[1];
+                    } else {
+                        data[Integer.parseInt(timeSplit[0])][displayPos] = data[Integer.parseInt(timeSplit[0])][displayPos] + " " + timeSplit[1];
+                    }
+                } catch (NoSuchElementException ex) {
+                    logger.debug("No stop time found for " + stopTimeResponse + " and stop name " + stopName);
                 }
-            } catch (NoSuchElementException ex) {
-                logger.debug("No stop time found for " + stopTimeResponse + " and stop name " + stopName);
             }
         }
         //Null check.

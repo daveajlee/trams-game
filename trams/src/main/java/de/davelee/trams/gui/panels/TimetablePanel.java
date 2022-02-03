@@ -107,8 +107,9 @@ public class TimetablePanel {
         everyLabel.setFont(new Font("Arial", Font.ITALIC, 16));
         timesPanel.add(everyLabel);
         int min = 10;
+        terminus1Box = new JComboBox<>(); terminus2Box = new JComboBox<>();
         if ( min > getCurrentRouteDuration(1, companyResponse.getScenarioName()) ) { min = getCurrentRouteDuration(1, companyResponse.getScenarioName()); }
-        everyMinuteModel = new SpinnerNumberModel(min,1,getMaxRouteDuration(companyResponse.getScenarioName()),1);
+        everyMinuteModel = new SpinnerNumberModel(min,1,120,1);
         everyMinuteSpinner = new JSpinner(everyMinuteModel);
         //Initialise minVehicles label here but then actually place it later.
         final JLabel minVehicleLabel = new JLabel("NOTE: " + getMinVehicles(companyResponse.getScenarioName()) + " vehicles are required to operate " + everyMinuteSpinner.getValue().toString() + " minute frequency!" );
@@ -140,39 +141,41 @@ public class TimetablePanel {
         //TODO: Add a list of the names of stops served by this route.
         StopResponse[] stopResponses = controllerHandler.getStopController().getAllStops(controlScreen.getCompany());
         //Terminus 1 Combo box.
-        terminus1Box = new JComboBox<>();
-        for ( int i = 0; i < stopResponses.length-1; i++ ) {
-            terminus1Box.addItem(stopResponses[i].getName());
-        }
-        terminus1Box.setSelectedIndex(0);
-        terminus1Box.setFont(new Font("Arial", Font.PLAIN, 14));
-        terminus1Box.addItemListener(e -> {
-            //Update terminus 2 box!!!
-            terminus2Box.removeAllItems();
-            for ( StopResponse stopResponse : stopResponses ) {
-                terminus2Box.addItem(stopResponse.getName());
+        if ( stopResponses != null && stopResponses.length > 0 ) {
+            for (int i = 0; i < stopResponses.length - 1; i++) {
+                terminus1Box.addItem(stopResponses[i].getName());
             }
-            //Update spinner!
-            everyMinuteModel.setMaximum(getCurrentRouteDuration(Integer.parseInt(everyMinuteSpinner.getValue().toString()), companyResponse.getScenarioName()));
-        });
+            terminus1Box.setSelectedIndex(0);
+            terminus1Box.setFont(new Font("Arial", Font.PLAIN, 14));
+            terminus1Box.addItemListener(e -> {
+                //Update terminus 2 box!!!
+                terminus2Box.removeAllItems();
+                for (StopResponse stopResponse : stopResponses) {
+                    terminus2Box.addItem(stopResponse.getName());
+                }
+                //Update spinner!
+                everyMinuteModel.setMaximum(getCurrentRouteDuration(Integer.parseInt(everyMinuteSpinner.getValue().toString()), companyResponse.getScenarioName()));
+            });
+        }
         betweenStopsPanel.add(terminus1Box);
         //And label.
         JLabel andLabel = new JLabel("  and  ");
         andLabel.setFont(new Font("Arial", Font.ITALIC, 16));
         betweenStopsPanel.add(andLabel);
         //Terminus 2 Combo box.
-        terminus2Box = new JComboBox<>();
-        for ( int i = 1; i < stopResponses.length; i++ ) {
-            terminus2Box.addItem(stopResponses[i].getName());
-        }
-        terminus2Box.setSelectedIndex(terminus2Box.getItemCount() - 1);
-        terminus2Box.setFont(new Font("Arial", Font.PLAIN, 14));
-        terminus2Box.addItemListener(e -> {
-            //Update spinner!
-            if ( terminus2Box.getItemCount() != 0 ) {
-                everyMinuteModel.setMaximum(getCurrentRouteDuration(Integer.parseInt(everyMinuteSpinner.getValue().toString()), companyResponse.getScenarioName()));
+        if ( stopResponses != null ) {
+            for (int i = 1; i < stopResponses.length; i++) {
+                terminus2Box.addItem(stopResponses[i].getName());
             }
-        });
+            terminus2Box.setSelectedIndex(terminus2Box.getItemCount() - 1);
+            terminus2Box.setFont(new Font("Arial", Font.PLAIN, 14));
+            terminus2Box.addItemListener(e -> {
+                //Update spinner!
+                if (terminus2Box.getItemCount() != 0) {
+                    everyMinuteModel.setMaximum(getCurrentRouteDuration(Integer.parseInt(everyMinuteSpinner.getValue().toString()), companyResponse.getScenarioName()));
+                }
+            });
+        }
         betweenStopsPanel.add(terminus2Box);
         //Add betweenStopsPanel.
         timetableScreenPanel.add(betweenStopsPanel);
@@ -184,7 +187,7 @@ public class TimetablePanel {
         validFromLabel.setFont(new Font("Arial", Font.ITALIC, 16));
         validityPanel.add(validFromLabel);
         //Valid From Day.
-        final LocalDate currentDate = LocalDate.parse(companyResponse.getTime(), DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+        final LocalDate currentDate = LocalDate.parse(companyResponse.getTime(), DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"));
         final int fromStartDay = currentDate.getDayOfMonth();
         final DefaultComboBoxModel<Integer> validFromDayModel = new DefaultComboBoxModel<>();
         YearMonth yearMonth = YearMonth.of(currentDate.getYear(), currentDate.getMonthValue());
@@ -196,7 +199,7 @@ public class TimetablePanel {
         validityPanel.add(validFromDayBox);
         //Valid From Month.
         final JComboBox<String> validFromMonthBox = new JComboBox<>();
-        LocalDate monthNames = LocalDate.parse(companyResponse.getTime(), DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+        LocalDate monthNames = LocalDate.parse(companyResponse.getTime(), DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"));
         for ( int i = 0; i < 4; i++ ) {
             validFromMonthBox.addItem(monthNames.getMonth() + " " + monthNames.getYear());
             monthNames = monthNames.plusMonths(1);
@@ -209,7 +212,7 @@ public class TimetablePanel {
         validToLabel.setFont(new Font("Arial", Font.ITALIC, 16));
         validityPanel.add(validToLabel);
         //Get the local date object with current date.
-        LocalDate defaultValidToDate = LocalDate.parse(companyResponse.getTime(), DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+        LocalDate defaultValidToDate = LocalDate.parse(companyResponse.getTime(), DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"));
         defaultValidToDate = defaultValidToDate.plusDays(3);
         //Valid To Day.
         final int toStartDay = defaultValidToDate.getDayOfMonth();

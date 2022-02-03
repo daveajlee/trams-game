@@ -82,16 +82,18 @@ public class StopTimeController {
      * @return a <code>StopTimeResponse</code> array containing all stop times which matched the specified criteria.
      */
     public StopTimeResponse[] getStopTimes (final Optional<Direction> direction, final String routeNumber, final String date, final String company,
-                                            final Optional<String> startingTime) {
+                                            final Optional<String> startingTime, final String stopName) {
         logger.info("Direction=" + direction + "&routeNumber=" + routeNumber) ;
+        //Translate date into correct format.
+        String stopTimeDate = date.substring(6,10) + "-" + date.substring(3,5) + "-" + date.substring(0,2);
         //TODO: Implement correct logic with missing parameters implemented.
-        final boolean isDepartures = false; final boolean isArrivals = false; final String stopName = "";
+        final boolean isDepartures = true; final boolean isArrivals = false;
         StopTimesResponse stopTimesResponse = startingTime.isPresent() ?
             restTemplate.getForObject(operationsServerUrl + "stopTimes/?company=" + company
-                    + "&date=" + date + "&departures=" + isDepartures + "&arrivals=" + isArrivals + "&startingTime=" + startingTime.get()
+                    + "&date=" + stopTimeDate + "&endDate=" + stopTimeDate + "&departures=" + isDepartures + "&arrivals=" + isArrivals + "&startingTime=" + startingTime.get()
                     + "&stopName=" + stopName, StopTimesResponse.class) :
                     restTemplate.getForObject(operationsServerUrl + "stopTimes/?company=" + company
-                            + "&date=" + date + "&departures=" + isDepartures + "&arrivals=" + isArrivals + "&stopName=" + stopName,
+                            + "&date=" + stopTimeDate + "&endDate=" + stopTimeDate + "&departures=" + isDepartures + "&arrivals=" + isArrivals + "&stopName=" + stopName,
                         StopTimesResponse.class);
         if ( stopTimesResponse != null && stopTimesResponse.getStopTimeResponses() != null ) {
             return stopTimesResponse.getStopTimeResponses();
