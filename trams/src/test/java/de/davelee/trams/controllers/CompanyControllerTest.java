@@ -13,6 +13,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.client.RestTemplate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.*;
 
 @ExtendWith(SpringExtension.class)
@@ -38,7 +39,7 @@ public class CompanyControllerTest {
 				CompanyResponse.builder().name("Mustermann GmbH").playerName("Dave A J Lee").difficultyLevel("EASY")
 						.time("24-12-2020 11:58").build()
 		);
-		Assertions.assertNotNull(companyController.getCompany("Mustermann GmbH", "Dave A J Lee"));
+		assertNotNull(companyController.getCompany("Mustermann GmbH", "Dave A J Lee"));
 		CompanyResponse companyResponse = companyController.getCompany("Mustermann GmbH", "Dave A J Lee");
 		assertEquals(companyResponse.getTime(), "24-12-2020 11:58");
 		Mockito.when(restTemplate.patchForObject(anyString(), any(), eq(TimeResponse.class))).thenReturn(
@@ -97,6 +98,24 @@ public class CompanyControllerTest {
 						.company("Mustermann GmbH")
 						.difficultyLevel("HARD").build());
 		assertEquals("HARD", companyController.setDifficultyLevel("Mustermann GmbH", "HARD"));
+	}
+
+	@Test
+	public void exportCompany() {
+		Mockito.when(restTemplate.postForObject(anyString(), any(), eq(ExportCompanyResponse.class))).thenReturn(
+				ExportCompanyResponse.builder()
+						.routes("")
+						.messages("")
+						.drivers("")
+						.vehicles("")
+						.playerName("Dave Lee")
+						.name("Mustermann GmbH")
+						.balance(80000.0)
+						.difficultyLevel("EASY")
+						.time("24-01-2022 04:00")
+						.scenarioName("Landuff")
+						.build());
+		assertNotNull(companyController.exportCompany("Mustermann GmbH", "Dave Lee", "", "", "", ""));
 	}
 
 }

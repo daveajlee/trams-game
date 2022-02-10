@@ -64,10 +64,10 @@ public class CompanyController {
 		//Save game to db.
 		restTemplate.postForObject(businessServerUrl + "company/", CompanyRequest.builder()
 				.name(companyResponse.getName())
-				.startingBalance(80000.00)
-				.startingTime("01-03-2017 04:00")
+				.startingBalance(companyResponse.getBalance())
+				.startingTime(companyResponse.getTime())
 				.playerName(companyResponse.getPlayerName())
-				.difficultyLevel(DifficultyLevel.EASY.name())
+				.difficultyLevel(companyResponse.getDifficultyLevel())
 				.scenarioName(companyResponse.getScenarioName())
 				.build(), Void.class);
 	}
@@ -168,6 +168,31 @@ public class CompanyController {
 						.satisfactionRate(totalSubtract).build(),
 				SatisfactionRateResponse.class);
 		return satisfactionRateResponse != null ? satisfactionRateResponse.getSatisfactionRate() : -1.0;
+	}
+
+	/**
+	 * Export all the company information for the supplied company and player name. The other supplied data
+	 * should be integrated into the export.
+	 * @param company a <code>String</code> containing the name of the company to export.
+	 * @param playerName a <code>String</code> containing the name of the player who's company should be exported.
+	 * @param drivers a <code>String</code> containing the driver information that exist for this company.
+	 * @param messages a <code>String</code> containing the message information that exist for this company.
+	 * @param routes a <code>String</code> containing the route information that exist for this company.
+	 * @param vehicles a <code>String</code> containing the vehicle information that exist for this company.
+	 * @return a <code>ExportCompanyResponse</code> object containing the exported data.
+	 */
+	public ExportCompanyResponse exportCompany(final String company, final String playerName, final String drivers,
+											   final String messages, final String routes, final String vehicles) {
+		return restTemplate.postForObject(businessServerUrl + "company/export",
+				ExportCompanyRequest.builder()
+						.company(company)
+						.playerName(playerName)
+						.drivers(drivers)
+						.messages(messages)
+						.routes(routes)
+						.vehicles(vehicles)
+						.build(),
+				ExportCompanyResponse.class);
 	}
 
 	/**

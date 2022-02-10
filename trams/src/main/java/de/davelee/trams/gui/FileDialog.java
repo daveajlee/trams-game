@@ -55,8 +55,11 @@ public class FileDialog {
      * Create a new dialog to save a file.
      * @param currentFrame a <code>JFrame</code> object containing the parent frame of this dialog.
      * @param controllerHandler a <code>ControllerHandler</code> object allowing access to Controllers.
+     * @param company a <code>String</code> containing the name of the company to export.
+     * @param playerName a <code>String</code> containing the name of the player who's company should be exported.
      */
-	public void createSaveFileDialog ( final JFrame currentFrame, final ControllerHandler controllerHandler ) {
+	public void createSaveFileDialog ( final JFrame currentFrame, final ControllerHandler controllerHandler, final String company,
+                                       final String playerName ) {
 		//Create file dialog box.
         JFileChooser fileDialog = new JFileChooser();
         fileDialog.setDialogTitle("Save Game");
@@ -67,12 +70,13 @@ public class FileDialog {
         int returnVal = fileDialog.showSaveDialog(currentFrame);
         //Check if user submitted file.
         if ( returnVal == JFileChooser.APPROVE_OPTION ) {
-            if ( controllerHandler.getFileController().saveFile(fileDialog.getSelectedFile()) ) {
+            if ( controllerHandler.getFileController().saveFile(fileDialog.getSelectedFile(), company, playerName)) {
                 String fileName = fileDialog.getSelectedFile().getPath();
                 if ( !fileName.endsWith(".tms") ) { fileName += ".tms"; }
                 JOptionPane.showMessageDialog(currentFrame, "The current simulation has been successfully saved to " + fileName, "File Saved Successfully", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(currentFrame, "The file could not be saved. Please try again later.", "ERROR: File Could Not Be Saved", JOptionPane.ERROR_MESSAGE);
             }
-            JOptionPane.showMessageDialog(currentFrame, "The file could not be saved. Please try again later.", "ERROR: File Could Not Be Saved", JOptionPane.ERROR_MESSAGE);
         }
 	}
 

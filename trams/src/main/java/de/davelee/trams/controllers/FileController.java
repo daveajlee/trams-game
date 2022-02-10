@@ -2,12 +2,12 @@ package de.davelee.trams.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import de.davelee.trams.api.response.CompanyResponse;
+import de.davelee.trams.api.response.*;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import de.davelee.trams.beans.TramsFile;
 import org.springframework.stereotype.Controller;
 
 import java.io.*;
@@ -22,6 +22,8 @@ import java.time.format.DateTimeFormatter;
 public class FileController {
 
 	private DriverController driverController;
+
+	private ExportController exportController;
 
 	private CompanyController companyController;
 
@@ -51,30 +53,37 @@ public class FileController {
 			while ((line = reader.readLine()) != null) {
 				out.append(line);   // add everything to StringBuilder
 			}
-			TramsFile myFile = mapper.readValue(out.toString(), TramsFile.class);
+			ExportCompanyResponse myFile = mapper.readValue(out.toString(), ExportCompanyResponse.class);
 			//Load game.
-			for ( CompanyResponse companyResponse : myFile.getCompanyResponses() ) {
-				companyController.loadCompany(companyResponse);
-			}
+			CompanyResponse companyResponse = CompanyResponse.builder()
+					.name(myFile.getName())
+					.playerName(myFile.getPlayerName())
+					.satisfactionRate(myFile.getSatisfactionRate())
+					.scenarioName(myFile.getScenarioName())
+					.difficultyLevel(myFile.getDifficultyLevel())
+					.time(myFile.getTime())
+					.balance(myFile.getBalance())
+					.build();
+			companyController.loadCompany(companyResponse);
 			//Load drivers.
-			if ( myFile.getUserResponses() != null ) {
-				driverController.loadDrivers(myFile.getUserResponses(), myFile.getCompanyResponses()[0].getName());
+			if ( !StringUtils.isBlank(myFile.getDrivers()) ) {
+				driverController.loadDrivers(mapper.readValue(myFile.getDrivers(), UserResponse[].class), myFile.getName());
 			}
 			//Load messages.
-			if ( myFile.getMessageResponses() != null ) {
-				messageController.loadMessages(myFile.getMessageResponses(), myFile.getCompanyResponses()[0].getName());
+			if ( !StringUtils.isBlank(myFile.getMessages()) ) {
+				messageController.loadMessages(mapper.readValue(myFile.getMessages(), MessageResponse[].class), myFile.getName());
 			}
 			//Load routes.
-			if ( myFile.getRouteResponses() != null ) {
-				routeController.loadRoutes(myFile.getRouteResponses(), myFile.getCompanyResponses()[0].getName());
+			if ( !StringUtils.isBlank(myFile.getRoutes()) ) {
+				routeController.loadRoutes(mapper.readValue(myFile.getRoutes(), RouteResponse[].class), myFile.getName());
 			}
 			//Load vehicles.
-			if ( myFile.getVehicleResponses() != null ) {
-				vehicleController.loadVehicles(myFile.getVehicleResponses(), myFile.getCompanyResponses()[0].getName(),
-						LocalDate.parse(myFile.getCompanyResponses()[0].getTime(), DateTimeFormatter.ofPattern("dd-MM-yyyy")));
+			if ( !StringUtils.isBlank(myFile.getVehicles()) ) {
+				vehicleController.loadVehicles(mapper.readValue(myFile.getVehicles(), VehicleResponse[].class), myFile.getName(),
+						LocalDate.parse(myFile.getTime(), DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm")));
 			}
 			simulationController.pauseSimulation();
-			return myFile.getCompanyResponses()[0];
+			return companyResponse;
 		} catch ( Exception exception ) {
 			logger.error("exception whilst loading file", exception);
 			return null;
@@ -82,11 +91,13 @@ public class FileController {
     }
     
     /**
-     * Save file.
+     * Save file - i.e. generate an export of all data for this company.
 	 * @param selectedFile a <code>File</code> object with the path to save the file to.
+	 * @param company a <code>String</code> containing the name of the company to export data for.
+	 * @param playerName a <code>String</code> containing the player name of the company to export data for.
      * @return a <code>boolean</code> which is true iff the file was saved successfully.
      */
-    public boolean saveFile ( final File selectedFile ) {
+    public boolean saveFile ( final File selectedFile, final String company, final String playerName ) {
 		//Output json.
 		try {
 			boolean resultOfDelete = true;
@@ -94,11 +105,21 @@ public class FileController {
 				resultOfDelete = selectedFile.delete();
 			}
 			if ( resultOfDelete && selectedFile.createNewFile() ) {
+				//Create object mapper to do exports to JSON.
 				final ObjectMapper mapper = new ObjectMapper();
 				mapper.registerModule(new JavaTimeModule());
-				//TODO: rebuild the trams file with all classes in a suitable structure.
-				mapper.writeValue(selectedFile, TramsFile.builder()
-						.build());
+				//Get all drivers for the company.
+				String drivers = mapper.writeValueAsString(driverController.getAllDrivers(company));
+				//Get all messages for the company.
+				String messages = mapper.writeValueAsString(messageController.getAllMessages(company));
+				//Get all routes and vehicles for the company.
+				ExportResponse exportResponse = exportController.getExport(company);
+				String routes = mapper.writeValueAsString(exportResponse.getRouteResponses());
+				String vehicles = mapper.writeValueAsString(exportResponse.getVehicleResponses());
+				//Now send this information to trams-business and get content.
+				ExportCompanyResponse exportCompanyResponse = companyController.exportCompany(company, playerName, drivers, messages, routes, vehicles);
+				//Convert this content to JSON and save.
+				mapper.writeValue(selectedFile, exportCompanyResponse);
 				return true;
 			}
 			return false;
@@ -115,6 +136,15 @@ public class FileController {
 	@Autowired
 	public void setDriverController(final DriverController driverController) {
 		this.driverController = driverController;
+	}
+
+	/**
+	 * Set the export controller object via Spring.
+	 * @param exportController a <code>ExportController</code> object.
+	 */
+	@Autowired
+	public void setExportController(final ExportController exportController) {
+		this.exportController = exportController;
 	}
 
 	/**

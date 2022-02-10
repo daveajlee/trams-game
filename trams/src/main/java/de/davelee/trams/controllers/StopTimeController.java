@@ -79,6 +79,7 @@ public class StopTimeController {
      * @param date a <code>String</code> with the date to return departures or arrivals for in the format dd-MM-yyyy
      * @param company a <code>String</code> with the name of the company to return departures for.
      * @param startingTime a <code>Optional</code> of type <code>String</code> containing the time in format HH:mm to deliver departure or arrival times from.
+     * @param stopName a <code>String</code> with the name of the stop to retrieve stop times for.
      * @return a <code>StopTimeResponse</code> array containing all stop times which matched the specified criteria.
      */
     public StopTimeResponse[] getStopTimes (final Optional<Direction> direction, final String routeNumber, final String date, final String company,
