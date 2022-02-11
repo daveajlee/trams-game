@@ -126,11 +126,11 @@ public class ViewTimetablePanel {
         JPanel validityPanel = new JPanel(new BorderLayout());
         validityPanel.setBackground(Color.WHITE);
         //TODO: choose a concrete stop and not Test Stop.
-        StopTimeResponse[] stopTimeModels = controllerHandler.getStopTimeController().getStopTimes(Optional.empty(), initialRouteResponse.getRouteNumber(), companyResponse.getTime(), companyResponse.getName(), Optional.empty(), "Test Stop");
-        JLabel validFromDateLabel = new JLabel("Valid From: " + stopTimeModels == null ? stopTimeModels[0].getValidFromDate() : "");
+        StopTimeResponse[] stopTimeModels = controllerHandler.getStopTimeController().getStopTimes(Optional.empty(), initialRouteResponse.getRouteNumber(), companyResponse.getTime(), companyResponse.getName(), Optional.empty(), "Test Stop", true, false);
+        JLabel validFromDateLabel = new JLabel("Valid From: " + stopTimeModels != null ? stopTimeModels[0].getValidFromDate() : "");
         validFromDateLabel.setFont(new Font("Arial", Font.ITALIC, 14));
         validityPanel.add(validFromDateLabel, BorderLayout.NORTH);
-        JLabel validToDateLabel = new JLabel("Valid To: " + stopTimeModels == null ? stopTimeModels[0].getValidToDate() : "");
+        JLabel validToDateLabel = new JLabel("Valid To: " + stopTimeModels != null ? stopTimeModels[0].getValidToDate() : "");
         validToDateLabel.setFont(new Font("Arial", Font.ITALIC, 14));
         validityPanel.add(validToDateLabel, BorderLayout.SOUTH);
         topPanel.add(validityPanel, BorderLayout.SOUTH);
@@ -179,7 +179,7 @@ public class ViewTimetablePanel {
         String[] columnNames = new String[] { "", "Monday - Friday", "Saturday", "Sunday" };
         String[][] data = new String[24][4];
         //TODO: Add multiple route schedules.
-        StopTimeResponse[] stopTimeResponses = controllerHandler.getStopTimeController().getStopTimes(Optional.of(direction), routeNumber, date, company, Optional.empty(), stopName );
+        StopTimeResponse[] stopTimeResponses = controllerHandler.getStopTimeController().getStopTimes(Optional.of(direction), routeNumber, date, company, Optional.empty(), stopName, true, false );
         if ( stopTimeResponses != null ) {
             for (StopTimeResponse stopTimeResponse : stopTimeResponses) {
                 try {

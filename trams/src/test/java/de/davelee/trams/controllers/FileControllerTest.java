@@ -14,8 +14,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.File;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 
 @ExtendWith(SpringExtension.class)
@@ -102,7 +102,7 @@ public class FileControllerTest {
                         .time("24-01-2022 04:00")
                         .scenarioName("Landuff")
                         .build());
-        fileController.saveFile(new File("test-game.json"), "Mustermann GmbH", "Dave Lee");
+        assertTrue(fileController.saveFile(new File("test-game.json"), "Mustermann GmbH", "Dave Lee"));
         companyController.createCompany("Bob Smith", "Landuff Transport Company", "Mustermann GmbH");
         Mockito.when(companyController.getCompany(any(), any())).thenReturn(CompanyResponse.builder()
                 .playerName("Bob Smith")
@@ -112,8 +112,9 @@ public class FileControllerTest {
 
     @Test
     public void testLoadFile ( ) {
-        fileController.loadFile(new File("test-game-service.json"));
-        //TODO: Fix save and load file logic and replace test with correct test.
+        CompanyResponse companyResponse = fileController.loadFile(new File("test-game-service.json"));
+        assertNotNull(companyResponse);
+        assertEquals("Mustermann GmbH", companyResponse.getName());
     }
 
 }

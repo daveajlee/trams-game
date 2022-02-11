@@ -80,15 +80,16 @@ public class StopTimeController {
      * @param company a <code>String</code> with the name of the company to return departures for.
      * @param startingTime a <code>Optional</code> of type <code>String</code> containing the time in format HH:mm to deliver departure or arrival times from.
      * @param stopName a <code>String</code> with the name of the stop to retrieve stop times for.
+     * @param isDepartures a <code>boolean</code> which is true iff departure times should be returned.
+     * @param isArrivals a <code>boolean</code> which is true iff arrival times should be returned.
      * @return a <code>StopTimeResponse</code> array containing all stop times which matched the specified criteria.
      */
     public StopTimeResponse[] getStopTimes (final Optional<Direction> direction, final String routeNumber, final String date, final String company,
-                                            final Optional<String> startingTime, final String stopName) {
+                                            final Optional<String> startingTime, final String stopName, final boolean isDepartures, final boolean isArrivals) {
         logger.info("Direction=" + direction + "&routeNumber=" + routeNumber) ;
         //Translate date into correct format.
         String stopTimeDate = date.substring(6,10) + "-" + date.substring(3,5) + "-" + date.substring(0,2);
-        //TODO: Implement correct logic with missing parameters implemented.
-        final boolean isDepartures = true; final boolean isArrivals = false;
+        //Request the stop times matching the supplied parameters.
         StopTimesResponse stopTimesResponse = startingTime.isPresent() ?
             restTemplate.getForObject(operationsServerUrl + "stopTimes/?company=" + company
                     + "&date=" + stopTimeDate + "&endDate=" + stopTimeDate + "&departures=" + isDepartures + "&arrivals=" + isArrivals + "&startingTime=" + startingTime.get()

@@ -48,12 +48,12 @@ public class StopTimeControllerTest {
                         .stopTimeResponses(new StopTimeResponse[0])
                         .build());
         assertNotNull(stopTimeController.getStopTimes(Optional.of(Direction.OUTGOING), "1A", "01-01-2020",
-                "Mustermann GmbH", Optional.of("06:00"), "City Centre"));
+                "Mustermann GmbH", Optional.of("06:00"), "City Centre", true, false));
         assertNotNull(stopTimeController.getStopTimes(Optional.of(Direction.OUTGOING), "1A", "01-01-2020",
-                "Mustermann GmbH", Optional.empty(), "City Centre"));
+                "Mustermann GmbH", Optional.empty(), "City Centre", false, true));
         Mockito.when(restTemplate.getForObject(anyString(), eq(StopTimesResponse.class))).thenReturn(null);
         assertNull(stopTimeController.getStopTimes(Optional.of(Direction.OUTGOING), "1A", "01-01-2020",
-                "Mustermann GmbH", Optional.empty(), "City Centre"));
+                "Mustermann GmbH", Optional.empty(), "City Centre", true, false));
     }
 
 }
