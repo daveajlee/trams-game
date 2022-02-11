@@ -8,6 +8,7 @@ import java.util.Optional;
 import de.davelee.trams.TramsGameApplication;
 import de.davelee.trams.api.response.PurchaseVehicleResponse;
 import de.davelee.trams.api.response.VehicleResponse;
+import de.davelee.trams.api.response.VehicleValueResponse;
 import de.davelee.trams.api.response.VehiclesResponse;
 import de.davelee.trams.beans.Scenario;
 import org.junit.jupiter.api.Assertions;
@@ -67,8 +68,16 @@ public class VehicleControllerTest {
 
 	@Test
 	public void testValue () {
-		//TODO: implement value correctly and then redo test.
-		assertTrue(vehicleController.getValue(null, "20-04-2014") > 0.0);
+		Mockito.when(restTemplate.getForObject(anyString(), eq(VehicleValueResponse.class))).thenReturn(
+				VehicleValueResponse.builder()
+						.company("Lee Transport")
+						.fleetNumber("223")
+						.value(100000.0)
+						.build()
+		);
+		assertEquals(100000.0, vehicleController.getValue(VehicleResponse.builder()
+				.company("Lee Transport")
+				.fleetNumber("223").build(), "20-04-2014"));
 	}
 
 	@Test
@@ -193,6 +202,13 @@ public class VehicleControllerTest {
 	@Test
 	public void testSellVehicle() {
 		Mockito.doNothing().when(restTemplate).delete(anyString());
+		Mockito.when(restTemplate.getForObject(anyString(), eq(VehicleValueResponse.class))).thenReturn(
+				VehicleValueResponse.builder()
+						.company("Lee Transport")
+						.fleetNumber("225")
+						.value(50000.0)
+						.build()
+		);
 		assertNotNull(vehicleController.sellVehicle(VehicleResponse.builder().company("Mustermann GmbH")
 				.additionalTypeInformationMap(Map.of("Registration Number", "DDD2 HJK"))
 				.deliveryDate("24-12-2020")

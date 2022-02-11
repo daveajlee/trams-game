@@ -4,6 +4,7 @@ import de.davelee.trams.api.request.AllocateVehicleRequest;
 import de.davelee.trams.api.request.PurchaseVehicleRequest;
 import de.davelee.trams.api.response.PurchaseVehicleResponse;
 import de.davelee.trams.api.response.VehicleResponse;
+import de.davelee.trams.api.response.VehicleValueResponse;
 import de.davelee.trams.api.response.VehiclesResponse;
 import de.davelee.trams.util.SortedVehicleResponses;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -132,10 +133,9 @@ public class VehicleController {
 	 * @return a <code>double</code> with the value of this vehicle.
 	 */
 	public double getValue ( final VehicleResponse vehicleResponse, final String currentDate ) {
-		logger.info("getValue method with " + vehicleResponse + " & " + currentDate);
-		//TODO: Calculate depreciation factor in the server.
-		//return vehicleResponse.getPurchasePrice() - ((vehicleResponse.getDepreciationFactor() * getAge(vehicleResponse.getDeliveryDate(), currentDate)) * vehicleResponse.getPurchasePrice());
-		return Math.random();
+		VehicleValueResponse vehicleValueResponse = restTemplate.getForObject(operationsServerUrl + "vehicle/value?company="
+				+ vehicleResponse.getCompany() + "&fleetNumber=" + vehicleResponse.getFleetNumber() + "&date=" + currentDate, VehicleValueResponse.class);
+		return vehicleValueResponse.getValue();
 	}
 
 	/**
