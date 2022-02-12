@@ -138,7 +138,6 @@ public class TimetablePanel {
         betweenLabel.setFont(new Font("Arial", Font.ITALIC, 16));
         betweenStopsPanel.add(betweenLabel);
         //Save the stop names to a variable.
-        //TODO: Add a list of the names of stops served by this route.
         StopResponse[] stopResponses = controllerHandler.getStopController().getAllStops(controlScreen.getCompany());
         //Terminus 1 Combo box.
         if ( stopResponses != null && stopResponses.length > 0 ) {

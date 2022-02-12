@@ -1,15 +1,14 @@
 package de.davelee.trams.api.response;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 /**
  * This class represents a response from the server containing details of a single stop according to specified criteria.
  * @author Dave Lee
  */
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
 @ToString

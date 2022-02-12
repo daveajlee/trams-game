@@ -103,6 +103,11 @@ public class NewGameScreen extends JFrame {
                 //Create Game
                 CompanyResponse companyResponse = controllerHandler.getCompanyController().createCompany(playerNameField.getText(), scenario.getScenarioName(), companyNameField.getText());
                 if ( companyResponse != null ) {
+                    //Create stops.
+                    java.util.List<String> stops = scenario.getStopDistances();
+                    for ( String stop : stops ) {
+                        controllerHandler.getStopController().saveStop(stop.split(":")[0], companyNameField.getText());
+                    }
                     //Create supplied vehicles.
                     controllerHandler.getVehicleController().createSuppliedVehicles(scenario.getSuppliedVehicles(), companyResponse.getTime(), companyNameField.getText());
                     //Create supplied drivers.
