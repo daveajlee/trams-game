@@ -3,6 +3,9 @@ package de.davelee.trams.gui;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.Serial;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import javax.swing.*;
 
 import de.davelee.trams.api.response.CompanyResponse;
@@ -106,7 +109,18 @@ public class NewGameScreen extends JFrame {
                     //Create stops.
                     java.util.List<String> stops = scenario.getStopDistances();
                     for ( String stop : stops ) {
-                        controllerHandler.getStopController().saveStop(stop.split(":")[0], companyNameField.getText());
+                        int waitingTime = 0; Map<String, Integer> distances = new HashMap<>();
+                        //Fill the array for this stop.
+                        for ( int i = 0; i < stops.size(); i++ ) {
+                            String[] stopTextArray = stop.split(":");
+                            if ( stopTextArray[0].contentEquals(stops.get(i).split(":")[0]) ) {
+                                waitingTime = Integer.parseInt(stopTextArray[1].split(",")[i]);
+                            } else {
+                                distances.put(stops.get(i).split(":")[0], Integer.parseInt(stopTextArray[1].split(",")[i]));
+                            }
+
+                        }
+                        controllerHandler.getStopController().saveStop(stop.split(":")[0], companyNameField.getText(), waitingTime, distances);
                     }
                     //Create supplied vehicles.
                     controllerHandler.getVehicleController().createSuppliedVehicles(scenario.getSuppliedVehicles(), companyResponse.getTime(), companyNameField.getText());

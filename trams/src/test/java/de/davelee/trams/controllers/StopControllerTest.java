@@ -14,6 +14,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -34,7 +35,7 @@ public class StopControllerTest {
 	@Test
 	public void testSaveStop() {
 		Mockito.when(restTemplate.postForObject(anyString(), any(), eq(Void.class))).thenReturn(null);
-		stopController.saveStop("Town Centre", "Mustermann GmbH");
+		stopController.saveStop("Town Centre", "Mustermann GmbH", 1, Map.of("Airport", 20));
 	}
 
 	@Test

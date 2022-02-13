@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Map;
+
 /**
  * This class enables access to Stop data via REST endpoints to the TraMS Operations microservice in the TraMS Platform.
  * @author Dave Lee
@@ -27,12 +29,16 @@ public class StopController {
 	 * Add a new stop.
 	 * @param stopName a <code>String</code> with the name for this stop.
 	 * @param company a <code>String</code> with the name of the company to create stop for.
+	 * @param waitingTime a <code>int</code> with the time that the vehicle should wait at this stop.
+	 * @param distances a <code>Map</code> with the distances in minutes between this stop and other stops in the scenario as key/value pair.
 	 */
-	public void saveStop ( final String stopName, final String company ) {
+	public void saveStop (final String stopName, final String company, final int waitingTime, final Map<String, Integer> distances) {
 		restTemplate.postForObject(operationsServerUrl + "stop/",
 				AddStopRequest.builder()
 						.company(company)
 						.name(stopName)
+						.waitingTime(waitingTime)
+						.distances(distances)
 						.build(),
 				Void.class);
 	}

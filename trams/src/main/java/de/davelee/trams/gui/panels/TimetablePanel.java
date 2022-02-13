@@ -1,12 +1,10 @@
 package de.davelee.trams.gui.panels;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.GridBagLayout;
+import java.awt.*;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.*;
 
@@ -17,8 +15,6 @@ import de.davelee.trams.controllers.ControllerHandler;
 
 import de.davelee.trams.gui.ControlScreen;
 import de.davelee.trams.util.GuiUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * This class represents a panel to show a timetable for a particular route.
@@ -31,10 +27,9 @@ public class TimetablePanel {
     private JCheckBox[] daysBox;
     private SpinnerNumberModel everyMinuteModel;
     private JSpinner everyMinuteSpinner;
-    private JComboBox<String> terminus1Box;
-    private JComboBox<String> terminus2Box;
 
-    private final Logger logger = LoggerFactory.getLogger(TimetablePanel.class);
+    private DefaultListModel<String> availableStopsModel;
+    private DefaultListModel<String> servedStopsModel;
 
     /**
      * Create a new <code>TimetablePanel</code> with access to all Controllers to get or send data where needed.
@@ -74,6 +69,8 @@ public class TimetablePanel {
             daysBox[i] = new JCheckBox(dayStr[i]);
             daysBox[i].setFont(new Font("Arial", Font.PLAIN, 14));
             dayOfWeekPanel.add(daysBox[i]);
+            //Weekdays should be enabled.
+            daysBox[i].setSelected(i > 0 && i < 6);
         }
         timetableScreenPanel.add(dayOfWeekPanel);
 
@@ -106,15 +103,20 @@ public class TimetablePanel {
         JLabel everyLabel = new JLabel("Every: ");
         everyLabel.setFont(new Font("Arial", Font.ITALIC, 16));
         timesPanel.add(everyLabel);
-        int min = 10;
-        terminus1Box = new JComboBox<>(); terminus2Box = new JComboBox<>();
-        if ( min > getCurrentRouteDuration(1, companyResponse.getScenarioName()) ) { min = getCurrentRouteDuration(1, companyResponse.getScenarioName()); }
-        everyMinuteModel = new SpinnerNumberModel(min,1,120,1);
+        //Save the stop names to a variable.
+        StopResponse[] stopResponses = controllerHandler.getStopController().getAllStops(controlScreen.getCompany());
+        Map<String, StopResponse> stopMap = new HashMap<>();
+        for ( StopResponse stopResponse : stopResponses ) {
+            stopMap.put(stopResponse.getName(), stopResponse);
+        }
+        servedStopsModel = new DefaultListModel<>();
+        int min = getCurrentRouteDuration(stopMap);
+        everyMinuteModel = new SpinnerNumberModel(min,0,120,1);
         everyMinuteSpinner = new JSpinner(everyMinuteModel);
         //Initialise minVehicles label here but then actually place it later.
-        final JLabel minVehicleLabel = new JLabel("NOTE: " + getMinVehicles(companyResponse.getScenarioName()) + " vehicles are required to operate " + everyMinuteSpinner.getValue().toString() + " minute frequency!" );
+        final JLabel minVehicleLabel = new JLabel("NOTE: " + getMinVehicles(stopMap) + " vehicles are required to operate " + everyMinuteSpinner.getValue().toString() + " minute frequency!" );
         everyMinuteSpinner.setFont(new Font("Arial", Font.PLAIN, 14));
-        everyMinuteSpinner.addChangeListener(e -> minVehicleLabel.setText("NOTE: " + getMinVehicles(companyResponse.getScenarioName()) + " vehicles are required to operate " + everyMinuteSpinner.getValue().toString() + " minute frequency!"));
+        everyMinuteSpinner.addChangeListener(e -> minVehicleLabel.setText("NOTE: " + getMinVehicles(stopMap) + " vehicles are required to operate " + everyMinuteSpinner.getValue().toString() + " minute frequency!"));
         timesPanel.add(everyMinuteSpinner);
         JLabel minutesLabel = new JLabel("minutes");
         minutesLabel.setFont(new Font("Arial", Font.PLAIN, 14));
@@ -122,62 +124,105 @@ public class TimetablePanel {
 
         timetableScreenPanel.add(timesPanel);
 
+        //Create panel with between stops.
+        JPanel stopsPanel = new JPanel(new GridBagLayout());
+        stopsPanel.setBackground(Color.WHITE);
+        //List of stops.
+        availableStopsModel = new DefaultListModel<>();
+        JList<String> servedStopsList = new JList<>(servedStopsModel);
+        JList<String> availableStopsList = new JList<>(availableStopsModel);
+        for ( StopResponse stopResponse : stopResponses ) {
+            availableStopsModel.addElement(stopResponse.getName());
+        }
+        JScrollPane availableScrollPane = new JScrollPane();
+        availableScrollPane.setViewportView(availableStopsList);
+        availableStopsList.setLayoutOrientation(JList.VERTICAL);
+        stopsPanel.add(availableScrollPane);
+        //Add & Remove Buttons.
+        JPanel addRemoveButtonPanel = new JPanel(new GridLayout(2,1,5,5));
+        addRemoveButtonPanel.setBackground(Color.WHITE);
+        //Add button
+        JButton addButton = new JButton(">>");
+        JButton removeButton = new JButton("<<");
+        JButton upButton = new JButton("Up");
+        JButton downButton = new JButton("Down");
+        JButton generateTimetableButton = new JButton("Generate Timetable");
+        addButton.setFont(new Font("Arial", Font.ITALIC, 16));
+        addButton.addActionListener(e -> {
+            servedStopsModel.addElement(availableStopsList.getSelectedValue());
+            availableStopsModel.removeElement(availableStopsList.getSelectedValue());
+            removeButton.setEnabled(servedStopsModel.size() > 0);
+            upButton.setEnabled(servedStopsModel.size() > 1);
+            downButton.setEnabled(servedStopsModel.size() > 1);
+            generateTimetableButton.setEnabled(servedStopsModel.size()>1);
+            if ( servedStopsModel.size() > 1 ) {
+                everyMinuteSpinner.setValue(Math. round(getCurrentRouteDuration(stopMap)/10.0) * 10);
+            }
+        });
+        addRemoveButtonPanel.add(addButton);
+        //Remove button
+        removeButton.setFont(new Font("Arial", Font.ITALIC, 16));
+        removeButton.setEnabled(false);
+        removeButton.addActionListener(e -> {
+            availableStopsModel.addElement(servedStopsList.getSelectedValue());
+            servedStopsModel.removeElement(servedStopsList.getSelectedValue());
+            removeButton.setEnabled(servedStopsModel.size() > 0);
+            upButton.setEnabled(servedStopsModel.size() > 1);
+            downButton.setEnabled(servedStopsModel.size() > 1);
+            generateTimetableButton.setEnabled(servedStopsModel.size()>1);
+        });
+        addRemoveButtonPanel.add(removeButton);
+        stopsPanel.add(addRemoveButtonPanel);
+        //List of stops to be served.
+        JScrollPane servedScrollPane = new JScrollPane();
+        servedScrollPane.setViewportView(servedStopsList);
+        servedStopsList.setLayoutOrientation(JList.VERTICAL);
+        stopsPanel.add(servedScrollPane);
+
+        //Up & Down Buttons.
+        JPanel upDownButtonPanel = new JPanel(new GridLayout(2,1,5,5));
+        upDownButtonPanel.setBackground(Color.WHITE);
+        //Up button
+        upButton.setFont(new Font("Arial", Font.ITALIC, 16));
+        upButton.setEnabled(false);
+        upButton.addActionListener(e -> {
+            int posToMove = servedStopsList.getSelectedIndex();
+            if ( posToMove != 0 ) {
+                String stopToMoveUp = servedStopsList.getSelectedValue();
+                String stopToMoveDown = servedStopsModel.getElementAt(posToMove - 1);
+                servedStopsModel.removeElement(stopToMoveUp);
+                servedStopsModel.removeElement(stopToMoveDown);
+                servedStopsModel.insertElementAt(stopToMoveUp, posToMove - 1);
+                servedStopsModel.insertElementAt(stopToMoveDown, posToMove);
+            }
+        });
+        upDownButtonPanel.add(upButton);
+        //Down button
+        downButton.setFont(new Font("Arial", Font.ITALIC, 16));
+        downButton.setEnabled(false);
+        downButton.addActionListener(e -> {
+            int posToMove = servedStopsList.getSelectedIndex();
+            System.out.println("PosToMove is: " + posToMove);
+            if ( posToMove != servedStopsModel.size()-1 ) {
+                String stopToMoveUp = servedStopsModel.getElementAt(posToMove + 1);
+                String stopToMoveDown = servedStopsList.getSelectedValue();
+                servedStopsModel.removeElement(stopToMoveUp);
+                servedStopsModel.removeElement(stopToMoveDown);
+                servedStopsModel.insertElementAt(stopToMoveUp, posToMove);
+                servedStopsModel.insertElementAt(stopToMoveDown, posToMove + 1);
+            }
+        });
+        upDownButtonPanel.add(downButton);
+        stopsPanel.add(upDownButtonPanel);
+        //Add betweenStopsPanel.
+        timetableScreenPanel.add(stopsPanel);
+
         //Create panel to state vehicles required to maintain frequency.
         JPanel minVehiclePanel = new JPanel(new GridBagLayout());
         minVehiclePanel.setBackground(Color.WHITE);
-
         minVehicleLabel.setFont(new Font("Arial", Font.PLAIN, 14));
         minVehiclePanel.add(minVehicleLabel);
         timetableScreenPanel.add(minVehiclePanel);
-
-        //Create panel with between stops.
-        JPanel betweenStopsPanel = new JPanel(new GridBagLayout());
-        betweenStopsPanel.setBackground(Color.WHITE);
-        //Between label.
-        JLabel betweenLabel = new JLabel("Between:");
-        betweenLabel.setFont(new Font("Arial", Font.ITALIC, 16));
-        betweenStopsPanel.add(betweenLabel);
-        //Save the stop names to a variable.
-        StopResponse[] stopResponses = controllerHandler.getStopController().getAllStops(controlScreen.getCompany());
-        //Terminus 1 Combo box.
-        if ( stopResponses != null && stopResponses.length > 0 ) {
-            for (int i = 0; i < stopResponses.length - 1; i++) {
-                terminus1Box.addItem(stopResponses[i].getName());
-            }
-            terminus1Box.setSelectedIndex(0);
-            terminus1Box.setFont(new Font("Arial", Font.PLAIN, 14));
-            terminus1Box.addItemListener(e -> {
-                //Update terminus 2 box!!!
-                terminus2Box.removeAllItems();
-                for (StopResponse stopResponse : stopResponses) {
-                    terminus2Box.addItem(stopResponse.getName());
-                }
-                //Update spinner!
-                everyMinuteModel.setMaximum(getCurrentRouteDuration(Integer.parseInt(everyMinuteSpinner.getValue().toString()), companyResponse.getScenarioName()));
-            });
-        }
-        betweenStopsPanel.add(terminus1Box);
-        //And label.
-        JLabel andLabel = new JLabel("  and  ");
-        andLabel.setFont(new Font("Arial", Font.ITALIC, 16));
-        betweenStopsPanel.add(andLabel);
-        //Terminus 2 Combo box.
-        if ( stopResponses != null ) {
-            for (int i = 1; i < stopResponses.length; i++) {
-                terminus2Box.addItem(stopResponses[i].getName());
-            }
-            terminus2Box.setSelectedIndex(terminus2Box.getItemCount() - 1);
-            terminus2Box.setFont(new Font("Arial", Font.PLAIN, 14));
-            terminus2Box.addItemListener(e -> {
-                //Update spinner!
-                if (terminus2Box.getItemCount() != 0) {
-                    everyMinuteModel.setMaximum(getCurrentRouteDuration(Integer.parseInt(everyMinuteSpinner.getValue().toString()), companyResponse.getScenarioName()));
-                }
-            });
-        }
-        betweenStopsPanel.add(terminus2Box);
-        //Add betweenStopsPanel.
-        timetableScreenPanel.add(betweenStopsPanel);
                 
         //Create panel for validity.
         JPanel validityPanel = new JPanel(new GridBagLayout());
@@ -242,7 +287,7 @@ public class TimetablePanel {
         bottomButtonPanel.setBackground(Color.WHITE);
         
         //Create new route button and add it to screen panel.
-        JButton generateTimetableButton = new JButton("Generate Timetable");
+        generateTimetableButton.setEnabled(servedStopsModel.size()>1);
         generateTimetableButton.addActionListener (e -> {
             if ( validFromMonthBox.getSelectedItem() != null && validToMonthBox.getSelectedItem() != null ) {
                 String[] validFromMonthYear = validFromMonthBox.getSelectedItem().toString().split(" ");
@@ -278,9 +323,10 @@ public class TimetablePanel {
                 LocalTime timeTo = LocalTime.of(Integer.parseInt(toHourSpinner.getValue().toString()), Integer.parseInt(toMinuteSpinner.getValue().toString()));
                 //Generate timetable as a series of stop times.
                 //TODO: implement the stoppingTimes and distances arrays in the GUI correctly instead of arrays of 0.
-                int[] stoppingTimes = new int[stopResponses.length];
+                //These should be based on the servedStopModel and the waiting time + distance to next stop.
+                int[] waitingTimes = new int[stopResponses.length];
                 int[] distances = new int[stopResponses.length - 1];
-                controllerHandler.getStopTimeController().generateStopTimes(companyResponse.getName(), stoppingTimes,
+                controllerHandler.getStopTimeController().generateStopTimes(companyResponse.getName(), waitingTimes,
                         stopResponses, routeResponse.getRouteNumber(), distances, timeFrom.format(DateTimeFormatter.ofPattern("HH:mm")),
                         timeTo.format(DateTimeFormatter.ofPattern("HH:mm")), (Integer) everyMinuteSpinner.getValue(),
                         validFromDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")), validToDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")),
@@ -305,48 +351,16 @@ public class TimetablePanel {
         return timetableScreenPanel;
 	}
 
-    private int getMaxRouteDuration ( final String scenarioName ) {
-        //So duration is the distance between selected one in terminus1 and then distance between all ones in terminus2 up to selected item.
-        //Note cumulative total.
-        int cumDistance = 0;
-        //Add distance of terminus1 and first item of terminus2 - this is guaranteed.
-        if ( terminus1Box.getSelectedItem() != null ) {
-            cumDistance += controllerHandler.getStopController().getDistance(scenarioName, terminus1Box.getSelectedItem().toString(), terminus2Box.getItemAt(0));
-        }
-        //Now from 0 up until the selected index - add distances for terminus 2.
-        int selectIndex = terminus2Box.getSelectedIndex();
-        if ( selectIndex == 0 ) {
-            return cumDistance*2;
-        }
-        for ( int i = 1; i <= selectIndex; i++ ) {
-            cumDistance += controllerHandler.getStopController().getDistance(scenarioName, terminus2Box.getItemAt(i-1), terminus2Box.getItemAt(i));
-        }
-        //Return distance * 2.
-        return cumDistance*2;
+    private int getMinVehicles ( final Map<String, StopResponse> stopMap ) {
+        return (int) Math.ceil((double) getCurrentRouteDuration(stopMap) / Double.parseDouble(everyMinuteSpinner.getValue().toString()) );
     }
 
-    private int getMinVehicles ( final String scenarioName ) {
-        return (int) Math.ceil((double) getCurrentRouteDuration(Integer.parseInt(everyMinuteSpinner.getValue().toString()), scenarioName) / Double.parseDouble(everyMinuteSpinner.getValue().toString()) );
-    }
-
-    private int getCurrentRouteDuration ( final int frequency, final String scenarioName ) {
-        //So duration is the distance between selected one in terminus1 and then distance between all ones in terminus2 up to selected item.
-        //Note cumulative total.
-        int cumDistance = 0;
-        //Add distance of terminus1 and first item of terminus2 - this is guaranteed.
-        if ( terminus1Box.getSelectedItem() != null ) {
-            cumDistance += controllerHandler.getStopController().getDistance(scenarioName, terminus1Box.getSelectedItem().toString(), terminus2Box.getItemAt(0));
+    private int getCurrentRouteDuration ( final Map<String, StopResponse> stopMap ) {
+        int duration = 0;
+        for ( int i = 0; i < servedStopsModel.size()-1; i++) {
+            duration += stopMap.get(servedStopsModel.getElementAt(i)).getDistances().get(servedStopsModel.getElementAt(i+1));
         }
-        //Now from 0 up until the selected index - add distances for terminus 2.
-        int selectIndex = terminus2Box.getSelectedIndex();
-        if ( selectIndex == 0 ) {
-            return calculateDistance(cumDistance, frequency);
-        }
-        for ( int i = 1; i <= selectIndex; i++ ) {
-            cumDistance += controllerHandler.getStopController().getDistance(scenarioName, terminus2Box.getItemAt(i-1), terminus2Box.getItemAt(i));
-        }
-        //Return distance * 2.
-        return calculateDistance(cumDistance, frequency);
+        return duration*2;
     }
 
     private void processMonth ( final JComboBox<String> validMonthBox, final DefaultComboBoxModel<Integer> validDayModel, final int startDay) {
@@ -365,17 +379,6 @@ public class TimetablePanel {
                 validDayModel.addElement(i);
             }
         }
-    }
-
-    private int calculateDistance ( int cumDistance, int frequency ) {
-        int myDistance = (cumDistance*2);
-        int myCumFreq = (frequency*2);
-        logger.debug("Distance was " + myDistance);
-        while ( myCumFreq < myDistance ) {
-            myCumFreq += (frequency*2);
-        }
-        logger.debug("Actual distance is " + myCumFreq);
-        return myCumFreq;
     }
 
 }
