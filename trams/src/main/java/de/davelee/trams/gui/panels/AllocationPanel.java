@@ -190,8 +190,7 @@ public class AllocationPanel {
                         vehiclePos = j;
                     }
                 }
-                //TODO: Set route and route schedule number.
-                controllerHandler.getVehicleController().assignVehicleToTour(vehicleModels[vehiclePos].getAdditionalTypeInformationMap().get("Registration Number"), "0/0", companyResponse.getName());
+                controllerHandler.getVehicleController().removeAssignVehicleToTour(vehicleModels[vehiclePos].getAdditionalTypeInformationMap().get("Registration Number"), companyResponse.getName());
             }
         });
         allocateButtonPanel.add(deAllocateButton);

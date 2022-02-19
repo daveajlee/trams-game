@@ -56,6 +56,20 @@ public class VehicleController {
 	}
 
 	/**
+	 * Remove assignment for the supplied vehicle for the specified company.
+	 * @param registrationNumber a <code>String</code> containing the registration number of the vehicle to remove the assignment for.
+	 * @param company a <code>String</code> with the name of the company to assign the vehicle for.
+	 */
+	public void removeAssignVehicleToTour ( final String registrationNumber, final String company ) {
+		VehicleResponse[] vehicleResponses = getVehicles(company).getVehicleResponses();
+		for ( VehicleResponse vehicleResponse : vehicleResponses ) {
+			if ( vehicleResponse.getAdditionalTypeInformationMap().get("Registration Number").contentEquals(registrationNumber) ) {
+				restTemplate.delete(operationsServerUrl + "vehicle/allocate/fleetNumber=" + vehicleResponse.getFleetNumber() + "&company=" + vehicleResponse.getCompany());
+			}
+		}
+	}
+
+	/**
 	 * Return all vehicles for the specified company.
 	 * @param company a <code>String</code> with the name of the company to retrieve the vehicles for.
 	 * @return a <code>VehiclesResponse</code> object containing all the vehicles which exist for the specified company.
