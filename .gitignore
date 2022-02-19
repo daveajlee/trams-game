@@ -1,5 +1,5 @@
 /releases/*
-/target/*
+/trams/target/*
 /.idea/*
 test.tmp
 test2.tmp
@@ -15,4 +15,5 @@ test2.log
 test2.properties
 test2.script
 tramshistory.txt
-trams.iml
+trams/trams.iml
+trams/test-game.json
