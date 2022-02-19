@@ -264,7 +264,7 @@ public class AllocationPanel {
                         }
                     }
                     //Now assign route detail to vehicle.
-                    controllerHandler.getVehicleController().assignVehicleToTour(vehicleModels[vehiclePos].getAdditionalTypeInformationMap().get("Registration Number"), vehicleModels[routeDetailPos].getAllocatedTour(), companyResponse.getName());
+                    controllerHandler.getVehicleController().assignVehicleToTour(vehicleModels[vehiclePos].getAdditionalTypeInformationMap().get("Registration Number"), vehicleModels[routeDetailPos].getAllocatedRoute(), vehicleModels[routeDetailPos].getAllocatedTour(), companyResponse.getName());
                 }
                 //Now return to previous screen.
                 controlScreen.redrawManagement(managementPanel.createPanel(controlScreen), companyResponse);

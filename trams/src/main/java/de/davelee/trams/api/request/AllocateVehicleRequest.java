@@ -24,6 +24,11 @@ public class AllocateVehicleRequest {
     private String company;
 
     /**
+     * The allocated route for this vehicle.
+     */
+    private String allocatedRoute;
+
+    /**
      * The allocated tour for this vehicle.
      */
     private String allocatedTour;

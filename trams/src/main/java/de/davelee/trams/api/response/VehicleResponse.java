@@ -73,6 +73,11 @@ public class VehicleResponse {
     private String livery;
 
     /**
+     * The allocated route for this vehicle.
+     */
+    private String allocatedRoute;
+
+    /**
      * The allocated tour for this vehicle.
      */
     private String allocatedTour;

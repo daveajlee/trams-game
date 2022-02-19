@@ -160,7 +160,7 @@ public class VehicleControllerTest {
 								.deliveryDate("24-12-2020")
 								.modelName("MyBus Single Decker").build() })
 						.build());
-		vehicleController.assignVehicleToTour("DDD2 HJK", "1/1", "Mustermann GmbH");
+		vehicleController.assignVehicleToTour("DDD2 HJK", "1", "1", "Mustermann GmbH");
 	}
 
 	@Test
@@ -217,6 +217,16 @@ public class VehicleControllerTest {
 
 	@Test
 	public void testGetVehiclesForRoute() {
+		Mockito.when(restTemplate.getForObject(anyString(), eq(VehiclesResponse.class))).
+				thenReturn(VehiclesResponse.builder()
+						.count(1L)
+						.vehicleResponses(new VehicleResponse[] { VehicleResponse.builder().company("Mustermann GmbH")
+								.additionalTypeInformationMap(Map.of("Registration Number", "DDD2 HJK"))
+								.allocatedRoute("1A")
+								.allocatedTour("1")
+								.deliveryDate("24-12-2020")
+								.modelName("MyBus Single Decker").build() })
+						.build());
 		assertNotNull(vehicleController.getVehiclesForRoute("Mustermann GmbH", "1A"));
 	}
 
@@ -237,7 +247,8 @@ public class VehicleControllerTest {
 								.additionalTypeInformationMap(Map.of("Registration Number", "DDD2 HJK"))
 								.deliveryDate("24-12-2020")
 								.modelName("MyBus Single Decker")
-								.allocatedTour("1/1").build() })
+								.allocatedRoute("1A")
+								.allocatedTour("1").build() })
 						.build());
 		assertEquals(1, vehicleController.getAllocations("Mustermann GmbH").size());
 	}
@@ -255,6 +266,7 @@ public class VehicleControllerTest {
 						.additionalTypeInformationMap(Map.of("Registration Number", "DDD2 HJK"))
 						.deliveryDate("24-12-2020")
 						.modelName("MyBus Single Decker")
+						.allocatedRoute("1A")
 						.allocatedTour("1/1").build() })
 			.build());
 		assertEquals("MyBus Double Decker", vehicleController.getPreviousVehicleModel("MyBus Single Decker", "Mustermann GmbH"));
@@ -275,7 +287,8 @@ public class VehicleControllerTest {
 								.additionalTypeInformationMap(Map.of("Registration Number", "DDD2 HJJ"))
 								.deliveryDate("24-12-2020")
 								.modelName("MyBus Double Decker")
-								.allocatedTour("1/1").build(), VehicleResponse.builder().company("Mustermann GmbH")
+								.allocatedRoute("1A")
+								.allocatedTour("1").build(), VehicleResponse.builder().company("Mustermann GmbH")
 								.additionalTypeInformationMap(Map.of("Registration Number", "DDD2 HJK"))
 								.deliveryDate("24-12-2020")
 								.modelName("MyBus Single Decker")

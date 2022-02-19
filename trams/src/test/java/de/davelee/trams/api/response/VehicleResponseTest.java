@@ -22,7 +22,8 @@ public class VehicleResponseTest {
         VehicleResponse vehicleResponse = VehicleResponse.builder()
                 .livery("Green with red text")
                 .fleetNumber("213")
-                .allocatedTour("1/1")
+                .allocatedRoute("1A")
+                .allocatedTour("1")
                 .vehicleType("Bus")
                 .additionalTypeInformationMap(Collections.singletonMap("Registration Number", "XXX2 BBB"))
                 .inspectionStatus("Inspected")
@@ -31,7 +32,8 @@ public class VehicleResponseTest {
                 .build();
         assertEquals("Green with red text", vehicleResponse.getLivery());
         assertEquals("213", vehicleResponse.getFleetNumber());
-        assertEquals("1/1", vehicleResponse.getAllocatedTour());
+        assertEquals("1A", vehicleResponse.getAllocatedRoute());
+        assertEquals("1", vehicleResponse.getAllocatedTour());
         assertEquals("Bus", vehicleResponse.getVehicleType());
         assertEquals("XXX2 BBB", vehicleResponse.getAdditionalTypeInformationMap().get("Registration Number"));
         assertEquals("Inspected", vehicleResponse.getInspectionStatus());
@@ -40,7 +42,8 @@ public class VehicleResponseTest {
         vehicleResponse.setCompany("Lee Buses");
         vehicleResponse.setLivery("Blue with orange text");
         vehicleResponse.setFleetNumber("1213");
-        vehicleResponse.setAllocatedTour("1/2");
+        vehicleResponse.setAllocatedRoute("1");
+        vehicleResponse.setAllocatedTour("2");
         vehicleResponse.setVehicleType("Tram");
         vehicleResponse.setAdditionalTypeInformationMap(Collections.singletonMap("Bidirectional", "true"));
         vehicleResponse.setInspectionStatus("Inspection Due!");
@@ -52,7 +55,7 @@ public class VehicleResponseTest {
         vehicleResponse.setPurchasePrice(700000.0);
         vehicleResponse.setUserHistory(List.of(VehicleHistoryResponse.builder().vehicleHistoryReason("PURCHASED").date("25-04-2021").comment("Love on first sight").build()));
         vehicleResponse.setTimesheet(Map.of("01-11-2021", 8));
-        assertEquals("VehicleResponse(fleetNumber=1213, company=Lee Buses, deliveryDate=25-04-2021, inspectionDate=25-05-2021, vehicleType=Tram, purchasePrice=700000.0, vehicleStatus=DELIVERED, seatingCapacity=0, standingCapacity=0, modelName=Bendy Bus 2000, livery=Blue with orange text, allocatedTour=1/2, delayInMinutes=0, inspectionStatus=Inspection Due!, nextInspectionDueInDays=0, additionalTypeInformationMap={Bidirectional=true}, userHistory=[VehicleHistoryResponse(date=25-04-2021, vehicleHistoryReason=PURCHASED, comment=Love on first sight)], timesheet={01-11-2021=8})", vehicleResponse.toString());
+        assertEquals("VehicleResponse(fleetNumber=1213, company=Lee Buses, deliveryDate=25-04-2021, inspectionDate=25-05-2021, vehicleType=Tram, purchasePrice=700000.0, vehicleStatus=DELIVERED, seatingCapacity=0, standingCapacity=0, modelName=Bendy Bus 2000, livery=Blue with orange text, allocatedRoute=1, allocatedTour=2, delayInMinutes=0, inspectionStatus=Inspection Due!, nextInspectionDueInDays=0, additionalTypeInformationMap={Bidirectional=true}, userHistory=[VehicleHistoryResponse(date=25-04-2021, vehicleHistoryReason=PURCHASED, comment=Love on first sight)], timesheet={01-11-2021=8})", vehicleResponse.toString());
     }
 
 }

@@ -37,15 +37,17 @@ public class VehicleController {
 	/**
 	 * Assign the supplied vehicle to the specified tour for the specified company.
 	 * @param registrationNumber a <code>String</code> containing the registration number of the vehicle to assign.
+	 * @param allocatedRoute a <code>String</code> containing the route number to assign the vehicle to.
 	 * @param allocatedTour a <code>String</code> containing the id of the tour to assign the vehicle to.
 	 * @param company a <code>String</code> with the name of the company to assign the vehicle for.
 	 */
-	public void assignVehicleToTour ( final String registrationNumber, final String allocatedTour, final String company ) {
+	public void assignVehicleToTour ( final String registrationNumber, final String allocatedRoute, final String allocatedTour, final String company ) {
 		VehicleResponse[] vehicleResponses = getVehicles(company).getVehicleResponses();
 		for ( VehicleResponse vehicleResponse : vehicleResponses ) {
 			if ( vehicleResponse.getAdditionalTypeInformationMap().get("Registration Number").contentEquals(registrationNumber) ) {
 				restTemplate.patchForObject(operationsServerUrl + "vehicle/allocate/",
 						AllocateVehicleRequest.builder()
+								.allocatedRoute(allocatedRoute)
 								.allocatedTour(allocatedTour)
 								.fleetNumber(vehicleResponse.getFleetNumber())
 								.company(company)
@@ -232,9 +234,11 @@ public class VehicleController {
 	 * @return a <code>VehiclesResponse</code> containing the vehicles belonging to the company and route including a count.
 	 */
 	public VehiclesResponse getVehiclesForRoute ( final String company, final String routeNumber ) {
-		logger.info("getVehiclesForRoute method with " + company + " & " + routeNumber);
-		//TODO: implement call to REST service to return the vehicles.
-		return VehiclesResponse.builder().vehicleResponses(new VehicleResponse[0]).count(0L).build();
+		VehiclesResponse vehiclesResponse = restTemplate.getForObject(operationsServerUrl + "vehicles/?company=" + company + "&routeNumber=" + routeNumber, VehiclesResponse.class);
+		if ( vehiclesResponse != null && vehiclesResponse.getVehicleResponses() != null ) {
+			return vehiclesResponse;
+		}
+		return null;
 	}
 
 	/**
@@ -259,10 +263,10 @@ public class VehicleController {
 		//Allocations list.
 		ArrayList<String> allocations = new ArrayList<>();
 		//Now go through and add their allocation if they already have an allocation.
-		VehicleResponse[] vehicleModels = getVehicles(company).getVehicleResponses();
-		for ( VehicleResponse vehicleModel : vehicleModels ) {
-			if ( vehicleModel.getAllocatedTour() != null ) {
-				allocations.add(vehicleModel.getAllocatedTour() + " & " + vehicleModel.getAdditionalTypeInformationMap().get("Registration Number"));
+		VehicleResponse[] vehicleResponses = getVehicles(company).getVehicleResponses();
+		for ( VehicleResponse vehicleResponse : vehicleResponses ) {
+			if ( vehicleResponse.getAllocatedTour() != null ) {
+				allocations.add(vehicleResponse.getAllocatedRoute() + "/" + vehicleResponse.getAllocatedTour() + " & " + vehicleResponse.getAdditionalTypeInformationMap().get("Registration Number"));
 			}
 		}
 		//Return allocations list.
