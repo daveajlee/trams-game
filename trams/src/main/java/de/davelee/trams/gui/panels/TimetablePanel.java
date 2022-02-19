@@ -202,7 +202,6 @@ public class TimetablePanel {
         downButton.setEnabled(false);
         downButton.addActionListener(e -> {
             int posToMove = servedStopsList.getSelectedIndex();
-            System.out.println("PosToMove is: " + posToMove);
             if ( posToMove != servedStopsModel.size()-1 ) {
                 String stopToMoveUp = servedStopsModel.getElementAt(posToMove + 1);
                 String stopToMoveDown = servedStopsList.getSelectedValue();
@@ -291,44 +290,45 @@ public class TimetablePanel {
         generateTimetableButton.addActionListener (e -> {
             if ( validFromMonthBox.getSelectedItem() != null && validToMonthBox.getSelectedItem() != null ) {
                 String[] validFromMonthYear = validFromMonthBox.getSelectedItem().toString().split(" ");
-                LocalDate validFromDate = LocalDate.of(Integer.parseInt(validFromMonthYear[1]), Month.valueOf(validFromMonthYear[0]).getValue(), validFromDayBox.getSelectedIndex());
+                LocalDate validFromDate = LocalDate.of(Integer.parseInt(validFromMonthYear[1]), Month.valueOf(validFromMonthYear[0]).getValue(), validFromDayBox.getSelectedIndex()+1);
                 String[] validToMonthYear = validToMonthBox.getSelectedItem().toString().split(" ");
-                LocalDate validToDate = LocalDate.of(Integer.parseInt(validToMonthYear[1]), Month.valueOf(validToMonthYear[0]).getValue(), validToDayBox.getSelectedIndex());
+                LocalDate validToDate = LocalDate.of(Integer.parseInt(validToMonthYear[1]), Month.valueOf(validToMonthYear[0]).getValue(), validToDayBox.getSelectedIndex()+1);
                 //Create a linked list of days selected.
                 String operatingDays = "";
                 if (daysBox[0].isSelected()) {
-                    operatingDays += DayOfWeek.SUNDAY.name();
+                    operatingDays += DayOfWeek.SUNDAY.name() + ",";
                 }
                 if (daysBox[1].isSelected()) {
-                    operatingDays += DayOfWeek.MONDAY.name();
+                    operatingDays += DayOfWeek.MONDAY.name() + ",";
                 }
                 if (daysBox[2].isSelected()) {
-                    operatingDays += DayOfWeek.TUESDAY.name();
+                    operatingDays += DayOfWeek.TUESDAY.name() + ",";
                 }
                 if (daysBox[3].isSelected()) {
-                    operatingDays += DayOfWeek.WEDNESDAY.name();
+                    operatingDays += DayOfWeek.WEDNESDAY.name() + ",";
                 }
                 if (daysBox[4].isSelected()) {
-                    operatingDays += DayOfWeek.THURSDAY.name();
+                    operatingDays += DayOfWeek.THURSDAY.name() + ",";
                 }
                 if (daysBox[5].isSelected()) {
-                    operatingDays += DayOfWeek.FRIDAY.name();
+                    operatingDays += DayOfWeek.FRIDAY.name() + ",";
                 }
                 if (daysBox[6].isSelected()) {
-                    operatingDays += DayOfWeek.SATURDAY.name();
+                    operatingDays += DayOfWeek.SATURDAY.name() + ",";
                 }
                 //Create time from.
                 LocalTime timeFrom = LocalTime.of(Integer.parseInt(fromHourSpinner.getValue().toString()), Integer.parseInt(fromMinuteSpinner.getValue().toString()));
                 //Create time to.
                 LocalTime timeTo = LocalTime.of(Integer.parseInt(toHourSpinner.getValue().toString()), Integer.parseInt(toMinuteSpinner.getValue().toString()));
+                //Generate array of stops which should be served.
+                String[] stopNames = new String[servedStopsModel.size()];
+                for ( int i = 0; i < servedStopsModel.size(); i++ ) {
+                    stopNames[i] = servedStopsModel.getElementAt(i);
+                }
                 //Generate timetable as a series of stop times.
-                //TODO: implement the stoppingTimes and distances arrays in the GUI correctly instead of arrays of 0.
-                //These should be based on the servedStopModel and the waiting time + distance to next stop.
-                int[] waitingTimes = new int[stopResponses.length];
-                int[] distances = new int[stopResponses.length - 1];
-                controllerHandler.getStopTimeController().generateStopTimes(companyResponse.getName(), waitingTimes,
-                        stopResponses, routeResponse.getRouteNumber(), distances, timeFrom.format(DateTimeFormatter.ofPattern("HH:mm")),
-                        timeTo.format(DateTimeFormatter.ofPattern("HH:mm")), (Integer) everyMinuteSpinner.getValue(),
+                controllerHandler.getStopTimeController().generateStopTimes(companyResponse.getName(),
+                        stopNames, routeResponse.getRouteNumber(), timeFrom.format(DateTimeFormatter.ofPattern("HH:mm")),
+                        timeTo.format(DateTimeFormatter.ofPattern("HH:mm")), Integer.parseInt(everyMinuteSpinner.getValue().toString()),
                         validFromDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")), validToDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")),
                         operatingDays);
                 //Return to management screen.

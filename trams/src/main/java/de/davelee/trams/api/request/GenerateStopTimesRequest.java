@@ -20,9 +20,9 @@ public class GenerateStopTimesRequest {
     private String company;
 
     /**
-     * Information about the stops that should be served.
+     * The stops that should be served in an array in the order that they should be served.
      */
-    private StopPatternRequest stopPatternRequest;
+    private String[] stopNames;
 
     /**
      * The route number serving these stops.

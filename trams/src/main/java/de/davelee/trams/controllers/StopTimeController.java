@@ -1,8 +1,6 @@
 package de.davelee.trams.controllers;
 
 import de.davelee.trams.api.request.GenerateStopTimesRequest;
-import de.davelee.trams.api.request.StopPatternRequest;
-import de.davelee.trams.api.response.StopResponse;
 import de.davelee.trams.api.response.StopTimeResponse;
 import de.davelee.trams.api.response.StopTimesResponse;
 import de.davelee.trams.util.Direction;
@@ -32,10 +30,8 @@ public class StopTimeController {
     /**
      * Generate a set of stop times based on the specified criteria.
      * @param company a <code>String</code> with the name of the company to generate stop times for.
-     * @param stoppingTimes a <code>int</code> array containing the amount of minutes that a vehicle should stop at the particular stop position in the array.
-     * @param stopResponses a <code>StopResponse</code> array containing the list of stop responses that should be served.
+     * @param stopNames a <code>String</code> array containing the names of the stops that should be served.
      * @param routeNumber a <code>String</code> with the route number to use to generate stop times.
-     * @param distances a <code>int</code> array containing the distances in minutes between stops. Position 0 is the distance between stop 0 and stop 1.
      * @param startTime a <code>String</code> with the start time in the format HH:mm
      * @param endTime a <code>String</code> with the end time in the format HH:mm
      * @param frequency a <code>int</code> containing the frequency between departures in minutes.
@@ -43,32 +39,24 @@ public class StopTimeController {
      * @param validToDate a <code>String</code> with the valid to date for departures in the format dd-MM-yyyy
      * @param operatingDays a <code>String</code> with comma-separated Strings with those days when the departure runs.
      */
-    public void generateStopTimes ( final String company, final int[] stoppingTimes, final StopResponse[] stopResponses,
-                                    final String routeNumber, final int[] distances, final String startTime,
-                                    final String endTime, final int frequency, final String validFromDate,
-                                    final String validToDate, final String operatingDays  ) {
-        //Convert stop responses to string array for stop names.
-        String[] stopNames = new String[stopResponses.length];
-        for ( int i = 0; i < stopNames.length; i++ ) {
-            stopNames[i] = stopResponses[i].getName();
-        }
+    public void generateStopTimes ( final String company, final String[] stopNames, final String routeNumber,
+                                    final String startTime, final String endTime, final int frequency,
+                                    final String validFromDate, final String validToDate, final String operatingDays  ) {
         //Send data to the server.
+        GenerateStopTimesRequest generateStopTimesRequest = GenerateStopTimesRequest.builder()
+                .company(company)
+                .stopNames(stopNames)
+                .routeNumber(routeNumber)
+                .startTime(startTime)
+                .endTime(endTime)
+                .frequency(frequency)
+                .validFromDate(validFromDate)
+                .validToDate(validToDate)
+                .operatingDays(operatingDays)
+                .build();
+
         restTemplate.postForObject(operationsServerUrl + "stopTimes/generate",
-                GenerateStopTimesRequest.builder()
-                        .company(company)
-                        .stopPatternRequest(StopPatternRequest.builder()
-                                .stoppingTimes(stoppingTimes)
-                                .stopNames(stopNames)
-                                .distances(distances)
-                                .build())
-                        .routeNumber(routeNumber)
-                        .startTime(startTime)
-                        .endTime(endTime)
-                        .frequency(frequency)
-                        .validFromDate(validFromDate)
-                        .validToDate(validToDate)
-                        .operatingDays(operatingDays)
-                        .build(),
+                generateStopTimesRequest,
                 Void.class);
     }
 

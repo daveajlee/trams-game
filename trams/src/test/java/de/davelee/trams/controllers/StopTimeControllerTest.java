@@ -1,7 +1,6 @@
 package de.davelee.trams.controllers;
 
 import de.davelee.trams.TramsGameApplication;
-import de.davelee.trams.api.response.StopResponse;
 import de.davelee.trams.api.response.StopTimeResponse;
 import de.davelee.trams.api.response.StopTimesResponse;
 import de.davelee.trams.util.Direction;
@@ -33,10 +32,8 @@ public class StopTimeControllerTest {
     @Test
     public void testGenerateStopTimes() {
         Mockito.when(restTemplate.postForObject(anyString(), any(), eq(Void.class))).thenReturn(null);
-        stopTimeController.generateStopTimes("Mustermann GmbH", new int[0],
-                new StopResponse[] { StopResponse.builder().company("Mustermann GmbH").name("Airport").build(),
-                StopResponse.builder().company("Mustermann GmbH").name("City Centre").build()}, "1A",
-                new int[0], "06:00", "19:00", 15, "01-01-2020",
+        stopTimeController.generateStopTimes("Mustermann GmbH", new String[] { "Airport", "City Centre"}, "1A",
+                "06:00", "19:00", 15, "01-01-2020",
                 "01-03-2020", "Monday,Tuesday,Wednesday,Thursday,Friday");
     }
 
