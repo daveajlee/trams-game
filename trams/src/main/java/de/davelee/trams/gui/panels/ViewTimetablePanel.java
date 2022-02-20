@@ -11,6 +11,7 @@ import javax.swing.table.TableColumn;
 
 import de.davelee.trams.api.response.CompanyResponse;
 import de.davelee.trams.api.response.RouteResponse;
+import de.davelee.trams.api.response.StopResponse;
 import de.davelee.trams.api.response.StopTimeResponse;
 import de.davelee.trams.controllers.ControllerHandler;
 import de.davelee.trams.util.Direction;
@@ -91,8 +92,10 @@ public class ViewTimetablePanel {
         stopSelectionLabel.setFont(new Font("Arial", Font.BOLD, 16));
         selectionPanel.add(stopSelectionLabel);
         final DefaultComboBoxModel<String> stopSelectionModel = new DefaultComboBoxModel<>();
-        //TODO: Add a list of stop names served by this route.
-        stopSelectionModel.addElement("");
+        StopResponse[] stopResponses = controllerHandler.getStopController().getAllStops(companyResponse.getName());
+        for ( StopResponse stopResponse : stopResponses ) {
+            stopSelectionModel.addElement(stopResponse.getName());
+        }
         final JComboBox<String> stopSelectionBox = new JComboBox<>(stopSelectionModel);
         stopSelectionBox.setFont(new Font("Arial", Font.PLAIN, 15));
         stopSelectionBox.addActionListener (e -> {
@@ -125,12 +128,13 @@ public class ViewTimetablePanel {
         //Show valid information.
         JPanel validityPanel = new JPanel(new BorderLayout());
         validityPanel.setBackground(Color.WHITE);
-        //TODO: choose a concrete stop and not Test Stop.
-        StopTimeResponse[] stopTimeModels = controllerHandler.getStopTimeController().getStopTimes(Optional.empty(), initialRouteResponse.getRouteNumber(), companyResponse.getTime(), companyResponse.getName(), Optional.empty(), "Test Stop", true, false);
-        JLabel validFromDateLabel = new JLabel("Valid From: " + stopTimeModels != null ? stopTimeModels[0].getValidFromDate() : "");
+        StopTimeResponse[] stopTimeResponses = controllerHandler.getStopTimeController().getStopTimes(Optional.empty(), initialRouteResponse.getRouteNumber(), companyResponse.getTime(), companyResponse.getName(), Optional.empty(), stopSelectionModel.getSelectedItem().toString(), true, false);
+        String validFromText = stopTimeResponses != null ? stopTimeResponses[0].getValidFromDate() : "";
+        JLabel validFromDateLabel = new JLabel("Valid From: " + validFromText);
         validFromDateLabel.setFont(new Font("Arial", Font.ITALIC, 14));
         validityPanel.add(validFromDateLabel, BorderLayout.NORTH);
-        JLabel validToDateLabel = new JLabel("Valid To: " + stopTimeModels != null ? stopTimeModels[0].getValidToDate() : "");
+        String validToText = stopTimeResponses != null ? stopTimeResponses[0].getValidToDate() : "";
+        JLabel validToDateLabel = new JLabel("Valid To: " + validToText);
         validToDateLabel.setFont(new Font("Arial", Font.ITALIC, 14));
         validityPanel.add(validToDateLabel, BorderLayout.SOUTH);
         topPanel.add(validityPanel, BorderLayout.SOUTH);
@@ -144,8 +148,7 @@ public class ViewTimetablePanel {
 
         //Display it!
         if ( stopSelectionBox.getSelectedItem() != null ) {
-            //TODO: Replace Test Stop with a correct stop name.
-            myTable.setModel(createTableModel(initialRouteResponse.getRouteNumber(), "Test Stop", Direction.OUTGOING, companyResponse.getTime(), companyResponse.getName()));
+            myTable.setModel(createTableModel(initialRouteResponse.getRouteNumber(), stopSelectionBox.getSelectedItem().toString(), Direction.OUTGOING, companyResponse.getTime(), companyResponse.getName()));
         }
         myTable.setFont(new Font("Arial", Font.PLAIN, 12));
         JScrollPane tableScrollPane = new JScrollPane(autoResizeColWidth(myTable, (DefaultTableModel) myTable.getModel()));

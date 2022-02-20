@@ -290,9 +290,9 @@ public class TimetablePanel {
         generateTimetableButton.addActionListener (e -> {
             if ( validFromMonthBox.getSelectedItem() != null && validToMonthBox.getSelectedItem() != null ) {
                 String[] validFromMonthYear = validFromMonthBox.getSelectedItem().toString().split(" ");
-                LocalDate validFromDate = LocalDate.of(Integer.parseInt(validFromMonthYear[1]), Month.valueOf(validFromMonthYear[0]).getValue(), validFromDayBox.getSelectedIndex()+1);
+                LocalDate validFromDate = LocalDate.of(Integer.parseInt(validFromMonthYear[1]), Month.valueOf(validFromMonthYear[0]).getValue(), validFromDayBox.getItemAt(validFromDayBox.getSelectedIndex()));
                 String[] validToMonthYear = validToMonthBox.getSelectedItem().toString().split(" ");
-                LocalDate validToDate = LocalDate.of(Integer.parseInt(validToMonthYear[1]), Month.valueOf(validToMonthYear[0]).getValue(), validToDayBox.getSelectedIndex()+1);
+                LocalDate validToDate = LocalDate.of(Integer.parseInt(validToMonthYear[1]), Month.valueOf(validToMonthYear[0]).getValue(), validToDayBox.getItemAt(validToDayBox.getSelectedIndex()));
                 //Create a linked list of days selected.
                 String operatingDays = "";
                 if (daysBox[0].isSelected()) {

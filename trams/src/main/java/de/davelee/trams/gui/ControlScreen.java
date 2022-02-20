@@ -646,10 +646,8 @@ public class ControlScreen extends ButtonBar {
         routeModel.clear();
         RouteResponse[] routeResponses = super.getControllerHandler().getRouteController().getRoutes(company).getRouteResponses();
         for ( RouteResponse routeResponse : routeResponses ) {
-            //TODO: Add stops to the display of the route text
-            routeModel.addElement(routeResponse.getRouteNumber() /*+ ":" + routeResponse.getStopNames().get(0) + " - " + routeResponse.getStopNames().get(routeResponse.getStopNames().size()-1)*/);
+            routeModel.addElement(routeResponse.getRouteNumber());
         }
-        //theRouteList = new JList(allRouteStr);
         logger.debug("Route number in control screen is " + routeNumber);
         if ( !routeNumber.equalsIgnoreCase("") ) {
             routeList.setSelectedValue(routeNumber, true);
