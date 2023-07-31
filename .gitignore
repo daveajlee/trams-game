@@ -1,0 +1,5 @@
+# IntelliJ IDEA Folder
+/.idea
+
+# Test game file for tests
+test-game.json
