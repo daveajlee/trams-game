@@ -3,3 +3,6 @@
 
 # Test game file for tests
 test-game.json
+
+# Hide Mac files
+.DS_Store
